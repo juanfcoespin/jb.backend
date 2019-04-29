@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="a419a983-f6d9-4552-880d-f4c61024adae" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.Generic.List`1" Category="List" />
+    </CollectionMappings>
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://64.46.87.43/ViaNetTest/ViaServicios/ViaIntegration.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="ViaIntegration.xsd" MetadataType="Schema" ID="2ad8b940-4ea6-4b02-bc31-fee53525556d" SourceId="1" SourceUrl="http://64.46.87.43/ViaNetTest/ViaServicios/ViaIntegration.svc?xsd=xsd0" />
+    <MetadataFile FileName="ViaIntegration.wsdl" MetadataType="Wsdl" ID="662cb80d-f1f3-4810-8b46-5b023175c37e" SourceId="1" SourceUrl="http://64.46.87.43/ViaNetTest/ViaServicios/ViaIntegration.svc?wsdl" />
+    <MetadataFile FileName="ViaIntegration1.xsd" MetadataType="Schema" ID="314747cd-70fa-4da1-810b-b5cfd7c7fa0a" SourceId="1" SourceUrl="http://64.46.87.43/ViaNetTest/ViaServicios/ViaIntegration.svc?xsd=xsd1" />
+    <MetadataFile FileName="ViaIntegration.disco" MetadataType="Disco" ID="d547eb6a-4474-4cae-b6c6-07813fc13bb2" SourceId="1" SourceUrl="http://64.46.87.43/ViaNetTest/ViaServicios/ViaIntegration.svc?disco" />
+    <MetadataFile FileName="ViaIntegration2.xsd" MetadataType="Schema" ID="8a5719c2-1cf0-4eee-aa0d-54d35c550cdf" SourceId="1" SourceUrl="http://64.46.87.43/ViaNetTest/ViaServicios/ViaIntegration.svc?xsd=xsd2" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="jbp.utils" GeneratedClassName="conf">
+  <Profiles />
+  <Settings>
+    <Setting Name="logsPathFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">c:\jbpSRI</Value>
+    </Setting>
+    <Setting Name="nombreEmpresa" Type="System.String" Scope="User">
+      <Value Profile="(Default)">JAMES BROWN PHARMA C.A.</Value>
+    </Setting>
+    <Setting Name="rucEmpresa" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1790462854001</Value>
+    </Setting>
+    <Setting Name="direccionMatriz" Type="System.String" Scope="User">
+      <Value Profile="(Default)">PIFO - AV INTEROCEANICA KM 23 1/2</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -1,0 +1,46 @@
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.core\bin\Debug\jbp.core.dll.config
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.core\bin\Debug\jbp.core.dll
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.core\bin\Debug\jbp.core.pdb
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.core\bin\Debug\jbp.core.contract.dll
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.core\bin\Debug\jbp.msg.dll
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.core\bin\Debug\jbp.utils.dll
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.core\bin\Debug\jbp.core.contract.pdb
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.core\bin\Debug\jbp.msg.pdb
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.core\bin\Debug\jbp.utils.pdb
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.core\obj\Debug\jbp.core.oracle9i.csprojAssemblyReference.cache
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.core\obj\Debug\jbp.core.oracle9i.csproj.CoreCompileInputs.cache
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.core\obj\Debug\jbp.core.oracle9i.csproj.CopyComplete
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.core\obj\Debug\jbp.core.dll
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.core\obj\Debug\jbp.core.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\bin\Debug\jbp.core.dll.config
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\bin\Debug\jbp.core.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\bin\Debug\jbp.core.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\bin\Debug\jbp.core.contract.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\bin\Debug\jbp.msg.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\bin\Debug\jbp.utils.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\bin\Debug\utilities.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\bin\Debug\utilities.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\bin\Debug\jbp.core.contract.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\bin\Debug\jbp.msg.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\bin\Debug\jbp.utils.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\bin\Debug\jbp.utils.dll.config
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\obj\Debug\jbp.core.oracle9i.csprojAssemblyReference.cache
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\obj\Debug\jbp.core.oracle9i.csproj.CoreCompileInputs.cache
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\obj\Debug\jbp.core.oracle9i.csproj.CopyComplete
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\obj\Debug\jbp.core.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core\obj\Debug\jbp.core.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\bin\Debug\jbp.core.dll.config
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\bin\Debug\jbp.core.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\bin\Debug\jbp.core.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\bin\Debug\jbp.core.contract.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\bin\Debug\jbp.msg.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\bin\Debug\utilities.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\bin\Debug\utilities.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\bin\Debug\jbp.core.contract.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\bin\Debug\jbp.msg.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\bin\Debug\jbp.msg.dll.config
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\obj\Debug\jbp.core.oracle9i.csprojAssemblyReference.cache
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\obj\Debug\jbp.core.oracle9i.csproj.CoreCompileInputs.cache
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\obj\Debug\jbp.core.oracle9i.csproj.CopyComplete
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\obj\Debug\jbp.core.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core\obj\Debug\jbp.core.pdb

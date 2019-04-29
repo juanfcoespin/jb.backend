@@ -1,0 +1,68 @@
+D:\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.business.dll
+D:\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.business.pdb
+D:\JBP\proyectos\software\jbp\jbp.business\obj\Debug\jbp.business.csprojAssemblyReference.cache
+D:\JBP\proyectos\software\jbp\jbp.business\obj\Debug\jbp.business.csproj.CoreCompileInputs.cache
+D:\JBP\proyectos\software\jbp\jbp.business\obj\Debug\jbp.business.dll
+D:\JBP\proyectos\software\jbp\jbp.business\obj\Debug\jbp.business.pdb
+D:\JBP\proyectos\software\jbp\jbp.business\obj\Debug\jbp.business.csproj.CopyComplete
+D:\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.notasCredito.old.dll
+D:\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.utils.dll
+D:\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.notasCredito.old.pdb
+D:\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.notasCredito.old.xml
+D:\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.utils.pdb
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.business.dll
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.business.pdb
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.core.dll
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.msg.dll
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.utils.dll
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.core.contract.dll
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.core.pdb
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.core.dll.config
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.msg.pdb
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.utils.pdb
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\bin\Debug\jbp.core.contract.pdb
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\obj\Debug\jbp.business.csprojAssemblyReference.cache
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\obj\Debug\jbp.business.csproj.CoreCompileInputs.cache
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\obj\Debug\jbp.business.csproj.CopyComplete
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\obj\Debug\jbp.business.dll
+D:\ownCloud\JBP\proyectos\software\jbp\jbp.business\obj\Debug\jbp.business.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\bin\Debug\jbp.business.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\bin\Debug\jbp.business.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\bin\Debug\jbp.core.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\bin\Debug\jbp.msg.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\bin\Debug\jbp.utils.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\bin\Debug\utilities.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\bin\Debug\jbp.core.contract.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\bin\Debug\utilities.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\bin\Debug\jbp.core.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\bin\Debug\jbp.core.dll.config
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\bin\Debug\jbp.msg.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\bin\Debug\jbp.utils.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\bin\Debug\jbp.utils.dll.config
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\bin\Debug\jbp.core.contract.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\obj\Debug\jbp.business.csprojAssemblyReference.cache
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\obj\Debug\jbp.business.csproj.CoreCompileInputs.cache
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\obj\Debug\jbp.business.csproj.CopyComplete
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\obj\Debug\jbp.business.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.business\obj\Debug\jbp.business.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\jbp.business.dll.config
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\jbp.business.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\jbp.business.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\jbp.core.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\jbp.msg.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\jbp.utils.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\utilities.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\jbp.core.contract.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\utilities.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\jbp.core.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\jbp.core.dll.config
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\jbp.msg.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\jbp.msg.dll.config
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\jbp.utils.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\jbp.utils.dll.config
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\jbp.core.contract.pdb
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\obj\Debug\jbp.business.csprojAssemblyReference.cache
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\obj\Debug\jbp.business.csproj.CoreCompileInputs.cache
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\obj\Debug\jbp.business.csproj.CopyComplete
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\obj\Debug\jbp.business.dll
+D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\obj\Debug\jbp.business.pdb

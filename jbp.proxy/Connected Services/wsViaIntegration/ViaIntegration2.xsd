@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/Via.Servicio.Entities" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/Via.Servicio.Entities" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="ArrayOfFactura">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Factura" nillable="true" type="tns:Factura" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfFactura" nillable="true" type="tns:ArrayOfFactura" />
+  <xs:complexType name="Factura">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CodigoCliente" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Detalle" nillable="true" type="tns:ArrayOfDetalleFactura" />
+      <xs:element minOccurs="0" name="Documento" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="FechaFactura" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Observaciones" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PuntoEntrega" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="UsuarioRegistro" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Factura" nillable="true" type="tns:Factura" />
+  <xs:complexType name="ArrayOfDetalleFactura">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DetalleFactura" nillable="true" type="tns:DetalleFactura" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfDetalleFactura" nillable="true" type="tns:ArrayOfDetalleFactura" />
+  <xs:complexType name="DetalleFactura">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Cantidad" type="xs:decimal" />
+      <xs:element minOccurs="0" name="CodigoArticulo" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Subtotal" type="xs:decimal" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DetalleFactura" nillable="true" type="tns:DetalleFactura" />
+</xs:schema>

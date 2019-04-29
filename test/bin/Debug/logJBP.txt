@@ -1,0 +1,105 @@
+Fecha: 18/2/2019 16:35:49, Tipo: error, ubicacion , descripcion: Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Error en el servidor remoto: (500) Error interno del servidor.
+Fecha: 18/2/2019 16:42:24, Tipo: error, ubicacion , descripcion: Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Error en el servidor remoto: (500) Error interno del servidor.
+Fecha: 18/2/2019 16:45:34, Tipo: error, ubicacion , descripcion: Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Error en el servidor remoto: (500) Error interno del servidor.
+Fecha: 18/2/2019 16:55:16, Tipo: error, ubicacion , descripcion: Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Error en el servidor remoto: (500) Error interno del servidor.
+Fecha: 18/2/2019 16:57:29, Tipo: error, ubicacion , descripcion: Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Error en el servidor remoto: (500) Error interno del servidor.
+Fecha: 18/2/2019 16:59:33, Tipo: error, ubicacion , descripcion: Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Error en el servidor remoto: (500) Error interno del servidor.
+Fecha: 18/2/2019 17:01:30, Tipo: error, ubicacion , descripcion: Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Error en el servidor remoto: (500) Error interno del servidor.
+Fecha: 18/2/2019 17:03:38, Tipo: error, ubicacion , descripcion: Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Error en el servidor remoto: (500) Error interno del servidor.
+Fecha: 18/2/2019 17:06:35, Tipo: error, ubicacion , descripcion: Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Error en el servidor remoto: (500) Error interno del servidor.
+Fecha: 18/2/2019 17:08:01, Tipo: error, ubicacion , descripcion: Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Error en el servidor remoto: (500) Error interno del servidor.
+Fecha: 18/2/2019 17:19:44, Tipo: error, ubicacion , descripcion: Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Error en el servidor remoto: (500) Error interno del servidor.
+Fecha: 19/2/2019 13:21:58, Tipo: error, ubicacion , descripcion: Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Campo UsuarioRegistro vacío o nulo.
+
+
+Fecha: 19/2/2019 13:38:12
+ Tipo: error
+  descripcion:
+ Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Campo UsuarioRegistro vacío o nulo.
+
+
+Fecha: 19/2/2019 15:01:26
+Tipo: error
+Descripción:
+Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Campo UsuarioRegistro vacío o nulo.
+
+
+--------- Fecha: 21/2/2019 9:24:22-----------
+Tipo: error
+Descripción:
+Capa: Proxy
+Clase: FacturaProxy
+Función: Void InsertPullFacturaTrandina()
+
+Error:
+Error en el servidor remoto: (500) Error interno del servidor.
