@@ -52,7 +52,7 @@
     <Compile Include="DetalleFacturaTrandinaCore .cs" />
     <Compile Include="FacturaCore.cs" />
     <Compile Include="FacturaTrandinaCore.cs" />
-    <Compile Include="PeridoCore.cs" />
+    <Compile Include="PeriodoCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FacturaStupendoCore.cs" />
     <Compile Include="SocioNegocioCore.cs" />

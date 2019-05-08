@@ -6,12 +6,18 @@ using System.Threading.Tasks;
 
 using jbp.msg;
 using jbp.core;
+using utilities;
+using System.Reactive.Linq;
+
+using System.Threading;
+using System.Reactive.Disposables;
 
 namespace jbp.business
 {
     public class CuentaBusiness
     {
-        public MontoCuentaMsg GetMontoCuentaByIdPeriodo_y_cuenta(int idPerido, string cuenta) {
+        public MontoCuentaMsg GetMontoCuentaByIdPeriodo_y_cuenta(int idPerido, string cuenta)
+        {
             var ms = new MontoCuentaMsg();
             return ms;
         }
@@ -43,5 +49,44 @@ namespace jbp.business
                 return new ListMS<CuentaMsg> { Error = e.Message };
             }
         }
+        public static ProcessCheckedMsg SetMontosPorPeriodo(int idPeriodo)
+        {
+            try
+            {
+                var ms = new ProcessCheckedMsg();
+                ms.Id = commonBusiness.ListProcessChecked.Count();
+                ms.Total = 50;
+                commonBusiness.ListProcessChecked.Add(ms);
+
+                //se corre el proceso de manera asíncrona
+                var obs = SetMontosPorPeriodoAsync();
+                //obs.Subscribe(o =>
+                //    ms.Current = o
+                //);
+                return ms;
+            }
+            catch (Exception e)
+            {
+                e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
+                return new ProcessCheckedMsg { Error = e.Message };
+            }
+        }
+        public static IObservable<int> SetMontosPorPeriodoAsync()
+        {
+            return Observable.Create<int>(o =>
+            {
+                // internally creates a new CancellationTokenSource
+                var cancel = new CancellationDisposable();
+
+                for (var i = 0; i <= 50; i++)
+                {
+                    Thread.Sleep(100);
+                    o.OnNext(i);
+                }
+                o.OnCompleted();
+                return cancel;
+            });
+        }
+
     }
 }

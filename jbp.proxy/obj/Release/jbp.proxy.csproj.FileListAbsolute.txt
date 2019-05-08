@@ -1,0 +1,2 @@
+D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.proxy\obj\Release\jbp.proxy.csprojAssemblyReference.cache
+D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.proxy\obj\Release\jbp.proxy.csproj.CoreCompileInputs.cache

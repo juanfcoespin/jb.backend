@@ -196,9 +196,8 @@ namespace jbp.core
                 var sql = string.Format("");
                 return ms;
             }
-            catch (Exception e)
+            catch
             {
-
                 throw;
             }
         }

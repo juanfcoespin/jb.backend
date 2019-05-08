@@ -29,6 +29,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jbp.services.rest", "jbp.se
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "utilities", "..\..\..\..\..\bibliotecaProyectosSoftware\libraries\utilities\utilities.csproj", "{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BBC77B99-4B69-4EE7-B07A-FCF7FE33FC04}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		Readme.md = Readme.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jbp.services.signalR", "jbp.services.signalR\jbp.services.signalR.csproj", "{C4B27EAB-37A9-4378-8A37-EDA3C020E33C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +91,10 @@ Global
 		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4B27EAB-37A9-4378-8A37-EDA3C020E33C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4B27EAB-37A9-4378-8A37-EDA3C020E33C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4B27EAB-37A9-4378-8A37-EDA3C020E33C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4B27EAB-37A9-4378-8A37-EDA3C020E33C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

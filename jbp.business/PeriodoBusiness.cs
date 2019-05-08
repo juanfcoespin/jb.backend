@@ -12,15 +12,26 @@ namespace jbp.business
 {
     public class PeriodoBusiness
     {
-        public static PeriodoMsg GetByNombre(string me) {
+        public static PeriodoMsg GetById(int id) {
             try
             {
-                return PeridoCore.GetByNombre(me);
+                return new PeriodoCore().GetById(id);
             }
             catch (Exception e)
             {
                 e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
                 return new PeriodoMsg { Error = e.Message };
+            }
+        }
+        public static ListMS<ItemCombo> GetList() {
+            try
+            {
+                return new PeriodoCore().GetList();
+            }
+            catch (Exception e)
+            {
+                e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
+                return new ListMS<ItemCombo> { Error = e.Message };
             }
         }
     }

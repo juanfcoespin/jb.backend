@@ -8,7 +8,9 @@ namespace jbp.msg
 {
     public class MontoCuentaMsg
     {
+        
         public decimal Real { get; set; }
         public decimal Presupuestado { get; set; }
     }
+    
 }

@@ -48,7 +48,7 @@ namespace jbp.core
               CUENTA, NIVEL_1, NIVEL_2, NIVEL_3, NIVEL_4, NIVEL_5,
               CTA_NOMBRE
              FROM
-              GMS.TBL_PLAN_CTAS_TODAS ORDER BY CUENTA ";
+              GMS.TBL_PLAN_CTAS_TODAS";
             var dt = GetDataTableByQuery(sql);
             foreach (DataRow dr in dt.Rows) {
                 ms.List.Add(
@@ -65,14 +65,15 @@ namespace jbp.core
             }
             return ms;
         }
-
         public void Insert(PlanCuentasProcesadoMsg me)
         {
             var sql = string.Format(@"
                 INSERT INTO GMS.TBL_PLAN_CTAS_PROCESADO(
                     ANIO,MES,NIVEL1,NIVEL2,NIVEL3,NIVEL4,NIVEL5,CUENTA, REAL,PRESUP,PCODE, CTA_NOMBRE
                 )values('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}',{8},{9},{10},'{11}')",
-                    me.Anio, me.Mes, me.Nivel1, me.Nivel2, me.Nivel3, me.Nivel4, me.Nivel5,
+                    me.Periodo.FechaInicio.Year,
+                    StringUtils.getTwoDigitNumber(me.Periodo.FechaInicio.Month),
+                    me.Nivel1, me.Nivel2, me.Nivel3, me.Nivel4, me.Nivel5,
                     me.Cuenta, MoneyUtils.GetMoneyFormat(me.Real),
                     me.Cuenta, MoneyUtils.GetMoneyFormat(me.Presupuesto),
                     me.Periodo, me.CuentaNombre
