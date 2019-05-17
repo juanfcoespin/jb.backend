@@ -66,7 +66,7 @@ namespace jbp.core
         public SavedMs UpdateParticipante(ParticipantesPuntosMsg me)
         {
             var sql = string.Format(@"
-                update gms.TBL_CLIENTES_PUNTOSJB_TMP
+                update gms.TBL_CLIENTES_PUNTOSJB
                     set nombres='{0}',
                     apellidos='{1}',
                     email='{2}',
@@ -124,7 +124,7 @@ namespace jbp.core
         {
             var sql = string.Format(
                 @"
-                select count(*) from gms.TBL_CLIENTES_PUNTOSJB_TMP
+                select count(*) from gms.TBL_CLIENTES_PUNTOSJB
                 where ruc='{0}'",
                 nroDocumento);
             return GetIntScalarByQuery(sql) > 0;
@@ -181,7 +181,7 @@ namespace jbp.core
 	            telefono,
 	            vendedor,
 	            comentario
-            from gms.TBL_CLIENTES_PUNTOSJB_TMP
+            from gms.TBL_CLIENTES_PUNTOSJB
             where ruc ='{0}'
             ", ruc);
         }

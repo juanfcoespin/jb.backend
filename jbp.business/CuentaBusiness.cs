@@ -78,7 +78,7 @@ namespace jbp.business
                 // internally creates a new CancellationTokenSource
                 var cancel = new CancellationDisposable();
 
-                for (var i = 0; i <= 50; i++)
+                for (int i = 0; i <= 50; i++)
                 {
                     Thread.Sleep(100);
                     o.OnNext(i);

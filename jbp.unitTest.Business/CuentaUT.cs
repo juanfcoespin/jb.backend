@@ -11,13 +11,11 @@ namespace jbp.unitTest.business
         [TestMethod]
         public void SetMontosPorPeriodo()
         {
-            var ms= CuentaBusiness.SetMontosPorPeriodo(0);
-            var percentageAdvance = 0;
-            while (percentageAdvance <= 100)
-            {
-                percentageAdvance = commonBusiness.GetAdvanceProcessById(ms.Id);
-            }
-            Assert.AreEqual(100, percentageAdvance);
+            
+            CuentaBusiness.SetMontosPorPeriodoAsync().Subscribe(n => {
+                if (n == 50)
+                    Assert.AreEqual(50, n);
+            });
         }
     }
 }

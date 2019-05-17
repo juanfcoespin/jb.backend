@@ -60,16 +60,35 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="commonBusiness.cs" />
+    <Compile Include="config.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>config.settings</DependentUpon>
+    </Compile>
+    <Compile Include="contracts\INotificationLog.cs" />
     <Compile Include="CuentaBusiness.cs" />
     <Compile Include="DetalleFacturaBusiness.cs" />
+    <Compile Include="FacturaPromotickBusiness.cs" />
+    <Compile Include="observables\BaseObservable.cs" />
+    <Compile Include="observers\BaseObserver.cs" />
+    <Compile Include="services\BaseServiceTimer.cs" />
     <Compile Include="LoteBusiness.cs" />
     <Compile Include="PeriodoBusiness.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FacturaBusiness.cs" />
+    <Compile Include="services\CheckFacturasToSendPtkBusinessService.cs" />
     <Compile Include="SocioNegocioBusiness.cs" />
     <Compile Include="UserBusiness.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\bibliotecaProyectosSoftware\libraries\ComunDelegates\ComunDelegates.csproj">
+      <Project>{c6863cc0-e925-4f7c-a36c-21be93b4739e}</Project>
+      <Name>ComunDelegates</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\bibliotecaProyectosSoftware\libraries\presentation.utilities\presentation.utilities.csproj">
+      <Project>{c4e7e556-f3ea-486a-b228-5625c431a705}</Project>
+      <Name>presentation.utilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\..\bibliotecaProyectosSoftware\libraries\utilities\utilities.csproj">
       <Project>{237e6ba0-bd90-42d7-91c0-cb5eab2a265a}</Project>
       <Name>utilities</Name>
@@ -89,6 +108,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="config.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>config.Designer.cs</LastGenOutput>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,0 +1,24 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="jbp.business" GeneratedClassName="config">
+  <Profiles />
+  <Settings>
+    <Setting Name="urlWSPromotick" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://jbpservices/api/factura/registrarFacturasJB</Value>
+    </Setting>
+    <Setting Name="ftpPromotickFileName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">FtpFiles\promotick\excel-transaccion.xlsx</Value>
+    </Setting>
+    <Setting Name="ftpPromotickUrl" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">ftp://ftp.jbp.com.ec/promotick</Value>
+    </Setting>
+    <Setting Name="ftpPromotickUser" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">jespin</Value>
+    </Setting>
+    <Setting Name="ftpPromotickPwd" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">2816Jfen*</Value>
+    </Setting>
+    <Setting Name="ftpPromotickPutDateTimeOnFileName" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

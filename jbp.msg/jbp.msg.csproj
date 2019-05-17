@@ -36,9 +36,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseMSMsg.cs" />
     <Compile Include="CuentaMsg.cs" />
-    <Compile Include="EnumsMsg.cs" />
     <Compile Include="FacturaSriMsg.cs" />
     <Compile Include="PeriodoMsg.cs" />
     <Compile Include="PlanCuentasProcesadoMsg.cs" />
@@ -48,7 +46,6 @@
     <Compile Include="CredencialesMsg.cs" />
     <Compile Include="DetalleFacturaTrandinaMsg.cs" />
     <Compile Include="FacturaMsg.cs" />
-    <Compile Include="LogMsg.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SucursalMsg.cs" />
   </ItemGroup>

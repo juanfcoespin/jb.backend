@@ -26,6 +26,32 @@ namespace jbp.services.rest.Controllers
             var ms = FacturaBusiness.RegistrarFacturaEnvioTerceros(me);
             return ms;
         }
+        [HttpPost]
+        [Route("api/factura/registrarFacturasJB")]
+        public List<ParametroSalidaPtkMsg> RegistrarFacturasJB([FromBody]List<FacturaPromotickMsg> me)
+        {
+            //se hace un mock
+            var listMs = new List<ParametroSalidaPtkMsg>();
+            me.ForEach(factura => {
+                var ms = new ParametroSalidaPtkMsg();
+                ms.numFactura = factura.numFactura;
+                ms.codigo = GetRamdomCodigo();
+                listMs.Add(ms);
+            });
+            return listMs;
+        }
+        private static readonly Random random = new Random();
+        private static readonly object syncLock = new object();
+        private static int GetRamdomCodigo()
+        {
+            lock (syncLock)// otherwise get the same random number
+            {
+                var codigos = new List<int>() { 1, -100, -150, -200, -500 };
+                int index = random.Next(codigos.Count);
+                return codigos[index];
+            }
+        }
+
         [HttpPut]
         [Route("api/factura/desregistrarFacturasEnvioTerceros")]
         public bool DesregistrarFacturaEnvioTerceros([FromBody] List<FacturaTrandinaMsg> me)

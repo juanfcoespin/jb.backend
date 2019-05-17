@@ -1,0 +1,376 @@
+17/5/2019 10:52:50: Info: Servicio Iniciado
+
+17/5/2019 10:52:50: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 10:52:53: Info: Se subio el archivo por ftp: FtpFiles\promotick\excel-transaccion_20190517_10h52_52s11.xlsx
+
+17/5/2019 10:52:53: Info: Insertada Factura: 001-010-0056249
+
+17/5/2019 10:52:53: Info: Insertada Factura: 001-010-0056248
+
+17/5/2019 10:52:53: Info: Insertada Factura: 001-010-0056258
+
+17/5/2019 10:52:53: Info: Insertada Factura: 001-010-0056251
+
+17/5/2019 10:52:53: Info: Insertada Factura: 001-010-0056247
+
+17/5/2019 10:52:53: Info: Insertada Factura: 001-010-0056246
+
+17/5/2019 10:52:53: Info: Insertada Factura: 001-010-0056252
+
+17/5/2019 10:52:53: Info: Insertada Factura: 001-010-0056245
+
+17/5/2019 10:52:53: Info: Insertada Factura: 001-010-0056253
+
+17/5/2019 10:52:53: Info: Insertada Factura: 001-010-0056254
+
+17/5/2019 10:53:41: Info: Servicio Parado
+
+17/5/2019 10:55:32: Info: Servicio Iniciado
+
+17/5/2019 10:55:32: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 10:55:34: Info: Enviada Factura:001-010-0056249, ruc: 0904531043001, monto:154, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:55:34: Info: Enviada Factura:001-010-0056248, ruc: 0904531043001, monto:154, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:55:34: Info: Enviada Factura:001-010-0056258, ruc: 0502288228001, monto:2163, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:55:34: Info: Enviada Factura:001-010-0056251, ruc: 1300622303001, monto:363, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:55:35: Info: Enviada Factura:001-010-0056247, ruc: 0704151257001, monto:152, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:55:35: Info: Enviada Factura:001-010-0056246, ruc: 0102415577001, monto:257, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:55:35: Info: Enviada Factura:001-010-0056252, ruc: 1314472794001, monto:55, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:55:35: Info: Enviada Factura:001-010-0056245, ruc: 1715232896001, monto:758, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:55:35: Info: Enviada Factura:001-010-0056253, ruc: 1792283736001, monto:182, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:55:35: Info: Enviada Factura:001-010-0056254, ruc: 1801085877001, monto:292, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:55:36: Info: Se subio el archivo por ftp: FtpFiles\promotick\excel-transaccion_20190517_10h55_35s64.xlsx
+
+17/5/2019 10:55:36: Info: Insertada Factura: 001-010-0056249
+
+17/5/2019 10:55:36: Info: Insertada Factura: 001-010-0056248
+
+17/5/2019 10:55:36: Info: Insertada Factura: 001-010-0056258
+
+17/5/2019 10:55:36: Info: Insertada Factura: 001-010-0056251
+
+17/5/2019 10:55:36: Info: Insertada Factura: 001-010-0056247
+
+17/5/2019 10:55:36: Info: Insertada Factura: 001-010-0056246
+
+17/5/2019 10:55:36: Info: Insertada Factura: 001-010-0056252
+
+17/5/2019 10:55:36: Info: Insertada Factura: 001-010-0056245
+
+17/5/2019 10:55:36: Info: Insertada Factura: 001-010-0056253
+
+17/5/2019 10:55:36: Info: Insertada Factura: 001-010-0056254
+
+17/5/2019 10:55:48: Info: Respuesta WS: numFactura: 001-010-0056249, codigo:-500, msg:Ocurrió un error en el proceso
+
+17/5/2019 10:55:48: Info: Respuesta WS: numFactura: 001-010-0056248, codigo:-500, msg:Ocurrió un error en el proceso
+
+17/5/2019 10:55:48: Info: Respuesta WS: numFactura: 001-010-0056258, codigo:-100, msg:No existe participante con el número de documento enviado
+
+17/5/2019 10:55:48: Info: Respuesta WS: numFactura: 001-010-0056251, codigo:-100, msg:No existe participante con el número de documento enviado
+
+17/5/2019 10:55:48: Info: Respuesta WS: numFactura: 001-010-0056247, codigo:-500, msg:Ocurrió un error en el proceso
+
+17/5/2019 10:55:48: Info: Respuesta WS: numFactura: 001-010-0056246, codigo:-500, msg:Ocurrió un error en el proceso
+
+17/5/2019 10:55:48: Info: Respuesta WS: numFactura: 001-010-0056252, codigo:-200, msg:Error en los parámetros de entrada
+
+17/5/2019 10:55:48: Info: Respuesta WS: numFactura: 001-010-0056245, codigo:-200, msg:Error en los parámetros de entrada
+
+17/5/2019 10:55:48: Info: Respuesta WS: numFactura: 001-010-0056253, codigo:-500, msg:Ocurrió un error en el proceso
+
+17/5/2019 10:55:48: Info: Respuesta WS: numFactura: 001-010-0056254, codigo:1, msg:Registro Exitoso
+
+17/5/2019 10:56:32: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 10:56:33: Info: Enviada Factura:001-010-0056249, ruc: 0904531043001, monto:154, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:56:33: Info: Enviada Factura:001-010-0056248, ruc: 0904531043001, monto:154, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:56:33: Info: Enviada Factura:001-010-0056258, ruc: 0502288228001, monto:2163, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:56:33: Info: Enviada Factura:001-010-0056251, ruc: 1300622303001, monto:363, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:56:33: Info: Enviada Factura:001-010-0056247, ruc: 0704151257001, monto:152, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:56:33: Info: Enviada Factura:001-010-0056246, ruc: 0102415577001, monto:257, al servicio: http://jbpservices/api/factura/registrarFacturasJB
+
+17/5/2019 10:56:33: Info: Respuesta WS: numFactura: 001-010-0056248, codigo:-100, msg:No existe participante con el número de documento enviado
+
+17/5/2019 10:56:33: Info: Respuesta WS: numFactura: 001-010-0056258, codigo:-500, msg:Ocurrió un error en el proceso
+
+17/5/2019 10:56:33: Info: Respuesta WS: numFactura: 001-010-0056251, codigo:-200, msg:Error en los parámetros de entrada
+
+17/5/2019 10:56:33: Info: Respuesta WS: numFactura: 001-010-0056247, codigo:-150, msg:No se puede registrar factura con una fecha de un cierre de mes anterior.
+
+17/5/2019 10:56:33: Info: Respuesta WS: numFactura: 001-010-0056246, codigo:-100, msg:No existe participante con el número de documento enviado
+
+17/5/2019 10:56:33: Info: Respuesta WS: numFactura: 001-010-0056252, codigo:-200, msg:Error en los parámetros de entrada
+
+17/5/2019 10:56:33: Info: Respuesta WS: numFactura: 001-010-0056245, codigo:1, msg:Registro Exitoso
+
+17/5/2019 10:56:33: Info: Respuesta WS: numFactura: 001-010-0056253, codigo:-100, msg:No existe participante con el número de documento enviado
+
+17/5/2019 10:56:33: Info: Respuesta WS: numFactura: 001-010-0056254, codigo:-500, msg:Ocurrió un error en el proceso
+
+17/5/2019 10:56:33: Info: Se subio el archivo por ftp: FtpFiles\promotick\excel-transaccion_20190517_10h56_33s939.xlsx
+
+17/5/2019 10:56:34: Info: Insertada Factura: 001-010-0056249
+
+17/5/2019 10:56:34: Info: Insertada Factura: 001-010-0056248
+
+17/5/2019 10:56:34: Info: Insertada Factura: 001-010-0056258
+
+17/5/2019 10:56:34: Info: Insertada Factura: 001-010-0056251
+
+17/5/2019 10:56:34: Info: Insertada Factura: 001-010-0056247
+
+17/5/2019 10:56:34: Info: Insertada Factura: 001-010-0056246
+
+17/5/2019 10:56:34: Info: Insertada Factura: 001-010-0056252
+
+17/5/2019 10:56:34: Info: Insertada Factura: 001-010-0056245
+
+17/5/2019 10:56:34: Info: Insertada Factura: 001-010-0056253
+
+17/5/2019 10:56:34: Info: Insertada Factura: 001-010-0056254
+
+17/5/2019 10:57:32: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 10:57:56: Info: Servicio Parado
+
+17/5/2019 11:13:41: Info: Servicio Iniciado
+
+17/5/2019 11:13:41: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 11:13:45: Info: Se subio el archivo por ftp: FtpFiles\promotick\excel-transaccion_20190517_11h13_43s479.xlsx, al sitio ftp://ftp.jbp.com.ec/promotick
+
+17/5/2019 11:13:45: Info: Insertada Factura: 001-010-0056249
+
+17/5/2019 11:13:45: Info: Insertada Factura: 001-010-0056248
+
+17/5/2019 11:13:45: Info: Insertada Factura: 001-010-0056258
+
+17/5/2019 11:13:45: Info: Insertada Factura: 001-010-0056251
+
+17/5/2019 11:13:45: Info: Insertada Factura: 001-010-0056247
+
+17/5/2019 11:13:45: Info: Insertada Factura: 001-010-0056246
+
+17/5/2019 11:13:45: Info: Insertada Factura: C01-010-0004474
+
+17/5/2019 11:13:45: Info: Insertada Factura: 001-010-0056252
+
+17/5/2019 11:13:45: Info: Insertada Factura: 001-010-0056245
+
+17/5/2019 11:13:45: Info: Insertada Factura: 001-010-0056253
+
+17/5/2019 11:13:45: Info: Insertada Factura: 001-010-0056254
+
+17/5/2019 11:14:34: Info: Servicio Parado
+
+17/5/2019 11:14:37: Info: Servicio Parado
+
+17/5/2019 12:17:01: Info: Servicio Iniciado
+
+17/5/2019 12:17:01: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 12:17:04: Info: Se subio el archivo por ftp: FtpFiles\promotick\excel-transaccion_20190517_12h17_03s616.xlsx, al sitio ftp://ftp.jbp.com.ec/promotick
+
+17/5/2019 12:17:04: Info: Insertada Factura: 001-010-0056249
+
+17/5/2019 12:17:04: Info: Insertada Factura: 001-010-0056248
+
+17/5/2019 12:17:04: Info: Insertada Factura: 001-010-0056258
+
+17/5/2019 12:17:04: Info: Insertada Factura: 001-010-0056251
+
+17/5/2019 12:17:04: Info: Insertada Factura: 001-010-0056247
+
+17/5/2019 12:17:04: Info: Insertada Factura: 001-010-0056246
+
+17/5/2019 12:17:04: Info: Insertada Factura: 001-010-0056263
+
+17/5/2019 12:17:04: Info: Insertada Factura: C01-010-0004474
+
+17/5/2019 12:17:04: Info: Insertada Factura: 001-010-0056252
+
+17/5/2019 12:17:04: Info: Insertada Factura: 001-010-0056245
+
+17/5/2019 12:17:04: Info: Insertada Factura: 001-010-0056253
+
+17/5/2019 12:17:04: Info: Insertada Factura: 001-010-0056254
+
+17/5/2019 12:17:34: Info: Servicio Parado
+
+17/5/2019 12:18:29: Info: Servicio Iniciado
+
+17/5/2019 12:18:29: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 12:18:31: Info: Se subio el archivo por ftp: FtpFiles\promotick\excel-transaccion_20190517_12h18_30s654.xlsx, al sitio ftp://ftp.jbp.com.ec/promotick
+
+17/5/2019 12:18:31: Info: Insertada Factura: 001-010-0056249
+
+17/5/2019 12:18:31: Info: Insertada Factura: 001-010-0056248
+
+17/5/2019 12:18:31: Info: Insertada Factura: 001-010-0056258
+
+17/5/2019 12:18:31: Info: Insertada Factura: 001-010-0056251
+
+17/5/2019 12:18:31: Info: Insertada Factura: 001-010-0056247
+
+17/5/2019 12:18:31: Info: Insertada Factura: 001-010-0056246
+
+17/5/2019 12:18:31: Info: Insertada Factura: 001-010-0056263
+
+17/5/2019 12:18:31: Info: Insertada Factura: C01-010-0004474
+
+17/5/2019 12:18:31: Info: Insertada Factura: 001-010-0056252
+
+17/5/2019 12:18:31: Info: Insertada Factura: 001-010-0056245
+
+17/5/2019 12:18:31: Info: Insertada Factura: 001-010-0056253
+
+17/5/2019 12:18:31: Info: Insertada Factura: 001-010-0056254
+
+17/5/2019 12:18:55: Info: Servicio Parado
+
+17/5/2019 12:29:26: Info: Servicio Iniciado
+
+17/5/2019 12:29:26: Info: El servicio correrá todos los dias a la hora 12, minuto 35
+
+17/5/2019 12:29:38: Info: Servicio Parado
+
+17/5/2019 12:29:48: Info: Servicio Parado
+
+17/5/2019 12:30:51: Info: Servicio Iniciado
+
+17/5/2019 12:30:51: Info: El servicio correrá todos los dias a la hora 12, minuto 31
+
+17/5/2019 12:31:21: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 12:31:51: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 12:31:55: Info: Se subio el archivo por ftp: FtpFiles\promotick\excel-transaccion_20190517_12h31_53s793.xlsx, al sitio ftp://ftp.jbp.com.ec/promotick
+
+17/5/2019 12:31:56: Info: Insertada Factura: 001-010-0056249
+
+17/5/2019 12:31:56: Info: Insertada Factura: 001-010-0056248
+
+17/5/2019 12:31:56: Info: Insertada Factura: 001-010-0056258
+
+17/5/2019 12:31:57: Info: Insertada Factura: 001-010-0056251
+
+17/5/2019 12:31:57: Info: Insertada Factura: 001-010-0056247
+
+17/5/2019 12:31:57: Info: Insertada Factura: 001-010-0056246
+
+17/5/2019 12:31:57: Info: Insertada Factura: 001-010-0056263
+
+17/5/2019 12:31:57: Info: Insertada Factura: C01-010-0004474
+
+17/5/2019 12:31:57: Info: Insertada Factura: 001-010-0056252
+
+17/5/2019 12:31:57: Info: Insertada Factura: 001-010-0056245
+
+17/5/2019 12:31:57: Info: Insertada Factura: 001-010-0056253
+
+17/5/2019 12:31:57: Info: Insertada Factura: 001-010-0056254
+
+17/5/2019 12:31:57: Info: Insertada Factura: 001-010-0056264
+
+17/5/2019 12:32:56: Info: Servicio Parado
+
+17/5/2019 12:36:29: Info: Servicio Iniciado
+
+17/5/2019 12:36:29: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 12:36:33: Info: Se subio el archivo por ftp: FtpFiles\promotick\excel-transaccion_20190517_12h36_31s871.xlsx, al sitio ftp://ftp.jbp.com.ec/promotick
+
+17/5/2019 12:36:33: Info: Insertada Factura: 001-010-0056249
+
+17/5/2019 12:36:33: Info: Insertada Factura: 001-010-0056248
+
+17/5/2019 12:36:33: Info: Insertada Factura: 001-010-0056258
+
+17/5/2019 12:36:33: Info: Insertada Factura: 001-010-0056251
+
+17/5/2019 12:36:33: Info: Insertada Factura: 001-010-0056247
+
+17/5/2019 12:36:33: Info: Insertada Factura: 001-010-0056246
+
+17/5/2019 12:36:33: Info: Insertada Factura: 001-010-0056263
+
+17/5/2019 12:36:33: Info: Insertada Factura: C01-010-0004474
+
+17/5/2019 12:36:33: Info: Insertada Factura: 001-010-0056265
+
+17/5/2019 12:36:33: Info: Insertada Factura: 001-010-0056252
+
+17/5/2019 12:36:33: Info: Insertada Factura: 001-010-0056245
+
+17/5/2019 12:36:33: Info: Insertada Factura: 001-010-0056253
+
+17/5/2019 12:36:33: Info: Insertada Factura: 001-010-0056254
+
+17/5/2019 12:36:33: Info: Insertada Factura: 001-010-0056264
+
+17/5/2019 12:37:29: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 12:38:29: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 12:39:29: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 12:40:11: Info: Servicio Parado
+
+17/5/2019 12:40:13: Info: Servicio Parado
+
+17/5/2019 12:54:44: Info: Servicio Iniciado
+
+17/5/2019 12:54:44: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 12:54:47: Info: Se subio el archivo por ftp: FtpFiles\promotick\excel-transaccion.xlsx, al sitio ftp://ftp.jbp.com.ec/promotick
+
+17/5/2019 12:54:47: Info: Insertada Factura: 001-010-0056249
+
+17/5/2019 12:54:47: Info: Insertada Factura: 001-010-0056248
+
+17/5/2019 12:54:47: Info: Insertada Factura: 001-010-0056258
+
+17/5/2019 12:54:47: Info: Insertada Factura: 001-010-0056251
+
+17/5/2019 12:54:47: Info: Insertada Factura: 001-010-0056247
+
+17/5/2019 12:54:47: Info: Insertada Factura: 001-010-0056246
+
+17/5/2019 12:54:47: Info: Insertada Factura: 001-010-0056263
+
+17/5/2019 12:54:47: Info: Insertada Factura: C01-010-0004474
+
+17/5/2019 12:54:47: Info: Insertada Factura: 001-010-0056265
+
+17/5/2019 12:54:47: Info: Insertada Factura: 001-010-0056252
+
+17/5/2019 12:54:47: Info: Insertada Factura: 001-010-0056245
+
+17/5/2019 12:54:47: Info: Insertada Factura: 001-010-0056253
+
+17/5/2019 12:54:47: Info: Insertada Factura: 001-010-0056254
+
+17/5/2019 12:54:47: Info: Insertada Factura: 001-010-0056264
+
+17/5/2019 12:55:44: Info: Inciciando consulta de facturas por enviar
+
+17/5/2019 12:56:36: Info: Servicio Parado
+

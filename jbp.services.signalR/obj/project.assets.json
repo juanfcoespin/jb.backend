@@ -4724,12 +4724,23 @@
           "lib/netstandard1.3/System.Xml.XPath.XDocument.dll": {}
         }
       },
+      "ComunDelegates/1.0.0": {
+        "type": "project",
+        "compile": {
+          "bin/placeholder/ComunDelegates.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ComunDelegates.dll": {}
+        }
+      },
       "jbp.business/1.0.0": {
         "type": "project",
         "dependencies": {
+          "ComunDelegates": "1.0.0",
           "jbp.core.oracle9i": "1.0.0",
           "jbp.msg": "1.0.0",
           "jbp.utils": "1.0.0",
+          "presentation.utilities": "1.0.0",
           "utilities": "1.0.0"
         },
         "compile": {
@@ -4751,6 +4762,7 @@
       "jbp.core.oracle9i/1.0.0": {
         "type": "project",
         "dependencies": {
+          "ComunDelegates": "1.0.0",
           "jbp.core.contract": "1.0.0",
           "jbp.msg": "1.0.0",
           "jbp.utils": "1.0.0",
@@ -4775,6 +4787,7 @@
       "jbp.utils/1.0.0": {
         "type": "project",
         "dependencies": {
+          "ComunDelegates": "1.0.0",
           "jbp.msg": "1.0.0",
           "utilities": "1.0.0"
         },
@@ -4783,6 +4796,18 @@
         },
         "runtime": {
           "bin/placeholder/jbp.utils.dll": {}
+        }
+      },
+      "presentation.utilities/1.0.0": {
+        "type": "project",
+        "dependencies": {
+          "utilities": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/presentation.utilities.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/presentation.utilities.dll": {}
         }
       },
       "utilities/1.0.0": {
@@ -13008,6 +13033,11 @@
         "system.xml.xpath.xdocument.nuspec"
       ]
     },
+    "ComunDelegates/1.0.0": {
+      "type": "project",
+      "path": "../../../../../../bibliotecaProyectosSoftware/libraries/ComunDelegates/ComunDelegates.csproj",
+      "msbuildProject": "../../../../../../bibliotecaProyectosSoftware/libraries/ComunDelegates/ComunDelegates.csproj"
+    },
     "jbp.business/1.0.0": {
       "type": "project",
       "path": "../jbp.business/jbp.business.csproj",
@@ -13032,6 +13062,11 @@
       "type": "project",
       "path": "../jbp.utils/jbp.utils.csproj",
       "msbuildProject": "../jbp.utils/jbp.utils.csproj"
+    },
+    "presentation.utilities/1.0.0": {
+      "type": "project",
+      "path": "../../../../../../bibliotecaProyectosSoftware/libraries/presentation.utilities/presentation.utilities.csproj",
+      "msbuildProject": "../../../../../../bibliotecaProyectosSoftware/libraries/presentation.utilities/presentation.utilities.csproj"
     },
     "utilities/1.0.0": {
       "type": "project",

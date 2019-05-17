@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="PromotickClientService" GeneratedClassName="config">
+  <Profiles />
+  <Settings>
+    <Setting Name="PeriodoEnSegundosDeConsultaServicio" Type="System.Int64" Scope="Application">
+      <Value Profile="(Default)">60</Value>
+    </Setting>
+    <Setting Name="IniciarA_Hora" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">12</Value>
+    </Setting>
+    <Setting Name="IniciarA_Minuto" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">31</Value>
+    </Setting>
+    <Setting Name="IniciarAHoraEspesifica" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

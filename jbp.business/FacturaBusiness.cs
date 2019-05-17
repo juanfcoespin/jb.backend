@@ -9,12 +9,12 @@ using jbp.msg;
 using utilities;
 using System.Data;
 using jbp.utils;
+using utilities;
 
 namespace jbp.business
 {
     public class FacturaBusiness
     {
-        
         public static List<FacturaTrandinaMsg> GetFacturasToSendTrandina()
         {
             try
@@ -174,7 +174,7 @@ namespace jbp.business
                             TelefonoCliente = dr["TELEFONO"].ToString(),
                             ContactoCliente = dr["CONTACTO"].ToString(),
                             FechaVencimiento = FechaUtils.getStringDate(Convert.ToDateTime(dr["FECHAVENC"]),"dd/mm/yyyy"),
-                            Vendedor=dr["VENDEDOR"].ToString(),
+                            Vendedor= dr["VENDEDOR"].ToString(),
                             mailCliente = dr["MAIL"].ToString()
                         }
                     );

@@ -4,17 +4,43 @@
     "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj": {}
   },
   "projects": {
+    "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj",
+        "projectName": "ComunDelegates",
+        "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj"
+      },
+      "frameworks": {
+        "net461": {}
+      }
+    },
+    "D:\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj",
+        "projectName": "presentation.utilities",
+        "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj",
+        "frameworks": {
+          "net461": {
+            "projectReferences": {
+              "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj": {
+                "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
+              }
+            }
+          }
+        }
+      },
+      "frameworks": {
+        "net461": {}
+      }
+    },
     "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj": {
       "version": "1.0.0",
       "restore": {
         "projectUniqueName": "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj",
         "projectName": "utilities",
-        "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj",
-        "frameworks": {
-          "net461": {
-            "projectReferences": {}
-          }
-        }
+        "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
       },
       "frameworks": {
         "net461": {}
@@ -29,6 +55,12 @@
         "frameworks": {
           "net461": {
             "projectReferences": {
+              "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj": {
+                "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj"
+              },
+              "D:\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj": {
+                "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj"
+              },
               "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj": {
                 "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
               },
@@ -54,12 +86,7 @@
       "restore": {
         "projectUniqueName": "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.core.definition\\jbp.core.contract.csproj",
         "projectName": "jbp.core.contract",
-        "projectPath": "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.core.definition\\jbp.core.contract.csproj",
-        "frameworks": {
-          "net461": {
-            "projectReferences": {}
-          }
-        }
+        "projectPath": "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.core.definition\\jbp.core.contract.csproj"
       },
       "frameworks": {
         "net461": {}
@@ -74,6 +101,9 @@
         "frameworks": {
           "net461": {
             "projectReferences": {
+              "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj": {
+                "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj"
+              },
               "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj": {
                 "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
               },
@@ -99,12 +129,7 @@
       "restore": {
         "projectUniqueName": "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj",
         "projectName": "jbp.msg",
-        "projectPath": "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj",
-        "frameworks": {
-          "net461": {
-            "projectReferences": {}
-          }
-        }
+        "projectPath": "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj"
       },
       "frameworks": {
         "net461": {}
@@ -197,6 +222,9 @@
         "frameworks": {
           "net461": {
             "projectReferences": {
+              "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj": {
+                "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj"
+              },
               "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj": {
                 "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
               },

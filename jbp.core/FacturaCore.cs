@@ -5,11 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 using jbp.msg;
+using ComunDelegates;
 
 namespace jbp.core
 {
     public class FacturaCore:BaseCore
     {
+        public static int LastIdFactura = 0;
         public static string SqlGetCodFacturaById(string idFactura)
         {
             return string.Format(@"
@@ -200,6 +202,11 @@ namespace jbp.core
             {
                 throw;
             }
+        }
+
+        public int GetMaxIdFactura() {
+            var sql = "select max(id) from JBPVW_FACTURARESUMEN";
+            return this.GetIntScalarByQuery(sql);
         }
     }
 }

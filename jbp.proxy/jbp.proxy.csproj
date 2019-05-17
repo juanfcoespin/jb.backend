@@ -115,6 +115,18 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\bibliotecaProyectosSoftware\libraries\ComunDelegates\ComunDelegates.csproj">
+      <Project>{c6863cc0-e925-4f7c-a36c-21be93b4739e}</Project>
+      <Name>ComunDelegates</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\bibliotecaProyectosSoftware\libraries\presentation.utilities\presentation.utilities.csproj">
+      <Project>{c4e7e556-f3ea-486a-b228-5625c431a705}</Project>
+      <Name>presentation.utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\bibliotecaProyectosSoftware\libraries\utilities\utilities.csproj">
+      <Project>{237e6ba0-bd90-42d7-91c0-cb5eab2a265a}</Project>
+      <Name>utilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\jbp.msg\jbp.msg.csproj">
       <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
       <Name>jbp.msg</Name>

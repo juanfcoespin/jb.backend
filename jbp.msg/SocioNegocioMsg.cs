@@ -19,7 +19,7 @@ namespace jbp.msg
         /// </summary>
         public bool Resp { get; set; }
     }
-    public class SavedMs:BaseMSMsg {
+    public class SavedMs:MensajeSalidaMsg {
 
         public bool Saved { get; set; }
     }

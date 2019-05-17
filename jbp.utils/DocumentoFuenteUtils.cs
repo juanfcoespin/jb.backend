@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using jbp.msg;
 using jbp.utils;
+using ComunDelegates;
 
-namespace jbp.business
+namespace jbp.utils
 {
     public class DocumentoFuenteUtils
     {

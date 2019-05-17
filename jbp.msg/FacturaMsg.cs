@@ -62,12 +62,14 @@ namespace jbp.msg
         public string TipoTercero { get; set; }
         public RegistroFacturaTercerosMsg() { }
     }
-    public class FacturaPromotickMsg {
+    public class FacturaPromotickMsg:MensajeSalidaMsg {
+        public int id { get; set; }
         public string fechaFactura { get; set; }
         public string numFactura { get; set; }
         public string descripcion { get; set; }
         public string numDocumento { get; set; }
-        public decimal montoFacturaFactura { get; set; }
+        public int montoFactura { get; set; }
         public int puntos { get; set; }
     }
+    
 }

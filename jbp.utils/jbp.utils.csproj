@@ -47,14 +47,14 @@
       <DependentUpon>conf.settings</DependentUpon>
     </Compile>
     <Compile Include="DocumentoFuenteUtils.cs" />
-    <Compile Include="fechaUtils.cs" />
-    <Compile Include="LogUtils.cs" />
-    <Compile Include="MoneyUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StringUtils.cs" />
     <Compile Include="SucursalUtils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\bibliotecaProyectosSoftware\libraries\ComunDelegates\ComunDelegates.csproj">
+      <Project>{c6863cc0-e925-4f7c-a36c-21be93b4739e}</Project>
+      <Name>ComunDelegates</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\..\bibliotecaProyectosSoftware\libraries\utilities\utilities.csproj">
       <Project>{237e6ba0-bd90-42d7-91c0-cb5eab2a265a}</Project>
       <Name>utilities</Name>

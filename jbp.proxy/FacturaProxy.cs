@@ -38,7 +38,7 @@ namespace jbp.proxy
                     {
                         var msg = "No se insertaron las facturas en trandina :(";
                         ShowBackgrounMessage(msg);
-                        LogUtils.addLog(eTipoLog.warning, msg);
+                        LogUtils.AddLog(msg);
                         DesregistrarFacturaEnvioTerceros(me);
                     }
                 }
@@ -47,7 +47,7 @@ namespace jbp.proxy
             {
                 DesregistrarFacturaEnvioTerceros(me);
                 e = utilities.ExceptionManager.GetDeepErrorMessage(e,utilities.ExceptionManager.eCapa.Proxy);
-                LogUtils.addLog(eTipoLog.error, e.Message);
+                LogUtils.AddLog(e.Message);
                 ShowErrorMessage(e.Message);
             }
         }
@@ -59,7 +59,7 @@ namespace jbp.proxy
             var listRegFactura = Traducir(me, tipoTercero);
             var rc = new RestCall();
             var url = string.Format("{0}/registrarFacturasEnvioTerceros", Properties.Settings.Default.urlWsJBPFactura);
-            var ms= (bool)rc.GetData_ByPutRestMethod(url, typeof(bool),listRegFactura,
+            var ms= (bool)rc.SendPostOrPutRestMethod(url, typeof(bool),listRegFactura,
                 typeof(List<RegistroFacturaTercerosMsg>));
             ShowBackgrounMessage(string.Format("Registro completado: {0}", ms.ToString()));
             return ms;
@@ -88,7 +88,7 @@ namespace jbp.proxy
             var rc = new RestCall();
             var url = string.Format("{0}/desregistrarFacturasEnvioTerceros", Properties.Settings.Default.urlWsJBPFactura);
             
-            var ms= (bool)rc.GetData_ByPutRestMethod(url, typeof(bool), me,
+            var ms= (bool)rc.SendPostOrPutRestMethod(url, typeof(bool), me,
                 typeof(List<FacturaTrandinaMsg>));
             if (ms)
                 ShowBackgrounMessage(string.Format("Eliminados {0} registros", me.Count.ToString()));
@@ -96,7 +96,7 @@ namespace jbp.proxy
             {
                 var msg = "No se pudo eliminar los registros enviados";
                 ShowBackgrounMessage(msg);
-                LogUtils.addLog(eTipoLog.error, msg);
+                LogUtils.AddLog(msg);
             }
             return ms;   
         }
@@ -106,7 +106,7 @@ namespace jbp.proxy
             var ms = new List<FacturaTrandinaMsg>();
             var rc = new RestCall();
             var url = string.Format("{0}/getListToSendTrandina", Properties.Settings.Default.urlWsJBPFactura);
-            ms = (List<FacturaTrandinaMsg>)rc.GetData_ByGetRestMethod(url, typeof(List<FacturaTrandinaMsg>));
+            ms = (List<FacturaTrandinaMsg>)rc.SendGet(url, typeof(List<FacturaTrandinaMsg>));
             ShowBackgrounMessage(string.Format("Facturas encontradas: {0}", ms.Count));
             return ms;
         }
