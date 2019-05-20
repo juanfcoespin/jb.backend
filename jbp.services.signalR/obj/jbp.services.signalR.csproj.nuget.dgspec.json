@@ -4,28 +4,28 @@
     "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj": {}
   },
   "projects": {
-    "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj": {
+    "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\DelegatesAndEnums\\DelegatesAndEnums.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj",
-        "projectName": "ComunDelegates",
-        "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj"
+        "projectUniqueName": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\DelegatesAndEnums\\DelegatesAndEnums.csproj",
+        "projectName": "DelegatesAndEnums",
+        "projectPath": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\DelegatesAndEnums\\DelegatesAndEnums.csproj"
       },
       "frameworks": {
         "net461": {}
       }
     },
-    "D:\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj": {
+    "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj",
+        "projectUniqueName": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj",
         "projectName": "presentation.utilities",
-        "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj",
+        "projectPath": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj",
         "frameworks": {
           "net461": {
             "projectReferences": {
-              "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj": {
-                "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
+              "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj": {
+                "projectPath": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
               }
             }
           }
@@ -35,12 +35,12 @@
         "net461": {}
       }
     },
-    "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj": {
+    "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj",
+        "projectUniqueName": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj",
         "projectName": "utilities",
-        "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
+        "projectPath": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
       },
       "frameworks": {
         "net461": {}
@@ -55,14 +55,14 @@
         "frameworks": {
           "net461": {
             "projectReferences": {
-              "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj": {
-                "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj"
+              "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\DelegatesAndEnums\\DelegatesAndEnums.csproj": {
+                "projectPath": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\DelegatesAndEnums\\DelegatesAndEnums.csproj"
               },
-              "D:\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj": {
-                "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj"
+              "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj": {
+                "projectPath": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj"
               },
-              "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj": {
-                "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
+              "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj": {
+                "projectPath": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
               },
               "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.core\\jbp.core.oracle9i.csproj": {
                 "projectPath": "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.core\\jbp.core.oracle9i.csproj"
@@ -101,11 +101,11 @@
         "frameworks": {
           "net461": {
             "projectReferences": {
-              "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj": {
-                "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj"
+              "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\DelegatesAndEnums\\DelegatesAndEnums.csproj": {
+                "projectPath": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\DelegatesAndEnums\\DelegatesAndEnums.csproj"
               },
-              "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj": {
-                "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
+              "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj": {
+                "projectPath": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
               },
               "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.core.definition\\jbp.core.contract.csproj": {
                 "projectPath": "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.core.definition\\jbp.core.contract.csproj"
@@ -222,11 +222,8 @@
         "frameworks": {
           "net461": {
             "projectReferences": {
-              "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj": {
-                "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\ComunDelegates\\ComunDelegates.csproj"
-              },
-              "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj": {
-                "projectPath": "D:\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
+              "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\DelegatesAndEnums\\DelegatesAndEnums.csproj": {
+                "projectPath": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\DelegatesAndEnums\\DelegatesAndEnums.csproj"
               },
               "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj": {
                 "projectPath": "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj"

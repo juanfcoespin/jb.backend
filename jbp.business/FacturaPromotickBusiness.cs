@@ -8,15 +8,15 @@ using jbp.msg;
 using jbp.core;
 using utilities;
 using presentation.utilities;
-using ComunDelegates;
+using DelegatesAndEnums;
 using System.IO;
+using jbp.business.contracts;
 
 namespace jbp.business
 {
     public class FacturaPromotickBusiness:contracts.INotificationLog
     {
         public event dLogNotification LogNotificationEvent;
-
         internal static bool EsFacturaPromotic(int idFactura)
         {
             return new FacturaPromotickCore().EsFacturaPromotic(idFactura);

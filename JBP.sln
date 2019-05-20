@@ -25,8 +25,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jbp.unitTest.business", "jb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jbp.services.rest", "jbp.services.rest\jbp.services.rest.csproj", "{CD7A3FB1-4B5B-48EF-A9AA-56A13A0CFC5B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "utilities", "..\..\..\..\..\bibliotecaProyectosSoftware\libraries\utilities\utilities.csproj", "{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BBC77B99-4B69-4EE7-B07A-FCF7FE33FC04}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE = LICENSE
@@ -35,13 +33,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "jbp.services.signalR", "jbp.services.signalR\jbp.services.signalR.csproj", "{C4B27EAB-37A9-4378-8A37-EDA3C020E33C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComunDelegates", "..\..\..\..\..\bibliotecaProyectosSoftware\libraries\ComunDelegates\ComunDelegates.csproj", "{C6863CC0-E925-4F7C-A36C-21BE93B4739E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "presentation.utilities", "..\..\..\..\..\bibliotecaProyectosSoftware\libraries\presentation.utilities\presentation.utilities.csproj", "{C4E7E556-F3EA-486A-B228-5625C431A705}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PromotickClientService", "PromotickClientService\PromotickClientService.csproj", "{A79248AC-490D-4238-8B1B-10FE6CB9273E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test2", "test2\test2.csproj", "{16322D2F-DC40-4A05-9B16-CB94D8A4DE81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "utilities", "C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\libraries\utilities\utilities.csproj", "{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegatesAndEnums", "C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\libraries\DelegatesAndEnums\DelegatesAndEnums.csproj", "{C6863CC0-E925-4F7C-A36C-21BE93B4739E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "presentation.utilities", "C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\libraries\presentation.utilities\presentation.utilities.csproj", "{C4E7E556-F3EA-486A-B228-5625C431A705}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,22 +89,10 @@ Global
 		{CD7A3FB1-4B5B-48EF-A9AA-56A13A0CFC5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD7A3FB1-4B5B-48EF-A9AA-56A13A0CFC5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD7A3FB1-4B5B-48EF-A9AA-56A13A0CFC5B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C4B27EAB-37A9-4378-8A37-EDA3C020E33C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C4B27EAB-37A9-4378-8A37-EDA3C020E33C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4B27EAB-37A9-4378-8A37-EDA3C020E33C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4B27EAB-37A9-4378-8A37-EDA3C020E33C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C6863CC0-E925-4F7C-A36C-21BE93B4739E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C6863CC0-E925-4F7C-A36C-21BE93B4739E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C6863CC0-E925-4F7C-A36C-21BE93B4739E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C6863CC0-E925-4F7C-A36C-21BE93B4739E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C4E7E556-F3EA-486A-B228-5625C431A705}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C4E7E556-F3EA-486A-B228-5625C431A705}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C4E7E556-F3EA-486A-B228-5625C431A705}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C4E7E556-F3EA-486A-B228-5625C431A705}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A79248AC-490D-4238-8B1B-10FE6CB9273E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A79248AC-490D-4238-8B1B-10FE6CB9273E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A79248AC-490D-4238-8B1B-10FE6CB9273E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -113,6 +101,18 @@ Global
 		{16322D2F-DC40-4A05-9B16-CB94D8A4DE81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16322D2F-DC40-4A05-9B16-CB94D8A4DE81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16322D2F-DC40-4A05-9B16-CB94D8A4DE81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6863CC0-E925-4F7C-A36C-21BE93B4739E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6863CC0-E925-4F7C-A36C-21BE93B4739E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6863CC0-E925-4F7C-A36C-21BE93B4739E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6863CC0-E925-4F7C-A36C-21BE93B4739E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4E7E556-F3EA-486A-B228-5625C431A705}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4E7E556-F3EA-486A-B228-5625C431A705}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4E7E556-F3EA-486A-B228-5625C431A705}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4E7E556-F3EA-486A-B228-5625C431A705}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

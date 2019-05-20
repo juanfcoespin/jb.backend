@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ComunDelegates;
+using DelegatesAndEnums;
 
 namespace jbp.business.observers
 {
@@ -28,7 +28,6 @@ namespace jbp.business.observers
         {
             throw error;
         }
-
         public virtual void OnNext(T value)
         {
             

@@ -51,10 +51,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\bibliotecaProyectosSoftware\libraries\utilities\utilities.csproj">
-      <Project>{237e6ba0-bd90-42d7-91c0-cb5eab2a265a}</Project>
-      <Name>utilities</Name>
-    </ProjectReference>
     <ProjectReference Include="..\jbp.msg\jbp.msg.csproj">
       <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
       <Name>jbp.msg</Name>

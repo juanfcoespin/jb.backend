@@ -17,7 +17,7 @@ D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\j
 D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core.definition\obj\Debug\jbp.core.contract.csprojAssemblyReference.cache
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core.definition\bin\Debug\jbp.core.contract.dll
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core.definition\bin\Debug\jbp.core.contract.pdb
-D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core.definition\obj\Debug\jbp.core.contract.csprojAssemblyReference.cache
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core.definition\obj\Debug\jbp.core.contract.csproj.CoreCompileInputs.cache
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core.definition\obj\Debug\jbp.core.contract.dll
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core.definition\obj\Debug\jbp.core.contract.pdb
+D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.core.definition\obj\Debug\jbp.core.contract.csprojAssemblyReference.cache
