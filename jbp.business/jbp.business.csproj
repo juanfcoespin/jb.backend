@@ -93,10 +93,6 @@
       <Project>{56530cb5-d16e-43c0-a4bd-f36a1da30f33}</Project>
       <Name>jbp.utils</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\libraries\DelegatesAndEnums\DelegatesAndEnums.csproj">
-      <Project>{c6863cc0-e925-4f7c-a36c-21be93b4739e}</Project>
-      <Name>DelegatesAndEnums</Name>
-    </ProjectReference>
     <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\libraries\presentation.utilities\presentation.utilities.csproj">
       <Project>{c4e7e556-f3ea-486a-b228-5625c431a705}</Project>
       <Name>presentation.utilities</Name>
