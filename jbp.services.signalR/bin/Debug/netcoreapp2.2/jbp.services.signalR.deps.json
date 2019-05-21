@@ -351,8 +351,11 @@
           "jbp.core.oracle9i": "1.0.0",
           "jbp.msg": "1.0.0",
           "jbp.utils": "1.0.0",
-          "utilities": "1.0.0",
-          "System.Reactive": "4.1.0.0"
+          "System.Reactive": "4.1.0.0",
+          "TechTools.DelegatesAndEnums": "1.0.0.2",
+          "TechTools.Utils": "1.0.0.1",
+          "SpreadsheetLight": "3.4.9.0",
+          "DocumentFormat.OpenXml": "2.5.5631.0"
         },
         "runtime": {
           "jbp.business.dll": {}
@@ -373,8 +376,7 @@
         "dependencies": {
           "jbp.core.contract": "1.0.0",
           "jbp.msg": "1.0.0",
-          "jbp.utils": "1.0.0",
-          "utilities": "1.0.0"
+          "jbp.utils": "1.0.0"
         },
         "runtime": {
           "jbp.core.dll": {}
@@ -393,22 +395,13 @@
       },
       "jbp.utils/1.0.0": {
         "dependencies": {
-          "jbp.msg": "1.0.0",
-          "utilities": "1.0.0"
+          "jbp.msg": "1.0.0"
         },
         "runtime": {
           "jbp.utils.dll": {}
         },
         "compile": {
           "jbp.utils.dll": {}
-        }
-      },
-      "utilities/1.0.0": {
-        "runtime": {
-          "utilities.dll": {}
-        },
-        "compile": {
-          "utilities.dll": {}
         }
       },
       "System.Reactive.Reference/4.1.0.0": {
@@ -416,6 +409,38 @@
           "System.Reactive.dll": {
             "assemblyVersion": "4.1.0.0",
             "fileVersion": "4.1.5.357"
+          }
+        }
+      },
+      "TechTools.DelegatesAndEnums.Reference/1.0.0.2": {
+        "runtime": {
+          "TechTools.DelegatesAndEnums.dll": {
+            "assemblyVersion": "1.0.0.2",
+            "fileVersion": "1.0.0.2"
+          }
+        }
+      },
+      "TechTools.Utils.Reference/1.0.0.1": {
+        "runtime": {
+          "TechTools.Utils.dll": {
+            "assemblyVersion": "1.0.0.1",
+            "fileVersion": "1.0.0.1"
+          }
+        }
+      },
+      "SpreadsheetLight.Reference/3.4.9.0": {
+        "runtime": {
+          "SpreadsheetLight.dll": {
+            "assemblyVersion": "3.4.9.0",
+            "fileVersion": "3.4.9.0"
+          }
+        }
+      },
+      "DocumentFormat.OpenXml.Reference/2.5.5631.0": {
+        "runtime": {
+          "DocumentFormat.OpenXml.dll": {
+            "assemblyVersion": "2.5.5631.0",
+            "fileVersion": "2.5.5631.0"
           }
         }
       },
@@ -3779,12 +3804,27 @@
       "serviceable": false,
       "sha512": ""
     },
-    "utilities/1.0.0": {
-      "type": "project",
+    "System.Reactive.Reference/4.1.0.0": {
+      "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "System.Reactive.Reference/4.1.0.0": {
+    "TechTools.DelegatesAndEnums.Reference/1.0.0.2": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "TechTools.Utils.Reference/1.0.0.1": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SpreadsheetLight.Reference/3.4.9.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "DocumentFormat.OpenXml.Reference/2.5.5631.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

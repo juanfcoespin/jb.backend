@@ -13,7 +13,7 @@ using jbp.business.contracts;
 
 namespace jbp.business
 {
-    public class FacturaPromotickBusiness:contracts.INotificationLog
+    public class FacturaPromotickBusiness:INotificationLog
     {
         public event dLogNotification LogNotificationEvent;
         internal static bool EsFacturaPromotic(int idFactura)

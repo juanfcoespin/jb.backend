@@ -10,7 +10,6 @@ D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\j
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp.core.dll
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp.msg.dll
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp.utils.dll
-D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\utilities.dll
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\System.Reactive.dll
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp.business.pdb
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp.business.dll.config
@@ -21,7 +20,6 @@ D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\j
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp.core.dll.config
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp.utils.pdb
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp.utils.dll.config
-D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\utilities.pdb
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\System.Reactive.xml
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.csprojAssemblyReference.cache
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.csproj.CoreCompileInputs.cache
@@ -46,3 +44,8 @@ D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\j
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.csproj.CopyComplete
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.dll
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.pdb
+D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\TechTools.DelegatesAndEnums.dll
+D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\TechTools.Utils.dll
+D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\SpreadsheetLight.dll
+D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\DocumentFormat.OpenXml.dll
+D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\SpreadsheetLight.xml
