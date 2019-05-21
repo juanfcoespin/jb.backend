@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DelegatesAndEnums;
+using TechTools.DelegatesAndEnums;
 
 namespace jbp.business.observers
 {

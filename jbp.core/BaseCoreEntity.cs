@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Data.OracleClient;
 using jbp.core.contract;
 using System.Data;
-using utilities;
+using TechTools.Utils;
 
 namespace jbp.core
 {

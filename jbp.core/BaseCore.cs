@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using utilities;
+using TechTools.Utils;
 using System.Data.OracleClient;
 using System.Data;
 
@@ -21,7 +21,7 @@ namespace jbp.core
         }
         public void Connect()
         {
-            var tipoCpu = utilities.CPU.GetCpuType();
+            var tipoCpu = CPU.GetCpuType();
             DbConnection.Open();
         }
         public void Disconect()

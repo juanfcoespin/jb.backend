@@ -4724,24 +4724,12 @@
           "lib/netstandard1.3/System.Xml.XPath.XDocument.dll": {}
         }
       },
-      "DelegatesAndEnums/1.0.0": {
-        "type": "project",
-        "compile": {
-          "bin/placeholder/DelegatesAndEnums.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/DelegatesAndEnums.dll": {}
-        }
-      },
       "jbp.business/1.0.0": {
         "type": "project",
         "dependencies": {
-          "DelegatesAndEnums": "1.0.0",
           "jbp.core.oracle9i": "1.0.0",
           "jbp.msg": "1.0.0",
-          "jbp.utils": "1.0.0",
-          "presentation.utilities": "1.0.0",
-          "utilities": "1.0.0"
+          "jbp.utils": "1.0.0"
         },
         "compile": {
           "bin/placeholder/jbp.business.dll": {}
@@ -4762,11 +4750,9 @@
       "jbp.core.oracle9i/1.0.0": {
         "type": "project",
         "dependencies": {
-          "DelegatesAndEnums": "1.0.0",
           "jbp.core.contract": "1.0.0",
           "jbp.msg": "1.0.0",
-          "jbp.utils": "1.0.0",
-          "utilities": "1.0.0"
+          "jbp.utils": "1.0.0"
         },
         "compile": {
           "bin/placeholder/jbp.core.oracle9i.dll": {}
@@ -4787,7 +4773,6 @@
       "jbp.utils/1.0.0": {
         "type": "project",
         "dependencies": {
-          "DelegatesAndEnums": "1.0.0",
           "jbp.msg": "1.0.0"
         },
         "compile": {
@@ -4795,27 +4780,6 @@
         },
         "runtime": {
           "bin/placeholder/jbp.utils.dll": {}
-        }
-      },
-      "presentation.utilities/1.0.0": {
-        "type": "project",
-        "dependencies": {
-          "utilities": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/presentation.utilities.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/presentation.utilities.dll": {}
-        }
-      },
-      "utilities/1.0.0": {
-        "type": "project",
-        "compile": {
-          "bin/placeholder/utilities.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/utilities.dll": {}
         }
       }
     }
@@ -13032,11 +12996,6 @@
         "system.xml.xpath.xdocument.nuspec"
       ]
     },
-    "DelegatesAndEnums/1.0.0": {
-      "type": "project",
-      "path": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\DelegatesAndEnums\\DelegatesAndEnums.csproj",
-      "msbuildProject": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\DelegatesAndEnums\\DelegatesAndEnums.csproj"
-    },
     "jbp.business/1.0.0": {
       "type": "project",
       "path": "../jbp.business/jbp.business.csproj",
@@ -13061,16 +13020,6 @@
       "type": "project",
       "path": "../jbp.utils/jbp.utils.csproj",
       "msbuildProject": "../jbp.utils/jbp.utils.csproj"
-    },
-    "presentation.utilities/1.0.0": {
-      "type": "project",
-      "path": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj",
-      "msbuildProject": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\presentation.utilities\\presentation.utilities.csproj"
-    },
-    "utilities/1.0.0": {
-      "type": "project",
-      "path": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj",
-      "msbuildProject": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\libraries\\utilities\\utilities.csproj"
     }
   },
   "projectFileDependencyGroups": {

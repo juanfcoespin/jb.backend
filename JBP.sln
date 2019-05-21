@@ -37,12 +37,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PromotickClientService", "P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test2", "test2\test2.csproj", "{16322D2F-DC40-4A05-9B16-CB94D8A4DE81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "utilities", "C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\libraries\utilities\utilities.csproj", "{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "presentation.utilities", "C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\libraries\presentation.utilities\presentation.utilities.csproj", "{C4E7E556-F3EA-486A-B228-5625C431A705}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegatesAndEnums", "C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\libraries\DelegatesAndEnums\DelegatesAndEnums.csproj", "{C6863CC0-E925-4F7C-A36C-21BE93B4739E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,18 +95,6 @@ Global
 		{16322D2F-DC40-4A05-9B16-CB94D8A4DE81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16322D2F-DC40-4A05-9B16-CB94D8A4DE81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16322D2F-DC40-4A05-9B16-CB94D8A4DE81}.Release|Any CPU.Build.0 = Release|Any CPU
-		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{237E6BA0-BD90-42D7-91C0-CB5EAB2A265A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C4E7E556-F3EA-486A-B228-5625C431A705}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C4E7E556-F3EA-486A-B228-5625C431A705}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C4E7E556-F3EA-486A-B228-5625C431A705}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C4E7E556-F3EA-486A-B228-5625C431A705}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C6863CC0-E925-4F7C-A36C-21BE93B4739E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C6863CC0-E925-4F7C-A36C-21BE93B4739E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C6863CC0-E925-4F7C-A36C-21BE93B4739E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C6863CC0-E925-4F7C-A36C-21BE93B4739E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

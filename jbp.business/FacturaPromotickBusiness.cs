@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 using jbp.msg;
 using jbp.core;
-using utilities;
-using presentation.utilities;
-using DelegatesAndEnums;
+using TechTools.Utils;
+using TechTools.DelegatesAndEnums;
 using System.IO;
 using jbp.business.contracts;
 
@@ -167,14 +166,6 @@ namespace jbp.business
                 }
             });
         }
-        private static int GetMesFactura(string fechaFactura)
-        {
-            //dd/mm/yyyy
-            var matrizFecha = fechaFactura.Split(new char[] { '/' });
-            if (matrizFecha.Count() > 0) {
-                return Convert.ToInt32(matrizFecha[1]);
-            }
-            return 0;
-        }
+  
     }
 }
