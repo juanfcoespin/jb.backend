@@ -91,6 +91,9 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="TechTools.DelegatesAndEnums, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TechTools.DelegatesAndEnums.1.0.0.2\lib\net461\TechTools.DelegatesAndEnums.dll</HintPath>
+    </Reference>
     <Reference Include="WebApiContrib.Formatting.Jsonp">
       <HintPath>..\packages\WebApiContrib.Formatting.Jsonp.3.0.2\lib\net45\WebApiContrib.Formatting.Jsonp.dll</HintPath>
     </Reference>
@@ -105,12 +108,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="license.txt" />
+    <Content Include="logo.png" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\CuentaController.cs" />
     <Compile Include="Controllers\FacturaController.cs" />
+    <Compile Include="Controllers\FacturaPromotickController.cs" />
     <Compile Include="Controllers\periodoController.cs" />
     <Compile Include="Controllers\SocioNegocioController.cs" />
     <Compile Include="Controllers\TestController.cs" />

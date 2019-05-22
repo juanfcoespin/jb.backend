@@ -30,7 +30,8 @@
           "Microsoft.NETCore.App": "2.2.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.2.3",
           "jbp.business": "1.0.0",
-          "jbp.msg": "1.0.0"
+          "jbp.msg": "1.0.0",
+          "System.Data.OracleClient": "4.0.0.0"
         },
         "runtime": {
           "jbp.services.signalR.dll": {}
@@ -353,7 +354,7 @@
           "jbp.utils": "1.0.0",
           "System.Reactive": "4.1.0.0",
           "TechTools.DelegatesAndEnums": "1.0.0.2",
-          "TechTools.Utils": "1.0.0.1",
+          "TechTools.Utils": "1.0.0.2",
           "SpreadsheetLight": "3.4.9.0",
           "DocumentFormat.OpenXml": "2.5.5631.0"
         },
@@ -376,7 +377,11 @@
         "dependencies": {
           "jbp.core.contract": "1.0.0",
           "jbp.msg": "1.0.0",
-          "jbp.utils": "1.0.0"
+          "jbp.utils": "1.0.0",
+          "System.EnterpriseServices": "4.0.0.0",
+          "System.DirectoryServices": "4.0.0.0",
+          "System.Runtime.Remoting": "4.0.0.0",
+          "System.Runtime.Serialization.Formatters.Soap": "4.0.0.0"
         },
         "runtime": {
           "jbp.core.dll": {}
@@ -404,6 +409,17 @@
           "jbp.utils.dll": {}
         }
       },
+      "System.Data.OracleClient/4.0.0.0": {
+        "runtime": {
+          "System.Data.OracleClient.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.6.1055.0"
+          }
+        },
+        "compile": {
+          "System.Data.OracleClient.dll": {}
+        }
+      },
       "System.Reactive.Reference/4.1.0.0": {
         "runtime": {
           "System.Reactive.dll": {
@@ -420,11 +436,19 @@
           }
         }
       },
-      "TechTools.Utils.Reference/1.0.0.1": {
+      "TechTools.Utils.Reference/1.0.0.2": {
         "runtime": {
           "TechTools.Utils.dll": {
-            "assemblyVersion": "1.0.0.1",
-            "fileVersion": "1.0.0.1"
+            "assemblyVersion": "1.0.0.2",
+            "fileVersion": "1.0.0.2"
+          }
+        }
+      },
+      "System.EnterpriseServices.Reference/4.0.0.0": {
+        "runtime": {
+          "System.EnterpriseServices.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.6.1055.0"
           }
         }
       },
@@ -436,11 +460,35 @@
           }
         }
       },
+      "System.DirectoryServices.Reference/4.0.0.0": {
+        "runtime": {
+          "System.DirectoryServices.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.6.1055.0"
+          }
+        }
+      },
+      "System.Runtime.Remoting.Reference/4.0.0.0": {
+        "runtime": {
+          "System.Runtime.Remoting.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.6.1055.0"
+          }
+        }
+      },
       "DocumentFormat.OpenXml.Reference/2.5.5631.0": {
         "runtime": {
           "DocumentFormat.OpenXml.dll": {
             "assemblyVersion": "2.5.5631.0",
             "fileVersion": "2.5.5631.0"
+          }
+        }
+      },
+      "System.Runtime.Serialization.Formatters.Soap.Reference/4.0.0.0": {
+        "runtime": {
+          "System.Runtime.Serialization.Formatters.Soap.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.6.1055.0"
           }
         }
       },
@@ -3804,6 +3852,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "System.Data.OracleClient/4.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
     "System.Reactive.Reference/4.1.0.0": {
       "type": "reference",
       "serviceable": false,
@@ -3814,7 +3867,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "TechTools.Utils.Reference/1.0.0.1": {
+    "TechTools.Utils.Reference/1.0.0.2": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "System.EnterpriseServices.Reference/4.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -3824,7 +3882,22 @@
       "serviceable": false,
       "sha512": ""
     },
+    "System.DirectoryServices.Reference/4.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "System.Runtime.Remoting.Reference/4.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
     "DocumentFormat.OpenXml.Reference/2.5.5631.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "System.Runtime.Serialization.Formatters.Soap.Reference/4.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

@@ -7,8 +7,9 @@ using System.Threading;
 
 using jbp.msg;
 using jbp.business.services;
-using utilities;
 using System.IO;
+using TechTools.DelegatesAndEnums;
+using TechTools.Utils;
 
 namespace PromotickClientService
 {
@@ -64,7 +65,7 @@ namespace PromotickClientService
         private static void IniciarObjetoServicio()
         {
             servicePtk = new CheckFacturasToSendPtkBusinessService();
-            servicePtk.LogEvent += (tipo, msg) =>
+            servicePtk.LogNotificationEvent += (tipo, msg) =>
             {
                 msg = string.Format("{0}: {1}", tipo, msg);
                 LogUtils.AddLog(msg);

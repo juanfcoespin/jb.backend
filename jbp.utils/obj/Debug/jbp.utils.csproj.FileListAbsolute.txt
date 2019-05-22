@@ -27,6 +27,7 @@ D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\j
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.utils\bin\Debug\jbp.utils.dll
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.utils\bin\Debug\jbp.utils.pdb
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.utils\bin\Debug\jbp.msg.dll
+D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.utils\bin\Debug\TechTools.DelegatesAndEnums.dll
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.utils\bin\Debug\jbp.msg.pdb
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.utils\bin\Debug\jbp.msg.dll.config
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.csprojAssemblyReference.cache
@@ -34,4 +35,3 @@ D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\j
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.csproj.CopyComplete
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.dll
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.pdb
-D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.utils\bin\Debug\TechTools.DelegatesAndEnums.dll

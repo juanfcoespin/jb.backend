@@ -9,25 +9,20 @@ using jbp.business.observers;
 
 namespace jbp.business.services
 {
-    public class CheckFacturasToSendPtkBusinessService : BaseServiceTimer,contracts.INotificationLog
+    public class CheckFacturasToSendPtkBusinessService : BaseServiceTimer
     {
-        public  event dLogNotification LogEvent;
 
-        public override void Start(long loopOnSeconds)
-        {
-            this.LogNotificationEvent += LogEvent;
-            base.Start(loopOnSeconds);
-        }
-        
+        public CheckFacturasToSendPtkBusinessService():base("Envío de Facturas y NC Promotick"){}
         public override void Process()
         {
-            LogEvent?.Invoke(eTypeLog.Info, "Inciciando consulta de facturas por enviar");
+            Log(eTypeLog.Info, "Inciciando consulta de facturas por enviar");
             var facturaPtkBusiness = new FacturaPromotickBusiness();
-            facturaPtkBusiness.LogNotificationEvent += LogEvent;
+            facturaPtkBusiness.LogNotificationEvent += (type,msg)=>Log(type,msg);
             var facturasPorProcesar = facturaPtkBusiness.GetCurrentMonthFacturasToSendWS();
             
             if(facturasPorProcesar!=null && facturasPorProcesar.Count > 0)
             {
+                // descomentar para que funcione el servicio web
                 //facturaPtkBusiness.SendFacturaToWsAsync(facturasPorProcesar);
                 facturaPtkBusiness.SendFacturasByFtpAsync(facturasPorProcesar);
                 facturaPtkBusiness.InsertFacturasEnviadasAPromotick(facturasPorProcesar);

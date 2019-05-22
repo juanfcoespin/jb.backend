@@ -20,4 +20,16 @@
     <ProjectReference Include="..\jbp.msg\jbp.msg.csproj" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="obj\Debug\netcoreapp2.2\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Reference Include="System.Data.OracleClient">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.OracleClient.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

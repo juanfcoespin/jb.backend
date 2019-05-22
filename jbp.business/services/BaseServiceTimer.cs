@@ -5,21 +5,30 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using TechTools.DelegatesAndEnums;
+using TechTools.Utils;
 
 
 namespace jbp.business.services
 {
     public abstract class BaseServiceTimer:contracts.INotificationLog
     {
-        private Timer _Timer;
+        private string serviceName;
+        private Timer timer;
+        private long loopOnSeconds;
         public class InitAt {
             public int Hour { get; set; }
             public int Minute { get; set; }
         }
-        private InitAt _InitAt;
+        private InitAt initAt;
         public event dLogNotification LogNotificationEvent;
-        public BaseServiceTimer() {
-            _Timer = new Timer();
+        public BaseServiceTimer(string serviceName) {
+            this.timer = new Timer();
+            this.serviceName = serviceName;
+        }
+        ~BaseServiceTimer() {
+            if (IsRunning()) {
+                Stop();
+            }
         }
         /// <summary>
         /// Inicia el servicio
@@ -28,13 +37,15 @@ namespace jbp.business.services
         public virtual void Start(long loopOnSeconds) {
             if (!IsRunning())
             {
-                _Timer = new Timer(loopOnSeconds * 1000);
-                _Timer.Elapsed += Timer_Elapsed;
-                _Timer.AutoReset = true;
-                _Timer.Enabled = true;
-                _Timer.Start();
-                LogNotificationEvent?.Invoke(eTypeLog.Info, "Servicio Iniciado");
-                if (_InitAt == null)//cuado el servicio se corre de forma forma periódica
+                Log(eTypeLog.Info, "Iniciando servicio ...");
+                this.loopOnSeconds = loopOnSeconds;
+                this.timer = new Timer(loopOnSeconds * 1000);
+                this.timer.Elapsed += Timer_Elapsed;
+                this.timer.AutoReset = true;
+                this.timer.Enabled = true;
+                this.timer.Start();
+                NotifyServiceStatus();
+                if (initAt == null)//cuado el servicio se corre de forma forma periódica
                     Process();
             }
         }
@@ -44,17 +55,18 @@ namespace jbp.business.services
         /// </summary>
         public void StartAt(InitAt initAt) {
             if (initAt != null) {
-                this._InitAt = initAt;
+                this.initAt = initAt;
             }
             Start(30);//verifica la hora de ejecución del servicio cada 30 seg
-            var msg = string.Format("El servicio correrá todos los dias a la hora {0}, minuto {1}",
-                initAt.Hour, initAt.Minute);
-            LogNotificationEvent?.Invoke(eTypeLog.Info, msg);
+            NotifyServiceStatus();
+        }
+        private void NotifyServiceStatus() {
+            Log(eTypeLog.Info, GetStatus());
         }
         private  void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             var currenTime = GetCurrentTime();
-            if(_InitAt== null || (_InitAt.Hour==currenTime.Hour && _InitAt.Minute==currenTime.Minute))
+            if(initAt== null || (initAt.Hour==currenTime.Hour && initAt.Minute==currenTime.Minute))
                 Process();
         }
         private InitAt GetCurrentTime()
@@ -69,17 +81,37 @@ namespace jbp.business.services
         /// Para el servicio
         /// </summary>
         public virtual void Stop() {
-            _Timer.Stop();
-            _Timer.Elapsed -= Timer_Elapsed;
-            _Timer.Enabled = false;
-            LogNotificationEvent?.Invoke(eTypeLog.Info, "Servicio Parado");
+            Log(eTypeLog.Info, "Parando servicio...");
+            this.timer.Stop();
+            this.timer.Elapsed -= Timer_Elapsed;
+            this.timer.Enabled = false;
+            NotifyServiceStatus();
         }
         public bool IsRunning() {
-               return _Timer.Enabled;
+               return this.timer.Enabled;
         }
         /// <summary>
         /// El proceso que va a correr cada cierto tiempo
         /// </summary>
         public abstract void Process();
+        public void Log(eTypeLog typeLog, string msg) {
+            LogNotificationEvent?.Invoke(typeLog, msg);
+            LogUtils.AddLog(string.Format("{0}: {1}", typeLog, msg));
+        }
+        public virtual string GetStatus() {
+            var ms = string.Format("El servicio de {0} ", this.serviceName);
+            if (IsRunning())
+            {
+                ms += "está corriendo";
+                if (this.initAt != null)
+                    ms = string.Format("{0} todos los días a las {1} horas con {2} minutos",
+                        ms, this.initAt.Hour, this.initAt.Minute);
+                else
+                    ms = string.Format("{0} cada {1} minutos", ms, this.loopOnSeconds);
+            }
+            else
+                ms += "está Parado";
+            return ms;
+        }
     }
 }

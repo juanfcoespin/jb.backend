@@ -42,18 +42,6 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ComunDelegates.dll" size="8192">
-      <assemblyIdentity name="ComunDelegates" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
-      <hash>
-        <dsig:Transforms>
-          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-        </dsig:Transforms>
-        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>hpQtcxeOgcnXz//oUlSrpF80h9spH5t+cQcZlMxMs9w=</dsig:DigestValue>
-      </hash>
-    </dependentAssembly>
-  </dependency>
-  <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="DocumentFormat.OpenXml.dll" size="5812328">
       <assemblyIdentity name="DocumentFormat.OpenXml" version="2.5.5631.0" publicKeyToken="31BF3856AD364E35" language="neutral" processorArchitecture="msil" />
       <hash>
@@ -66,14 +54,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="jbp.business.dll" size="27136">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="jbp.business.dll" size="26624">
       <assemblyIdentity name="jbp.business" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>vTbt10lY9BuYMAO9v8Uq6dZdinpA+E56XUxaCjHUlNI=</dsig:DigestValue>
+        <dsig:DigestValue>lgKxk5bdkL7LtfY3AKAiRpQTa6gMA3LwLWd2LKx/mzQ=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -85,7 +73,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>93D65f/SAbjNguPCIVXbPDRJYZMLFYKJtUy/1uz2A9Y=</dsig:DigestValue>
+        <dsig:DigestValue>NcJLjT8KQaUYxmQGsj0ifx8xPgxx7GdtrFoWOJmUawM=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -138,18 +126,6 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="presentation.utilities.dll" size="9216">
-      <assemblyIdentity name="presentation.utilities" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
-      <hash>
-        <dsig:Transforms>
-          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-        </dsig:Transforms>
-        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>FF7kZWUK4kbH0JoyxtjaS63h7FTqQiAAXxPmdNNMA4Q=</dsig:DigestValue>
-      </hash>
-    </dependentAssembly>
-  </dependency>
-  <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="PromotickClientService.exe" size="8096">
       <assemblyIdentity name="PromotickClientService" version="1.0.0.0" language="neutral" processorArchitecture="amd64" />
       <hash>
@@ -157,7 +133,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>ZC7U2YMggCvrJAT0JI44q8x2KLZqam+CKpYrRm5Ougk=</dsig:DigestValue>
+        <dsig:DigestValue>zNEiJjY6Rd/fdekUfWWztsc4GxSAGwRxxRmPO+UM2qY=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -222,24 +198,54 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="utilities.dll" size="37888">
-      <assemblyIdentity name="utilities" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="TechTools.DelegatesAndEnums.dll" size="8704">
+      <assemblyIdentity name="TechTools.DelegatesAndEnums" version="1.0.0.2" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>Kn82WybKUS1oAOFph7WJBVhQnFjk8mAbNbbYkKy02tE=</dsig:DigestValue>
+        <dsig:DigestValue>qXX2cGxEjl+hFfaoqPpy1IlIJIQtxXn4ToP0XmUBlMc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="PromotickClientService.exe.config" size="4564">
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="TechTools.Utils.dll" size="42496">
+      <assemblyIdentity name="TechTools.Utils" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>USVUIvajpo5WryDKyla2/1nEddtWSoZptcqzskUCm9w=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <file name="license.txt" size="1127">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>t0+cRGqok1R3H8sbDdp4haHqx/yEWFkUz9V873OuRg0=</dsig:DigestValue>
+      <dsig:DigestValue>i/i/HwsWDiVDOlQKkwQSVQNHpLrLBmhhFlAseSWyGpY=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="logo.png" size="32241">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>dmNYJqRXnAUuDhK5+JoRYYXcz8eZFC8SVldrApEAsF0=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="PromotickClientService.exe.config" size="4696">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>R2hgG4dnz9pd2NZJqdQAQanaV+IQuJXNfmWDTlor8O8=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>
