@@ -6,25 +6,31 @@ using System.Net.Http;
 using System.Web.Http;
 
 using jbp.business.services;
-
+using TechTools.DelegatesAndEnums;
+using TechTools.Utils;
+using TechTools.Msg;
+using jbp.msg;
 
 namespace jbp.services.rest.Controllers
 {
     public class FacturaPromotickController : ApiController
     {
         private static CheckFacturasToSendPtkBusinessService servicePtk;
-        private static List<string> logs;
         public FacturaPromotickController() {
-            if (logs == null)
-                logs = new List<string>();
             if (servicePtk == null)
             {
                 servicePtk = new CheckFacturasToSendPtkBusinessService();
-                servicePtk.LogNotificationEvent += (tipo, msg) =>
-                {
-                    logs.Add(string.Format("{0}: {1}", tipo, msg));
-                };
+                servicePtk.LogNotificationEvent += (tipo, msg) => NotificarEvento(tipo, msg);
             }
+        }
+        
+        private void NotificarEvento(eTypeLog tipo, string msg)
+        {
+            msg = string.Format("{0}: {1}", DateTime.Now.ToString("yyyy-mm-dd HH:mm:ss"), msg);
+            var url = "http://localhost:5000/api/message";
+            var rc = new RestCall();
+            var me = new TestMsg { Type = tipo.ToString(), Payload = msg };
+            rc.SendPostOrPutAsync(url, typeof(string), me, typeof(TestMsg), RestCall.eTypeSend.POST);
         }
         [HttpGet]
         [Route("api/facturaPromotick/start")]
@@ -49,10 +55,10 @@ namespace jbp.services.rest.Controllers
             return servicePtk.GetStatus();
         }
         [HttpGet]
-        [Route("api/facturaPromotick/logs")]
-        public List<string> Logs()
+        [Route("api/facturaPromotick/logByDate/{me}")]
+        public List<LogMsg> LogByDate(string me)
         {
-            return logs;
+            return LogUtils.GetLogsByDate(me);
         }
         [HttpGet]
         [Route("api/facturaPromotick/isRunning")]

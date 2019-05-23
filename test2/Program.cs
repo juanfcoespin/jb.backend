@@ -4,16 +4,50 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using utilities;
 using jbp.msg;
-
+using TechTools.Utils;
 namespace test2
 {
     class Program
     {
         static void Main(string[] args)
         {
-            UploadFileByFtpTest();
+            TestSendMessageSignalR();
+        }
+      
+        private static void TestSendMessageSignalR()
+        {
+            var opt = 0;
+            while (opt != 2) {
+                PrintMenu();
+                opt = Convert.ToInt32(Console.ReadLine());
+                switch (opt) {
+                    case 1://sendMessage
+                        Console.WriteLine("mensaje: ");
+                        var msg = Console.ReadLine();
+                        SendMsg(msg);
+                        break;
+                }
+            }
+            
+        }
+
+        private static void SendMsg(string msg)
+        {
+            var url = "http://localhost:5000/api/message";
+            var rc = new RestCall();
+            var me = new TestMsg { Type = "Info", Payload = msg };
+            rc.SendPostOrPutAsync(url, typeof(string), me, typeof(TestMsg), RestCall.eTypeSend.POST);
+        }
+
+        private static void PrintMenu()
+        {
+            var msg = @"
+1. Send Message
+2. Salir
+
+Opt: ";
+            Console.WriteLine(msg);
         }
 
         private static void UploadFileByFtpTest()

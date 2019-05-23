@@ -195,3 +195,4 @@ D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\j
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\obj\Debug\jbp.business.csproj.CopyComplete
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\obj\Debug\jbp.business.dll
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\obj\Debug\jbp.business.pdb
+D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.business\bin\Debug\TechTools.Msg.dll

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using System.Timers;
 using TechTools.DelegatesAndEnums;
 using TechTools.Utils;
+using TechTools.Msg;
 
 
 namespace jbp.business.services
@@ -44,7 +46,7 @@ namespace jbp.business.services
                 this.timer.AutoReset = true;
                 this.timer.Enabled = true;
                 this.timer.Start();
-                NotifyServiceStatus();
+                GetStatus();
                 if (initAt == null)//cuado el servicio se corre de forma forma periódica
                     Process();
             }
@@ -58,10 +60,7 @@ namespace jbp.business.services
                 this.initAt = initAt;
             }
             Start(30);//verifica la hora de ejecución del servicio cada 30 seg
-            NotifyServiceStatus();
-        }
-        private void NotifyServiceStatus() {
-            Log(eTypeLog.Info, GetStatus());
+            GetStatus();
         }
         private  void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
@@ -85,7 +84,7 @@ namespace jbp.business.services
             this.timer.Stop();
             this.timer.Elapsed -= Timer_Elapsed;
             this.timer.Enabled = false;
-            NotifyServiceStatus();
+            GetStatus();
         }
         public bool IsRunning() {
                return this.timer.Enabled;
@@ -96,9 +95,12 @@ namespace jbp.business.services
         public abstract void Process();
         public void Log(eTypeLog typeLog, string msg) {
             LogNotificationEvent?.Invoke(typeLog, msg);
-            LogUtils.AddLog(string.Format("{0}: {1}", typeLog, msg));
+            LogUtils.AddLog(
+                new LogMsg {Type=typeLog , msg = msg }
+            );
         }
         public virtual string GetStatus() {
+            Log(eTypeLog.Info, "Consultado estado del servicio...");
             var ms = string.Format("El servicio de {0} ", this.serviceName);
             if (IsRunning())
             {
@@ -111,6 +113,7 @@ namespace jbp.business.services
             }
             else
                 ms += "está Parado";
+            Log(eTypeLog.Info, ms);
             return ms;
         }
     }

@@ -158,7 +158,7 @@ namespace jbp.business
                             CodOrden = dr["ORDEN"].ToString(),
                             CodFactura = dr["FACTURA"].ToString(),
                             Sitio = dr["SITIO"].ToString(),
-                            FechaFactura = FechaUtils.getStringDate(Convert.ToDateTime(dr["FECHAFACT"]), "dd/mm/yyyy"),
+                            FechaFactura = FechaUtils.GetStringDate(Convert.ToDateTime(dr["FECHAFACT"]), "dd/mm/yyyy"),
                             RazonSocial = dr["RAZONSOCIALCLI"].ToString(),
                             Ruc = dr["RUC"].ToString(),
                             MontoBruto = MoneyUtils.GetMoneyFormat(dr["ORDEN"].ToString()),
@@ -173,7 +173,7 @@ namespace jbp.business
                             CiudadCliente = dr["CIUDAD"].ToString(),
                             TelefonoCliente = dr["TELEFONO"].ToString(),
                             ContactoCliente = dr["CONTACTO"].ToString(),
-                            FechaVencimiento = FechaUtils.getStringDate(Convert.ToDateTime(dr["FECHAVENC"]),"dd/mm/yyyy"),
+                            FechaVencimiento = FechaUtils.GetStringDate(Convert.ToDateTime(dr["FECHAVENC"]),"dd/mm/yyyy"),
                             Vendedor= dr["VENDEDOR"].ToString(),
                             mailCliente = dr["MAIL"].ToString()
                         }

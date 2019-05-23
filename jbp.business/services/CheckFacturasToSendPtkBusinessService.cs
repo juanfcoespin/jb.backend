@@ -15,7 +15,7 @@ namespace jbp.business.services
         public CheckFacturasToSendPtkBusinessService():base("Envío de Facturas y NC Promotick"){}
         public override void Process()
         {
-            Log(eTypeLog.Info, "Inciciando consulta de facturas por enviar");
+            Log(eTypeLog.Info, "Iniciciando consulta de facturas por enviar");
             var facturaPtkBusiness = new FacturaPromotickBusiness();
             facturaPtkBusiness.LogNotificationEvent += (type,msg)=>Log(type,msg);
             var facturasPorProcesar = facturaPtkBusiness.GetCurrentMonthFacturasToSendWS();

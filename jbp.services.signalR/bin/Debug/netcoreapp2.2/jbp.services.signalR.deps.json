@@ -354,7 +354,7 @@
           "jbp.utils": "1.0.0",
           "System.Reactive": "4.1.0.0",
           "TechTools.DelegatesAndEnums": "1.0.0.2",
-          "TechTools.Utils": "1.0.0.2",
+          "TechTools.Utils": "1.0.0.3",
           "SpreadsheetLight": "3.4.9.0",
           "DocumentFormat.OpenXml": "2.5.5631.0"
         },
@@ -436,11 +436,11 @@
           }
         }
       },
-      "TechTools.Utils.Reference/1.0.0.2": {
+      "TechTools.Utils.Reference/1.0.0.3": {
         "runtime": {
           "TechTools.Utils.dll": {
-            "assemblyVersion": "1.0.0.2",
-            "fileVersion": "1.0.0.2"
+            "assemblyVersion": "1.0.0.3",
+            "fileVersion": "1.0.0.3"
           }
         }
       },
@@ -3867,7 +3867,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "TechTools.Utils.Reference/1.0.0.2": {
+    "TechTools.Utils.Reference/1.0.0.3": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

@@ -49,10 +49,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FechaUtilsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StringUtilsTest.cs" />
-    <Compile Include="MoneyUtilsTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

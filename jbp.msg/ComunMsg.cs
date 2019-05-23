@@ -12,6 +12,11 @@ namespace jbp.msg
         /// </summary>
         public string Error { get; set; }
     }
+    public class TestMsg
+    {
+        public string Type { get; set; }
+        public string Payload { get; set; }
+    }
     public class BoolMs : MensajeSalidaMsg {
         public bool ms { get; set; }
     }
