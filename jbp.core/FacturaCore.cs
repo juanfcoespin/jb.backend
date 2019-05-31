@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using jbp.msg;
-using DelegatesAndEnums;
+using TechTools.DelegatesAndEnums;
 
 namespace jbp.core
 {

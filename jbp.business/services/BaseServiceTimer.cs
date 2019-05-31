@@ -8,11 +8,10 @@ using System.Timers;
 using TechTools.DelegatesAndEnums;
 using TechTools.Utils;
 using TechTools.Msg;
-
-
+using jbp.msg;
 namespace jbp.business.services
 {
-    public abstract class BaseServiceTimer:contracts.INotificationLog
+    public abstract class BaseServiceTimer
     {
         private string serviceName;
         private Timer timer;
@@ -22,7 +21,6 @@ namespace jbp.business.services
             public int Minute { get; set; }
         }
         private InitAt initAt;
-        public event dLogNotification LogNotificationEvent;
         public BaseServiceTimer(string serviceName) {
             this.timer = new Timer();
             this.serviceName = serviceName;
@@ -94,10 +92,26 @@ namespace jbp.business.services
         /// </summary>
         public abstract void Process();
         public void Log(eTypeLog typeLog, string msg) {
-            LogNotificationEvent?.Invoke(typeLog, msg);
             LogUtils.AddLog(
-                new LogMsg {Type=typeLog , msg = msg }
+                new LogMsg {type =typeLog , msg = msg }
             );
+            NotifyEventToClients(typeLog, msg);
+        }
+        /// <summary>
+        /// este metodo se comunica con signal R para notificar a los clientes
+        /// </summary>
+        /// <param name="tipo"></param>
+        /// <param name="msg"></param>
+        private void NotifyEventToClients(eTypeLog tipo, string msg)
+        {
+            var date = DateTime.Now.ToString("yyyy-mm-dd HH:mm:ss");
+            var url = config.Default.urlNotificationClient;
+            var rc = new RestCall();
+            var me = new LogMsg { date=date,type=tipo,msg=msg };
+            //No se llama al método asíncrono porque da error en la capa jbp.services.rest
+            rc.SendPostOrPut(url, typeof(string), me, typeof(LogMsg), RestCall.eRestMethod.POST);
+            if (!string.IsNullOrEmpty(rc.ErrorMessage))
+                LogUtils.AddLog(new LogMsg { type = eTypeLog.Error, msg = rc.ErrorMessage });
         }
         public virtual string GetStatus() {
             Log(eTypeLog.Info, "Consultado estado del servicio...");

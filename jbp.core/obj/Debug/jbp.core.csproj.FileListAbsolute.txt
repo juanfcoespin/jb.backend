@@ -1,7 +1,0 @@
-D:\JBP\proyectos\software\jbp\jbp.core\bin\Debug\jbp.core.dll.config
-D:\JBP\proyectos\software\jbp\jbp.core\bin\Debug\jbp.core.dll
-D:\JBP\proyectos\software\jbp\jbp.core\bin\Debug\jbp.core.pdb
-D:\JBP\proyectos\software\jbp\jbp.core\obj\Debug\jbp.core.csproj.CoreCompileInputs.cache
-D:\JBP\proyectos\software\jbp\jbp.core\obj\Debug\jbp.core.dll
-D:\JBP\proyectos\software\jbp\jbp.core\obj\Debug\jbp.core.pdb
-D:\JBP\proyectos\software\jbp\jbp.core\obj\Debug\jbp.core.csprojAssemblyReference.cache

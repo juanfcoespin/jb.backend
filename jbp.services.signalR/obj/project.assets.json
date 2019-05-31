@@ -4724,7 +4724,7 @@
           "lib/netstandard1.3/System.Xml.XPath.XDocument.dll": {}
         }
       },
-      "TechTools.DelegatesAndEnums/1.0.0.1": {
+      "TechTools.DelegatesAndEnums/1.0.0.2": {
         "type": "package",
         "compile": {
           "lib/net461/TechTools.DelegatesAndEnums.dll": {}
@@ -4733,7 +4733,7 @@
           "lib/net461/TechTools.DelegatesAndEnums.dll": {}
         }
       },
-      "TechTools.Msg/1.0.0": {
+      "TechTools.Msg/1.0.0.2": {
         "type": "package",
         "dependencies": {
           "TechTools.DelegatesAndEnums": "1.0.0.1"
@@ -4743,64 +4743,6 @@
         },
         "runtime": {
           "lib/netstandard2.0/TechTools.Msg.dll": {}
-        }
-      },
-      "jbp.business/1.0.0": {
-        "type": "project",
-        "dependencies": {
-          "jbp.core.oracle9i": "1.0.0",
-          "jbp.msg": "1.0.0",
-          "jbp.utils": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/jbp.business.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/jbp.business.dll": {}
-        }
-      },
-      "jbp.core.contract/1.0.0": {
-        "type": "project",
-        "compile": {
-          "bin/placeholder/jbp.core.contract.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/jbp.core.contract.dll": {}
-        }
-      },
-      "jbp.core.oracle9i/1.0.0": {
-        "type": "project",
-        "dependencies": {
-          "jbp.core.contract": "1.0.0",
-          "jbp.msg": "1.0.0",
-          "jbp.utils": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/jbp.core.oracle9i.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/jbp.core.oracle9i.dll": {}
-        }
-      },
-      "jbp.msg/1.0.0": {
-        "type": "project",
-        "compile": {
-          "bin/placeholder/jbp.msg.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/jbp.msg.dll": {}
-        }
-      },
-      "jbp.utils/1.0.0": {
-        "type": "project",
-        "dependencies": {
-          "jbp.msg": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/jbp.utils.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/jbp.utils.dll": {}
         }
       }
     }
@@ -13018,10 +12960,10 @@
         "system.xml.xpath.xdocument.nuspec"
       ]
     },
-    "TechTools.DelegatesAndEnums/1.0.0.1": {
-      "sha512": "A36yaqQm9w9LJueGHBehIc2bqPsE9hu+PwEwT0OoLk2Abg/HJGkYCV4bMOIkMLTkTW8Kiu8g8t9DJ8Z9DrPU9g==",
+    "TechTools.DelegatesAndEnums/1.0.0.2": {
+      "sha512": "RcZGYiHHFZgsNAQfQCzoQV/P33WVl+uwDbqR/SxLe/tyGJwoBnARYAJ7gkq/ZEhCpcqQNfId7ifxQEt39NRlrA==",
       "type": "package",
-      "path": "techtools.delegatesandenums/1.0.0.1",
+      "path": "techtools.delegatesandenums/1.0.0.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -13029,48 +12971,23 @@
         "content/logo.png",
         "lib/net461/TechTools.DelegatesAndEnums.dll",
         "license.txt",
-        "techtools.delegatesandenums.1.0.0.1.nupkg.sha512",
+        "techtools.delegatesandenums.1.0.0.2.nupkg.sha512",
         "techtools.delegatesandenums.nuspec"
       ]
     },
-    "TechTools.Msg/1.0.0": {
-      "sha512": "JM7fhexSAf/vmWNNnnYwtJnavgXtl1s8fRrdE0PanEJ6B9pUNU89oe3lvBG2QDQwE57WTjT4o/yZ3ub+/WRZ3A==",
+    "TechTools.Msg/1.0.0.2": {
+      "sha512": "7m44Gcg3k/qkvWtUQAjkDLcU62xUjOIrlNYh/ky0ti3qPazgcxh5OJZdUZFyqqQqawLum2iBuwXJ1/qyDKeIag==",
       "type": "package",
-      "path": "techtools.msg/1.0.0",
+      "path": "techtools.msg/1.0.0.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "content/license.txt",
         "lib/netstandard2.0/TechTools.Msg.dll",
         "license.txt",
-        "techtools.msg.1.0.0.nupkg.sha512",
+        "techtools.msg.1.0.0.2.nupkg.sha512",
         "techtools.msg.nuspec"
       ]
-    },
-    "jbp.business/1.0.0": {
-      "type": "project",
-      "path": "../jbp.business/jbp.business.csproj",
-      "msbuildProject": "../jbp.business/jbp.business.csproj"
-    },
-    "jbp.core.contract/1.0.0": {
-      "type": "project",
-      "path": "../jbp.core.definition/jbp.core.contract.csproj",
-      "msbuildProject": "../jbp.core.definition/jbp.core.contract.csproj"
-    },
-    "jbp.core.oracle9i/1.0.0": {
-      "type": "project",
-      "path": "../jbp.core/jbp.core.oracle9i.csproj",
-      "msbuildProject": "../jbp.core/jbp.core.oracle9i.csproj"
-    },
-    "jbp.msg/1.0.0": {
-      "type": "project",
-      "path": "../jbp.msg/jbp.msg.csproj",
-      "msbuildProject": "../jbp.msg/jbp.msg.csproj"
-    },
-    "jbp.utils/1.0.0": {
-      "type": "project",
-      "path": "../jbp.utils/jbp.utils.csproj",
-      "msbuildProject": "../jbp.utils/jbp.utils.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -13080,9 +12997,8 @@
       "Microsoft.AspNetCore.Razor.Design >= 2.2.0",
       "Microsoft.NETCore.App >= 2.2.0",
       "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 2.2.3",
-      "TechTools.Msg >= 1.0.0",
-      "jbp.business >= 1.0.0",
-      "jbp.msg >= 1.0.0"
+      "TechTools.DelegatesAndEnums >= 1.0.0.2",
+      "TechTools.Msg >= 1.0.0.2"
     ]
   },
   "packageFolders": {
@@ -13114,14 +13030,7 @@
       },
       "frameworks": {
         "netcoreapp2.2": {
-          "projectReferences": {
-            "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.business\\jbp.business.csproj": {
-              "projectPath": "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.business\\jbp.business.csproj"
-            },
-            "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj": {
-              "projectPath": "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj"
-            }
-          }
+          "projectReferences": {}
         }
       },
       "warningProperties": {
@@ -13158,9 +13067,13 @@
             "target": "Package",
             "version": "[2.2.3, )"
           },
+          "TechTools.DelegatesAndEnums": {
+            "target": "Package",
+            "version": "[1.0.0.2, )"
+          },
           "TechTools.Msg": {
             "target": "Package",
-            "version": "[1.0.0, )"
+            "version": "[1.0.0.2, )"
           }
         },
         "imports": [
@@ -13176,7 +13089,7 @@
       "code": "NU1701",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "Package 'TechTools.DelegatesAndEnums 1.0.0.1' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.2'. This package may not be fully compatible with your project.",
+      "message": "Package 'TechTools.DelegatesAndEnums 1.0.0.2' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.2'. This package may not be fully compatible with your project.",
       "libraryId": "TechTools.DelegatesAndEnums",
       "targetGraphs": [
         ".NETCoreApp,Version=v2.2"

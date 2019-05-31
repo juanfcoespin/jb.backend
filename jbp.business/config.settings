@@ -20,5 +20,8 @@
     <Setting Name="ftpPromotickPutDateTimeOnFileName" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="urlNotificationClient" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://localhost:5000/api/PromotickServiceNotification</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

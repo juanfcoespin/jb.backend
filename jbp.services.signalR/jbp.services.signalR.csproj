@@ -12,25 +12,13 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
-    <PackageReference Include="TechTools.Msg" Version="1.0.0" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\jbp.business\jbp.business.csproj" />
-    <ProjectReference Include="..\jbp.msg\jbp.msg.csproj" />
+    <PackageReference Include="TechTools.DelegatesAndEnums" Version="1.0.0.2" />
+    <PackageReference Include="TechTools.Msg" Version="1.0.0.2" />
   </ItemGroup>
 
 
   <ItemGroup>
     <Folder Include="obj\Debug\netcoreapp2.2\" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Reference Include="System.Data.OracleClient">
-      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.OracleClient.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

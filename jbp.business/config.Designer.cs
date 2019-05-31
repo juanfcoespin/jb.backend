@@ -77,5 +77,15 @@ namespace jbp.business {
                 return ((bool)(this["ftpPromotickPutDateTimeOnFileName"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:5000/api/PromotickServiceNotification")]
+        public string urlNotificationClient {
+            get {
+                return ((string)(this["urlNotificationClient"]));
+            }
+        }
     }
 }

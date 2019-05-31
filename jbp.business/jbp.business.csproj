@@ -68,11 +68,11 @@
     <Reference Include="TechTools.DelegatesAndEnums, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TechTools.DelegatesAndEnums.1.0.0.2\lib\net461\TechTools.DelegatesAndEnums.dll</HintPath>
     </Reference>
-    <Reference Include="TechTools.Msg, Version=1.0.1.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TechTools.Msg.1.0.0.1\lib\netstandard2.0\TechTools.Msg.dll</HintPath>
+    <Reference Include="TechTools.Msg, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TechTools.Msg.1.0.0.2\lib\netstandard2.0\TechTools.Msg.dll</HintPath>
     </Reference>
-    <Reference Include="TechTools.Utils, Version=1.0.0.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TechTools.Utils.1.0.0.5\lib\net461\TechTools.Utils.dll</HintPath>
+    <Reference Include="TechTools.Utils, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TechTools.Utils.1.0.1\lib\net461\TechTools.Utils.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -87,6 +87,7 @@
     <Compile Include="CuentaBusiness.cs" />
     <Compile Include="DetalleFacturaBusiness.cs" />
     <Compile Include="FacturaPromotickBusiness.cs" />
+    <Compile Include="LogBusiness.cs" />
     <Compile Include="observables\BaseObservable.cs" />
     <Compile Include="observers\BaseObserver.cs" />
     <Compile Include="services\BaseServiceTimer.cs" />
@@ -122,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="license.txt" />
+    <Content Include="logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

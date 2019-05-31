@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using jbp.services.signalR.Hubs;
+
 
 namespace jbp.services.signalR
 {
@@ -62,6 +64,7 @@ namespace jbp.services.signalR
             app.UseSignalR(routes =>
             {
                 routes.MapHub<NotifyHub>("/notify");
+                routes.MapHub<LogPromotickServiceHub>("/logPromotickServiceHub");
             });
             app.UseMvc();
         }

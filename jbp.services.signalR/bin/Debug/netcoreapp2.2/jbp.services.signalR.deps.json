@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.2",
-    "signature": "88bc2e688b9ccbaa626c34717f5360127a600a3c"
+    "signature": "2aafaa71d67b3c92e4ffafd9b5f24d2b0234495b"
   },
   "compilationOptions": {
     "defines": [
@@ -29,9 +29,8 @@
           "Microsoft.AspNetCore.Razor.Design": "2.2.0",
           "Microsoft.NETCore.App": "2.2.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.2.3",
-          "jbp.business": "1.0.0",
-          "jbp.msg": "1.0.0",
-          "System.Data.OracleClient": "4.0.0.0"
+          "TechTools.DelegatesAndEnums": "1.0.0.2",
+          "TechTools.Msg": "1.0.0.2"
         },
         "runtime": {
           "jbp.services.signalR.dll": {}
@@ -347,149 +346,29 @@
           "System.Threading.Tasks": "4.3.0"
         }
       },
-      "jbp.business/1.0.0": {
-        "dependencies": {
-          "jbp.core.oracle9i": "1.0.0",
-          "jbp.msg": "1.0.0",
-          "jbp.utils": "1.0.0",
-          "System.Reactive": "4.1.0.0",
-          "TechTools.DelegatesAndEnums": "1.0.0.2",
-          "TechTools.Utils": "1.0.0.3",
-          "SpreadsheetLight": "3.4.9.0",
-          "DocumentFormat.OpenXml": "2.5.5631.0"
-        },
+      "TechTools.DelegatesAndEnums/1.0.0.2": {
         "runtime": {
-          "jbp.business.dll": {}
-        },
-        "compile": {
-          "jbp.business.dll": {}
-        }
-      },
-      "jbp.core.contract/1.0.0": {
-        "runtime": {
-          "jbp.core.contract.dll": {}
-        },
-        "compile": {
-          "jbp.core.contract.dll": {}
-        }
-      },
-      "jbp.core.oracle9i/1.0.0": {
-        "dependencies": {
-          "jbp.core.contract": "1.0.0",
-          "jbp.msg": "1.0.0",
-          "jbp.utils": "1.0.0",
-          "System.EnterpriseServices": "4.0.0.0",
-          "System.DirectoryServices": "4.0.0.0",
-          "System.Runtime.Remoting": "4.0.0.0",
-          "System.Runtime.Serialization.Formatters.Soap": "4.0.0.0"
-        },
-        "runtime": {
-          "jbp.core.dll": {}
-        },
-        "compile": {
-          "jbp.core.dll": {}
-        }
-      },
-      "jbp.msg/1.0.0": {
-        "runtime": {
-          "jbp.msg.dll": {}
-        },
-        "compile": {
-          "jbp.msg.dll": {}
-        }
-      },
-      "jbp.utils/1.0.0": {
-        "dependencies": {
-          "jbp.msg": "1.0.0"
-        },
-        "runtime": {
-          "jbp.utils.dll": {}
-        },
-        "compile": {
-          "jbp.utils.dll": {}
-        }
-      },
-      "System.Data.OracleClient/4.0.0.0": {
-        "runtime": {
-          "System.Data.OracleClient.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.6.1055.0"
-          }
-        },
-        "compile": {
-          "System.Data.OracleClient.dll": {}
-        }
-      },
-      "System.Reactive.Reference/4.1.0.0": {
-        "runtime": {
-          "System.Reactive.dll": {
-            "assemblyVersion": "4.1.0.0",
-            "fileVersion": "4.1.5.357"
-          }
-        }
-      },
-      "TechTools.DelegatesAndEnums.Reference/1.0.0.2": {
-        "runtime": {
-          "TechTools.DelegatesAndEnums.dll": {
+          "lib/net461/TechTools.DelegatesAndEnums.dll": {
             "assemblyVersion": "1.0.0.2",
             "fileVersion": "1.0.0.2"
           }
+        },
+        "compile": {
+          "lib/net461/TechTools.DelegatesAndEnums.dll": {}
         }
       },
-      "TechTools.Utils.Reference/1.0.0.3": {
+      "TechTools.Msg/1.0.0.2": {
+        "dependencies": {
+          "TechTools.DelegatesAndEnums": "1.0.0.2"
+        },
         "runtime": {
-          "TechTools.Utils.dll": {
-            "assemblyVersion": "1.0.0.3",
-            "fileVersion": "1.0.0.3"
+          "lib/netstandard2.0/TechTools.Msg.dll": {
+            "assemblyVersion": "1.0.0.2",
+            "fileVersion": "1.0.0.2"
           }
-        }
-      },
-      "System.EnterpriseServices.Reference/4.0.0.0": {
-        "runtime": {
-          "System.EnterpriseServices.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.6.1055.0"
-          }
-        }
-      },
-      "SpreadsheetLight.Reference/3.4.9.0": {
-        "runtime": {
-          "SpreadsheetLight.dll": {
-            "assemblyVersion": "3.4.9.0",
-            "fileVersion": "3.4.9.0"
-          }
-        }
-      },
-      "System.DirectoryServices.Reference/4.0.0.0": {
-        "runtime": {
-          "System.DirectoryServices.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.6.1055.0"
-          }
-        }
-      },
-      "System.Runtime.Remoting.Reference/4.0.0.0": {
-        "runtime": {
-          "System.Runtime.Remoting.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.6.1055.0"
-          }
-        }
-      },
-      "DocumentFormat.OpenXml.Reference/2.5.5631.0": {
-        "runtime": {
-          "DocumentFormat.OpenXml.dll": {
-            "assemblyVersion": "2.5.5631.0",
-            "fileVersion": "2.5.5631.0"
-          }
-        }
-      },
-      "System.Runtime.Serialization.Formatters.Soap.Reference/4.0.0.0": {
-        "runtime": {
-          "System.Runtime.Serialization.Formatters.Soap.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.6.1055.0"
-          }
+        },
+        "compile": {
+          "lib/netstandard2.0/TechTools.Msg.dll": {}
         }
       },
       "Microsoft.AspNet.WebApi.Client/5.2.6": {
@@ -3827,80 +3706,19 @@
       "path": "system.linq.parallel/4.3.0",
       "hashPath": "system.linq.parallel.4.3.0.nupkg.sha512"
     },
-    "jbp.business/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
+    "TechTools.DelegatesAndEnums/1.0.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RcZGYiHHFZgsNAQfQCzoQV/P33WVl+uwDbqR/SxLe/tyGJwoBnARYAJ7gkq/ZEhCpcqQNfId7ifxQEt39NRlrA==",
+      "path": "techtools.delegatesandenums/1.0.0.2",
+      "hashPath": "techtools.delegatesandenums.1.0.0.2.nupkg.sha512"
     },
-    "jbp.core.contract/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "jbp.core.oracle9i/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "jbp.msg/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "jbp.utils/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "System.Data.OracleClient/4.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "System.Reactive.Reference/4.1.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "TechTools.DelegatesAndEnums.Reference/1.0.0.2": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "TechTools.Utils.Reference/1.0.0.3": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "System.EnterpriseServices.Reference/4.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "SpreadsheetLight.Reference/3.4.9.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "System.DirectoryServices.Reference/4.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "System.Runtime.Remoting.Reference/4.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "DocumentFormat.OpenXml.Reference/2.5.5631.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "System.Runtime.Serialization.Formatters.Soap.Reference/4.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
+    "TechTools.Msg/1.0.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7m44Gcg3k/qkvWtUQAjkDLcU62xUjOIrlNYh/ky0ti3qPazgcxh5OJZdUZFyqqQqawLum2iBuwXJ1/qyDKeIag==",
+      "path": "techtools.msg/1.0.0.2",
+      "hashPath": "techtools.msg.1.0.0.2.nupkg.sha512"
     },
     "Microsoft.AspNet.WebApi.Client/5.2.6": {
       "type": "package",

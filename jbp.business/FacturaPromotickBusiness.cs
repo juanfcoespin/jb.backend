@@ -116,7 +116,7 @@ namespace jbp.business
                     }
                 };
                 restCall.SendPostOrPutAsync(url, typeof(List<ParametroSalidaPtkMsg>),
-                    me, typeof(List<FacturaPromotickMsg>), RestCall.eTypeSend.POST);
+                    me, typeof(List<FacturaPromotickMsg>), RestCall.eRestMethod.POST);
                 me.ForEach(factura => {
                     LogNotificationEvent?.Invoke(eTypeLog.Info,
                     String.Format("Enviada Factura:{0}, ruc: {1}, monto:{2}, al servicio: {3}",

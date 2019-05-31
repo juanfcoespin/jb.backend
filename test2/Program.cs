@@ -12,7 +12,8 @@ namespace test2
     {
         static void Main(string[] args)
         {
-            TestSendMessageSignalR();
+            var fecha = new DateTime(2019, 5, 23);
+            var stringDate = fecha.ToString("dd/MM/yyyy");
         }
       
         private static void TestSendMessageSignalR()
