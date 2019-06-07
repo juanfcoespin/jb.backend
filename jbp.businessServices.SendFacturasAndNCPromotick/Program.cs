@@ -5,6 +5,9 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 
+using Microsoft.AspNetCore.SignalR.Client;
+
+
 namespace jbp.businessServices.SendFacturasAndNCPromotick
 {
     static class Program
@@ -15,24 +18,32 @@ namespace jbp.businessServices.SendFacturasAndNCPromotick
         /// </summary>
         static void Main()
         {
-            var ptkService = new EnvioFacturas_y_NC();
-            //Init(ptkService);
-            //test();
-            SubscribeOrdersFromRemoteClients();
-
+            //Init();
+            //SubscribeOrdersFromRemoteClients();
         }
 
+        //desde la aplicacion jbp de angular se manda las ordenes de start y stop
         private static void SubscribeOrdersFromRemoteClients()
         {
-            throw new NotImplementedException();
+            var hubConnection = new HubConnectionBuilder()
+                .WithUrl(conf.Default.urlHub)
+                .Build();
+
+            //cuando pierde conexión se vuelve a conectar
+            hubConnection.Closed += async (error) =>
+                await hubConnection.StartAsync();
+            hubConnection.On("start",()=>StartService());
+            hubConnection.On("stop", () => StopService());
         }
 
-        private static void Init(EnvioFacturas_y_NC ptkService)
+     
+
+        private static void Init()
         {
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {
-                ptkService
+                new EnvioFacturas_y_NC()
             };
             ServiceBase.Run(ServicesToRun);
         }
