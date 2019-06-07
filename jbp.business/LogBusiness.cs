@@ -11,7 +11,7 @@ namespace jbp.business
 {
     public class LogBusiness
     {
-        public static List<LogMsg> GetLogByDate(string me) {
+        public static List<LogMsg> GetLogsByDate(string me) {
             return LogUtils.GetLogsByDate(me);
         }
     }

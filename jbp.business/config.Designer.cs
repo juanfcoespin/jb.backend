@@ -87,5 +87,41 @@ namespace jbp.business {
                 return ((string)(this["urlNotificationClient"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        public long ptkPeriodoEnSegundosDeConsultaServicio {
+            get {
+                return ((long)(this["ptkPeriodoEnSegundosDeConsultaServicio"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        public int ptkIniciarA_Hora {
+            get {
+                return ((int)(this["ptkIniciarA_Hora"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int ptkIniciarA_Minuto {
+            get {
+                return ((int)(this["ptkIniciarA_Minuto"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ptkIniciarAHoraEspesifica {
+            get {
+                return ((bool)(this["ptkIniciarAHoraEspesifica"]));
+            }
+        }
     }
 }

@@ -78,40 +78,44 @@ namespace jbp.business.services
         /// Para el servicio
         /// </summary>
         public virtual void Stop() {
-            Log(eTypeLog.Info, "Parando servicio...");
-            this.timer.Stop();
-            this.timer.Elapsed -= Timer_Elapsed;
-            this.timer.Enabled = false;
-            GetStatus();
+            if (IsRunning())
+            {
+                Log(eTypeLog.Info, "Parando servicio...");
+                this.timer.Stop();
+                this.timer.Elapsed -= Timer_Elapsed;
+                this.timer.Enabled = false;
+                GetStatus();
+            }
         }
         public bool IsRunning() {
-               return this.timer.Enabled;
+            var isRunning= this.timer.Enabled;
+            Log(isRunning ? eTypeLog.Info : eTypeLog.Advertencia, 
+                string.Format("is runing: {0}",isRunning.ToString().ToLower()));
+            return isRunning;
         }
         /// <summary>
         /// El proceso que va a correr cada cierto tiempo
         /// </summary>
         public abstract void Process();
         public void Log(eTypeLog typeLog, string msg) {
-            LogUtils.AddLog(
-                new LogMsg {type =typeLog , msg = msg }
-            );
-            NotifyEventToClients(typeLog, msg);
+            var log = new LogMsg { type = typeLog, msg = msg };
+            LogUtils.AddLog(log);
+            NotifyEventToClients(typeLog, log);
         }
         /// <summary>
         /// este metodo se comunica con signal R para notificar a los clientes
         /// </summary>
         /// <param name="tipo"></param>
         /// <param name="msg"></param>
-        private void NotifyEventToClients(eTypeLog tipo, string msg)
+        private void NotifyEventToClients(eTypeLog tipo, LogMsg me)
         {
-            var date = DateTime.Now.ToString("yyyy-mm-dd HH:mm:ss");
             var url = config.Default.urlNotificationClient;
             var rc = new RestCall();
-            var me = new LogMsg { date=date,type=tipo,msg=msg };
             //No se llama al método asíncrono porque da error en la capa jbp.services.rest
             rc.SendPostOrPut(url, typeof(string), me, typeof(LogMsg), RestCall.eRestMethod.POST);
             if (!string.IsNullOrEmpty(rc.ErrorMessage))
-                LogUtils.AddLog(new LogMsg { type = eTypeLog.Error, msg = rc.ErrorMessage });
+                LogUtils.AddLog(new LogMsg {
+                    date =me.date, type = eTypeLog.Error, msg = rc.ErrorMessage });
         }
         public virtual string GetStatus() {
             Log(eTypeLog.Info, "Consultado estado del servicio...");

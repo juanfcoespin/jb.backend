@@ -23,17 +23,15 @@ namespace jbp.services.rest.Controllers
         [Route("api/facturaPromotick/start")]
         public string Start()
         {
-            if (!servicePtk.IsRunning())
-                servicePtk.Start(60);
-            return "starting";
+            servicePtk.Start();
+            return "Llamada al método start del servicio: ok";
         }
         [HttpGet]
         [Route("api/facturaPromotick/stop")]
         public string Stop()
         {
-            if (servicePtk.IsRunning())
-                servicePtk.Stop();
-            return "stoping";
+            servicePtk.Stop();
+            return "Llamada al método stop del servicio: ok";
         }
         [HttpGet]
         [Route("api/facturaPromotick/status")]
@@ -42,10 +40,17 @@ namespace jbp.services.rest.Controllers
             return servicePtk.GetStatus();
         }
         [HttpGet]
-        [Route("api/facturaPromotick/logByDate/{me}")]
-        public List<LogMsg> LogByDate(string me)
+        [Route("api/facturaPromotick/getLogsByDate/{me}")]
+        public List<LogMsg> GetLogsByDate(string me)
         {
-            return LogBusiness.GetLogByDate(me);
+            return LogBusiness.GetLogsByDate(me);
+        }
+        [HttpGet]
+        [Route("api/facturaPromotick/GetTodayLogs")]
+        public List<LogMsg> GetTodayLogs()
+        {
+            var today = DateTime.Now.ToString("yyyy-MM-dd");
+            return LogBusiness.GetLogsByDate(today);
         }
         [HttpGet]
         [Route("api/facturaPromotick/isRunning")]

@@ -13,6 +13,18 @@ namespace jbp.business.services
     {
 
         public CheckFacturasToSendPtkBusinessService():base("Envío de Facturas y NC Promotick"){}
+        public void Start()
+        {
+            if (config.Default.ptkIniciarAHoraEspesifica)
+            {
+                var init = new InitAt {
+                    Hour =config.Default.ptkIniciarA_Hora,
+                    Minute=config.Default.ptkIniciarA_Minuto
+                };
+                base.StartAt(init);
+            }else
+                base.Start(config.Default.ptkPeriodoEnSegundosDeConsultaServicio);
+        }
         public override void Process()
         {
             Log(eTypeLog.Info, "Iniciciando consulta de facturas por enviar");

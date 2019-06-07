@@ -65,12 +65,6 @@ namespace PromotickClientService
         private static void IniciarObjetoServicio()
         {
             servicePtk = new CheckFacturasToSendPtkBusinessService();
-            servicePtk.LogNotificationEvent += (tipo, msg) =>
-            {
-                msg = string.Format("{0}: {1}", tipo, msg);
-                LogUtils.AddLog(msg);
-                Console.WriteLine(msg);
-            };
         }
         private static void PrintStadoServicio()
         {

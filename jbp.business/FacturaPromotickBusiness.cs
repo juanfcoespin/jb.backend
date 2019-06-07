@@ -157,7 +157,8 @@ namespace jbp.business
                 {
                     new FacturaPromotickCore().InsertFactEnviada(factura);
                     LogNotificationEvent?.Invoke(eTypeLog.Info,
-                        string.Format("Insertada Factura: {0}",factura.numFactura));
+                        string.Format("Enviada Factura: {0}, cliente: {1}, monto: {2} ",
+                            factura.numFactura, factura.numDocumento, factura.montoFactura));
                 }
                 catch (Exception e)
                 {
