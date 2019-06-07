@@ -18,9 +18,15 @@ namespace jbp.businessServices.SendFacturasAndNCPromotick
             var ptkService = new EnvioFacturas_y_NC();
             //Init(ptkService);
             //test();
-            //StartService();
-            StopService();
+            SubscribeOrdersFromRemoteClients();
+
         }
+
+        private static void SubscribeOrdersFromRemoteClients()
+        {
+            throw new NotImplementedException();
+        }
+
         private static void Init(EnvioFacturas_y_NC ptkService)
         {
             ServiceBase[] ServicesToRun;

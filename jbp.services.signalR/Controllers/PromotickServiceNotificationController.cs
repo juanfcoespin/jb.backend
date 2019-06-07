@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using jbp.services.signalR.Hubs;
 using TechTools.Msg;
+using jbp.services.signalR.Hubs.Contracts;
 
 namespace jbp.services.signalR.Controllers
 {
@@ -15,16 +16,16 @@ namespace jbp.services.signalR.Controllers
     [ApiController]
     public class PromotickServiceNotificationController : ControllerBase
     {
-        private IHubContext<LogPromotickServiceHub, ILogHubClient> hubContext;
-        public PromotickServiceNotificationController(IHubContext<LogPromotickServiceHub, ILogHubClient> hubContext) {
-            this.hubContext = hubContext;
+        private IHubContext<LogHub, ILogHub> HubContext;
+        public PromotickServiceNotificationController(IHubContext<LogHub, ILogHub> hubContext) {
+            this.HubContext = hubContext;
         }
         [HttpPost]
         public string Post([FromBody]LogMsg me)
         {
             try
             {
-                this.hubContext.Clients.All.PushLog(me);
+                this.HubContext.Clients.All.PushLog(me);
                 return "ok";
             }
             catch (Exception e)

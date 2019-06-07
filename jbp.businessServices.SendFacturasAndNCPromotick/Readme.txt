@@ -1,3 +1,15 @@
+Desarrollado por: Juan Francisco Espín
+Fecha primer Relase: 05 jun 2019
+-------------------------------------------------
+Información del servicio:
+ Este servicio tiene como funcionalidad hacer el envio automático de facturas de participantes del plan
+ puntos al sistema PROMOTICK
+
+ Se puede parametrizar desde el archivo de configuración, la frecuencia de ejecución del servicio
+ por ejemplo cada 60 seg. o en su defecto, que se ejecute todos los días a una hora espesífica.
+
+ Las facturas pueden enviarse por FTP o mediante el consumo de un servicio WEB
+
 Para Instalar el servicio:
  Si está instalado Visual Studio
   - Buscar el programa "Developer Command Pront" y ejecutar como administrador

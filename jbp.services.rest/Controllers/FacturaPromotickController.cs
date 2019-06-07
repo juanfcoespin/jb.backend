@@ -20,20 +20,6 @@ namespace jbp.services.rest.Controllers
                 servicePtk = new CheckFacturasToSendPtkBusinessService();
         }
         [HttpGet]
-        [Route("api/facturaPromotick/start")]
-        public string Start()
-        {
-            servicePtk.Start();
-            return "Llamada al método start del servicio: ok";
-        }
-        [HttpGet]
-        [Route("api/facturaPromotick/stop")]
-        public string Stop()
-        {
-            servicePtk.Stop();
-            return "Llamada al método stop del servicio: ok";
-        }
-        [HttpGet]
         [Route("api/facturaPromotick/status")]
         public string Status()
         {

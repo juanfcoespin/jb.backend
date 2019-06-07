@@ -11,8 +11,8 @@ namespace jbp.services.signalR.Controllers
     [ApiController]
     public class TestController : ControllerBase
     {
-        // GET: api/Test
-        [HttpGet]
+        // GET: api/Test/getValues
+        [HttpGet("getValues")]
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };

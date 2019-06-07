@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.AspNetCore.SignalR;
+using jbp.services.signalR.Hubs;
+using jbp.services.signalR.Hubs.Contracts;
 
 namespace jbp.services.signalR.Controllers
 {
@@ -13,6 +15,11 @@ namespace jbp.services.signalR.Controllers
     [ApiController]
     public class MessageController : ControllerBase
     {
+        public class Message
+        {
+            public string Type { get; set; }
+            public string Payload { get; set; }
+        }
         private IHubContext<NotifyHub, ITypedHubClient> _hubContext;
         public MessageController(IHubContext<NotifyHub, ITypedHubClient> hubContext)
         {
@@ -33,7 +40,5 @@ namespace jbp.services.signalR.Controllers
             }
             return retMessage;
         }
-
-
     }
 }
