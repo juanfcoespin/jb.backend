@@ -15,8 +15,8 @@ namespace jbp.services.signalR.Controllers
     [ApiController]
     public class PromotickBusinessServicesOrdersController : ControllerBase
     {
-        private IHubContext<SendFacturasNcPromotickHub, IBusinessServicesHub> HubContext;
-        public PromotickBusinessServicesOrdersController(IHubContext<SendFacturasNcPromotickHub, IBusinessServicesHub> hubContext)
+        private IHubContext<CheckOrdersToPromotickBusinessService, IBusinessServicesHub> HubContext;
+        public PromotickBusinessServicesOrdersController(IHubContext<CheckOrdersToPromotickBusinessService, IBusinessServicesHub> hubContext)
         {
             this.HubContext = hubContext;
         }

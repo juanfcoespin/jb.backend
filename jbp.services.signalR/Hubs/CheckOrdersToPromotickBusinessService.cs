@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using jbp.services.signalR.Hubs.Contracts;
 
+
 namespace jbp.services.signalR.Hubs
 {
-    public class SendFacturasNcPromotickHub:Hub<IBusinessServicesHub>
+    public class CheckOrdersToPromotickBusinessService : Hub<IBusinessServicesHub>
     {
     }
 }

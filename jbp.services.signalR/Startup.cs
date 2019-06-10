@@ -65,7 +65,7 @@ namespace jbp.services.signalR
             {
                 routes.MapHub<NotifyHub>("/notify");
                 routes.MapHub<LogHub>("/logPromotickServiceHub");
-                routes.MapHub<SendFacturasNcPromotickHub>("/sendFacturasNcPromotickHub");
+                routes.MapHub<CheckOrdersToPromotickBusinessService>("/checkOrdersToPromotickBusinessService");
             });
             app.UseMvc();
         }

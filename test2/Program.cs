@@ -6,16 +6,47 @@ using System.Threading.Tasks;
 
 using jbp.msg;
 using TechTools.Utils;
+using Microsoft.AspNetCore.SignalR.Client;
+using TechTools.Msg;
+
 namespace test2
 {
     class Program
     {
+        private static HubConnection hubConnection;
         static void Main(string[] args)
         {
-            var fecha = new DateTime(2019, 5, 23);
-            var stringDate = fecha.ToString("dd/MM/yyyy");
+            testSignalRClient();
+            Console.ReadLine();
         }
-      
+
+        private static async Task testSignalRClient()
+        {
+
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl("http://localhost:5000/checkOrdersToPromotickBusinessService")
+                .Build();
+
+            //hubConnection = new HubConnectionBuilder()
+            // .WithUrl("http://localhost:5000/logPromotickServiceHub")
+            // .Build();
+
+            //hubConnection.On<LogMsg>("PushLog", (log => showLog(log)));
+            hubConnection.On("Start", () => Console.WriteLine("start"));
+            hubConnection.On("Stop", () => Console.WriteLine("stop"));
+            await hubConnection.StartAsync();
+
+            //cuando pierde conexión se vuelve a conectar
+            hubConnection.Closed += async (error) =>
+                await hubConnection.StartAsync();
+            
+            
+            
+        }
+        private static void showLog(LogMsg log) {
+            Console.WriteLine(log.msg);
+        }
+
         private static void TestSendMessageSignalR()
         {
             var opt = 0;
@@ -37,8 +68,6 @@ namespace test2
         {
             var url = "http://localhost:5000/api/message";
             var rc = new RestCall();
-            var me = new TestMsg { Type = "Info", Payload = msg };
-            rc.SendPostOrPutAsync(url, typeof(string), me, typeof(TestMsg), RestCall.eTypeSend.POST);
         }
 
         private static void PrintMenu()
