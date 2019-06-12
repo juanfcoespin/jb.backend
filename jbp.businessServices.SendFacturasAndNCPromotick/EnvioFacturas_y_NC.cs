@@ -14,12 +14,15 @@ namespace jbp.businessServices.SendFacturasAndNCPromotick
 {
     public partial class EnvioFacturas_y_NC : ServiceBase
     {
+        
         public CheckFacturasToSendPtkBusinessService businessService;
+        
         public EnvioFacturas_y_NC()
         {
             InitializeComponent();
             this.businessService = new CheckFacturasToSendPtkBusinessService();
         }
+        
 
         protected override void OnStart(string[] args)
         {
@@ -30,5 +33,6 @@ namespace jbp.businessServices.SendFacturasAndNCPromotick
         {
             this.businessService.Stop();
         }
+
     }
 }

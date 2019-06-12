@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="jbp.businessServices.listenSignalROrders" GeneratedClassName="conf">
+  <Profiles />
+  <Settings>
+    <Setting Name="urlHub" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://localhost:5000/checkOrdersToPromotickBusinessService</Value>
+    </Setting>
+    <Setting Name="envioFacturasNCServiceName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">jbp.businessServices.SendFacturasNC_Promotick</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

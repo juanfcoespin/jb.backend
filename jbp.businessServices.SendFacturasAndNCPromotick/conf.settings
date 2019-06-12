@@ -1,9 +1,0 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="jbp.businessServices.SendFacturasAndNCPromotick" GeneratedClassName="conf">
-  <Profiles />
-  <Settings>
-    <Setting Name="urlHub" Type="(Web Service URL)" Scope="Application">
-      <Value Profile="(Default)">http://localhost:5000/sendFacturasNcPromotickHub</Value>
-    </Setting>
-  </Settings>
-</SettingsFile>

@@ -13008,11 +13008,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj",
+      "projectUniqueName": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj",
       "projectName": "jbp.services.signalR",
-      "projectPath": "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj",
+      "projectPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj",
       "packagesPath": "C:\\Users\\jespin\\.nuget\\packages\\",
-      "outputPath": "D:\\ownCloud\\1. Catálogo de servicios\\5. Sistemas de Apoyo\\10. JBP\\jbp.backend\\jbp.services.signalR\\obj\\",
+      "outputPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.services.signalR\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

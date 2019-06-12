@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using jbp.msg;
-using TechTools.Utils;
 using Microsoft.AspNetCore.SignalR.Client;
 using TechTools.Msg;
+using TechTools.Utils;
 
 namespace test2
 {
@@ -22,18 +22,26 @@ namespace test2
 
         private static async Task testSignalRClient()
         {
-
+            var serviceName = "CscService";
+            var winService = new WindowsServiceUtils(serviceName);
             hubConnection = new HubConnectionBuilder()
                 .WithUrl("http://localhost:5000/checkOrdersToPromotickBusinessService")
                 .Build();
 
-            //hubConnection = new HubConnectionBuilder()
-            // .WithUrl("http://localhost:5000/logPromotickServiceHub")
-            // .Build();
-
-            //hubConnection.On<LogMsg>("PushLog", (log => showLog(log)));
-            hubConnection.On("Start", () => Console.WriteLine("start"));
-            hubConnection.On("Stop", () => Console.WriteLine("stop"));
+            hubConnection.On("Start", () => {
+                var ms = winService.StartService();
+                if ( ms== "ok")
+                    Console.WriteLine("started");
+                else
+                    Console.WriteLine("not started: "+ms);
+            });
+            hubConnection.On("Stop", () => {
+                var ms = winService.StopService();
+                if (ms=="ok")
+                    Console.WriteLine("stoped");
+                else
+                    Console.WriteLine("not stoped: "+ms);
+            });
             await hubConnection.StartAsync();
 
             //cuando pierde conexión se vuelve a conectar
@@ -67,7 +75,7 @@ namespace test2
         private static void SendMsg(string msg)
         {
             var url = "http://localhost:5000/api/message";
-            var rc = new RestCall();
+            //var rc = new RestCall();
         }
 
         private static void PrintMenu()
@@ -82,34 +90,34 @@ Opt: ";
 
         private static void UploadFileByFtpTest()
         {
-            var cred = new FtpUtils.Credencials {
-                Url = "ftp://ftp.jbp.com.ec/promotick",
-                User = "jespin",
-                Pwd = "2816Jfen*"
-            };
-            FtpUtils.UploadFile(cred, @"c:\temp\tmp.PDF");
+            //var cred = new FtpUtils.Credencials {
+            //    Url = "ftp://ftp.jbp.com.ec/promotick",
+            //    User = "jespin",
+            //    Pwd = "2816Jfen*"
+            //};
+            //FtpUtils.UploadFile(cred, @"c:\temp\tmp.PDF");
         }
 
-        private static void ExecelUtilsTest()
-        {
-            var facturas = GetListFacturas();
-            var ex = new ExcelUtils("Test.xlsx");
-            ex.AddColumn("Fecha");
-            ex.AddColumn("Nro Documento");
-            ex.AddColumn("Monto");
-            ex.AddColumn("Puntos");
-            ex.AddColumn("Nro Factura");
-            var row = 1;
-            facturas.ForEach(factura => {
-                ex.AddData(row, 0, factura.fechaFactura);
-                ex.AddData(row, 1, factura.numDocumento);
-                ex.AddData(row, 2, factura.montoFactura);
-                ex.AddData(row, 3, factura.puntos);
-                ex.AddData(row, 4, factura.numFactura);
-                row++;
-            });
-            ex.EndEditAndSave();
-        }
+        //private static void ExecelUtilsTest()
+        //{
+        //    var facturas = GetListFacturas();
+        //    var ex = new ExcelUtils("Test.xlsx");
+        //    ex.AddColumn("Fecha");
+        //    ex.AddColumn("Nro Documento");
+        //    ex.AddColumn("Monto");
+        //    ex.AddColumn("Puntos");
+        //    ex.AddColumn("Nro Factura");
+        //    var row = 1;
+        //    facturas.ForEach(factura => {
+        //        ex.AddData(row, 0, factura.fechaFactura);
+        //        ex.AddData(row, 1, factura.numDocumento);
+        //        ex.AddData(row, 2, factura.montoFactura);
+        //        ex.AddData(row, 3, factura.puntos);
+        //        ex.AddData(row, 4, factura.numFactura);
+        //        row++;
+        //    });
+        //    ex.EndEditAndSave();
+        //}
         private static List<FacturaPromotickMsg> GetListFacturas()
         {
             var ms = new List<FacturaPromotickMsg>();
