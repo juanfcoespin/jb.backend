@@ -362,3 +362,7 @@ D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\j
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CopyComplete
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.dll
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.pdb
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csprojAssemblyReference.cache
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CoreCompileInputs.cache
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.dll
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.pdb

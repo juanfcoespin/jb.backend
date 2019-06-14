@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="jbp.businessServices.admin" GeneratedClassName="conf">
+  <Profiles />
+  <Settings>
+    <Setting Name="promotickServiceHubUrl" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://localhost:5000/checkOrdersToPromotickBusinessService</Value>
+    </Setting>
+    <Setting Name="envioFacturasNCServiceName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">jbp.businessServices.SendFacturasNC_Promotick</Value>
+    </Setting>
+    <Setting Name="promotickBusinessServiceOrdersUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://localhost:5000/api/PromotickBusinessServicesOrders</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

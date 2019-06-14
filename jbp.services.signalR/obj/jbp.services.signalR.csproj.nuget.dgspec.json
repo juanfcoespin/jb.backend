@@ -24,8 +24,7 @@
           "netcoreapp2.2"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
+          "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\packageSource": {}
         },
         "frameworks": {
           "netcoreapp2.2": {

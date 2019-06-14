@@ -45,7 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "jbp.core", "jbp.core", "{4E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test2", "test2\test2.csproj", "{16322D2F-DC40-4A05-9B16-CB94D8A4DE81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jbp.businessServices.listenSignalROrders", "jbp.businessServices.listenSignalROrders\jbp.businessServices.listenSignalROrders.csproj", "{3755CED0-B3A0-4085-AFE8-75208859AF18}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jbp.businessServices.admin", "jbp.businessServices.admin\jbp.businessServices.admin.csproj", "{3755CED0-B3A0-4085-AFE8-75208859AF18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

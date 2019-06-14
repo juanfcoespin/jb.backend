@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using jbp.services.signalR.Hubs;
 using jbp.services.signalR.Hubs.Contracts;
+using TechTools.Msg;
 
 namespace jbp.services.signalR.Controllers
 {
@@ -20,6 +21,11 @@ namespace jbp.services.signalR.Controllers
         {
             this.HubContext = hubContext;
         }
+        [HttpPost("log")]
+        public void Log([FromBody]LogMsg me)
+        {
+           this.HubContext.Clients.All.PushLog(me);
+        }
         [HttpGet("start")]
         public void Start()
         {
@@ -30,5 +36,21 @@ namespace jbp.services.signalR.Controllers
         {
             this.HubContext.Clients.All.Stop();
         }
+        [HttpGet("status")]
+        public void Status()
+        {
+            this.HubContext.Clients.All.Status();
+        }
+        [HttpGet("checkIsRunning")]
+        public void CheckIsRunning()
+        {
+            this.HubContext.Clients.All.CheckIsRunning();
+        }
+        [HttpGet("isRunningResponse/{isRunning}")]
+        public void IsRunningResponse(bool isRunning)
+        {
+            this.HubContext.Clients.All.IsRunningResponse(isRunning);
+        }
+        
     }
 }
