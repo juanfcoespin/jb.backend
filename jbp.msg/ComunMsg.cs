@@ -59,33 +59,5 @@ namespace jbp.msg
         /// </summary>
         public int Current { get; set; }
     }
-    public class ParametroSalidaPtkMsg {
-        public string numFactura { get; set; }
-        private int _codigo;
-        public int codigo {
-            get { return _codigo; }
-            set {
-                _codigo = value;
-                switch (value) {
-                    case 1:
-                        this.mensaje = "Registro Exitoso";
-                        break;
-                    case -100:
-                        this.mensaje = "No existe participante con el número de documento enviado";
-                        break;
-                    case -150:
-                        this.mensaje = "No se puede registrar factura con una fecha de un cierre de mes anterior.";
-                        break;
-                    case -200:
-                        this.mensaje = "Error en los parámetros de entrada";
-                        break;
-                    case -500:
-                        this.mensaje = "Ocurrió un error en el proceso";
-                        break;
-
-                }
-            }
-        }
-        public string mensaje { get; set; }
-    }
+    
 }

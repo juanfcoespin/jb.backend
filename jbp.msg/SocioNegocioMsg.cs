@@ -12,12 +12,16 @@ namespace jbp.msg
         /// 1 proceso Exitoso
         /// -500 error interno en el procesamiento
         /// </summary>
-        public int CodResp { get; set; }
+        public int codigo { get; set; }
         /// <summary>
         /// True: si está habilitado para canjear puntos
         /// False: Si no está habilitado para canjear puntos
         /// </summary>
         public bool Resp { get; set; }
+    }
+    public class RespWsMsg {
+        public int codigo { get; set; }
+        public string mensaje { get; set; }
     }
     public class SavedMs:MensajeSalidaMsg {
 
@@ -36,24 +40,44 @@ namespace jbp.msg
     public class ParticipantesPuntosMsg
     {
         public bool Activo { get; set; }
-        public string Apellidos { get; set; }
-        public string Celular { get; set; }
-        public string Clave { get; set; }
-        public int CupoAnual { get; set; }
-        public bool Elite { get; set; }
-        public string Email { get; set; }
-        public DateTime FechaNacimiento { get; set; }
-        public int IdCatalogo { get; set; }
-        
-        public int IdGenero { get; set; }
-        public int IdTipoDocumento { get; set; }
-        public string Nombres { get; set; }
-        public string NroDocumento { get; set; }
+        public string apellidos { get; set; }
+        public string celular { get; set; }
+        public string clave { get; set; }
+        public object Comentario { get; set; }
+        private bool _Elite;
+        public bool Elite
+        {
+            get { return _Elite; }
+            set
+            {
+                this._Elite = value;
+                this.tipoCatalogo = (value ? 1 : 2);
+            }
+        }
+        public string email { get; set; }
+        public int estado { get; set; }
+        private DateTime _FechaNacimiento;
+        public DateTime FechaNacimiento
+        {
+            get { return this._FechaNacimiento; }
+            set
+            {
+                this._FechaNacimiento = value;
+                this.fechaNacimiento = value.ToString("dd/MM/yyyy");
+            }
+        }
+        public string fechaNacimiento { get; set; }
+        public int idCatalogo { get; set; }
+        public int metaAnual { get; set; }
+        public string nombres { get; set; }
+        public string nroDocumento { get; set; }
         public string NroDocumentoAnterior { get; set; } //cuado se quiera actualizar el ruc
         public string RucPrincipal { get; set; }
-        public string Telefono { get; set; }
-        public string Vendedor { get; set; }
-        public object Comentario { get; set; }
+        public string telefono { get; set; }
+        public int tipoCatalogo { get; set; }
+        public int tipoDocumento { get; set; }
+        public int tipoGenero { get; set; }
+        public string vendedor { get; set; }
     }
     public class SocioNegocioItemMsg
     {

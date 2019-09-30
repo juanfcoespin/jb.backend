@@ -51,6 +51,7 @@
     </Compile>
     <Compile Include="DocumentoFuenteUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="IdentificacionUtils.cs" />
     <Compile Include="SucursalUtils.cs" />
   </ItemGroup>
   <ItemGroup>

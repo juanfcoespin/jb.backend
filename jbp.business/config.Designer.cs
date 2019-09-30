@@ -26,71 +26,71 @@ namespace jbp.business {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://jbpservices/api/factura/registrarFacturasJB")]
-        public string urlWSPromotick {
+        [global::System.Configuration.DefaultSettingValueAttribute("http://apijames.promotick.com.pe/api")]
+        public string ptkWsUrl {
             get {
-                return ((string)(this["urlWSPromotick"]));
+                return ((string)(this["ptkWsUrl"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("FtpFiles\\promotick\\excel-transaccion.xlsx")]
-        public string ftpPromotickFileName {
+        public string ptkFtpFileName {
             get {
-                return ((string)(this["ftpPromotickFileName"]));
+                return ((string)(this["ptkFtpFileName"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("ftp://ftp.jbp.com.ec/promotick")]
-        public string ftpPromotickUrl {
+        public string ptkFtpUrl {
             get {
-                return ((string)(this["ftpPromotickUrl"]));
+                return ((string)(this["ptkFtpUrl"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("jespin")]
-        public string ftpPromotickUser {
+        public string ptkFtpUser {
             get {
-                return ((string)(this["ftpPromotickUser"]));
+                return ((string)(this["ptkFtpUser"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("2816Jfen*")]
-        public string ftpPromotickPwd {
+        public string ptkFtpPwd {
             get {
-                return ((string)(this["ftpPromotickPwd"]));
+                return ((string)(this["ptkFtpPwd"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ftpPromotickPutDateTimeOnFileName {
+        public bool ptkFtpPutDateTimeOnFileName {
             get {
-                return ((bool)(this["ftpPromotickPutDateTimeOnFileName"]));
+                return ((bool)(this["ptkFtpPutDateTimeOnFileName"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:5000/api/PromotickServiceNotification")]
-        public string urlNotificationClient {
+        [global::System.Configuration.DefaultSettingValueAttribute("http://services2.jbp.com.ec/api/PromotickBusinessServicesOrders/log")]
+        public string ptkUrlNotificarLogs {
             get {
-                return ((string)(this["urlNotificationClient"]));
+                return ((string)(this["ptkUrlNotificarLogs"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        [global::System.Configuration.DefaultSettingValueAttribute("300")]
         public long ptkPeriodoEnSegundosDeConsultaServicio {
             get {
                 return ((long)(this["ptkPeriodoEnSegundosDeConsultaServicio"]));
@@ -121,6 +121,71 @@ namespace jbp.business {
         public bool ptkIniciarAHoraEspesifica {
             get {
                 return ((bool)(this["ptkIniciarAHoraEspesifica"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("api-james-promotick")]
+        public string ptkWsUser {
+            get {
+                return ((string)(this["ptkWsUser"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("hkIUtJmnq5sda")]
+        public string ptkWsPwd {
+            get {
+                return ((string)(this["ptkWsPwd"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ptkEnviarPorFTP {
+            get {
+                return ((bool)(this["ptkEnviarPorFTP"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ptkEnviarPorWS {
+            get {
+                return ((bool)(this["ptkEnviarPorWS"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2019")]
+        public int ptkAceleradorAño {
+            get {
+                return ((int)(this["ptkAceleradorAño"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\'01\',\'02\',\'03\',\'04\',\'05\',\'06\'")]
+        public string ptkAceleradorMeses {
+            get {
+                return ((string)(this["ptkAceleradorMeses"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\'VF BEQ0060\',\'VF BRV0050\',\'VF CAL0500\',\'VF CCB0001\',\'VF DMX0100\',\'VF DMX0500\',\'VF" +
+            " EPR1000\',\'VF EPR0250\',\'VB GUM0050\',\'VB GUM0100\',\'VB GUM0500\',\'VF LEP0020\',\'VF L" +
+            "EP0250\',\'VF PRB0050\',\'VF PRB0250\',\'VF PGF0050\',\'VF RCA0002\',\'VF PGK0050\'")]
+        public string ptkAceleradorCodProductos {
+            get {
+                return ((string)(this["ptkAceleradorCodProductos"]));
             }
         }
     }

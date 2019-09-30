@@ -226,11 +226,11 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\SpreadsheetLight.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\TechTools.DelegatesAndEnums.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\TechTools.Msg.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\TechTools.Utils.dll
-D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\jbp.core.contract.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\jbp.msg.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\jbp.msg.dll.config
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\jbp.utils.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\jbp.utils.dll.config
+D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\jbp.core.contract.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\Newtonsoft.Json.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\SpreadsheetLight.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\obj\Debug\jbp.core.oracle9i.csprojAssemblyReference.cache

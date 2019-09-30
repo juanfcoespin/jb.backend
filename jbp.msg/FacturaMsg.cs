@@ -33,11 +33,10 @@ namespace jbp.msg
         public string ConocidoComo { get; set; }
         public string ContactoCliente { get; set; }
         public string mailCliente { get; set; }
-
         public FacturaServicioMsg() { }
     }
-    public class FacturaMsg  {
-        public FacturaServicioMsg facturaServicio { get; set; }
+    public class FacturaMsg: FacturaServicioMsg
+    {
         public string NumGuia { get; set; }
         public FacturaMsg() { }
     }
@@ -62,14 +61,6 @@ namespace jbp.msg
         public string TipoTercero { get; set; }
         public RegistroFacturaTercerosMsg() { }
     }
-    public class FacturaPromotickMsg:MensajeSalidaMsg {
-        public int id { get; set; }
-        public string fechaFactura { get; set; }
-        public string numFactura { get; set; }
-        public string descripcion { get; set; }
-        public string numDocumento { get; set; }
-        public int montoFactura { get; set; }
-        public int puntos { get; set; }
-    }
+    
     
 }

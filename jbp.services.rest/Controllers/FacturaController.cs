@@ -28,12 +28,12 @@ namespace jbp.services.rest.Controllers
         }
         [HttpPost]
         [Route("api/factura/registrarFacturasJB")]
-        public List<ParametroSalidaPtkMsg> RegistrarFacturasJB([FromBody]List<FacturaPromotickMsg> me)
+        public List<RespPtkWSFacturasMsg> RegistrarFacturasJB([FromBody]List<FacturaPromotickMsg> me)
         {
             //se hace un mock
-            var listMs = new List<ParametroSalidaPtkMsg>();
+            var listMs = new List<RespPtkWSFacturasMsg>();
             me.ForEach(factura => {
-                var ms = new ParametroSalidaPtkMsg();
+                var ms = new RespPtkWSFacturasMsg();
                 ms.numFactura = factura.numFactura;
                 ms.codigo = GetRamdomCodigo();
                 listMs.Add(ms);

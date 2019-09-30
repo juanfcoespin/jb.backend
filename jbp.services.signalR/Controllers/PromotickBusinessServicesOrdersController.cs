@@ -51,6 +51,15 @@ namespace jbp.services.signalR.Controllers
         {
             this.HubContext.Clients.All.IsRunningResponse(isRunning);
         }
-        
+        [HttpGet("requestTodayLogs")]
+        public void RequestTodayLogs()
+        {
+            this.HubContext.Clients.All.RequestTodayLogs();
+        }
+        [HttpPost("responseTodayLogs")]
+        public void ResponseTodayLogs([FromBody]List<LogMsg> me)
+        {
+            this.HubContext.Clients.All.ResponseTodayLogs(me);
+        }
     }
 }

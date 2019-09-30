@@ -15,9 +15,16 @@ namespace jbp.services.signalR.Hubs.Contracts
         Task Start();
         Task Stop();
         Task Status();
-        Task CheckIsRunning();
-        Task IsRunningResponse(bool isRunning);
         Task PushLog(LogMsg me);
+        //para la petición
+        Task CheckIsRunning();
+        //para la respuesta
+        Task IsRunningResponse(bool isRunning);
+
+        Task RequestTodayLogs();
+        Task ResponseTodayLogs(List<LogMsg> logs);
+        
+
 
     }
 }

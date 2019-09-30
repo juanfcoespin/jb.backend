@@ -69,10 +69,11 @@
     <Compile Include="DetalleFacturaCore.cs" />
     <Compile Include="DetalleFacturaTrandinaCore .cs" />
     <Compile Include="FacturaCore.cs" />
-    <Compile Include="FacturaPromotickCore.cs" />
+    <Compile Include="promotick\FacturaPromotickCore.cs" />
     <Compile Include="FacturaTrandinaCore.cs" />
     <Compile Include="ParticipantesPuntosCore.cs" />
     <Compile Include="PeriodoCore.cs" />
+    <Compile Include="promotick\RegistroEnvioPktCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FacturaStupendoCore.cs" />
     <Compile Include="SocioNegocioCore.cs" />

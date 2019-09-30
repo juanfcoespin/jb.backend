@@ -40,6 +40,7 @@
     <Compile Include="FacturaSriMsg.cs" />
     <Compile Include="PeriodoMsg.cs" />
     <Compile Include="PlanCuentasProcesadoMsg.cs" />
+    <Compile Include="PromotickMsg.cs" />
     <Compile Include="UserMsg.cs" />
     <Compile Include="SocioNegocioMsg.cs" />
     <Compile Include="ComunMsg.cs" />

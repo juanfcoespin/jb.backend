@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using jbp.core;
 using jbp.msg;
 using TechTools.Utils;
+using TechTools.DelegatesAndEnums;
 using System.Data;
 using jbp.utils;
 
@@ -128,55 +129,48 @@ namespace jbp.business
                 throw e;
             }
         }
-        public static List<FacturaServicioMsg> GetFacturasServicioPorAprobar()
+        
+        private static List<FacturaMsg> TraducirAFacturaMsg(DataTable dt)
         {
             try
             {
-                var ms = new List<FacturaServicioMsg>();
-                var sql = FacturaCore.SqlFacturasPorAprobar();
-                var dt = new BaseCore().GetDataTableByQuery(sql);
-                return TraducirAFacturaServicios(dt);
-            }
-            catch (Exception e)
-            {
-                throw ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
-            }
-        }
-        private static List<FacturaServicioMsg> TraducirAFacturaServicios(DataTable dt)
-        {
-            try
-            {
-                var ms = new List<FacturaServicioMsg>();
+                var ms = new List<FacturaMsg>();
                 foreach (DataRow dr in dt.Rows)
                 {
-                    ms.Add(
-                        new FacturaServicioMsg
-                        {
-                            IdFactura = Convert.ToInt32(dr["IDFACT"]),
-                            IdOrden = Convert.ToInt32(dr["IDORDEN"]),
-                            CodOrden = dr["ORDEN"].ToString(),
-                            CodFactura = dr["FACTURA"].ToString(),
-                            Sitio = dr["SITIO"].ToString(),
-                            FechaFactura = FechaUtils.GetStringDate(Convert.ToDateTime(dr["FECHAFACT"]), "dd/mm/yyyy"),
-                            RazonSocial = dr["RAZONSOCIALCLI"].ToString(),
-                            Ruc = dr["RUC"].ToString(),
-                            MontoBruto = MoneyUtils.GetMoneyFormat(dr["ORDEN"].ToString()),
-                            Descuento = MoneyUtils.GetMoneyFormat(dr["DESCUENTO"].ToString()),
-                            Impuestos = MoneyUtils.GetMoneyFormat(dr["IMPUESTOS"].ToString()),
-                            Monto = MoneyUtils.GetMoneyFormat(dr["IMPORTETOTAL"].ToString()),
-                            Moneda = dr["MONEDA"].ToString(),
-                            TerminoPago = dr["TERMPAGO"].ToString(),
-                            ConocidoComo = dr["CONOCIDOCOMO"].ToString(),
-                            CiudadEmisionFactura = dr["CIUFACT"].ToString(),
-                            DireccionCliente = dr["DIRECCION"].ToString(),
-                            CiudadCliente = dr["CIUDAD"].ToString(),
-                            TelefonoCliente = dr["TELEFONO"].ToString(),
-                            ContactoCliente = dr["CONTACTO"].ToString(),
-                            FechaVencimiento = FechaUtils.GetStringDate(Convert.ToDateTime(dr["FECHAVENC"]),"dd/mm/yyyy"),
-                            Vendedor= dr["VENDEDOR"].ToString(),
-                            mailCliente = dr["MAIL"].ToString()
-                        }
-                    );
+                    var fechaFactura = new BaseCore().GetDateTime(dr["FECHAFACT"]).ToString("dd/MM/yyyy");
+                    var fechaVencimiento = new BaseCore().GetDateTime(dr["FECHAVENC"]).ToString("dd/MM/yyyy");
+                    var factura = new FacturaMsg
+                    {
+                        IdFactura = Convert.ToInt32(dr["IDFACT"]),
+                        IdOrden = Convert.ToInt32(dr["IDORDEN"]),
+                        CodOrden = dr["CODORDEN"].ToString(),
+                        CodFactura = dr["FACTURA"].ToString(),
+                        Sitio = dr["SITIO"].ToString(),
+                        FechaFactura = fechaFactura,
+                        RazonSocial = dr["RAZONSOCIALCLI"].ToString(),
+                        Ruc = dr["RUC"].ToString(),
+                        MontoBruto = MoneyUtils.GetMoneyFormat(dr["MONTOBRUTO"].ToString()),
+                        Descuento = MoneyUtils.GetMoneyFormat(dr["DESCUENTO"].ToString()),
+                        Impuestos = MoneyUtils.GetMoneyFormat(dr["IMPUESTOS"].ToString()),
+                        Monto = MoneyUtils.GetMoneyFormat(dr["IMPORTETOTAL"].ToString()),
+                        Moneda = dr["MONEDA"].ToString(),
+                        TerminoPago = dr["TERMPAGO"].ToString(),
+                        ConocidoComo = dr["CONOCIDOCOMO"].ToString(),
+                        CiudadEmisionFactura = dr["CIUFACT"].ToString(),
+                        DireccionCliente = dr["DIRECCION"].ToString(),
+                        CiudadCliente = dr["CIUDAD"].ToString(),
+                        TelefonoCliente = dr["TELEFONO"].ToString(),
+                        ContactoCliente = dr["CONTACTO"].ToString(),
+                        FechaVencimiento = fechaVencimiento,
+                        Vendedor = dr["VENDEDOR"].ToString(),
+                        mailCliente = dr["MAIL"].ToString()
+                    };
+                    try
+                    {//Este campo solo se setea para facturas no para facturas servicios.
+                        factura.NumGuia = dr["NUMGUIA"].ToString();
+                    }
+                    catch {}
+                    ms.Add(factura);
                 }
                 return ms;
             }
@@ -187,19 +181,20 @@ namespace jbp.business
             }
             
         }
-        public static List<FacturaMsg> GetFacturasPorAprobar()
+        public static List<FacturaMsg> GetFacturasPorAprobar(eTipoDocFuente tipoDocumento)
         {
-            var ms = new List<FacturaMsg>();
-            var facturasServicios = GetFacturasServicioPorAprobar();
-            facturasServicios.ForEach(fs=> {
-                ms.Add(
-                    new FacturaMsg {
-                        NumGuia=GetNumGuiaByIdFact(fs.IdFactura),
-                        facturaServicio =fs
-                    }
-                );
-            });
-            return ms;
+            try
+            {
+                var ms = new List<FacturaMsg>();
+                var sql = FacturaCore.SqlFacturasPorAprobar(tipoDocumento);
+                ms= TraducirAFacturaMsg(new BaseCore().GetDataTableByQuery(sql));
+                //ms.ForEach(fact => fact.NumGuia = GetNumGuiaByIdFact(fact.IdFactura));
+                return ms;
+            }
+            catch (Exception e)
+            {
+                throw ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
+            }
         }
         public static string GetNumGuiaByIdFact(int idFactura)
         {

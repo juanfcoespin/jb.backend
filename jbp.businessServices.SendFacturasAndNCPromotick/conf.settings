@@ -3,7 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="urlHub" Type="(Web Service URL)" Scope="Application">
-      <Value Profile="(Default)">http://localhost:5000/checkOrdersToPromotickBusinessService</Value>
+      <Value Profile="(Default)">http://services2.jbp.com.ec/checkOrdersToPromotickBusinessService</Value>
+    </Setting>
+    <Setting Name="urlService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://services2.jbp.com.ec/api/PromotickBusinessServicesOrders</Value>
     </Setting>
   </Settings>
 </SettingsFile>

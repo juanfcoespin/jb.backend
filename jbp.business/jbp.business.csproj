@@ -71,8 +71,8 @@
     <Reference Include="TechTools.Msg, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TechTools.Msg.1.0.0.2\lib\netstandard2.0\TechTools.Msg.dll</HintPath>
     </Reference>
-    <Reference Include="TechTools.Utils, Version=1.0.1.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TechTools.Utils.1.0.1.5\lib\net461\TechTools.Utils.dll</HintPath>
+    <Reference Include="TechTools.Utils, Version=1.0.1.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TechTools.Utils.1.0.1.9\lib\net461\TechTools.Utils.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -87,12 +87,13 @@
     <Compile Include="contracts\INotificationLog.cs" />
     <Compile Include="CuentaBusiness.cs" />
     <Compile Include="DetalleFacturaBusiness.cs" />
-    <Compile Include="FacturaPromotickBusiness.cs" />
-    <Compile Include="LogBusiness.cs" />
+    <Compile Include="promotick\ConsumoFtpPtkBusiness.cs" />
+    <Compile Include="promotick\FacturaPromotickBusiness.cs" />
+    <Compile Include="LoteBusiness.cs" />
     <Compile Include="observables\BaseObservable.cs" />
     <Compile Include="observers\BaseObserver.cs" />
-    <Compile Include="LoteBusiness.cs" />
     <Compile Include="PeriodoBusiness.cs" />
+    <Compile Include="promotick\ConsumoWsPtkBusiness.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FacturaBusiness.cs" />
     <Compile Include="BusinessServices\CheckFacturasToSendPtkBusinessService.cs" />

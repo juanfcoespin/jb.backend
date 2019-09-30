@@ -25,35 +25,29 @@ namespace jbp.businessServices.admin {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("jbp.businessServices.SendFacturasNC_Promotick")]
+        public string envioFacturasNCServiceName {
+            get {
+                return ((string)(this["envioFacturasNCServiceName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:5000/checkOrdersToPromotickBusinessService")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://services2.jbp.com.ec/checkOrdersToPromotickBusinessService")]
         public string promotickServiceHubUrl {
             get {
                 return ((string)(this["promotickServiceHubUrl"]));
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("jbp.businessServices.SendFacturasNC_Promotick")]
-        public string envioFacturasNCServiceName {
-            get {
-                return ((string)(this["envioFacturasNCServiceName"]));
-            }
-            set {
-                this["envioFacturasNCServiceName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:5000/api/PromotickBusinessServicesOrders")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://services2.jbp.com.ec/api/PromotickBusinessServicesOrders")]
         public string promotickBusinessServiceOrdersUrl {
             get {
                 return ((string)(this["promotickBusinessServiceOrdersUrl"]));
-            }
-            set {
-                this["promotickBusinessServiceOrdersUrl"] = value;
             }
         }
     }

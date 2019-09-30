@@ -27,6 +27,7 @@ namespace jbp.services.rest
 
             //Estas dos lineas de código permiten los post, put y delete
             EnableCorsAttribute cors = new EnableCorsAttribute("*", "*", "*");
+            //cors.o = new string[] { ""};
             config.EnableCors(cors);
         }
     }

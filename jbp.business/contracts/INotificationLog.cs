@@ -7,7 +7,7 @@ using TechTools.DelegatesAndEnums;
 
 namespace jbp.business.contracts
 {
-    interface INotificationLog
+    public interface INotificationLog
     {
         event dLogNotification LogNotificationEvent;
     }

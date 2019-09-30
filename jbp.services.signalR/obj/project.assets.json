@@ -13025,7 +13025,7 @@
         "netcoreapp2.2"
       ],
       "sources": {
-        "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\packageSource": {}
+        "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "netcoreapp2.2": {

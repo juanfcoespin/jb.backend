@@ -25,4 +25,3 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.core.definition\bin\Debug\jbp.core.contract.
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core.definition\obj\Debug\jbp.core.contract.csproj.CoreCompileInputs.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core.definition\obj\Debug\jbp.core.contract.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core.definition\obj\Debug\jbp.core.contract.pdb
-D:\DesarrolloSw\JBP\jbp.backend\jbp.core.definition\obj\Debug\jbp.core.contract.csprojAssemblyReference.cache

@@ -19,7 +19,7 @@ namespace PromotickClientService
         private static CheckFacturasToSendPtkBusinessService servicePtk;
         static void  Main(string[] args)
         {
-            IniciarObjetoServicio();
+            servicePtk = new CheckFacturasToSendPtkBusinessService();
             var opt = "0";
             while (opt != "6")//mientras no se digite opción salir
             { 
@@ -28,7 +28,7 @@ namespace PromotickClientService
                 switch (opt)
                 {
                     case "1":
-                        IniciarServicio();
+                        servicePtk.Start();
                         break;
                     case "2":
                         servicePtk.Stop();
@@ -43,32 +43,14 @@ namespace PromotickClientService
                         PrintStadoServicio();
                         break;
                     case "6":
-                        servicePtk.Stop(); //para el servicio al salir
+                        servicePtk.Stop(); //para el servicio antes de salir
                         break;
                 }
             }
         }
-        private static void IniciarServicio()
-        {
-            if (config.Default.IniciarAHoraEspesifica)
-            {
-                var startAt = new BaseServiceTimer.InitAt
-                {
-                    Hour = config.Default.IniciarA_Hora,
-                    Minute = config.Default.IniciarA_Minuto
-                };
-                servicePtk.StartAt(startAt);
-            }
-            else
-                servicePtk.Start(config.Default.PeriodoEnSegundosDeConsultaServicio);
-        }
-        private static void IniciarObjetoServicio()
-        {
-            servicePtk = new CheckFacturasToSendPtkBusinessService();
-        }
         private static void PrintStadoServicio()
         {
-            var msg = "Servicio: " + (servicePtk.IsRunning() ? "Corriendo" : "Parado");
+            var msg = servicePtk.GetStatus();
             Console.WriteLine(msg);
         }
         private static void OpenLog()

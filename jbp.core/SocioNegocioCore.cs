@@ -58,11 +58,31 @@ namespace jbp.core
         public SavedMs InsertParticipante(ParticipantesPuntosMsg me)
         {
             var sql = string.Format(@"
-            
-            ");
+            insert into gms.TBL_CLIENTES_PUNTOSJB(
+                nombres, apellidos, email, tipo_documento, 
+                ruc, ruc_prin, clave, estado, 
+                fecha_nacimiento, celular, telefono,
+                tipo_genero, id_catalogo, tipo_catalogo,
+                vendedor, cupo_anual, comentario
+            )values(
+                '{0}','{1}','{2}',{3},
+                '{4}','{5}','{6}','activo',
+                to_date('{7}','yyyy/mm/dd'),'{8}','{9}',
+                {10},{11},{12},
+                '{13}',{14},'{15}'
+            )",
+                me.nombres,me.apellidos, me.email, me.tipoDocumento,
+                me.nroDocumento, me.RucPrincipal, me.clave,
+                me.FechaNacimiento.ToString("yyyy/MM/dd"), me.celular, me.telefono,
+                me.tipoGenero, me.idCatalogo, me.tipoCatalogo,
+                me.vendedor,me.metaAnual, me.Comentario
+                );
             Execute(sql);
             return new SavedMs { Saved = true };
         }
+
+        
+
         public SavedMs UpdateParticipante(ParticipantesPuntosMsg me)
         {
             var sql = string.Format(@"
@@ -87,13 +107,13 @@ namespace jbp.core
                 where
                     ruc='{17}'
             ",
-                me.Nombres,me.Apellidos,me.Email,me.IdTipoDocumento,
-                me.NroDocumento, me.RucPrincipal,me.Clave,
+                me.nombres,me.apellidos,me.email,me.tipoDocumento,
+                me.nroDocumento, me.RucPrincipal,me.clave,
                 me.Activo?"activo":"inactivo",
-                string.Format("{0}/{1}/{2}",me.FechaNacimiento.Year, me.FechaNacimiento.Month, me.FechaNacimiento.Day),
-                me.Celular,me.Telefono,me.IdGenero, me.IdCatalogo,
-                me.Elite?1:2,
-                me.Vendedor, me.CupoAnual, me.Comentario,me.NroDocumentoAnterior
+                me.FechaNacimiento.ToString("yyyy/MM/dd"),
+                me.celular,me.telefono,me.tipoGenero, me.idCatalogo,
+                me.tipoCatalogo,
+                me.vendedor, me.metaAnual, me.Comentario,me.NroDocumentoAnterior
             );
             Execute(sql);
             return new SavedMs { Saved = true };
@@ -195,23 +215,24 @@ namespace jbp.core
                 {
                     ms =new ParticipantesPuntosMsg(){
                         Activo = GetBoolean(dt.Rows[0]["activo"]),
-                        Apellidos = dt.Rows[0]["apellidos"].ToString(),
-                        Celular = dt.Rows[0]["celular"].ToString(),
-                        Clave = dt.Rows[0]["clave"].ToString(),
-                        CupoAnual = GetInt(dt.Rows[0]["cupo_anual"]),
+                        apellidos = dt.Rows[0]["apellidos"].ToString(),
+                        celular = dt.Rows[0]["celular"].ToString(),
+                        clave = dt.Rows[0]["clave"].ToString(),
+                        metaAnual = GetInt(dt.Rows[0]["cupo_anual"]),
                         Elite = GetBoolean(dt.Rows[0]["elite"]),
-                        Email = dt.Rows[0]["email"].ToString(),
+                        email = dt.Rows[0]["email"].ToString(),
                         FechaNacimiento = GetDateTime(dt.Rows[0]["fecha_nacimiento"]),
-                        IdCatalogo= GetInt(dt.Rows[0]["id_catalogo"]),
-                        IdGenero = GetInt(dt.Rows[0]["id_genero"]),
-                        IdTipoDocumento= GetInt(dt.Rows[0]["id_tipoDocumento"]),
-                        Nombres = dt.Rows[0]["nombres"].ToString(),
-                        NroDocumento = dt.Rows[0]["nroDocumento"].ToString(),
+                        idCatalogo= GetInt(dt.Rows[0]["id_catalogo"]),
+                        tipoGenero = GetInt(dt.Rows[0]["id_genero"]),
+                        tipoDocumento= GetInt(dt.Rows[0]["id_tipoDocumento"]),
+                        nombres = dt.Rows[0]["nombres"].ToString(),
+                        nroDocumento = dt.Rows[0]["nroDocumento"].ToString(),
                         RucPrincipal = dt.Rows[0]["ruc_prin"].ToString(),
-                        Telefono = dt.Rows[0]["telefono"].ToString(),
-                        Vendedor = dt.Rows[0]["vendedor"].ToString(),
+                        telefono = dt.Rows[0]["telefono"].ToString(),
+                        vendedor = dt.Rows[0]["vendedor"].ToString(),
                         Comentario = dt.Rows[0]["comentario"].ToString(),
                     };
+                    ms.NroDocumentoAnterior = ms.nroDocumento;
                 }
                 return ms;
             }

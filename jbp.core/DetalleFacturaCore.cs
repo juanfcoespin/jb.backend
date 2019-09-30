@@ -9,48 +9,37 @@ namespace jbp.core
     public class DetalleFacturaCore
     {
         public static string SqlDetalleFacturaByIdFactura(string idFactura) {
-            //EB_ver2:CAMBIO DE CONSULTA PRA EL DETALLE DE FACTURAS
-            //DETALLE DE LOS PRODUCTOS DE LA FACTURA SIN LOTES
+            
             return string.Format(@"
-            SELECT
-                    SQ_COD AS CODIGO,
-                    SQ_DESCRIPT AS PRODUCTO,
-                    SUM (SQ_CANTIDAD) AS CANTIDAD,
-                    SQ_PRECIOUNIT AS PRECIOUNIT,
-                    SUM(SQ_DESCU) AS DSCTO,
-                    SUM(SQ_NETOSINIMP) As NETOSINIMP,
-                    SQ_ORDLIN As ORDLIN,
-                    SQ_OBJRSC As OBJRSC,
-                    SQ_ORDEN As ORDEN,
-                    SUM (SQ_IMPUESTO) As IMPUESTO,
-                    SQ_UM As UM
-                FROM
-                    (
-                        Select
-                            L.RESC As SQ_COD,
-                            R.DESCRIPTION As SQ_DESCRIPT,
-                            L.IVDUSQTY As SQ_CANTIDAD,
-                            L.UNITPRICECURAMT As SQ_PRECIOUNIT,
-                            L.DISCBAAMT As SQ_DESCU,
-                            L.NETTAXBAMT As SQ_NETOSINIMP,
-                            L.ORDDEL,
-                            L.ORDLIN As SQ_ORDLIN,
-                            L.RESCOBJECTID As SQ_OBJRSC,
-                            O.ORDERUK As SQ_ORDEN,
-                            L.TAXBASEAMT As SQ_IMPUESTO, 
-                            L.UNITPRICEUM As SQ_UM
-                        FROM
-                            coInvcOrder O, COINVCLINE L, FDBASRESC R
-                        WHERE
-                            O.PARENTOBJECTID = {0}
-                            And L.PARENTOBJECTID = O.OBJECTID
-                            And L.RESCOBJECTID = R.OBJECTID
-                            And L.RESCSITE = R.RESOURCEUKSITE
-                    )
-                    GROUP BY
-                        SQ_COD, SQ_DESCRIPT, SQ_PRECIOUNIT, SQ_ORDLIN, SQ_OBJRSC, SQ_ORDEN, SQ_UM
-                    ORDER BY SQ_COD
-            ",idFactura);        
+            	select
+	                p.codRecurso CODIGO,
+	                p.descripcion as Producto,
+	                ord.codOrden ORDEN,
+	                p.unidad UM,
+	                p.ID OBJRSC,		
+	                df.precioUnitario PRECIOUNIT,
+	                df.ordenlinea ORDLIN,
+	                sum(df.cantidad) CANTIDAD,
+	                sum(df.DESCUENTO) DSCTO,
+	                sum(df.montoBruto) - sum(df.DESCUENTO) NETOSINIMP,
+	                sum(df.impuestos) IMPUESTO
+                from
+                 JBPVW_FACTURARESUMEN fr inner join
+                 jbpvw_ordenfactura ord on ord.idFactura=fr.id inner join
+                 JBPVW_detalleFactura df on df.idOrden=ord.id inner join
+                 JBPVW_PRODUCTO p on df.idProducto=p.id inner join
+                 JBPVW_SOCIONEGOCIO sn on fr.RUCSOCIONEGOCIO=sn.ruc
+                where
+	                fr.id={0}
+                group by
+	                p.codRecurso,
+	                p.descripcion,
+	                ord.codOrden,
+	                p.unidad,
+	                p.ID,
+	                df.precioUnitario,
+	                df.ordenlinea
+	        ", idFactura);        
         }
     }
 }

@@ -26,10 +26,20 @@ namespace jbp.businessServices.SendFacturasAndNCPromotick {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:5000/checkOrdersToPromotickBusinessService")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://services2.jbp.com.ec/checkOrdersToPromotickBusinessService")]
         public string urlHub {
             get {
                 return ((string)(this["urlHub"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://services2.jbp.com.ec/api/PromotickBusinessServicesOrders")]
+        public string urlService {
+            get {
+                return ((string)(this["urlService"]));
             }
         }
     }

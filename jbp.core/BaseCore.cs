@@ -14,19 +14,17 @@ namespace jbp.core
     {
         public OracleConnection DbConnection;
 
-        public BaseCore()
-        {
-            DbConnection = new OracleConnection();
-            DbConnection.ConnectionString = Variables.Default.bddStringConnection;
-        }
         public void Connect()
         {
-            var tipoCpu = CPU.GetCpuType();
+            //var tipoCpu = CPU.GetCpuType();
+            DbConnection = new OracleConnection();
+            DbConnection.ConnectionString = Variables.Default.bddStringConnection;
             DbConnection.Open();
         }
         public void Disconect()
         {
             DbConnection.Close();
+            DbConnection.Dispose();
         }
         /// <summary>
         /// Para sentencias sql tipo select
@@ -42,6 +40,7 @@ namespace jbp.core
                 var dt = new DataTable();
                 var da = new OracleDataAdapter(sql, DbConnection);
                 da.Fill(dt);
+                da.Dispose();
                 Disconect();
                 return dt;
             }
@@ -74,7 +73,7 @@ namespace jbp.core
                 var dt = new DataTable();
                 var da = new OracleDataAdapter(sql, DbConnection);
                 da.Fill(dt);
-
+                da.Dispose();
                 Disconect();
                 return (dt.Rows.Count == 0 ? null : dt.Rows[0][0].ToString());
             }
@@ -96,6 +95,7 @@ namespace jbp.core
                 Connect();
                 var command = new OracleCommand(sql, this.DbConnection);
                 command.ExecuteReader();
+                command.Dispose();
                 Disconect();
             }
             catch (Exception e)
@@ -126,6 +126,15 @@ namespace jbp.core
                 return 0;
             }
             return Convert.ToInt32(me);
+        }
+        public decimal GetDecimal(object me)
+        {
+            if (DBNull.Value.Equals(me))
+            {
+                return 0;
+            }
+            var ms= Convert.ToDecimal(me);
+            return decimal.Round(ms, 2);
         }
         /// <summary>
         /// Ej: token: "juan francisco espin"

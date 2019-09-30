@@ -16,10 +16,71 @@ namespace test2
         private static HubConnection hubConnection;
         static void Main(string[] args)
         {
-            testSignalRClient();
+            PrintTodayLogs();
             Console.ReadLine();
         }
 
+        private static void PrintTodayLogs()
+        {
+            var tmp = DateTime.Now.ToString("yyyy-MM-dd");
+            var logs=LogUtils.GetLogsByDate(DateTime.Now);
+            Console.WriteLine(logs.Count);
+        }
+
+        private static void PruebaLlamadaWsPromotick()
+        {
+            var auth = new RestCall.AuthenticationMe {
+                User= "api-james-promotick",
+                Pwd= "hkIUtJmnq5sda",
+                AuthType=RestCall.eAuthType.Basic
+            };
+            var url = "http://apijames.promotick.com.pe/api/gsttransaccion";
+            var facturas = getFacturasPtk();
+            var rc = new RestCall();
+            rc.DataArrived += (resp, err) =>
+            {
+                if (!string.IsNullOrEmpty(err))
+                    Console.WriteLine(err);
+                else {
+                    Console.WriteLine(SerializadorJson.Serializar(resp));
+                }
+            };
+            rc.SendPostOrPutAsync(url, typeof(RespuestasPtkWsFacturasMsg), facturas,
+                typeof(FacturasPtkMsg), RestCall.eRestMethod.POST, auth);
+        }
+        private static FacturasPtkMsg getFacturasPtk()
+        {
+            var ms = new List<FacturaPromotickMsg>();
+            ms.Add(new FacturaPromotickMsg {
+                id=21,
+                fechaFactura="10/10/2018",
+                numFactura="FC0003",
+                descripcion="desc01",
+                numDocumento= "1103007496001",
+                montoFactura=15,
+                puntos=6,
+                Error="sin error"
+            });
+            ms.Add(new FacturaPromotickMsg
+            {
+                id = 21,
+                fechaFactura = "10/10/2018",
+                numFactura = "FC0004",
+                descripcion = "desc02",
+                numDocumento = "1103007496001",
+                montoFactura = 152,
+                puntos = 62,
+                Error = "sin error 2"
+            });
+            return new FacturasPtkMsg { facturas=ms};
+        }
+        private static string GetBasicAuthTocken(string usr, string pwd)
+        {
+            var authHeader = Convert.ToBase64String(
+                    ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", usr, pwd)));
+            return authHeader;
+            //request.Headers.Add("Authorization", auth.AuthType.ToString() + " " + authHeader);
+        }
         private static async Task testSignalRClient()
         {
             var serviceName = "CscService";
@@ -54,7 +115,6 @@ namespace test2
         private static void showLog(LogMsg log) {
             Console.WriteLine(log.msg);
         }
-
         private static void TestSendMessageSignalR()
         {
             var opt = 0;
@@ -71,13 +131,11 @@ namespace test2
             }
             
         }
-
         private static void SendMsg(string msg)
         {
             var url = "http://localhost:5000/api/message";
             //var rc = new RestCall();
         }
-
         private static void PrintMenu()
         {
             var msg = @"
@@ -87,7 +145,6 @@ namespace test2
 Opt: ";
             Console.WriteLine(msg);
         }
-
         private static void UploadFileByFtpTest()
         {
             //var cred = new FtpUtils.Credencials {
@@ -97,7 +154,6 @@ Opt: ";
             //};
             //FtpUtils.UploadFile(cred, @"c:\temp\tmp.PDF");
         }
-
         //private static void ExecelUtilsTest()
         //{
         //    var facturas = GetListFacturas();

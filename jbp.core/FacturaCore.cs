@@ -141,18 +141,18 @@ namespace jbp.core
                 ", idFactura, codRecurso);
             
         }
-        public static string SqlFacturasPorAprobar() {
-            return @"
+        public static string SqlFacturasPorAprobar(eTipoDocFuente tipoDocumento) {
+            var sql = @"
                 select
                  fr.id idFact,
                  o.id idOrden,
-                 o.codOrden orden,
+                 o.codOrden,
                  fr.codFactura factura,
                  fr.SITIO,
                  fr.FECHAFACTURA fechaFact,
                  sn.nombre razonSocialCli,
                  fr.RUCSOCIONEGOCIO ruc,
-                 fr.MONTOBRUTO totaSinImp,
+                 fr.MONTOBRUTO,
                  fr.DESCUENTO,
                  fr.IMPUESTO impuestos,
                  fr.MONTO importeTotal,
@@ -166,21 +166,31 @@ namespace jbp.core
                  fr.CLIENTE contacto,
                  fr.fechaVencimiento fechaVenc,
                  v.vendedor,
-                 c.email mail
-                from	                JBPVW_FACTURARESUMEN fr left join
-	                jbpvw_ordenFactura o on o.idFactura=fr.id left join
-	                JBPVW_SOCIONEGOCIO sn on fr.RUCSOCIONEGOCIO=sn.ruc left join
-	                jbpvw_vendedor v on v.idSocioNegocio=sn.id left join
-	                jbpvw_facturarA fa on fa.idSocioNegocio=sn.id left join
-	                JBPVW_CONTACTO c on fa.idContacto=c.id
-                where
-	                v.vendedor not in ('CISNEROS TORRES LOLA') -- no se toman en cuenta exportaciones
-	                and SUBSTR(fr.CODFACTURA,1,7) In ('001-010','001-020','002-010') --solo facturas
-	                and to_char(fr.FECHAFACTURA,'yyyy-mm')='2019-02'
-                    --and to_char(fr.FECHAFACTURA,'yyyy-mm')=to_char(SYSDATE,'yyyy-mm')
-	                and fr.autorizacionSri is null
+                 c.email mail";
+                if (tipoDocumento == eTipoDocFuente.factura)// solo aqui se extraen las guias
+                    sql += ", g.DOCGUIA numGuia";
+                sql +=@"
+                from	             JBPVW_FACTURARESUMEN fr left join
+	             jbpvw_ordenFactura o on o.idFactura=fr.id left join
+	             JBPVW_SOCIONEGOCIO sn on fr.RUCSOCIONEGOCIO=sn.ruc left join
+	             jbpvw_vendedor v on v.idSocioNegocio=sn.id left join
+	             jbpvw_facturarA fa on fa.idSocioNegocio=sn.id left join
+	             JBPVW_CONTACTO c on fa.idContacto=c.id";
+                if (tipoDocumento == eTipoDocFuente.factura)// solo aqui se extraen las guias
+                    sql += " inner join GMS.TBL_GUIAS_REMISION g on g.FOBJECID=fr.id ";
+                sql += @"
+                where 
+                 --fr.id=641571 and
+                 fr.idTipo={0}
+	             and v.vendedor not in ('CISNEROS TORRES LOLA') -- no se toman en cuenta exportaciones
+	             and SUBSTR(fr.CODFACTURA,1,7) In ('001-010','001-020','002-010') --solo facturas
+                 and to_char(fr.FECHAFACTURA,'yyyy-mm')=to_char(SYSDATE,'yyyy-mm')
+	             and fr.autorizacionSri is null
             ";
+            sql=string.Format(sql, (int)tipoDocumento);
+            return sql;
         }
+
         public static string SqlGetNumGuiaByIdFactura(string idFactura) {
             return string.Format(
                 "select DOCGUIA from GMS.TBL_GUIAS_REMISION where FOBJECID={0}", 
@@ -203,7 +213,6 @@ namespace jbp.core
                 throw;
             }
         }
-
         public int GetMaxIdFactura() {
             var sql = "select max(id) from JBPVW_FACTURARESUMEN";
             return this.GetIntScalarByQuery(sql);

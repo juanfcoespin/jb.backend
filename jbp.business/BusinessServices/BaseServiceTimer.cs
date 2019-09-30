@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using System.Timers;
+using jbp.business.contracts;
 using TechTools.DelegatesAndEnums;
 using TechTools.Utils;
 using TechTools.Msg;
@@ -65,6 +65,10 @@ namespace jbp.business.services
             LogUtils.AddLog(log);
             NotifyEventToClients(typeLog, log);
         }
+        
+        public List<LogMsg> GetTodayLogs() {
+            return LogUtils.GetLogsByDate(DateTime.Now);
+        }
         /// <summary>
         /// este metodo se comunica con signal R para notificar a los clientes
         /// </summary>
@@ -72,7 +76,7 @@ namespace jbp.business.services
         /// <param name="msg"></param>
         private void NotifyEventToClients(eTypeLog tipo, LogMsg me)
         {
-            var url = config.Default.urlNotificationClient;
+            var url = config.Default.ptkUrlNotificarLogs;
             var rc = new RestCall();
             //No se llama al método asíncrono porque da error en la capa jbp.services.rest
             rc.SendPostOrPut(url, typeof(string), me, typeof(LogMsg), RestCall.eRestMethod.POST);
@@ -90,7 +94,7 @@ namespace jbp.business.services
                     ms = string.Format("{0} todos los días a las {1} horas con {2} minutos",
                         ms, this.initAt.Hour, this.initAt.Minute);
                 else
-                    ms = string.Format("{0} cada {1} minutos", ms, this.loopOnSeconds);
+                    ms = string.Format("{0} cada {1} minutos", ms, this.loopOnSeconds/60);
             }
             else
                 ms += "está Parado";

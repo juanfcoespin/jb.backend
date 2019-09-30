@@ -35,7 +35,7 @@ namespace jbp.services.rest.Controllers
         [Route("api/socioNegocio/habilitadoParaCangearPuntos/{nroDocumento}")]
         public HabilitadoCanjearPuntosMS HabilitadoParaCangearPuntos(string nroDocumento)
         {
-            return new HabilitadoCanjearPuntosMS { CodResp=1, Resp=false};
+            return new HabilitadoCanjearPuntosMS { codigo=1, Resp=false};
         }
 
         [HttpGet]
@@ -48,7 +48,7 @@ namespace jbp.services.rest.Controllers
         [HttpPost]
         [Route("api/socioNegocio/SaveParticipante")]
         public SavedMs SaveParticipante([FromBody]ParticipantesPuntosMsg me) {
-            return SocioNegocioBusiness.SaveParticipante(me);
+            return new SocioNegocioBusiness().SaveParticipante(me);
         }
         
     }

@@ -85,26 +85,17 @@
     <Reference Include="TechTools.Msg, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TechTools.Msg.1.0.0.2\lib\netstandard2.0\TechTools.Msg.dll</HintPath>
     </Reference>
-    <Reference Include="TechTools.Utils, Version=1.0.1.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TechTools.Utils.1.0.1.3\lib\net461\TechTools.Utils.dll</HintPath>
+    <Reference Include="TechTools.Utils, Version=1.0.1.7, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TechTools.Utils.1.0.1.7\lib\net461\TechTools.Utils.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="config.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>config.settings</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
-    </None>
-    <None Include="config.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>config.Designer.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
     <None Include="PromotickClientService_TemporaryKey.pfx" />
