@@ -177,11 +177,11 @@ namespace jbp.core
 	             jbpvw_facturarA fa on fa.idSocioNegocio=sn.id left join
 	             JBPVW_CONTACTO c on fa.idContacto=c.id";
                 if (tipoDocumento == eTipoDocFuente.factura)// solo aqui se extraen las guias
-                    sql += " inner join GMS.TBL_GUIAS_REMISION g on g.FOBJECID=fr.id ";
+                    sql += " left join GMS.TBL_GUIAS_REMISION g on g.FOBJECID=fr.id ";
                 sql += @"
                 where 
-                 --fr.id=641571 and
-                 fr.idTipo={0}
+                 --fr.id in (645981,645982) 
+                  fr.idTipo={0}
 	             and v.vendedor not in ('CISNEROS TORRES LOLA') -- no se toman en cuenta exportaciones
 	             and SUBSTR(fr.CODFACTURA,1,7) In ('001-010','001-020','002-010') --solo facturas
                  and to_char(fr.FECHAFACTURA,'yyyy-mm')=to_char(SYSDATE,'yyyy-mm')

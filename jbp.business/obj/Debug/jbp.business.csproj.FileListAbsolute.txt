@@ -254,7 +254,6 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.business\bin\Debug\System.Threading.Tasks.Ex
 D:\DesarrolloSw\JBP\jbp.backend\jbp.business\bin\Debug\System.ValueTuple.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.business\bin\Debug\jbp.core.contract.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.business\obj\Debug\jbp.business.csprojAssemblyReference.cache
-D:\DesarrolloSw\JBP\jbp.backend\jbp.business\obj\Debug\jbp.business.csproj.CoreCompileInputs.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.business\obj\Debug\jbp.business.csproj.CopyComplete
 D:\DesarrolloSw\JBP\jbp.backend\jbp.business\obj\Debug\jbp.business.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.business\obj\Debug\jbp.business.pdb

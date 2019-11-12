@@ -16,9 +16,12 @@ namespace jbp.business
         public static string GetCorreoByRuc(string ruc) {
             return new SocioNegocioCore().GetCorreoByRuc(ruc);
         }
+        public static string GetCorreoProveedorByRuc(string ruc) {
+            return new BaseCore().GetScalarByQuery(SocioNegocioCore.SqlGetCorreoProveedorByRuc(ruc));
+        }
         public static string GetRazonSocialByRuc(string ruc)
         {
-            return new SocioNegocioCore().GetRazonSocialByRuc(ruc);
+            return new BaseCore().GetScalarByQuery(SocioNegocioCore.SqlRazonSocialByRuc(ruc));
         }
         public static ParticipantesPuntosMsg GetParticipanteByRuc(string ruc) {
             return new SocioNegocioCore().GetParticipanteByRuc(ruc);
@@ -68,8 +71,6 @@ namespace jbp.business
                 return new SavedMs { Saved = false, Error = e.Message };
             }
         }
-
-
         private void SaveParticipanteWsAsync(ParticipantesPuntosMsg me)
         {
             var url = string.Format("{0}/{1}", config.Default.ptkWsUrl, "gstparticipantes");
@@ -90,7 +91,6 @@ namespace jbp.business
             LastRucParticipanteSaved = me.nroDocumento;
             rc.SendPostOrPutAsync(url, typeof(RespWsMsg), me, typeof(ParticipantesPuntosMsg), RestCall.eRestMethod.POST, auth);
         }
-
         private void SaveRespWSParticipante(RespWsMsg respWS)
         {
             var sql = string.Format(@"
@@ -101,12 +101,10 @@ namespace jbp.business
             ", LastRucParticipanteSaved,respWS.codigo,respWS.mensaje);
             new BaseCore().Execute(sql);
         }
-
         private static void Rc_DataArrived(object result, string errorMessage)
         {
             throw new NotImplementedException();
         }
-
         public static bool ExisteParticipante(string nroDocumento) {
             return new SocioNegocioCore().ExisteParticipante(nroDocumento);
         }

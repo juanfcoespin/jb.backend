@@ -21,6 +21,7 @@ namespace jbp.core
             DbConnection.ConnectionString = Variables.Default.bddStringConnection;
             DbConnection.Open();
         }
+
         public void Disconect()
         {
             DbConnection.Close();

@@ -35,7 +35,7 @@ namespace jbp.services.rest.Controllers
         [Route("api/socioNegocio/habilitadoParaCangearPuntos/{nroDocumento}")]
         public HabilitadoCanjearPuntosMS HabilitadoParaCangearPuntos(string nroDocumento)
         {
-            return new HabilitadoCanjearPuntosMS { codigo=1, Resp=false};
+            return new HabilitadoCanjearPuntosMS { codigo=1, Resp=true};
         }
 
         [HttpGet]

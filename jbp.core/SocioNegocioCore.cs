@@ -12,7 +12,7 @@ namespace jbp.core
 {
     public class SocioNegocioCore:BaseCore
     {
-        private static string SqlRazonSocialByRuc(string ruc) {
+        public static string SqlRazonSocialByRuc(string ruc) {
             var ms = string.Format(@"
                 SELECT
                     AORSOCIAL AS RAZONSOCIAL 
@@ -28,6 +28,21 @@ namespace jbp.core
             ", ruc);
             return ms;
         }
+
+        public static string SqlGetCorreoProveedorByRuc(string ruc)
+        {
+            return string.Format(@"
+                SELECT 
+                 aoEnvioPag AS CORREO
+                FROM
+                 AOINFOPROVEEDOR AO, FDADDON AD, FDTRADINGPARTNE CLI
+                WHERE CLI.TP = '{0}'
+                 AND AD.ADDONDEFN = 'INFO_PROVEEDOR' 
+                 AND CLI.OBJECTID = AD.PARENTOBJECTID
+                 AND AO.FDADDONID = AD.OBJECTID
+            ", ruc);
+        }
+
         public List<SocioNegocioItemMsg> GetItemsBytoken(string token)
         {
             try
@@ -153,10 +168,7 @@ namespace jbp.core
         {
             return GetScalarByQuery(SqlCorreoByRuc(ruc));
         }
-        public string GetRazonSocialByRuc(string ruc)
-        {
-            return GetScalarByQuery(SqlRazonSocialByRuc(ruc));
-        }
+     
         public static string SqlCorreoByRuc(string ruc)
         {
             var ms = string.Format(@"

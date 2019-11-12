@@ -54,9 +54,9 @@ namespace jbp.business
             try
             {
                 var ms = new ProcessCheckedMsg();
-                ms.Id = commonBusiness.ListProcessChecked.Count();
+                ms.Id = CommonBusiness.ListProcessChecked.Count();
                 ms.Total = 50;
-                commonBusiness.ListProcessChecked.Add(ms);
+                CommonBusiness.ListProcessChecked.Add(ms);
 
                 //se corre el proceso de manera asíncrona
                 var obs = SetMontosPorPeriodoAsync();

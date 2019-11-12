@@ -233,8 +233,7 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\jbp.utils.dll.config
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\jbp.core.contract.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\Newtonsoft.Json.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\bin\Debug\SpreadsheetLight.xml
-D:\DesarrolloSw\JBP\jbp.backend\jbp.core\obj\Debug\jbp.core.oracle9i.csprojAssemblyReference.cache
-D:\DesarrolloSw\JBP\jbp.backend\jbp.core\obj\Debug\jbp.core.oracle9i.csproj.CoreCompileInputs.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\obj\Debug\jbp.core.oracle9i.csproj.CopyComplete
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\obj\Debug\jbp.core.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.core\obj\Debug\jbp.core.pdb
+D:\DesarrolloSw\JBP\jbp.backend\jbp.core\obj\Debug\jbp.core.oracle9i.csprojAssemblyReference.cache

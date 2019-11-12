@@ -107,6 +107,16 @@ namespace jbp.business
             var sql = FacturaCore.SqlObservacionFacturaById(id);
             return new BaseCore().GetScalarByQuery(sql);
         }
+
+        public static void RegistrarAutorizacionSRI(string numAutorizacion, string idDocumento)
+        {
+            var sql = string.Format(@"
+                UPDATE COINVCSUMRY 
+                SET CMNT = '{0}' WHERE OBJECTID = {1}",
+                numAutorizacion, idDocumento);
+            new BaseCore().Execute(sql);
+        }
+
         public static string GetBonificacionByIdFacturaIdRecurso(string idFactura, string codRecurso)
         {
             try

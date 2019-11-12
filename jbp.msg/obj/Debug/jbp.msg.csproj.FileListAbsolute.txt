@@ -20,6 +20,6 @@ D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\j
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Debug\jbp.msg.dll.config
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Debug\jbp.msg.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Debug\jbp.msg.pdb
-D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.csproj.CoreCompileInputs.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.pdb
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.csprojAssemblyReference.cache
