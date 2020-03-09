@@ -1,6 +1,0 @@
-D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core.definition\bin\Release\jbp.core.contract.dll
-D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core.definition\bin\Release\jbp.core.contract.pdb
-D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core.definition\obj\Release\jbp.core.contract.csproj.CoreCompileInputs.cache
-D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core.definition\obj\Release\jbp.core.contract.dll
-D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core.definition\obj\Release\jbp.core.contract.pdb
-D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.core.definition\obj\Release\jbp.core.contract.csprojAssemblyReference.cache

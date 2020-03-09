@@ -1,5 +1,0 @@
-D:\ownCloud\JBP\proyectos\software\jbp\jbp.core.definition\bin\Debug\jbp.core.definition.dll
-D:\ownCloud\JBP\proyectos\software\jbp\jbp.core.definition\bin\Debug\jbp.core.definition.pdb
-D:\ownCloud\JBP\proyectos\software\jbp\jbp.core.definition\obj\Debug\jbp.core.definition.csproj.CoreCompileInputs.cache
-D:\ownCloud\JBP\proyectos\software\jbp\jbp.core.definition\obj\Debug\jbp.core.definition.dll
-D:\ownCloud\JBP\proyectos\software\jbp\jbp.core.definition\obj\Debug\jbp.core.definition.pdb

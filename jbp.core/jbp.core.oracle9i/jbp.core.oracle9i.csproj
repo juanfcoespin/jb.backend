@@ -75,11 +75,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\jbp.msg\jbp.msg.csproj">
+    <ProjectReference Include="..\jbp.core.contract\jbp.core.contract.csproj">
+      <Project>{3d135fee-24c8-44f9-bc07-f4dd593ead28}</Project>
+      <Name>jbp.core.contract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\jbp.msg\jbp.msg.csproj">
       <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
       <Name>jbp.msg</Name>
     </ProjectReference>
-    <ProjectReference Include="..\jbp.utils\jbp.utils.csproj">
+    <ProjectReference Include="..\..\jbp.utils\jbp.utils.csproj">
       <Project>{56530cb5-d16e-43c0-a4bd-f36a1da30f33}</Project>
       <Name>jbp.utils</Name>
     </ProjectReference>

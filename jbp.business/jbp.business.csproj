@@ -93,10 +93,6 @@
     <Compile Include="UserBusiness.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\jbp.core\jbp.core.oracle9i.csproj">
-      <Project>{c10e69aa-6960-44e4-a852-51a1a79c7491}</Project>
-      <Name>jbp.core.oracle9i</Name>
-    </ProjectReference>
     <ProjectReference Include="..\jbp.msg\jbp.msg.csproj">
       <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
       <Name>jbp.msg</Name>
