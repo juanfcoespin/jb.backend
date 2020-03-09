@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using jbp.msg;
 using jbp.core;
-using TechTools.Utils;
+using TechTools.Exceptions;
 
 namespace jbp.business
 {

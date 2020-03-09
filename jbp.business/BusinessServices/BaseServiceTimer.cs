@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 
 using jbp.business.contracts;
 using TechTools.DelegatesAndEnums;
-using TechTools.Utils;
+using TechTools.WinServices;
 using TechTools.Msg;
+using TechTools.Logs;
+using TechTools.Rest;
 
 namespace jbp.business.services
 {
     public abstract class BaseServiceTimer: BaseTimer
     {
         private string serviceName;
+        private LogUtils logUtls = new LogUtils();
         public BaseServiceTimer(string serviceName){
             this.serviceName = serviceName;
         }
@@ -62,12 +65,12 @@ namespace jbp.business.services
         
         public void Log(eTypeLog typeLog, string msg) {
             var log = new LogMsg { type = typeLog, msg = msg };
-            LogUtils.AddLog(log);
+            logUtls.AddLog(log);
             NotifyEventToClients(typeLog, log);
         }
         
         public List<LogMsg> GetTodayLogs() {
-            return LogUtils.GetLogsByDate(DateTime.Now);
+            return logUtls.GetLogsByDate(DateTime.Now);
         }
         /// <summary>
         /// este metodo se comunica con signal R para notificar a los clientes
@@ -81,7 +84,7 @@ namespace jbp.business.services
             //No se llama al método asíncrono porque da error en la capa jbp.services.rest
             rc.SendPostOrPut(url, typeof(string), me, typeof(LogMsg), RestCall.eRestMethod.POST);
             if (!string.IsNullOrEmpty(rc.ErrorMessage))
-                LogUtils.AddLog(new LogMsg {
+                logUtls.AddLog(new LogMsg {
                     date =me.date, type = eTypeLog.Error, msg = rc.ErrorMessage });
         }
         public virtual string GetStatus() {

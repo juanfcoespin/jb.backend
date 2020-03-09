@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>jbp.utils</RootNamespace>
     <AssemblyName>jbp.utils</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,9 +40,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="TechTools.DelegatesAndEnums, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TechTools.DelegatesAndEnums.1.0.0.1\lib\net461\TechTools.DelegatesAndEnums.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="conf.Designer.cs">
@@ -60,16 +58,15 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>conf.Designer.cs</LastGenOutput>
     </None>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="license.txt" />
-    <Content Include="logo.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\jbp.msg\jbp.msg.csproj">
       <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
       <Name>jbp.msg</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.DelegatesAndEnums\TechTools.DelegatesAndEnums.csproj">
+      <Project>{c6863cc0-e925-4f7c-a36c-21be93b4739e}</Project>
+      <Name>TechTools.DelegatesAndEnums</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -44,3 +44,6 @@ D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\j
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.proxy\bin\Debug\jbp.utils.dll.config
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.proxy\bin\Debug\Enums.pdb
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.proxy\obj\Debug\jbp.proxy.csproj.CopyComplete
+D:\DesarrolloSw\JBP\jbp.backend\jbp.proxy\obj\Debug\jbp.proxy.csprojAssemblyReference.cache
+D:\DesarrolloSw\JBP\jbp.backend\jbp.proxy\obj\Debug\jbp.proxy.dll
+D:\DesarrolloSw\JBP\jbp.backend\jbp.proxy\obj\Debug\jbp.proxy.pdb

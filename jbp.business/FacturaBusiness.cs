@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 using jbp.core;
 using jbp.msg;
-using TechTools.Utils;
 using TechTools.DelegatesAndEnums;
 using System.Data;
-using jbp.utils;
+using TechTools.Logs;
+using TechTools.Exceptions;
+using TechTools.Utils;
+using TechTools.Net;
 
 namespace jbp.business
 {
@@ -196,9 +198,25 @@ namespace jbp.business
             try
             {
                 var ms = new List<FacturaMsg>();
-                var sql = FacturaCore.SqlFacturasPorAprobar(tipoDocumento);
-                ms= TraducirAFacturaMsg(new BaseCore().GetDataTableByQuery(sql));
-                //ms.ForEach(fact => fact.NumGuia = GetNumGuiaByIdFact(fact.IdFactura));
+                var sql = FacturaCore.SqlFacturasPorAprobar(tipoDocumento);// se incluye las guias si aplica
+                var dt = new BaseCore().GetDataTableByQuery(sql);
+                ms = TraducirAFacturaMsg(dt);
+                
+                // si no se ha emitido la guía de remisión no se manda a autorizar
+                // la factura y se notifica por correo al personal de ventas
+                // no aplica para factura de servicios
+                for (int i = ms.Count; i > 0; i--) // se hace un for porque da un error con foreach al usar remove
+                {
+                    var fact = ms[i - 1];
+                    if (string.IsNullOrEmpty(fact.NumGuia) && tipoDocumento.Equals(eTipoDocFuente.factura))
+                    {
+                        ms.RemoveAt(i - 1);
+                        var subject = string.Format("Factura {0} sin guia de remisión", fact.CodFactura);
+                        var msg = string.Format("La factura <b>{0}</b> del cliente <b>{1}</b> no se envia para aprobar en stupendo debido a que no se ha emitido guía de remisión", fact.CodFactura, fact.Ruc);
+                        if (!MailUtils.Send(config.Default.mailErrorVentas, subject, msg))
+                            new LogUtils().AddLog(string.Format("No se pudo enviar el correo: {0}", msg));
+                    }
+                };
                 return ms;
             }
             catch (Exception e)

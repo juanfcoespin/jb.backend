@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using jbp.core;
-using TechTools.Utils;
+using TechTools.Exceptions;
 using System.Data;
 
 namespace jbp.business

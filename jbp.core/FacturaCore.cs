@@ -180,12 +180,17 @@ namespace jbp.core
                     sql += " left join GMS.TBL_GUIAS_REMISION g on g.FOBJECID=fr.id ";
                 sql += @"
                 where 
-                 --fr.id in (645981,645982) 
-                  fr.idTipo={0}
+                 
+                 fr.idTipo={0}
 	             and v.vendedor not in ('CISNEROS TORRES LOLA') -- no se toman en cuenta exportaciones
 	             and SUBSTR(fr.CODFACTURA,1,7) In ('001-010','001-020','002-010') --solo facturas
-                 and to_char(fr.FECHAFACTURA,'yyyy-mm')=to_char(SYSDATE,'yyyy-mm')
+                 --and to_char(fr.FECHAFACTURA,'yyyy-mm')=to_char(SYSDATE,'yyyy-mm')
 	             and fr.autorizacionSri is null
+                 and fr.CODFACTURA in (
+                    '001-010-0061832',
+                    '001-010-0061833',
+                    '001-010-0061834'
+) 
             ";
             sql=string.Format(sql, (int)tipoDocumento);
             return sql;

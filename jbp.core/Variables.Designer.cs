@@ -12,7 +12,7 @@ namespace jbp.core {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.8.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.3.0.0")]
     internal sealed partial class Variables : global::System.Configuration.ApplicationSettingsBase {
         
         private static Variables defaultInstance = ((Variables)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Variables())));
@@ -25,10 +25,19 @@ namespace jbp.core {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=jbp_virtual;Password=JBP;User ID=JBP;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=jbp;Password=JBP;User ID=JBP;")]
         public string bddStringConnection {
             get {
                 return ((string)(this["bddStringConnection"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Ñ,209;Á,193;É,201;Í,205;Ó,211;Ú,218;ñ,241;á,225;é,233;í,237;ó,243;ú,250")]
+        public string acciReplace {
+            get {
+                return ((string)(this["acciReplace"]));
             }
         }
     }

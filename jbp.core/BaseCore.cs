@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using TechTools.Utils;
+using TechTools.Exceptions;
 using System.Data.OracleClient;
 using System.Data;
 
@@ -89,10 +89,12 @@ namespace jbp.core
         /// Para sentencias sql como insert, update, delete
         /// </summary>
         /// <param name="sql"></param>
+        
         public void Execute(string sql)
         {
             try
             {
+                sql = ReeplaceToAscci(sql);
                 Connect();
                 var command = new OracleCommand(sql, this.DbConnection);
                 command.ExecuteReader();
@@ -106,6 +108,29 @@ namespace jbp.core
             }
 
         }
+
+        /// <summary>
+        /// reemplaza los caracteres que se espesifiquen en el archivo de configuración
+        /// por sus respectivos ascci
+        /// </summary>
+        /// <param name="sql">Ej; la Ñ por chr(209)</param>
+        /// <returns></returns>
+        private string ReeplaceToAscci(string sql)
+        {
+            //Ñ,209;Á,193;É,201;Í,205;Ó,211;Ú,218;ñ,241;á,225;é,233;í,237;ó,243;ú,250
+            var matriz = Variables.Default.acciReplace.Split(new char[] { ';' });
+            if (matriz != null) {
+                foreach (string vector in matriz) {
+                    var token = vector.Split(new char[] { ','});
+                    if (sql.Contains(token[0])) {
+                        // sql = sql.Replace("Ñ", "'||chr(209)||'");
+                        sql = sql.Replace(token[0], string.Format("'||chr({0})||'", token[1]));
+                    }
+                }
+            }
+            return sql;
+        }
+
         public DateTime GetDateTime(object me) {
             if (DBNull.Value.Equals(me)) {
                 return DateTime.MinValue;

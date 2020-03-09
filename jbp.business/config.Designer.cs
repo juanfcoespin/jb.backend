@@ -12,7 +12,7 @@ namespace jbp.business {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.3.0.0")]
     internal sealed partial class config : global::System.Configuration.ApplicationSettingsBase {
         
         private static config defaultInstance = ((config)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new config())));
@@ -186,6 +186,15 @@ namespace jbp.business {
         public string ptkAceleradorCodProductos {
             get {
                 return ((string)(this["ptkAceleradorCodProductos"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("jespin@jbp.com.ec; glandacay@jamesbrownpharma.com")]
+        public string mailErrorVentas {
+            get {
+                return ((string)(this["mailErrorVentas"]));
             }
         }
     }

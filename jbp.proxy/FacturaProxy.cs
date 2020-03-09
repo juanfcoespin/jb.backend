@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 using System.Configuration;
 using jbp.msg;
-using jbp.utils;
-using ComunDelegates;
+using TechTools.DelegatesAndEnums;
 using System.ComponentModel;
 using jbp.proxy.wsViaIntegration;
-using presentation.utilities;
+using TechTools.Logs;
+using TechTools.Rest;
+using TechTools.Utils;
+using TechTools.Exceptions;
 
 namespace jbp.proxy
 {
@@ -38,7 +40,7 @@ namespace jbp.proxy
                     {
                         var msg = "No se insertaron las facturas en trandina :(";
                         ShowBackgrounMessage(msg);
-                        LogUtils.AddLog(msg);
+                        new LogUtils().AddLog(msg);
                         DesregistrarFacturaEnvioTerceros(me);
                     }
                 }
@@ -46,8 +48,8 @@ namespace jbp.proxy
             catch (Exception e)
             {
                 DesregistrarFacturaEnvioTerceros(me);
-                e = utilities.ExceptionManager.GetDeepErrorMessage(e,utilities.ExceptionManager.eCapa.Proxy);
-                LogUtils.AddLog(e.Message);
+                e = ExceptionManager.GetDeepErrorMessage(e,ExceptionManager.eCapa.Proxy);
+                new LogUtils().AddLog(e.Message);
                 ShowErrorMessage(e.Message);
             }
         }
@@ -59,8 +61,13 @@ namespace jbp.proxy
             var listRegFactura = Traducir(me, tipoTercero);
             var rc = new RestCall();
             var url = string.Format("{0}/registrarFacturasEnvioTerceros", Properties.Settings.Default.urlWsJBPFactura);
-            var ms= (bool)rc.SendPostOrPutRestMethod(url, typeof(bool),listRegFactura,
-                typeof(List<RegistroFacturaTercerosMsg>));
+            var ms= (bool)rc.SendPostOrPut(
+                url, 
+                typeof(bool),
+                listRegFactura,
+                typeof(List<RegistroFacturaTercerosMsg>),
+                RestCall.eRestMethod.POST
+                );
             ShowBackgrounMessage(string.Format("Registro completado: {0}", ms.ToString()));
             return ms;
         }
@@ -88,15 +95,15 @@ namespace jbp.proxy
             var rc = new RestCall();
             var url = string.Format("{0}/desregistrarFacturasEnvioTerceros", Properties.Settings.Default.urlWsJBPFactura);
             
-            var ms= (bool)rc.SendPostOrPutRestMethod(url, typeof(bool), me,
-                typeof(List<FacturaTrandinaMsg>));
+            var ms= (bool)rc.SendPostOrPut(url, typeof(bool), me,
+                typeof(List<FacturaTrandinaMsg>),RestCall.eRestMethod.POST);
             if (ms)
                 ShowBackgrounMessage(string.Format("Eliminados {0} registros", me.Count.ToString()));
             else
             {
                 var msg = "No se pudo eliminar los registros enviados";
                 ShowBackgrounMessage(msg);
-                LogUtils.AddLog(msg);
+                new LogUtils().AddLog(msg);
             }
             return ms;   
         }

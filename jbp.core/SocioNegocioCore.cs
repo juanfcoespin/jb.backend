@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using jbp.msg;
-using TechTools.Utils;
+using TechTools.Exceptions;
 using System.Data;
 
 namespace jbp.core
@@ -14,7 +14,7 @@ namespace jbp.core
     {
         public static string SqlRazonSocialByRuc(string ruc) {
             var ms = string.Format(@"
-                SELECT
+                 SELECT
                     AORSOCIAL AS RAZONSOCIAL 
                 From
                     AOINFOADICSN AO,

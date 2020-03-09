@@ -14,12 +14,13 @@ namespace jbp.businessServices.SendFacturasAndNCPromotick
 
         static void Main()
         {
-            ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[]
-            {
-                new EnvioFacturas_y_NC()
-            };
-            ServiceBase.Run(ServicesToRun);
+            new EnvioFacturas_y_NC();
+            //ServiceBase[] ServicesToRun;
+            //ServicesToRun = new ServiceBase[]
+            //{
+            //    new EnvioFacturas_y_NC()
+            //};
+            //ServiceBase.Run(ServicesToRun);
         }
         
         

@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="jbp.services.rest.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="RetencionesSendStatusWS_Url" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://services2.jbp.com.ec/api/Retenciones/sendMessage</Value>
+    </Setting>
+    <Setting Name="Setting" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">.</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

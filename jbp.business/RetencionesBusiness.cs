@@ -55,9 +55,9 @@ namespace jbp.business
                 }
             }
         }
-        public DataTable GetRetencionesPorAutorizar(int diffDaysFactRet) {
-            AsignarNumSecuencialEnRetencionesNuevas(diffDaysFactRet);
-            return new BaseCore().GetDataTableByQuery(RetencionesCore.SqlGetRetencionesPorAutorizar());
+        public DataTable GetRetencionesPorAutorizar(int diffDaysFactRet, string mesesRetencion) {
+            //AsignarNumSecuencialEnRetencionesNuevas(diffDaysFactRet);
+            return new BaseCore().GetDataTableByQuery(RetencionesCore.SqlGetRetencionesPorAutorizar(mesesRetencion));
         }
 
         private void AsignarNumSecuencialEnRetencionesNuevas(int diffDaysFactRet)

@@ -4,6 +4,17 @@
     "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj": {}
   },
   "projects": {
+    "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj",
+        "projectName": "jbp.msg",
+        "projectPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj"
+      },
+      "frameworks": {
+        "net472": {}
+      }
+    },
     "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj": {
       "version": "1.0.0",
       "restore": {
@@ -26,7 +37,11 @@
         },
         "frameworks": {
           "netcoreapp2.2": {
-            "projectReferences": {}
+            "projectReferences": {
+              "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj": {
+                "projectPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
@@ -61,7 +76,7 @@
             },
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
-              "version": "[2.2.3, )"
+              "version": "[2.2.4, )"
             },
             "TechTools.DelegatesAndEnums": {
               "target": "Package",

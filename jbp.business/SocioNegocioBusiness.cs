@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 using jbp.core;
 using jbp.msg;
-using TechTools.Utils;
+using TechTools.Exceptions;
 using System.IO;
+using TechTools.Rest;
+using TechTools.Serializador;
 
 namespace jbp.business
 {
@@ -19,6 +21,97 @@ namespace jbp.business
         public static string GetCorreoProveedorByRuc(string ruc) {
             return new BaseCore().GetScalarByQuery(SocioNegocioCore.SqlGetCorreoProveedorByRuc(ruc));
         }
+
+        public static ParticipantesPuntosMsg GetParticipanteByRucFromERP(string ruc)
+        {
+            var ms = new ParticipantesPuntosMsg();
+            var sn = GetByRuc(ruc);
+            if (sn != null && !string.IsNullOrEmpty(sn.Nombre)) {
+                ms.celular = sn.Celular;
+                ms.clave = sn.Ruc.Substring(4,6);
+                ms.email = sn.Email;
+                ms.nombres = sn.Nombre;
+                ms.nroDocumento = sn.Ruc;
+                ms.telefono = sn.Telefonos;
+                ms.tipoDocumento = sn.TipoIdentificacion.ToLower().Trim() == "ruc" ? 2 : 1;
+                ms.tipoGenero = sn.Genero.ToLower().Trim() == "masculino" ? 1 : 2;
+                ms.vendedor = sn.Vendedor;
+                ms.idCatalogo = 2; //por defecto tipo B
+            }
+            if (sn != null && !string.IsNullOrEmpty(sn.Error))
+                ms.Error = sn.Error;
+            return ms;
+        }
+        public static SocioNegocioMsg GetByRuc(string ruc)
+        {
+            var ms = new SocioNegocioMsg();
+            try
+            {
+                var sql = string.Format(@"
+                select
+                 t0.ruc,
+                 t0.nombre,
+                 t0.CONOCIDOCOMO,
+                 t0.TIPOSOCIONEGOCIO,
+                 t2.telefonos,
+                 t2.fax celular,
+                 t2.email,
+                 t3.vendedor,
+                 t2.ciudad,
+                 t2.provincia,
+                 t2.direccion,
+                 t2.tipoContacto,
+                 t4.genero,
+                 t4.tipoIdentificacion,
+                 t4.estadoCivil
+                from jbpvw_socionegocio t0 inner join
+                 jbpvw_facturara t1 on t1.idsocionegocio=t0.id inner join
+                 jbpvw_contacto t2 on t1.idcontacto=t2.id left outer join
+                 jbpvw_vendedor t3 on t3.idSocioNegocio=t0.id left outer join
+                 jbpvw_infoAdicionalSN t4 on t4.idSocioNegocio=t0.id
+                where t0.RUC='{0}'",ruc);
+                var bc = new BaseCore();
+                var dtSn = bc.GetDataTableByQuery(sql);
+                if (dtSn != null && dtSn.Rows.Count > 0) {
+                    ms.Ruc = dtSn.Rows[0]["RUC"].ToString();
+                    ms.Nombre = dtSn.Rows[0]["NOMBRE"].ToString();
+                    ms.ConocidoComo = dtSn.Rows[0]["CONOCIDOCOMO"].ToString();
+                    ms.TipoSocioNegocio = dtSn.Rows[0]["TIPOSOCIONEGOCIO"].ToString();
+                    ms.Telefonos = dtSn.Rows[0]["telefonos"].ToString();
+                    ms.Celular = dtSn.Rows[0]["celular"].ToString();
+                    ms.Email = dtSn.Rows[0]["email"].ToString().Trim();
+                    ms.Vendedor = dtSn.Rows[0]["vendedor"].ToString();
+                    ms.Ciudad = dtSn.Rows[0]["Ciudad"].ToString();
+                    ms.Provincia = dtSn.Rows[0]["Provincia"].ToString();
+                    ms.Direccion = dtSn.Rows[0]["Direccion"].ToString();
+                    ms.TipoContacto = dtSn.Rows[0]["TipoContacto"].ToString();
+                    ms.Genero = dtSn.Rows[0]["Genero"].ToString();
+                    ms.TipoIdentificacion = dtSn.Rows[0]["TipoIdentificacion"].ToString();
+                    ms.EstadoCivil = dtSn.Rows[0]["EstadoCivil"].ToString();
+                }
+            }
+            catch (Exception e)
+            {
+                e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
+                ms.Error = e.Message;
+            }
+            return ms;
+        }
+
+        public static string GetRazonSocialProveedorByRuc(string ruc)
+        {
+            var sql = string.Format(@"
+                SELECT AORSOCIAL AS RAZONSOCIAL 
+                FROM AOINFOPROVEEDOR AO, FDADDON AD, FDTRADINGPARTNE CLI 
+                WHERE 
+                CLI.TP = '{0}'
+                AND AD.ADDONDEFN = 'INFO_PROVEEDOR' 
+                AND CLI.OBJECTID = AD.PARENTOBJECTID 
+                AND AO.FDADDONID = AD.OBJECTID
+            ",ruc);
+            return new BaseCore().GetScalarByQuery(sql);
+        }
+
         public static string GetRazonSocialByRuc(string ruc)
         {
             return new BaseCore().GetScalarByQuery(SocioNegocioCore.SqlRazonSocialByRuc(ruc));

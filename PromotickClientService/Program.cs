@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using System.Threading;
 
 using jbp.msg;
-using jbp.business.services;
+
 using System.IO;
 using TechTools.DelegatesAndEnums;
 using TechTools.Utils;
-
+using jbp.business.services;
 namespace PromotickClientService
 {
     class Program

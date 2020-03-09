@@ -46,11 +46,11 @@ namespace jbp.business.services
                     consumoWsPtk.LogNotificationEvent += (typelog, msg) => Log(typelog, msg);
                     consumoWsPtk.SendFacturaToWsAsync(new FacturasPtkMsg { facturas = facturasPorProcesar });
                 }
-                if (config.Default.ptkEnviarPorFTP){
-                    var consumoFtpPtk = new ConsumoFtpPtkBusiness();
-                    consumoFtpPtk.LogNotificationEvent += (typelog, msg) => Log(typelog, msg);
-                    consumoFtpPtk.SendFacturasByFtpAsync(facturasPorProcesar);
-                }
+                //if (config.Default.ptkEnviarPorFTP){
+                //    var consumoFtpPtk = new ConsumoFtpPtkBusiness();
+                //    consumoFtpPtk.LogNotificationEvent += (typelog, msg) => Log(typelog, msg);
+                //    consumoFtpPtk.SendFacturasByFtpAsync(facturasPorProcesar);
+                //}
                 SetFacturasProcesadas(facturasPorProcesar);
             }
         }

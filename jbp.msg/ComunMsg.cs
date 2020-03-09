@@ -59,5 +59,9 @@ namespace jbp.msg
         /// </summary>
         public int Current { get; set; }
     }
-    
+    public class StatusMsg {
+        public string Date { get; set; }
+        public string Msg { get; set; }
+    }
+
 }

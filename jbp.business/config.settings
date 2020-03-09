@@ -56,5 +56,8 @@
     <Setting Name="ptkAceleradorCodProductos" Type="System.String" Scope="Application">
       <Value Profile="(Default)">'VF BEQ0060','VF BRV0050','VF CAL0500','VF CCB0001','VF DMX0100','VF DMX0500','VF EPR1000','VF EPR0250','VB GUM0050','VB GUM0100','VB GUM0500','VF LEP0020','VF LEP0250','VF PRB0050','VF PRB0250','VF PGF0050','VF RCA0002','VF PGK0050'</Value>
     </Setting>
+    <Setting Name="mailErrorVentas" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">jespin@jbp.com.ec; glandacay@jamesbrownpharma.com</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

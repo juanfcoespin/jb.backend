@@ -3,7 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="bddStringConnection" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Data Source=jbp_virtual;Password=JBP;User ID=JBP;</Value>
+      <Value Profile="(Default)">Data Source=jbp;Password=JBP;User ID=JBP;</Value>
+    </Setting>
+    <Setting Name="acciReplace" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Ñ,209;Á,193;É,201;Í,205;Ó,211;Ú,218;ñ,241;á,225;é,233;í,237;ó,243;ú,250</Value>
     </Setting>
   </Settings>
 </SettingsFile>

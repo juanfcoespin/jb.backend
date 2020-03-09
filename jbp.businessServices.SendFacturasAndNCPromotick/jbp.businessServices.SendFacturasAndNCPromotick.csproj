@@ -181,6 +181,10 @@
       <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
       <Name>jbp.msg</Name>
     </ProjectReference>
+    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.WinServices\TechTools.WinServices.csproj">
+      <Project>{fcf3d03f-fabb-4fba-b11d-99eddd47d101}</Project>
+      <Name>TechTools.WinServices</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ProjectInstaller.resx">

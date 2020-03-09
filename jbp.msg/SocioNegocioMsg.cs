@@ -12,7 +12,7 @@ namespace jbp.msg
         /// 1 proceso Exitoso
         /// -500 error interno en el procesamiento
         /// </summary>
-        public int codigo { get; set; }
+        public int CodResp { get; set; }
         /// <summary>
         /// True: si está habilitado para canjear puntos
         /// False: Si no está habilitado para canjear puntos
@@ -29,11 +29,23 @@ namespace jbp.msg
     }
     public class SocioNegocioMsg
     {
+        public string Ruc { get; set; }
         public string Nombre { get; set; }
-        public string NombreComercial { get; set; }
-        public string Direccion { get; set; }
-        public string Telefono { get; set; }
+        public string ConocidoComo { get; set; }
+        public string Telefonos { get; set; }
+        public string Celular { get; set; }
+        public string Email { get; set; }
+        public string Vendedor { get; set; }
         public string Ciudad { get; set; }
+        public string Provincia { get; set; }
+        public string Direccion { get; set; }
+        public string TipoContacto { get; set; }
+        public string Genero { get; set; }
+        public string TipoIdentificacion { get; set; }
+        public string EstadoCivil { get; set; }
+        public string Error { get; set; }
+        public string TipoSocioNegocio { get; set; }
+
         public SocioNegocioMsg() { }
 
     }
@@ -78,6 +90,7 @@ namespace jbp.msg
         public int tipoDocumento { get; set; }
         public int tipoGenero { get; set; }
         public string vendedor { get; set; }
+        public string Error { get; set; }
     }
     public class SocioNegocioItemMsg
     {

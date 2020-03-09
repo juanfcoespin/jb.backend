@@ -9,7 +9,8 @@ using jbp.business.contracts;
 using jbp.core;
 using jbp.core.promotick;
 using TechTools.DelegatesAndEnums;
-using TechTools.Utils;
+using TechTools.Rest;
+using TechTools.Exceptions;
 
 namespace jbp.business.promotick
 {
@@ -29,15 +30,15 @@ namespace jbp.business.promotick
         }
 
         #region Envío Facturas y NC 
-        internal void SendFacturaToWsAsync(FacturasPtkMsg me)
+        public void SendFacturaToWsAsync(FacturasPtkMsg me)
         {
             try
             {
                 var url = string.Format("{0}/{1}", config.Default.ptkWsUrl, "gsttransaccion");
                 var rc = new RestCall();
-                rc.DataArrived += SendFacturaToWsAsync_Response;
-                rc.SendPostOrPutAsync(url, typeof(RespuestasPtkWsFacturasMsg),
-                    me, typeof(FacturasPtkMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
+                //rc.DataArrived += SendFacturaToWsAsync_Response;
+                /*var resp=rc.SendPostOrPut(url, typeof(RespuestasPtkWsFacturasMsg),
+                    me, typeof(FacturasPtkMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);*/
                 me.facturas.ForEach(factura =>{
                     LogNotificationEvent?.Invoke(eTypeLog.Info,
                     string.Format("Enviada Factura:{0}, ruc: {1}, monto:{2}, al servicio: {3}",

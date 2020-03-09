@@ -15,6 +15,10 @@ namespace jbp.msg
     {
         public string Nombre { get; set; }
         public List<string> Perfiles { get; set; }
+        public string Error { get; set; }
+        public RespAuthMsg() {
+            this.Perfiles = new List<string>();
+        }
     }
     public class UserMsg :LoginMsg{
         public string Nombre { get; set; }
