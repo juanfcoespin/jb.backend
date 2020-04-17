@@ -15,6 +15,7 @@ namespace jbp.services.rest
             // Web API configuration and services
 
             // Web API routes
+            var is64 = Environment.Is64BitProcess;
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(

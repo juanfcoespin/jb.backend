@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using jbp.msg;
+using TechTools.Core.Oracle9i;
 
-namespace jbp.core
+namespace jbp.core.oracle9i
 {
     public class FacturaStupendoCore:BaseCore
     {

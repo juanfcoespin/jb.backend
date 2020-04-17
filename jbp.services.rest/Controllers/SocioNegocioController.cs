@@ -6,7 +6,8 @@ using System.Net.Http;
 using System.Web.Http;
 
 using jbp.msg;
-using jbp.business;
+using jbp.business.oracle9i;
+using jbp.business.hana;
 
 namespace jbp.services.rest.Controllers
 {
@@ -16,31 +17,31 @@ namespace jbp.services.rest.Controllers
         [Route("api/socioNegocio/getByRuc/{ruc}")]
         public SocioNegocioMsg GetByRuc(string ruc)
         {
-            return SocioNegocioBusiness.GetByRuc(ruc);
+            return jbp.business.oracle9i.SocioNegocioBusiness.GetByRuc(ruc);
         }
         [HttpGet]
         [Route("api/socioNegocio/getParticipanteByRuc/{ruc}")]
         public ParticipantesPuntosMsg GetParticipanteByRuc(string ruc)
         {
-            return SocioNegocioBusiness.GetParticipanteByRuc(ruc);
+            return jbp.business.oracle9i.SocioNegocioBusiness.GetParticipanteByRuc(ruc);
         }
         [HttpGet]
         [Route("api/socioNegocio/getParticipanteByRucFromERP/{ruc}")]
         public ParticipantesPuntosMsg GetParticipanteByRucFromERP(string ruc)
         {
-            return SocioNegocioBusiness.GetParticipanteByRucFromERP(ruc);
+            return jbp.business.oracle9i.SocioNegocioBusiness.GetParticipanteByRucFromERP(ruc);
         }
         [HttpGet]
         [Route("api/socioNegocio/getItemsByToken/{token}")]
         public List<SocioNegocioItemMsg> GetItemsBytoken(string token)
         {
-            return SocioNegocioBusiness.GetItemsBytoken(token);
+            return jbp.business.oracle9i.SocioNegocioBusiness.GetItemsBytoken(token);
         }
         [HttpGet]
         [Route("api/socioNegocio/getVendedores")]
         public List<string> GetVendedores()
         {
-            return SocioNegocioBusiness.GetVededores();
+            return jbp.business.oracle9i.SocioNegocioBusiness.GetVededores();
         }
 
         [HttpGet]
@@ -54,13 +55,13 @@ namespace jbp.services.rest.Controllers
         [Route("api/socioNegocio/existeParticipante/{nroDocumento}")]
         public bool ExisteParticipante(string nroDocumento)
         {
-            return SocioNegocioBusiness.ExisteParticipante(nroDocumento);
+            return jbp.business.oracle9i.SocioNegocioBusiness.ExisteParticipante(nroDocumento);
         }
 
         [HttpPost]
         [Route("api/socioNegocio/SaveParticipante")]
         public SavedMs SaveParticipante([FromBody]ParticipantesPuntosMsg me) {
-            return new SocioNegocioBusiness().SaveParticipante(me);
+            return new jbp.business.oracle9i.SocioNegocioBusiness().SaveParticipante(me);
         }
         
     }

@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 using jbp.msg;
 using TechTools.Exceptions;
 using System.Data;
+using TechTools.Core.Oracle9i;
 
-namespace jbp.core
+namespace jbp.core.oracle9i
 {
     public class FacturaTrandinaCore : BaseCoreEntity<FacturaTrandinaMsg>
     {

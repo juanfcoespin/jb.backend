@@ -1,0 +1,63 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="jbp.business.oracle9i" GeneratedClassName="conf">
+  <Profiles />
+  <Settings>
+    <Setting Name="ptkWsUrl" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://apijames.promotick.com.pe/api</Value>
+    </Setting>
+    <Setting Name="ptkFtpFileName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">FtpFiles\promotick\excel-transaccion.xlsx</Value>
+    </Setting>
+    <Setting Name="ptkFtpUrl" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">ftp://ftp.jbp.com.ec/promotick</Value>
+    </Setting>
+    <Setting Name="ptkFtpUser" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">jespin</Value>
+    </Setting>
+    <Setting Name="ptkFtpPwd" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">2816Jfen*</Value>
+    </Setting>
+    <Setting Name="ptkFtpPutDateTimeOnFileName" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ptkUrlNotificarLogs" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://services2.jbp.com.ec/api/PromotickBusinessServicesOrders/log</Value>
+    </Setting>
+    <Setting Name="ptkPeriodoEnSegundosDeConsultaServicio" Type="System.Int64" Scope="Application">
+      <Value Profile="(Default)">300</Value>
+    </Setting>
+    <Setting Name="ptkIniciarA_Hora" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">16</Value>
+    </Setting>
+    <Setting Name="ptkIniciarA_Minuto" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="ptkIniciarAHoraEspesifica" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ptkWsUser" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">api-james-promotick</Value>
+    </Setting>
+    <Setting Name="ptkWsPwd" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">hkIUtJmnq5sda</Value>
+    </Setting>
+    <Setting Name="ptkEnviarPorFTP" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ptkEnviarPorWS" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ptkAceleradorAño" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">2019</Value>
+    </Setting>
+    <Setting Name="ptkAceleradorMeses" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">'01','02','03','04','05','06'</Value>
+    </Setting>
+    <Setting Name="ptkAceleradorCodProductos" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">'VF BEQ0060','VF BRV0050','VF CAL0500','VF CCB0001','VF DMX0100','VF DMX0500','VF EPR1000','VF EPR0250','VB GUM0050','VB GUM0100','VB GUM0500','VF LEP0020','VF LEP0250','VF PRB0050','VF PRB0250','VF PGF0050','VF RCA0002','VF PGK0050'</Value>
+    </Setting>
+    <Setting Name="mailErrorVentas" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">jespin@jbp.com.ec; glandacay@jamesbrownpharma.com</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 using jbp.msg;
 using TechTools.DelegatesAndEnums;
+using TechTools.Core.Oracle9i;
 
-namespace jbp.core
+namespace jbp.core.oracle9i
 {
     public class FacturaCore:BaseCore
     {
@@ -170,7 +171,8 @@ namespace jbp.core
                 if (tipoDocumento == eTipoDocFuente.factura)// solo aqui se extraen las guias
                     sql += ", g.DOCGUIA numGuia";
                 sql +=@"
-                from	             JBPVW_FACTURARESUMEN fr left join
+                from
+	             JBPVW_FACTURARESUMEN fr left join
 	             jbpvw_ordenFactura o on o.idFactura=fr.id left join
 	             JBPVW_SOCIONEGOCIO sn on fr.RUCSOCIONEGOCIO=sn.ruc left join
 	             jbpvw_vendedor v on v.idSocioNegocio=sn.id left join
@@ -206,10 +208,10 @@ namespace jbp.core
         /// </summary>
         /// <param name="date">En formato yyyy-mm-dd</param>
         /// <returns></returns>
-        public static FacturaPromotickMsg GetFacturaByDate(string date) {
+        public static DocumentoPromotickMsg GetFacturaByDate(string date) {
             try
             {
-                var ms = new FacturaPromotickMsg();
+                var ms = new DocumentoPromotickMsg();
                 var sql = string.Format("");
                 return ms;
             }

@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 
 using jbp.msg;
-using jbp.business;
+using jbp.business.oracle9i;
 
 namespace jbp.services.rest.Controllers
 {

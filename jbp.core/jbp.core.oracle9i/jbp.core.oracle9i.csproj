@@ -7,8 +7,8 @@
     <ProjectGuid>{C10E69AA-6960-44E4-A852-51A1A79C7491}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>jbp.core</RootNamespace>
-    <AssemblyName>jbp.core</AssemblyName>
+    <RootNamespace>jbp.core.Oracle9i</RootNamespace>
+    <AssemblyName>jbp.core.Oracle9i</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -45,34 +45,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseCore.cs" />
-    <Compile Include="BaseCoreEntity.cs" />
     <Compile Include="CuentaCore.cs" />
     <Compile Include="DetalleFacturaCore.cs" />
     <Compile Include="DetalleFacturaTrandinaCore .cs" />
     <Compile Include="DocumentoFuenteCore.cs" />
     <Compile Include="FacturaCore.cs" />
-    <Compile Include="promotick\FacturaPromotickCore.cs" />
+    <Compile Include="FacturaPromotickCore.cs" />
     <Compile Include="FacturaTrandinaCore.cs" />
     <Compile Include="ParticipantesPuntosCore.cs" />
     <Compile Include="PeriodoCore.cs" />
-    <Compile Include="promotick\RegistroEnvioPktCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FacturaStupendoCore.cs" />
     <Compile Include="RetencionesCore.cs" />
     <Compile Include="SocioNegocioCore.cs" />
-    <Compile Include="Variables.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Variables.settings</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Variables.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Variables.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\jbp.core.contract\jbp.core.contract.csproj">
@@ -86,6 +74,14 @@
     <ProjectReference Include="..\..\jbp.utils\jbp.utils.csproj">
       <Project>{56530cb5-d16e-43c0-a4bd-f36a1da30f33}</Project>
       <Name>jbp.utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Core\TechTools.Core.Base\TechTools.Core.Base.csproj">
+      <Project>{4890096f-5313-401f-9366-74b7622aae8b}</Project>
+      <Name>TechTools.Core.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Core\TechTools.Core.Oracle9i\TechTools.Core.Oracle9i.csproj">
+      <Project>{293ff26d-c95f-4dd0-bc95-d3eb047c998d}</Project>
+      <Name>TechTools.Core.Oracle9i</Name>
     </ProjectReference>
     <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.DelegatesAndEnums\TechTools.DelegatesAndEnums.csproj">
       <Project>{c6863cc0-e925-4f7c-a36c-21be93b4739e}</Project>

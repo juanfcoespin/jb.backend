@@ -25,5 +25,9 @@ X:\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Debug\jbp.msg.dll.config
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Debug\jbp.msg.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Debug\jbp.msg.pdb
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Debug\TechTools.Utils.dll
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Debug\TechTools.Utils.pdb
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.csprojAssemblyReference.cache
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.csproj.CopyComplete
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.pdb

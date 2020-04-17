@@ -34,6 +34,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,12 +50,15 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.7\lib\net45\System.Web.Cors.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Web.Http.Cors">
+    <Reference Include="System.Web.Http.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.2.7\lib\net45\System.Web.Http.Cors.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
@@ -167,25 +171,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\DxSriDll\DxSriDll.vbproj">
-      <Project>{55f2c2ea-e81d-488f-bbf3-edf5e3faf98b}</Project>
-      <Name>DxSriDll</Name>
+    <ProjectReference Include="..\jbp.business.hana\jbp.business.hana.csproj">
+      <Project>{9ed95a00-f6c4-4249-84e4-7f822dc813bf}</Project>
+      <Name>jbp.business.hana</Name>
     </ProjectReference>
-    <ProjectReference Include="..\jbp.business\jbp.business.csproj">
+    <ProjectReference Include="..\jbp.business.oracle9i\jbp.business.oracle9i.csproj">
       <Project>{1e48c5df-d8da-471c-a922-f30024446284}</Project>
-      <Name>jbp.business</Name>
+      <Name>jbp.business.oracle9i</Name>
     </ProjectReference>
     <ProjectReference Include="..\jbp.msg\jbp.msg.csproj">
       <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
       <Name>jbp.msg</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.DelegatesAndEnums\TechTools.DelegatesAndEnums.csproj">
-      <Project>{c6863cc0-e925-4f7c-a36c-21be93b4739e}</Project>
-      <Name>TechTools.DelegatesAndEnums</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Rest\TechTools.Rest.csproj">
-      <Project>{ef5ef697-d4dc-4d87-b5e3-fcda91cd048e}</Project>
-      <Name>TechTools.Rest</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

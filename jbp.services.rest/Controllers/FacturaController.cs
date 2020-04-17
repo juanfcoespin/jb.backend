@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 
 using jbp.msg;
-using jbp.business;
+using jbp.business.oracle9i;
 
 namespace jbp.services.rest.Controllers
 {
@@ -28,7 +28,7 @@ namespace jbp.services.rest.Controllers
         }
         [HttpPost]
         [Route("api/factura/registrarFacturasJB")]
-        public List<RespPtkWSFacturasMsg> RegistrarFacturasJB([FromBody]List<FacturaPromotickMsg> me)
+        public List<RespPtkWSFacturasMsg> RegistrarFacturasJB([FromBody]List<DocumentoPromotickMsg> me)
         {
             //se hace un mock
             var listMs = new List<RespPtkWSFacturasMsg>();

@@ -56,12 +56,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\jbp.business\jbp.business.csproj">
-      <Project>{1e48c5df-d8da-471c-a922-f30024446284}</Project>
-      <Name>jbp.business</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="license.txt" />
     <Content Include="logo.png" />
   </ItemGroup>

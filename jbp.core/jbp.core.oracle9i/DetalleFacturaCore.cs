@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace jbp.core
+namespace jbp.core.oracle9i
 {
     public class DetalleFacturaCore
     {

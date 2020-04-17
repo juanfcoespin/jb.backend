@@ -14,7 +14,7 @@
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -48,6 +48,32 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\jbp.business.hana\jbp.business.hana.csproj">
+      <Project>{9ed95a00-f6c4-4249-84e4-7f822dc813bf}</Project>
+      <Name>jbp.business.hana</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\jbp.business.oracle9i\jbp.business.oracle9i.csproj">
+      <Project>{1e48c5df-d8da-471c-a922-f30024446284}</Project>
+      <Name>jbp.business.oracle9i</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\jbp.msg\jbp.msg.csproj">
+      <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
+      <Name>jbp.msg</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Core\TechTools.Core.Base\TechTools.Core.Base.csproj">
+      <Project>{4890096f-5313-401f-9366-74b7622aae8b}</Project>
+      <Name>TechTools.Core.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Core\TechTools.Core.Hana\TechTools.Core.Hana.csproj">
+      <Project>{46a41246-2d2f-4504-94f1-76db57fd8b55}</Project>
+      <Name>TechTools.Core.Hana</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Core\TechTools.Core.Oracle9i\TechTools.Core.Oracle9i.csproj">
+      <Project>{293ff26d-c95f-4dd0-bc95-d3eb047c998d}</Project>
+      <Name>TechTools.Core.Oracle9i</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
