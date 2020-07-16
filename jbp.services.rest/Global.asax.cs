@@ -14,6 +14,14 @@ namespace jbp.services.rest
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
+
+            //para que por defecto las respuestas sea en formato JSON
+            GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
+            /*Response as default json format
+             * example (http://localhost:9090/WebApp/api/user/)
+             */
+            GlobalConfiguration.Configuration.Formatters.XmlFormatter.SupportedMediaTypes.Clear();
+
         }
     }
 }

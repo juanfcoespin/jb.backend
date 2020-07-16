@@ -15,13 +15,18 @@ namespace jbp.business.hana
         public void EnviarDocumentosAPromotick() {
             try
             {
-                EnviarAjustes();
-                new SocioNegocioBusiness().SetRucInRucPrincipalNull();
-                if (conf.Default.ptkEnviarFacturas)
-                    EnviarFacturas();
+                //var ppb = new ParticipantePtkBusiness();
+                //ppb.SetRucInRucPrincipalNull();
+                //ppb.SincronizarDatosDeParticipantes();
+
+                ////para que se envíen los ajustes hay que insertar 
+                ////manualmente los documentos
+                //EnviarAjustes();
+
+                //if (conf.Default.ptkEnviarFacturas)
+                //    EnviarFacturas();
                 if (conf.Default.ptkEnviarNC)
                     EnviarNotasCredito();
-                new ParticipantePtkBusiness().SincronizarDatosDeParticipantes();
             }
             catch (Exception e)
             {
@@ -37,7 +42,7 @@ namespace jbp.business.hana
         private void EnviarAjustes()
         {
             var documentos = GetDocumentosAjusteToSendPromotick();
-            if (documentos == null)
+            if (documentos == null || documentos.Count==0)
                 return;
             new SendDocWsPtk().SendDocumentosToPromotickWS(documentos);
             SetDocumentosAjusteComoEnviado(documentos);

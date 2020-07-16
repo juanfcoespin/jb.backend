@@ -85,20 +85,7 @@ namespace jbp.business.hana
             return string.Empty;
         }
 
-        internal void SetRucInRucPrincipalNull()
-        {
-            var rucs = GetRucsConRucPrincipalNull();
-            rucs.ForEach(ruc => {
-                var sql = string.Format(@"
-                 update OCRD
-                  set ""U_JBP_RucPrincipal""=""LicTradNum""
-                 where
-                  U_IXX_APLICA_PUNTOS = 'SI'
-                  and ""LicTradNum"" = '{0}'
-                ",ruc);
-                new BaseCore().Execute(sql);
-            });
-        }
+        
         internal List<string> GetRucsConRucPrincipalNull()
         {
             var ms = new List<string>();
@@ -118,84 +105,7 @@ namespace jbp.business.hana
             return ms;
         }
 
-        public static ParticipantesPuntosMsg GetParticipantePuntosByRuc(string ruc)
-        {
-            var ms = new ParticipantesPuntosMsg();
-            var bc = new BaseCore();
-            var sql = string.Format(@"
-                select
-                 ""Nombre"",
-                 ""Email"",
-                 case
-                    when ""CodTipoIdentificacion"" = 'C' then 1--cedula
-                    when ""CodTipoIdentificacion"" = 'R' then 2--ruc
-                 end ""TipoDocumento"",
-                 ""Ruc"",
-                 SUBSTRING(""Ruc"", 5, 6) ""Clave"",
-                 to_char(""FechaCumpleaños"", 'dd/mm/yyyy') ""FechaNacimiento"",
-                 ""Celular"",
-                 ""Telefonos"",
-                 case
-                    when ""Genero"" = 'M' then 1
-                    when ""Genero"" = 'F' then 2
-                 end ""TipoGenero"",
-                 case
-                    when ""TipoCliente"" = 'A' then 1
-                    when ""TipoCliente"" = 'B' then 2
-                 end ""IdCatalogo"",
-                 case
-                    when ""EsElite"" = 'SI' then 1
-                    when ""EsElite"" = 'NO' then 2
-                 end ""TipoCatalogo"",
-                 t1.""Vendedor"",
-                 t0.""MetaCompras""
-                from
-                 ""JbpVw_SocioNegocio"" t0 inner join
-                 ""JbpVw_Vendedores"" t1 on t1.""CodVendedor"" = t0.""CodVendedor""
-                where
-                 ""Ruc"" = '{0}'
-                 and ""Ruc"" = ""RucPrincipal""
-            ", ruc);
-            var dt = bc.GetDataTableByQuery(sql);
-            if (dt.Rows.Count > 0) {
-                ms.nombres= dt.Rows[0]["Nombre"].ToString();
-                ms.email = dt.Rows[0]["Email"].ToString();
-                ms.tipoDocumento = bc.GetInt(dt.Rows[0]["TipoDocumento"]);
-                ms.nroDocumento = dt.Rows[0]["Ruc"].ToString();
-                ms.clave = dt.Rows[0]["Clave"].ToString();
-                ms.fechaNacimiento = dt.Rows[0]["FechaNacimiento"].ToString();
-                ms.celular = dt.Rows[0]["Celular"].ToString();
-                ms.telefono = dt.Rows[0]["Telefonos"].ToString();
-                ms.tipoGenero= bc.GetInt( dt.Rows[0]["TipoGenero"]);
-                ms.idCatalogo = bc.GetInt(dt.Rows[0]["IdCatalogo"]);
-                ms.tipoCatalogo= bc.GetInt(dt.Rows[0]["TipoCatalogo"]);
-                ms.vendedor = dt.Rows[0]["Vendedor"].ToString();
-                ms.metaAnual= bc.GetInt(dt.Rows[0]["MetaCompras"]);
-            }
-            return ms;
-        }
-        internal List<ParticipantesPuntosMsg> GetParticipantesPorSincronizar()
-        {
-            var ms = new List<ParticipantesPuntosMsg>();
-            var sql = @"
-                select
-                 top 10  
-                 ""Ruc"",
-                 ""SincronizadoConBddPromotick""
-                from
-                 ""JbpVw_SocioNegocio""
-                where
-                 ""AplicaPuntos"" = 'SI'
-                 and(""SincronizadoConBddPromotick"" is null or ""SincronizadoConBddPromotick"" = 'NO')
-            ";
-            var dt = new BaseCore().GetDataTableByQuery(sql);
-            if (dt.Rows.Count > 0) {
-                foreach (DataRow dr in dt.Rows) {
-                    ms.Add(GetParticipantePuntosByRuc(dr["Ruc"].ToString()));
-                }
-            }
-            return ms;
-        }
+        
         internal void RegistrarParticipanteComoSincronizado(string ruc)
         {
             var sql = string.Format(@"
@@ -203,7 +113,6 @@ namespace jbp.business.hana
                  set ""U_JBP_SincronizadoConBddPromotick"" = 1 
                 where 
                  ""LicTradNum"" = '{0}'
-                 and ""LicTradNum"" = ""U_JBP_RucPrincipal""
              ",ruc);
             new BaseCore().Execute(sql);
         }

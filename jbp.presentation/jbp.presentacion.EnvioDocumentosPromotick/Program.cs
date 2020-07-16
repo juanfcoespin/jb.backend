@@ -14,19 +14,8 @@ namespace jbp.presentacion.EnvioDocumentosPromotick
         static void Main(string[] args)
         {
             Console.WriteLine("Inicio Proceso");
-            EnviarDocumentos();
-            //RegistrarParticipante("1721796751001");
-            Console.WriteLine("Fin Proceso");
-        }
-
-        private static void RegistrarParticipante(string ruc)
-        {
-            new ParticipantePtkBusiness().RegistrarParticipante(ruc);
-        }
-
-        private static void EnviarDocumentos()
-        {
             new DocumentosPtkBusiness().EnviarDocumentosAPromotick();
+            Console.WriteLine("Fin Proceso");
         }
     }
 }

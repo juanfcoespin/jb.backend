@@ -24,7 +24,7 @@ namespace test1
             //ms = dt2.Rows.Count;
             
             var ms = jbp.business.oracle9i.SocioNegocioBusiness.GetItemsBytoken("18032816");
-            var ms2 = jbp.business.hana.SocioNegocioBusiness.GetParticipantePuntosByRuc("1802919496001");
+            var ms2 = jbp.business.hana.ParticipantePtkBusiness.GetParticipantePuntosByRucPrincipal("1802919496001");
 
         }
     }

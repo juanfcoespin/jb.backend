@@ -15,9 +15,35 @@ namespace jbp.business.hana
     {
         public void SendDocumentosToPromotickWS(List<DocumentoPromotickMsg> documentos)
         {
+            //valida si los datos del participante están correctos
+            //previo a enviar a promotick
+            var documentosAQuitar = new List<DocumentoPromotickMsg>();
+            foreach(var d in documentos)
+            {
+                var errorParticipante = "";
+                if (!new ParticipantePtkBusiness().ParticipanteValido(d.numDocumento, ref errorParticipante))
+                {
+                    var msg = string.Format(@"
+                    No se envio la {0} porque hay un problema de validación con el participante:</br>
+                        Num Documento: {1}</br>
+                        Monto: {2}</br>
+                        Ruc: {3}</br>
+                        Fecha Documento: {4}</br></br>
+                        Detalle de la validación:</br>{5}",
+                        d.EnumTipoDocumento, d.numFactura, d.montoFactura, d.numDocumento, d.fechaFactura, errorParticipante);
+                    EnviarPorCorreo("Error en envio documento promotick", msg);
+                    documentosAQuitar.Add(d);
+                }
+            }
+            //solo se envian los documentos con participantes validados
+            documentosAQuitar.ForEach(d =>documentos.Remove(d));
             if (documentos.Count == 0)
                 return;
             InsertarDocumentosAEnviar(documentos);
+            //SendDocumentosToWS(documentos);
+        }
+        private void SendDocumentosToWS(List<DocumentoPromotickMsg> documentos)
+        {
             DocumentosPtkMsg me = new DocumentosPtkMsg { facturas = documentos };
             try
             {
@@ -37,7 +63,7 @@ namespace jbp.business.hana
         {
             if (documentos == null)
                 return;
-            documentos = CorregirFechasAnterioresAlMesActual(documentos);
+            //documentos = CorregirFechasAnterioresAlMesActual(documentos);
             documentos.ForEach(documento => {
                 var idDocumento = documento.id;
                 if (SeEnvioAntesDocumento(documento))
@@ -147,13 +173,15 @@ namespace jbp.business.hana
                 Se ha procesado en envio al WS por {3} veces de promotick el documento {0} con numero {1}
             y entrega la respuesta: {2}",
             documento.tipoDocumento, documento.numFactura, documento.RespuestaWS, documento.numIntentosTx);
-            EnviarPorCorreo(msg, "Jbp-Promotick");
+            EnviarPorCorreo("Jbp-Promotick",msg);
         }
         private void ActualizarReintentosEnvio(DocumentoPromotickMsg documento)
         {
             documento.numIntentosTx +=1;
             var sql = string.Format(@"
-                update JBP_LOG_ENVIO_DOCUMENTOS_PTK set NUM_INTENTOS_TX={0} 
+                update JBP_LOG_ENVIO_DOCUMENTOS_PTK 
+                set NUM_INTENTOS_TX={0},
+                FECHA_TX=NOW()
                 where ID_DOCUMENTO={1} and TIPO_DOCUMENTO='{2}'
             ",
             documento.numIntentosTx, documento.id, documento.tipoDocumento);

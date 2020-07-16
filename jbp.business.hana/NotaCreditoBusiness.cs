@@ -20,7 +20,7 @@ namespace jbp.business.hana
                 // son las facturas del principal y las sucursales
                 var sql = @"
                 select 
-                 top 20
+                 --top 25
                  ""Id"",
                  ""fechaFactura"",
                  ""NumFolio"",

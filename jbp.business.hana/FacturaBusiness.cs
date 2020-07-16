@@ -29,7 +29,7 @@ namespace jbp.business.hana
                 // son las facturas del principal y las sucursales
                 var sql = @"
                 select 
-                 top 20
+                 --top 25
                  ""Id"",
                  ""fechaFactura"",
                  ""NumFolio"",
@@ -40,6 +40,7 @@ namespace jbp.business.hana
                  ""RespWS""
                 from
                  ""JbpVw_FacturasToSendPtk""
+                --where ""Id""=12741
                 ";
                 var bc = new BaseCore();
                 var dt = bc.GetDataTableByQuery(sql);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TechTools.Utils;
+using System.Runtime.Serialization;
 
 namespace jbp.msg
 {
@@ -12,6 +13,32 @@ namespace jbp.msg
         public string CodigosProductos { get; set; }
         public int Año { get; set; }
         public string Meses { get; set; }
+    }
+    public class RucMsg {
+        public string nroDocumento { get; set; }
+    }
+   
+    public class DocumentoEnviadoMsg
+    {
+       
+        public string tipoDocumento { get; set; }
+       
+        public string fechaEnvio { get; set; }
+        
+        public string fechaDocumento { get; set; }
+        
+        public string fechaDocumentoOriginal { get; set; }
+       
+        public string nroDocumento { get; set; }
+       
+        public int monto { get; set; }
+     
+        public int puntos { get; set; }
+       
+        public int codRespWS { get; set; }
+        
+        
+        public string respWs { get; set; }
     }
     public class AceleradorMsg
     {

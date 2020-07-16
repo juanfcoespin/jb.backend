@@ -13,6 +13,7 @@ namespace jbp.services.rest.Controllers
 {
     public class SocioNegocioController : ApiController
     {
+        
         [HttpGet]
         [Route("api/socioNegocio/getByRuc/{ruc}")]
         public SocioNegocioMsg GetByRuc(string ruc)
@@ -23,7 +24,8 @@ namespace jbp.services.rest.Controllers
         [Route("api/socioNegocio/getParticipanteByRuc/{ruc}")]
         public ParticipantesPuntosMsg GetParticipanteByRuc(string ruc)
         {
-            return jbp.business.oracle9i.SocioNegocioBusiness.GetParticipanteByRuc(ruc);
+            //return jbp.business.oracle9i.SocioNegocioBusiness.GetParticipanteByRuc(ruc);
+            return jbp.business.hana.ParticipantePtkBusiness.GetParticipantePuntosByRucPrincipal(ruc);
         }
         [HttpGet]
         [Route("api/socioNegocio/getParticipanteByRucFromERP/{ruc}")]
@@ -35,7 +37,7 @@ namespace jbp.services.rest.Controllers
         [Route("api/socioNegocio/getItemsByToken/{token}")]
         public List<SocioNegocioItemMsg> GetItemsBytoken(string token)
         {
-            return jbp.business.oracle9i.SocioNegocioBusiness.GetItemsBytoken(token);
+            return jbp.business.hana.SocioNegocioBusiness.GetItemsBytoken(token);
         }
         [HttpGet]
         [Route("api/socioNegocio/getVendedores")]
