@@ -100,7 +100,7 @@ namespace jbp.msg.sap
     }
     public class ValorPagadoMsg
     {
-        public string Valor { get; set; }
+        public decimal Valor { get; set; }
         public string Fecha { get; set; }
     }
 }

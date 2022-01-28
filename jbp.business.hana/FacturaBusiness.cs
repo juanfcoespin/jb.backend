@@ -118,10 +118,11 @@ namespace jbp.business.hana
                  upper(t1.""Comentario"") not like '%RET%'--que no sea una retencion
                  and t2.""DocNum"" = {0}
             ", docNum);
-            var dt = new BaseCore().GetDataTableByQuery(sql);
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
             foreach (DataRow dr in dt.Rows) {
                 ms.Add(new ValorPagadoMsg {
-                    Valor = dr["Pago"].ToString(),
+                    Valor = bc.GetDecimal(dr["Pago"]),
                     Fecha = dr["Fecha"].ToString()
                 });
             }
