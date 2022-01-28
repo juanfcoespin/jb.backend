@@ -73,11 +73,12 @@ namespace jbp.business.hana
                     });
                 }
             }
-            //se agregan retenciones a las facturas
+            //se agregan pagos y retenciones a las facturas
             ms.ForEach(fact =>
             {
                 if (fact.TipoDocumento == "Factura") {
                     fact.Retenciones = FacturaBusiness.GetRetencionesByDocNum(fact.DocNum);
+                    fact.Pagos = FacturaBusiness.GetPagosByDocNum(fact.DocNum);
                 }
             });
             return ms;

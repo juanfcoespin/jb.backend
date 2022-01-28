@@ -103,6 +103,31 @@ namespace jbp.business.hana
             new BaseCore().Execute(sql);
         }
 
+        internal static List<ValorPagadoMsg> GetPagosByDocNum(int docNum)
+        {
+            var ms = new List<ValorPagadoMsg>();
+            var sql = string.Format(@"
+                select 
+                 t0.""Pago"",
+                 to_char(t1.""Fecha"", 'yyyy-mm-dd') ""Fecha""
+                from
+                 ""JbpVw_PagosRecibidosLinea"" t0 inner join
+                 ""JbpVw_PagosRecibidos"" t1 on t1.""Id"" = t0.""IdPagoRecibido"" inner join
+                 ""JbpVw_Factura"" t2 on t2.""Id"" = t0.""IdFactura""
+                where
+                 upper(t1.""Comentario"") not like '%RET%'--que no sea una retencion
+                 and t2.""DocNum"" = {0}
+            ", docNum);
+            var dt = new BaseCore().GetDataTableByQuery(sql);
+            foreach (DataRow dr in dt.Rows) {
+                ms.Add(new ValorPagadoMsg {
+                    Valor = dr["Pago"].ToString(),
+                    Fecha = dr["Fecha"].ToString()
+                });
+            }
+            return ms;
+        }
+
         internal static List<RetencionMsg> GetRetencionesByDocNum(int docNumFactura)
         {
             var ms = new List<RetencionMsg>();

@@ -98,4 +98,9 @@ namespace jbp.msg.sap
         public TipoPagoMsg TipoPago { get; set; }
         public List<DocCarteraMsg> facturasAPagar { get; set; }
     }
+    public class ValorPagadoMsg
+    {
+        public string Valor { get; set; }
+        public string Fecha { get; set; }
+    }
 }
