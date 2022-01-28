@@ -12,6 +12,36 @@ namespace jbp.business.hana
 {
     public class SocioNegocioBusiness
     {
+        public static double GetPrecioByCodSocioNegocioCodArticulo(string codSocioNegocio, string codArticulo)
+        {
+            var sql = string.Format(@"
+                select
+                 top 1
+                 ifnull(t1.""Precio"",0)
+                from
+                 ""JbpVw_SocioNegocio"" t0 left join
+                 ""JbpVw_ListaPrecio"" t1 on t1.""Id"" = t0.""IdListaPrecio""
+                where
+                 t1.""CodArticulo"" = '{0}'
+                 and t0.""CodSocioNegocio"" = '{1}'
+            ",codArticulo, codSocioNegocio);
+            var ms = new BaseCore().GetDoubleScalarByQuery(sql);
+            return ms;
+        }
+
+        internal static string GetVendedorByCodSocioNegocio(string codCliente)
+        {
+            var sql = string.Format(@"
+                 select 
+                  t1.""Vendedor""
+                 from
+                  ""JbpVw_SocioNegocio"" t0 inner join
+                  ""JbpVw_Vendedores"" t1 on t1.""CodVendedor"" = t0.""CodVendedor""
+                 where t0.""CodSocioNegocio"" = '{0}'
+            ",codCliente);
+            return new BaseCore().GetScalarByQuery(sql);
+        }
+
         public static List<SocioNegocioItemMsg> GetItemsBytoken(string token)
         {
             var ms = new List<SocioNegocioItemMsg>();
@@ -42,6 +72,42 @@ namespace jbp.business.hana
             }
             return ms;
         }
+
+        public static HabilitadoCanjearPuntosMS HabilitadoParaCangearPuntos(string ruc)
+        {
+            try
+            {
+                var ms = false;
+                var sql = string.Format(@"
+                    SELECT 
+                     --t0.""Ruc"" ""RucSucursal"",
+                     --t1.""Ruc"" ""RucPrincipal"",
+                     top 1
+                     t1.""EsElite""-- SI o NO para habilitar canje de puntos
+                    FROM
+                     ""JbpVw_SocioNegocio"" t0 inner join--es el secundario o sucursal
+                     ""JbpVw_SocioNegocio"" t1 on t1.""Ruc"" = t0.""RucPrincipal""--es el principal
+                    where
+                     t0.""Ruc"" = '{0}'--sucursal 0 principal
+                     and t1.""AplicaPuntos"" = 'SI' -- el principal participa en el plan puntos
+                ", ruc);
+                var resp = new BaseCore().GetScalarByQuery(sql);
+                if (resp!=null && resp.Equals("SI"))
+                    ms = true;
+                return new HabilitadoCanjearPuntosMS() { 
+                    CodResp=1,
+                    Resp=ms
+                };
+            }
+            catch(Exception e) {
+                return new HabilitadoCanjearPuntosMS()
+                {
+                    CodResp = -500,
+                    Resp = false
+                };
+            }
+        }
+
         public static void ActualizarBanderaSincronizacionSocioNegocioPtk(string rucCliente, bool sincronizado)
         {
             try
@@ -59,6 +125,26 @@ namespace jbp.business.hana
             {
                 e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
                 throw e;
+            }
+        }
+
+        internal static string GetCorreoByCodigo(string codCliente)
+        {
+            try
+            {
+                var bc = new BaseCore();
+                var sql = string.Format(@"
+                    select ""Email"" from ""JbpVw_SocioNegocio""
+                    where
+                        ""CodSocioNegocio"" = '{0}'
+                ", codCliente);
+                var correos = bc.GetScalarByQuery(sql);
+                return GetUnSoloCorreo(correos);
+            }
+            catch
+            {
+
+                return null;
             }
         }
 
@@ -85,7 +171,121 @@ namespace jbp.business.hana
             return string.Empty;
         }
 
-        
+        public static List<ClientMsg> GetByCodVendedor(string codVendedor)
+        {
+            var ms = new List<ClientMsg>();
+            var sql = @"
+               select 
+                ""CodSocioNegocio"", 
+                ""Nombre"",
+                ""NombreComercial"",
+                ""Ruc"",
+                ""JbpFn_GetCumple""(""FechaCumpleaños"") ""FecCumple"",
+                ""IdListaPrecio"",
+                ""Telefono"",
+                ""Celular""
+               from
+                ""JbpVw_SocioNegocio""
+               where
+                ""Activo""='Y'
+            ";
+            if (!string.IsNullOrEmpty(codVendedor) && codVendedor!="0") { //no aplica para usuarios administradores
+                sql += string.Format(@"
+                    and ""CodVendedor"" = {0} 
+                ",codVendedor);
+            }
+            sql+=@"   
+               order by 2
+            ";
+            var dt = new BaseCore().GetDataTableByQuery(sql);
+            if(dt!=null && dt.Rows.Count > 0)
+            {
+                foreach(DataRow dr in dt.Rows)
+                {
+                    var codSocioNegocio = dr["CodSocioNegocio"].ToString();
+                    ms.Add(new ClientMsg
+                    {
+                        id = codSocioNegocio,
+                        name = dr["Nombre"].ToString(),
+                        comercialName = dr["NombreComercial"].ToString(),
+                        ruc= dr["Ruc"].ToString(),
+                        birthDate = dr["FecCumple"].ToString(),
+                        priceListId = dr["IdListaPrecio"].ToString(),
+                        telefono = dr["Telefono"].ToString(),
+                        celular = dr["Celular"].ToString(),
+                        directions = GetDirectionsById(codSocioNegocio),
+                        
+                        contacts = GetContactsById(codSocioNegocio),
+                        observations = GetVendorObservationsById(codSocioNegocio)
+                    });
+                }
+            }
+            return ms;
+        }
+        private static List<ClientDirectionMsg> GetDirectionsById(string codSocioNegocio)
+        {
+            var ms = new List<ClientDirectionMsg>();
+            var sql = string.Format(@"
+               select 
+                distinct
+                ""Ciudad"", 
+                ""CalleYNumero""
+               from ""JbpVw_DireccionesSN""
+               where ""CodSocioNegocio"" = '{0}'
+            ", codSocioNegocio);
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dt.Rows)
+                {
+
+                    ms.Add(new ClientDirectionMsg
+                    {
+                        city = dr["Ciudad"].ToString(),
+                        direction = dr["CalleYNumero"].ToString()
+                    });
+                }
+            }
+            return ms;
+        }
+        private static List<ClientContactMsg> GetContactsById(string codSocioNegocio)
+        {
+            var ms = new List<ClientContactMsg>();
+            var sql = string.Format(@"
+               select 
+                ""Contacto"", 
+                ""Telefono"",
+                ""Celular"",
+                ""Email"",
+                ""Direccion""
+               from ""JbpVw_Contactos""
+               where ""CodSocioNegocio"" = '{0}'
+            ", codSocioNegocio);
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dt.Rows)
+                {
+
+                    ms.Add(new ClientContactMsg
+                    {
+                        name = dr["Contacto"].ToString(),
+                        phone = dr["Telefono"].ToString(),
+                        cellular = dr["Celular"].ToString(),
+                        email = dr["Email"].ToString(),
+                        direction = dr["Direccion"].ToString()
+                    });
+                }
+            }
+            return ms;
+        }
+        private static List<ClientVendorOnservationMsg> GetVendorObservationsById(string codSocioNegocio)
+        {
+            var ms = new List<ClientVendorOnservationMsg>();
+            return ms;
+        }
         internal List<string> GetRucsConRucPrincipalNull()
         {
             var ms = new List<string>();
@@ -104,8 +304,6 @@ namespace jbp.business.hana
             }
             return ms;
         }
-
-        
         internal void RegistrarParticipanteComoSincronizado(string ruc)
         {
             var sql = string.Format(@"

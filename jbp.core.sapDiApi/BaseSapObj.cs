@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Threading;
 
 namespace jbp.core.sapDiApi
 {
@@ -10,6 +12,8 @@ namespace jbp.core.sapDiApi
     {
         public SAPbobsCOM.Documents obj;
         public SAPbobsCOM.Company Company;
+        public delegate void dDisconected(bool connected);
+        public event dDisconected onDisconected;
 
         public BaseSapObj()
         {
@@ -21,10 +25,16 @@ namespace jbp.core.sapDiApi
             this.Company.DbUserName = conf.Default.dbUser;
             this.Company.DbPassword = conf.Default.dbPwd;
         }
-        private bool Connect()
+        public bool IsConected()
+        {
+            return this.Company.Connected;
+        }
+        public bool Connect()
         {
             try
             {
+                if (this.Company.Connected)
+                    return true;
                 this.Company.CompanyDB = conf.Default.dbName;
                 this.Company.UserName = conf.Default.sapUser;
                 this.Company.Password = conf.Default.sapPwd;
@@ -33,13 +43,44 @@ namespace jbp.core.sapDiApi
             }
             catch
             {
-
                 return false;
             }
         }
-        private void Disconnect() {
+        public void Disconnect() {
             if (this.Company.Connected)
                 this.Company.Disconnect();
+            CheckIfIsDisconectedAsync();
+        }
+
+        private void CheckIfIsDisconectedAsync()
+        {
+            //wait until diApi disconect to DB in other thread for 2 minutes
+            var worker = new BackgroundWorker();
+            var connected = true;
+            worker.DoWork += delegate {
+                int timeElapsedInSeconds = 0;
+                int waitTimeInSeconds = 120;
+                var waitTimeInMiliseconds = 1000;
+                while (timeElapsedInSeconds <= waitTimeInSeconds)
+                {
+                    if (!this.Company.Connected)
+                    {
+                        connected = false;
+                        timeElapsedInSeconds = waitTimeInSeconds;
+                    }
+                    else
+                    {
+                        connected = true;
+
+                        timeElapsedInSeconds += waitTimeInMiliseconds;
+                        Thread.Sleep(waitTimeInMiliseconds);
+                    }
+                }
+            };
+            worker.RunWorkerCompleted += (s, e) => onDisconected?.Invoke(connected);
+            worker.RunWorkerAsync();
+            
+            
         }
     }
 }

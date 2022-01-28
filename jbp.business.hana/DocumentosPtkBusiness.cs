@@ -11,20 +11,14 @@ using TechTools.Core.Hana;
 
 namespace jbp.business.hana
 {
-    public class DocumentosPtkBusiness:BaseBusiness { 
+    public class DocumentosPtkBusiness:BaseWSPtk { 
         public void EnviarDocumentosAPromotick() {
             try
             {
-                //var ppb = new ParticipantePtkBusiness();
-                //ppb.SetRucInRucPrincipalNull();
-                //ppb.SincronizarDatosDeParticipantes();
+                var ppb = new ParticipantePtkBusiness();
 
-                ////para que se envíen los ajustes hay que insertar 
-                ////manualmente los documentos
-                //EnviarAjustes();
-
-                //if (conf.Default.ptkEnviarFacturas)
-                //    EnviarFacturas();
+                if (conf.Default.ptkEnviarFacturas)
+                    EnviarFacturas();
                 if (conf.Default.ptkEnviarNC)
                     EnviarNotasCredito();
             }
@@ -35,64 +29,44 @@ namespace jbp.business.hana
             }
         }
 
-        /// <summary>
-        /// cuando hay un desfase de la bdd de participantes
-        /// y se envia mas o menos puntos de los que se deberia
-        /// </summary>
-        private void EnviarAjustes()
+        public void EnviarAjustes()
         {
-            var documentos = GetDocumentosAjusteToSendPromotick();
-            if (documentos == null || documentos.Count==0)
-                return;
-            new SendDocWsPtk().SendDocumentosToPromotickWS(documentos);
-            SetDocumentosAjusteComoEnviado(documentos);
-        }
-
-        private void SetDocumentosAjusteComoEnviado(List<DocumentoPromotickMsg> documentos)
-        {
-            documentos.ForEach(documento => {
-                var sql = string.Format(@"
-                 UPDATE JBP_DOCUMENTOS_AJUSTE_PTK
-                  SET ENVIADO=true
-                 WHERE ID={0} AND NRO_DOCUMENTO='{1}'
-                ", documento.id, documento.numFactura);
-                new BaseCore().Execute(sql);
-            });
-        }
-
-        private List<DocumentoPromotickMsg> GetDocumentosAjusteToSendPromotick()
-        {
-            try
-            {
-                // son las facturas del principal y las sucursales
-                var sql = @"
+            var documentos = new List<DocumentoPromotickMsg>();
+            var sql = @"
                 select 
-                 top 20
-                 ID ""Id"",
-                 FECHA_DOCUMENTO ""fechaFactura"",
-                 NRO_DOCUMENTO ""NumFolio"",
-                 TIPO_DOCUMENTO,
-                 RUC ""RucPrincipal"",
-                 MONTO ""montoFactura"",
-                 PUNTOS ""Puntos"",
-                 0 ""NumIntentos"",
-                 '' ""RespWS""
-                from
-                 JBP_DOCUMENTOS_AJUSTE_PTK
-                where 
-                 ENVIADO=false
-                ";
-                var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql);
-                return new DocumentosPtkBusiness().GetListDocumentosPtkFromDt(dt);
+                 FECHAFACTURA,
+                 NUMFACTURA, 
+                 DESCRIPCION,
+                 NUMDOCUMENTO,
+                 MONTOFACTURA,
+                 PUNTOS
+                from JBP_TMP_DOCS_PTK
+            ";
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
+            foreach (DataRow dr in dt.Rows) {
+                var documento = new DocumentoPromotickMsg
+                {
+                    fechaFactura = dr["FECHAFACTURA"].ToString(),
+                    numFactura = dr["NUMFACTURA"].ToString(),
+                    numDocumento = dr["NUMDOCUMENTO"].ToString(),
+                    montoFactura = bc.GetInt(dr["MONTOFACTURA"]),
+                    puntos = bc.GetInt(dr["PUNTOS"])
+                };
+                //por defecto en descripcion se iyecta el tipo de documento
+                documento._customDescription = true;
+                documento._description = dr["DESCRIPCION"].ToString();
+                documentos.Add(documento); 
             }
-            catch (Exception e)
-            {
-                e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
-                throw e;
-            }
+            new SendDocWsPtk().SendDocumentosToWS(documentos, true);
         }
 
+        public void EnviarAceleradores(string periodo)
+        {
+            var aceleradores = new promotickBusiness().GetAceleradoresToSend();
+            new SendDocWsPtk().SendAceleradoresToPromotickWS(aceleradores, periodo);
+        }
+       
         private void EnviarFacturas()
         {
             var facturas = new FacturaBusiness().GetFacturasParticipantesToSendPromotick();
@@ -101,7 +75,12 @@ namespace jbp.business.hana
         private void EnviarNotasCredito()
         {
             var notasCredito = new NotaCreditoBusiness().GetNotasCreditoParticipantesToSendPromotick();
-            notasCredito = notasCredito.Take(2).ToList();//solo para pruebas
+            new SendDocWsPtk().SendDocumentosToPromotickWS(notasCredito);
+        }
+
+        public void EnviarNotasCreditoManuales()
+        {
+            var notasCredito = new NotaCreditoBusiness().GetNCManualesParticipantesToSendPromotick();
             new SendDocWsPtk().SendDocumentosToPromotickWS(notasCredito);
         }
         /// <summary>
@@ -109,8 +88,8 @@ namespace jbp.business.hana
         /// se dispara un trigger que levanta la bandera de sincronización
         /// para registrar la actualización en la bdd de ptk
         /// </summary>
-        
-        public List<DocumentoPromotickMsg> GetListDocumentosPtkFromDt(DataTable dt, eTipoDocumentoPtk tipoDocumentoPtk=eTipoDocumentoPtk.NoDefinido)
+
+        public List<DocumentoPromotickMsg> GetListDocumentosPtkFromDt(DataTable dt)
         {
             var bc = new BaseCore();
             var ms = new List<DocumentoPromotickMsg>();
@@ -119,28 +98,23 @@ namespace jbp.business.hana
                 var factura = new DocumentoPromotickMsg
                 {
                     id = bc.GetInt(dr["Id"]),
+                    tipoDocumento= dr["TipoDocumento"].ToString(),
+
                     fechaFactura = dr["fechaFactura"].ToString(),
                     numFactura = dr["NumFolio"].ToString(),
                     numDocumento = dr["RucPrincipal"].ToString(),
                     montoFactura = bc.GetInt(dr["montoFactura"]),
                     puntos = bc.GetInt(dr["Puntos"]),
+                     
                     numIntentosTx = bc.GetInt(dr["NumIntentos"]),
                     RespuestaWS = dr["RespWS"].ToString()
                 };
-
-                if (tipoDocumentoPtk != eTipoDocumentoPtk.NoDefinido)
-                    factura.EnumTipoDocumento = tipoDocumentoPtk;
-                else {
-                    switch (dr["TIPO_DOCUMENTO"].ToString()) {
-                        case "ajusteFacturaVentas":
-                            factura.EnumTipoDocumento = eTipoDocumentoPtk.AjusteFacturaVentas;
-                            break;
-                        case "ajusteNotaCredito":
-                            factura.EnumTipoDocumento = eTipoDocumentoPtk.AjusteNotaCredito;
-                            break;
-                    }
+                if(factura.tipoDocumento == "notaCreditoManual") {
+                    factura._customDescription = true;
+                    factura._description = dr["descripcion"].ToString();
                 }
-                ms.Add(factura); ;
+                
+                ms.Add(factura);
             }
             return ms;
         }

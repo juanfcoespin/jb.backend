@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,6 +48,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>conf.settings</DependentUpon>
     </Compile>
+    <Compile Include="SapPagoRecibido - 15Dic2021.cs" />
+    <Compile Include="SapPagoRecibido.cs" />
+    <Compile Include="SapOrder - Copy.cs" />
     <Compile Include="SapOrder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -70,9 +73,13 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\jbp.msg\jbp.msg.csproj">
-      <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
-      <Name>jbp.msg</Name>
+    <ProjectReference Include="..\jbp.msg.sap\jbp.msg.sap.csproj">
+      <Project>{82573bbb-4437-46f2-b19d-f592d1b73000}</Project>
+      <Name>jbp.msg.sap</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Utils\TechTools.Utils.csproj">
+      <Project>{f5f4b36b-6166-4db9-998c-8aed8cade5b6}</Project>
+      <Name>TechTools.Utils</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

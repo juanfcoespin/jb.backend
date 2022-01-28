@@ -12,7 +12,7 @@ namespace jbp.business.hana {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.3.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.8.1.0")]
     internal sealed partial class conf : global::System.Configuration.ApplicationSettingsBase {
         
         private static conf defaultInstance = ((conf)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new conf())));
@@ -74,6 +74,33 @@ namespace jbp.business.hana {
         public string CorreosNotificacionesPromotick {
             get {
                 return ((string)(this["CorreosNotificacionesPromotick"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("jespin@jbp.com.ec")]
+        public string correoPagos {
+            get {
+                return ((string)(this["correoPagos"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://apijames.promotick.com.pe/JamesBPApi/api")]
+        public string ptkWsUrl2 {
+            get {
+                return ((string)(this["ptkWsUrl2"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("c:\\tmp\\comprobantesPago")]
+        public string pathComprobantesPago {
+            get {
+                return ((string)(this["pathComprobantesPago"]));
             }
         }
     }

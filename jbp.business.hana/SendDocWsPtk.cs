@@ -13,6 +13,7 @@ namespace jbp.business.hana
 {
     public class SendDocWsPtk: BaseWSPtk
     {
+
         public void SendDocumentosToPromotickWS(List<DocumentoPromotickMsg> documentos)
         {
             //valida si los datos del participante están correctos
@@ -30,7 +31,7 @@ namespace jbp.business.hana
                         Ruc: {3}</br>
                         Fecha Documento: {4}</br></br>
                         Detalle de la validación:</br>{5}",
-                        d.EnumTipoDocumento, d.numFactura, d.montoFactura, d.numDocumento, d.fechaFactura, errorParticipante);
+                        d.tipoDocumento, d.numFactura, d.montoFactura, d.numDocumento, d.fechaFactura, errorParticipante);
                     EnviarPorCorreo("Error en envio documento promotick", msg);
                     documentosAQuitar.Add(d);
                 }
@@ -40,9 +41,39 @@ namespace jbp.business.hana
             if (documentos.Count == 0)
                 return;
             InsertarDocumentosAEnviar(documentos);
-            //SendDocumentosToWS(documentos);
+            SendDocumentosToWS(documentos);
         }
-        private void SendDocumentosToWS(List<DocumentoPromotickMsg> documentos)
+
+        internal void SendAceleradoresToPromotickWS(List<AceleradoresMsg> aceleradores, string periodo)
+        {
+            var url = string.Format("{0}/{1}", conf.Default.ptkWsUrl, "gstacelerador");
+            aceleradores.ForEach(acelerador =>
+            {
+                try
+                {
+                    var rc = new RestCall();
+                    var resp = (RespPtkWsAceleradorMsg)rc.SendPostOrPut(url, typeof(RespPtkWsAceleradorMsg),
+                        acelerador, typeof(AceleradoresMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
+                    InsertLogEnvioAcelerador(resp, acelerador, periodo);
+                }
+                catch (Exception e)
+                {
+                    e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
+                    EnviarPorCorreo(e.Message, "Jbp-Promotick");
+                }
+            });
+        }
+
+        private void InsertLogEnvioAcelerador(RespPtkWsAceleradorMsg resp, AceleradoresMsg acelerador, string periodo)
+        {
+            var sql = string.Format(@"
+                insert into JBP_ACELERADORES(PERIODO, RUC, PUNTOS, FECHA_ENVIO, COD_RESPUESTA_WS, MSG_RESPUESTA_WS) 
+                values('{0}', '{1}', {2}, CURRENT_TIMESTAMP, {3}, '{4}')
+            ", periodo, acelerador.nroDocumento, acelerador.puntos, resp.codigo, resp.mensaje);
+            new BaseCore().Execute(sql);
+        }
+
+        public void SendDocumentosToWS(List<DocumentoPromotickMsg> documentos, bool esNcAjuste=false)
         {
             DocumentosPtkMsg me = new DocumentosPtkMsg { facturas = documentos };
             try
@@ -51,7 +82,10 @@ namespace jbp.business.hana
                 var rc = new RestCall();
                 var resp = (RespuestasPtkWsFacturasMsg)rc.SendPostOrPut(url, typeof(RespuestasPtkWsFacturasMsg),
                     me, typeof(DocumentosPtkMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
-                ActualizarRespuestasWS(resp);
+                if (!esNcAjuste)
+                    ActualizarRespuestasWS(resp);
+                else
+                    RegistrarNCAjuste(resp, documentos);
             }
             catch (Exception e)
             {
@@ -59,6 +93,34 @@ namespace jbp.business.hana
                 EnviarPorCorreo(e.Message, "Jbp-Promotick");
             }
         }
+
+        private void RegistrarNCAjuste(RespuestasPtkWsFacturasMsg respuestasWS, List<DocumentoPromotickMsg> documentos)
+        {
+            respuestasWS.respuesta.ForEach(resp =>
+            {
+                if (resp.codigo == 1){//proceso exitoso
+                    var nc = documentos.FirstOrDefault(d => d.numFactura == resp.numFactura);
+                    if (nc != null) {
+                        var bc = new BaseCore();
+                        //se inserta la NC por ajuste
+                        var sql = string.Format(@"
+                            insert into JBP_NC_MANUALES(FECHA_FACTURA, NUM_FOLIO, RUC_PRINCIPAL, MONTO_FACTURA, PUNTOS, DESCRIPCION)
+                            VALUES('{0}', '{1}', '{2}', {3}, {4}, '{5}')
+                        ",nc.fechaFactura, nc.numFactura, nc.numDocumento, nc.montoFactura, nc.puntos, nc._description);
+                        bc.Execute(sql);
+                        // se borra NC de documentos temporales
+                        sql = string.Format(@"
+                            delete from JBP_TMP_DOCS_PTK
+                            where NUMDOCUMENTO='{0}'
+                            and NUMFACTURA='{1}'
+                        ", nc.numDocumento, nc.numFactura);
+                        bc.Execute(sql);
+                    }
+                }
+
+            });
+        }
+
         private void InsertarDocumentosAEnviar(List<DocumentoPromotickMsg> documentos)
         {
             if (documentos == null)
@@ -78,15 +140,18 @@ namespace jbp.business.hana
                         insert into JBP_LOG_ENVIO_DOCUMENTOS_PTK(
                             ID_DOCUMENTO, FECHA_DOCUMENTO, NRO_DOCUMENTO,
                             RUC, MONTO, PUNTOS,
-                            FECHA_TX, NUM_INTENTOS_TX, TIPO_DOCUMENTO, FECHA_DOCUMENTO_ORIGINAL
+                            FECHA_TX, NUM_INTENTOS_TX, TIPO_DOCUMENTO, 
+                            FECHA_DOCUMENTO_ORIGINAL, DESCRIPCION
                         )values(
                             {0},'{1}','{2}',
                             '{3}',{4},{5},
-                            NOW(),1,'{6}','{7}'
+                            NOW(),1,'{6}',
+                            '{7}', '{8}'
                         )
                     ", documento.id, documento.fechaFactura, documento.numFactura,
                     documento.numDocumento, documento.montoFactura, documento.puntos,
-                    documento.tipoDocumento, documento.fechaDocumentoOriginal
+                    documento.tipoDocumento, 
+                    documento.fechaDocumentoOriginal, documento.descripcion
                     );
                     var bc = new BaseCore();
                     bc.Execute(sql);
@@ -162,8 +227,12 @@ namespace jbp.business.hana
         {
             var sql = string.Format(@"
                 select count(*) from JBP_LOG_ENVIO_DOCUMENTOS_PTK
-                where ID_DOCUMENTO={0} and TIPO_DOCUMENTO='{1}'",
-            documento.id, documento.tipoDocumento);
+                where 
+                 RUC ='{0}'
+                 and NRO_DOCUMENTO='{1}'
+                 and TIPO_DOCUMENTO='{2}'                
+            ",
+            documento.numDocumento, documento.numFactura, documento.tipoDocumento);
             var numreg = new BaseCore().GetIntScalarByQuery(sql);
             return numreg > 0;
         }
@@ -171,7 +240,7 @@ namespace jbp.business.hana
         {
             var msg = string.Format(@"
                 Se ha procesado en envio al WS por {3} veces de promotick el documento {0} con numero {1}
-            y entrega la respuesta: {2}",
+            ",
             documento.tipoDocumento, documento.numFactura, documento.RespuestaWS, documento.numIntentosTx);
             EnviarPorCorreo("Jbp-Promotick",msg);
         }

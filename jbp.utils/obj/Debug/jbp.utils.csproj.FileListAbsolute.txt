@@ -49,6 +49,7 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\bin\Debug\jbp.msg.dll.config
 D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\bin\Debug\TechTools.DelegatesAndEnums.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\bin\Debug\TechTools.Utils.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.csprojAssemblyReference.cache
+D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.csproj.CoreCompileInputs.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.csproj.CopyComplete
 D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.pdb

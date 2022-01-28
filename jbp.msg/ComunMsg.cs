@@ -5,6 +5,11 @@ using System.Text;
 
 namespace jbp.msg
 {
+    public class CamposValidar
+    {
+        public string Campo { get; set; }
+        public string Msg { get; set; }
+    }
     public class MensajeSalidaMsg {
         /// <summary>
         /// en esta variable se almacenan los errores producidos en el 
@@ -34,6 +39,7 @@ namespace jbp.msg
     }
     public class ItemCombo {
         public int Id { get; set; }
+        public string Cod { get; set; }
         public string Nombre { get; set; }
     }
     /// <summary>

@@ -38,10 +38,15 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AceleradoresMsg.cs" />
+    <Compile Include="ArticuloMsg.cs" />
+    <Compile Include="CatalogoMsg.cs" />
     <Compile Include="CuentaMsg.cs" />
+    <Compile Include="EntregaMsg.cs" />
     <Compile Include="FacturaSriMsg.cs" />
     <Compile Include="PeriodoMsg.cs" />
     <Compile Include="PlanCuentasProcesadoMsg.cs" />
+    <Compile Include="ProductMsg.cs" />
     <Compile Include="PromotickMsg.cs" />
     <Compile Include="UserMsg.cs" />
     <Compile Include="SocioNegocioMsg.cs" />
@@ -51,6 +56,7 @@
     <Compile Include="FacturaMsg.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SucursalMsg.cs" />
+    <Compile Include="VendedorMsg.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

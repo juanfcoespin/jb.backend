@@ -37,8 +37,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.DirectoryServices" />
-    <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.Reactive, Version=4.3.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Reactive.4.3.1\lib\net46\System.Reactive.dll</HintPath>
     </Reference>
@@ -66,7 +64,6 @@
   <ItemGroup>
     <Compile Include="BaseBusiness.cs" />
     <Compile Include="BusinessServices\BaseServiceTimer.cs" />
-    <Compile Include="Class1.cs" />
     <Compile Include="CommonBusiness.cs" />
     <Compile Include="conf.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -92,7 +89,6 @@
     <Compile Include="BusinessServices\CheckFacturasToSendPtkBusinessService.cs" />
     <Compile Include="RetencionesBusiness.cs" />
     <Compile Include="SocioNegocioBusiness.cs" />
-    <Compile Include="UserBusiness.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\jbp.core\jbp.core.oracle9i\jbp.core.oracle9i.csproj">

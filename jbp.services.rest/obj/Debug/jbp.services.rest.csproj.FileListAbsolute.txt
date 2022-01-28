@@ -50,7 +50,9 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\roslyn\VBCSCompiler.exe.co
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\Antlr3.Runtime.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.business.hana.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.business.oracle9i.dll
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.core.sapDiApi.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.msg.dll
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.msg.sap.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\Microsoft.Web.Infrastructure.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\Newtonsoft.Json.dll
@@ -70,8 +72,9 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\WebGrease.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Rest.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Core.Hana.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Net.dll
-D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Exceptions.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Core.Base.dll
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Exceptions.dll
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Utils.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.DelegatesAndEnums.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.core.Oracle9i.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Reactive.dll
@@ -79,7 +82,6 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Core.Oracle9i.dl
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.WinServices.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Logs.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Msg.dll
-D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Utils.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Serializador.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\Sap.Data.Hana.v4.5.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.ValueTuple.dll
@@ -89,10 +91,13 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.business.hana.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.business.hana.dll.config
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.business.oracle9i.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.business.oracle9i.dll.config
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.core.sapDiApi.pdb
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.core.sapDiApi.dll.config
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.msg.sap.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.msg.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.msg.dll.config
-D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Web.Http.Cors.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\Newtonsoft.Json.xml
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Web.Http.Cors.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Net.Http.Formatting.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Web.Helpers.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Web.Http.xml
@@ -110,8 +115,9 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Core.Hana.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Core.Hana.dll.config
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Net.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Net.dll.config
-D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Exceptions.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Core.Base.pdb
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Exceptions.pdb
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Utils.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.DelegatesAndEnums.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.core.Oracle9i.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.core.Oracle9i.dll.config
@@ -122,7 +128,6 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.WinServices.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Logs.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Logs.dll.config
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Msg.pdb
-D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Utils.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Serializador.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\Sap.Data.Hana.v4.5.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\Sap.Data.Hana.v4.5.dll.config
@@ -130,6 +135,7 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.ValueTuple.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Threading.Tasks.Extensions.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Runtime.CompilerServices.Unsafe.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csprojAssemblyReference.cache
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CoreCompileInputs.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CopyComplete
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.pdb

@@ -19,11 +19,14 @@ namespace jbp.business.hana
         public object GetEstadoCuentaByRuc(string ruc) {
             try
             {
-                var me = new RucMsg { nroDocumento = ruc };
+                var me = new EstadoCuentaMe { 
+                    nroDocumento = ruc,
+                    anio = DateTime.Now.Year.ToString()
+                };
                 var url = string.Format("{0}/{1}", conf.Default.ptkWsUrl, "estadocuenta");
                 var rc = new RestCall();
                 var resp = rc.SendPostOrPut(url, typeof(String),
-                    me, typeof(RucMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
+                    me, typeof(EstadoCuentaMe), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
                 return resp;
             }
             catch (Exception e)
@@ -32,6 +35,86 @@ namespace jbp.business.hana
                 EnviarPorCorreo(e.Message, "Jbp-Promotick");
                 return null;
             }
+        }
+
+        public void AsignacionMasivaVendedor()
+        {
+            var participantes = new List<ParticipanteCampoMsg>();
+            var bc = new BaseCore();
+            var sql = @"
+                select
+                 ""Ruc"",
+                 t1.""Cedula"" ""Vendedor""
+                from
+                 ""JbpVw_SocioNegocio"" t0 inner join
+                 ""JbpVw_Vendedores"" t1 on t1.""CodVendedor"" = t0.""CodVendedor""
+                where
+                 t0.""Ruc""=""RucPrincipal""
+                 and t0.""AplicaPuntos"" = 'SI'
+                 and t0.""CodTipoSocioNegocio"" = 'C'
+                 and t0.""SincronizadoConBddPromotick""='NO'
+            ";
+            var dt = bc.GetDataTableByQuery(sql);
+            if (dt.Rows.Count > 0)
+            {
+                foreach(DataRow dr in dt.Rows)
+                {
+                    var participante = new ParticipanteCampoMsg();
+                    participante.nroDocumento = dr["Ruc"].ToString();
+                    participante.listaCamposActualizar.Add(new ListaCamposMsg {
+                        nombreCampo = "usuarioVendedor",
+                        valor = dr["Vendedor"].ToString()
+                    });
+                    participantes.Add(participante);
+                }
+                ActualizarParticipantesPorCampoWsPtk(participantes);
+            }
+        }
+
+        private void ActualizarParticipantesPorCampoWsPtk(List<ParticipanteCampoMsg> participantes)
+        {
+            var url = string.Format("{0}/{1}", conf.Default.ptkWsUrl, "gstparticipantes/actualizar");
+            var rc = new RestCall();
+            participantes.ForEach(participante => {
+                var resp = (RespWsMsg)rc.SendPostOrPut(
+                    url, typeof(RespWsMsg), participante, typeof(ParticipanteCampoMsg),
+                    RestCall.eRestMethod.POST, this.credencialesWsPromotick
+                );
+                RegistrarLogActualizacionParticipanteCampo(participante, resp);
+                if (resp != null && resp.codigo==1) //proceso exitoso
+                {
+                    new SocioNegocioBusiness().RegistrarParticipanteComoSincronizado(participante.nroDocumento);
+                }
+            });
+            
+        }
+
+        private void RegistrarLogActualizacionParticipanteCampo(ParticipanteCampoMsg participante, RespWsMsg resp)
+        {
+            participante.listaCamposActualizar.ForEach(campo =>
+            {
+                var sql = string.Format(@"
+                    insert into JBP_MODIFICACION_PARTICIPANTES_CAMPO(
+                            CEDULA_PARTICIPANTE,
+                            CAMPO,
+                            VALOR_CAMPO,
+                            COD_RESP_WS,
+                            RESP_WS,
+                            FECHA
+                        )
+                        VALUES(
+                         '{0}', '{1}', '{2}',
+                         {3}, '{4}', CURRENT_TIMESTAMP
+                        )
+                     ",
+                    participante.nroDocumento,
+                    campo.nombreCampo,
+                    campo.valor,
+                    resp.codigo,
+                    resp.mensaje
+                );
+                new BaseCore().Execute(sql);
+            });
         }
 
         public List<DocumentoEnviadoMsg> GetDocumentosEnviadosByRuc(string ruc)
@@ -47,7 +130,8 @@ namespace jbp.business.hana
              MONTO,
              PUNTOS,
              COD_RESPUESTA_WS,
-             MSG_RESPUESTA_WS
+             MSG_RESPUESTA_WS,
+             DESCRIPCION
             from JBP_LOG_ENVIO_DOCUMENTOS_PTK
             where RUC='{0}'
             ", ruc);
@@ -65,7 +149,8 @@ namespace jbp.business.hana
                     monto = bc.GetInt(dr["MONTO"]),
                     puntos = bc.GetInt(dr["PUNTOS"]),
                     codRespWS = bc.GetInt(dr["COD_RESPUESTA_WS"]),
-                    respWs = dr["MSG_RESPUESTA_WS"].ToString()
+                    respWs = dr["MSG_RESPUESTA_WS"].ToString(),
+                    descripcion = dr["DESCRIPCION"].ToString()
                 });
             }
             return ms;
@@ -92,19 +177,87 @@ namespace jbp.business.hana
                 new BaseCore().Execute(sql);
             });
         }
+        public void ActualizacionMasivaParticipantes()
+        {
+            EnviarPorCorreo("Test final smtp","test final correo <br><b>office 365</b>");
+            return;
+            var participantes = GetParticipantesToUpdate();
+            participantes.ForEach(p => RegistrarParticipante(p));
+        }
+        public void InactivarParticipantes()
+        {
+            var participantes = GetParticipantesToInactivate();
+            participantes.ForEach(p => {
+                RegistrarParticipante(p);
+                QuitarParticipanteADesactivar(p.nroDocumento);
+            });
+        }
+
+        private void QuitarParticipanteADesactivar(string ruc)
+        {
+            var sql = string.Format(@"
+                delete from JBP_PARTICIPANTES_A_DESACTIVAR
+                where RUC='{0}'
+            ",ruc);
+            new BaseCore().Execute(sql);
+        }
+
+        private List<ParticipantesPuntosMsg> GetParticipantesToInactivate()
+        {
+            var sql = @"
+                select 
+                 RUC
+                from
+                 JBP_PARTICIPANTES_A_DESACTIVAR
+            ";
+            var dtRucs = new BaseCore().GetDataTableByQuery(sql);
+            var ms = GetParticipantesByRucs(dtRucs, "RUC", -1); //estado -1 para desactivar
+            return ms;
+        }
+
+        public List<ParticipantesPuntosMsg> GetParticipantesToUpdate()
+        {
+            var sql = @"
+                select 
+                 ""Ruc""
+                from
+                 ""JbpVw_SocioNegocio""
+                where
+                 ""AplicaPuntos"" = 'SI'
+                 and ""Ruc"" = ""RucPrincipal""
+                 and ""SincronizadoConBddPromotick"" = 'NO'
+            ";
+            var dtRucs = new BaseCore().GetDataTableByQuery(sql);
+            var ms = GetParticipantesByRucs(dtRucs, "Ruc",1); //estado 1 para actualizar o insertar
+            return ms;
+        }
+        public List<ParticipantesPuntosMsg> GetParticipantesByRucs(DataTable dtRucs, string fieldRuc, int estado)
+        {
+            var ms = new List<ParticipantesPuntosMsg>();
+            
+            foreach (DataRow dr in dtRucs.Rows)
+            {
+                var rucPrincipal = dr[fieldRuc].ToString();
+                var participante = GetParticipantePuntosByRucPrincipal(rucPrincipal);
+                participante.estado = estado; 
+                ms.Add(participante);
+            }
+            return ms;
+        }
         public void RegistrarParticipante(ParticipantesPuntosMsg me, string numFactura = null) {
             try
             {
                 var errorParticipante = "";
                 if (!ParticipanteValido(me, ref errorParticipante))
                     return;
-                
+
                 this.RucParticipante = me.nroDocumento;
-                me.estado = 1; //Para registrarlo en ptk
+
                 var url = string.Format("{0}/{1}", conf.Default.ptkWsUrl, "gstparticipantes");
                 var rc = new RestCall();
                 var resp = (RespWsMsg)rc.SendPostOrPut(url, typeof(RespWsMsg), me, typeof(ParticipantesPuntosMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
-                resp.mensaje = string.Format("NumFactura: {0} {1}", numFactura, resp.mensaje);
+
+                RegistrarParticipanteEnLog(me, resp);
                 GestionarRespuestaRegistrarParticipante(resp, me);
                 new SocioNegocioBusiness().RegistrarParticipanteComoSincronizado(me.nroDocumento);
             }
@@ -116,22 +269,47 @@ namespace jbp.business.hana
             }
             
         }
+        public void RegistrarParticipanteEnLog(ParticipantesPuntosMsg me, RespWsMsg resp)
+        {
+            var sql = string.Format(@"
+                insert into JBP_MODIFICACION_PARTICIPANTES(
+                    FECHA, ESTADO, NOMBRES, APELLIDOS,
+                    EMAIL, TIPO_DOCUMENTO, NRO_DOCUMENTO,
+                    CLAVE, FECHA_NACIMIENTO, CELULAR,
+                    TELEFONO, TIPO_GENERO, ID_CATALOGO, 
+                    TIPO_CATALOGO, VENDEDOR, META_ANUAL,
+                    COD_WS, MSG_WS
+                )
+                VALUES(
+                 CURRENT_TIMESTAMP, {0}, '{1}', '{2}',
+                 '{3}', {4}, '{5}',
+                 '{6}', '{7}', '{8}',
+                 '{9}', {10}, {11},
+                  {12}, '{13}', {14},
+                  {15}, '{16}'
+                )
+             ", me.estado, me.nombres, me.apellidos,
+              me.email, me.tipoDocumento, me.nroDocumento,
+              me.clave, me.fechaNacimiento, me.celular,
+              me.telefono, me.tipoGenero, me.idCatalogo,
+              me.tipoCatalogo, me.vendedor, me.metaAnual,
+              resp.codigo, resp.mensaje
+             );
+            new BaseCore().Execute(sql);
+        }
+       
         public bool ParticipanteValido(string rucPrincipal, ref string errorParticipante) {
             var participante = GetParticipantePuntosByRucPrincipal(rucPrincipal);
             if (participante == null || string.IsNullOrEmpty(participante.nroDocumento))
             {
                 var msg = "No esta registrado en SAP el cliente:" + rucPrincipal;
-                EnviarPorCorreo("Error envio documento promotick", msg);
                 errorParticipante = msg;
                 return false;
             }
                 
             return ParticipanteValido(participante, ref errorParticipante);
         }
-        private class CamposValidar {
-            public string Campo { get; set; }
-            public string Msg { get; set; }
-        }
+        
         public bool ParticipanteValido(ParticipantesPuntosMsg me, ref string errorParticipante)
         {
             
@@ -237,14 +415,6 @@ namespace jbp.business.hana
             var ms = bc.GetScalarByQuery(sql);
             return ms;
         }
-        public void SincronizarDatosDeParticipantes()
-        {
-            var participantesPorSincronizar = GetParticipantesPorSincronizar();
-            var pb = new ParticipantePtkBusiness();
-            foreach (var participante in participantesPorSincronizar) {
-                pb.RegistrarParticipante(participante);
-            }
-        }
         public static ParticipantesPuntosMsg GetParticipantePuntosByRucPrincipal(string rucPrincipal)
         {
             var ms = new ParticipantesPuntosMsg();
@@ -253,6 +423,7 @@ namespace jbp.business.hana
                 select
                  ""AplicaPuntos"",
                  ""Nombre"",
+                 ""NombreComercial"",
                  ""NombrePtk"",
                  ""ApellidoPtk"",
                  ""EmailPtk"",
@@ -268,16 +439,20 @@ namespace jbp.business.hana
                  case
                     when ""Genero"" = 'M' then 1
                     when ""Genero"" = 'F' then 2
+                    else 1 --da error en la plataforma de promotick cuando no se envia un valor
                  end ""TipoGenero"",
                  case
-                    when ""TipoCliente"" = 'A' then 1
-                    when ""TipoCliente"" = 'B' then 2
+                    when T0.""MetaCompras"">=10000 then 1
+                    when T0.""MetaCompras""<10000 then 2
+                    else 0
                  end ""IdCatalogo"",
                  case
                     when ""EsElite"" = 'SI' then 1
                     when ""EsElite"" = 'NO' then 2
                  end ""TipoCatalogo"",
-                 t1.""Vendedor"",
+                 t1.""Cedula"" ""Vendedor"",
+                 t1.""Vendedor"" ""VendedorStr"",
+                 t1.""Email"" ""correoVendedor"",
                  t0.""MetaCompras"",
                  t0.""RucPrincipal""
                 from
@@ -285,6 +460,7 @@ namespace jbp.business.hana
                  ""JbpVw_Vendedores"" t1 on t1.""CodVendedor"" = t0.""CodVendedor""
                 where
                  t0.""RucPrincipal"" = '{0}'
+                 and t0.""Ruc""=""RucPrincipal""
                  and ""AplicaPuntos"" = 'SI'
                  and ""CodTipoSocioNegocio"" = 'C'
             ", rucPrincipal);
@@ -294,15 +470,14 @@ namespace jbp.business.hana
                 ms.Activo = dt.Rows[0]["AplicaPuntos"].ToString() == "SI" ? true : false;
                 ms.nombres = dt.Rows[0]["NombrePtk"].ToString();
                 if (string.IsNullOrEmpty(ms.nombres))
-                {
                     ms.nombres = dt.Rows[0]["Nombre"].ToString();
                     
-                }
                 if (!string.IsNullOrEmpty(ms.nombres) && ms.nombres.Length > 32)
                     ms.nombres = ms.nombres.Substring(0, 32); // validación promotick para el nombre
                 ms.apellidos = dt.Rows[0]["ApellidoPtk"].ToString();
                 if (ms.apellidos==null) //el servicio web de ptk no soporta nulls
                     ms.apellidos = "";
+                ms.nombreComercial= dt.Rows[0]["NombreComercial"].ToString();
                 ms.email = dt.Rows[0]["EmailPtk"].ToString();
                 ms.tipoDocumento = bc.GetInt(dt.Rows[0]["TipoDocumento"]);
                 ms.nroDocumento = dt.Rows[0]["Ruc"].ToString();
@@ -314,35 +489,53 @@ namespace jbp.business.hana
                 ms.idCatalogo = bc.GetInt(dt.Rows[0]["IdCatalogo"]);
                 ms.tipoCatalogo = bc.GetInt(dt.Rows[0]["TipoCatalogo"]);
                 ms.vendedor = dt.Rows[0]["Vendedor"].ToString();
+                ms.vendedorStr = dt.Rows[0]["VendedorStr"].ToString();
+                ms.correoVendedor = dt.Rows[0]["correoVendedor"].ToString();
                 ms.RucPrincipal = dt.Rows[0]["RucPrincipal"].ToString();
                 ms.metaAnual = bc.GetInt(dt.Rows[0]["MetaCompras"]);
             }
             return ms;
         }
-        internal List<ParticipantesPuntosMsg> GetParticipantesPorSincronizar()
+        public static List<DocumentoParticipanteMsg> GetFacturasYNcByRucPrincipal(string ruc)
         {
-            var ms = new List<ParticipantesPuntosMsg>();
-            var sql = @"
-                select
-                 top 100  
+            var ms = new List<DocumentoParticipanteMsg>();
+            var sql = string.Format(@"
+                select 
+                 ""TipoDocumento"",
+                 ""fechaFactura"",
+                 ""mesFactura"",
+                 ""NumFolio"",
                  ""Ruc"",
-                 ""SincronizadoConBddPromotick""
-                from
-                 ""JbpVw_SocioNegocio""
-                where
-                 ""AplicaPuntos"" = 'SI'
-                 and(""SincronizadoConBddPromotick"" is null or ""SincronizadoConBddPromotick"" = 'NO')
-                 and ""Ruc""=""RucPrincipal""
-                 and ""CodTipoSocioNegocio""='C'
-            ";
+                 ""RucPrincipal"",
+                 ""montoFactura"",
+                 ""Puntos""
+                from ""JbpVw_FacturasMasNCParticipantes""
+                where ""RucPrincipal"" = '{0}'
+                    
+            ", ruc);
             var dt = new BaseCore().GetDataTableByQuery(sql);
-            if (dt.Rows.Count > 0)
-            {
-                foreach (DataRow dr in dt.Rows)
-                {
-                    ms.Add(GetParticipantePuntosByRucPrincipal(dr["Ruc"].ToString()));
+            if (dt.Rows.Count > 0) {
+                foreach(DataRow dr in dt.Rows) {
+                    ms.Add(new DocumentoParticipanteMsg
+                    {
+                        tipoDocumento=dr["TipoDocumento"].ToString(),
+                        fechaDocumento = dr["fechaFactura"].ToString(),
+                        mesDocumento = dr["mesFactura"].ToString(),
+                        numDocumento = dr["NumFolio"].ToString(),
+                        ruc = dr["Ruc"].ToString(),
+                        rucPrincipal = dr["RucPrincipal"].ToString(),
+                        monto = dr["montoFactura"].ToString(),
+                        puntos = dr["Puntos"].ToString(),
+
+                    });
                 }
             }
+            return ms;
+        }
+        public static ParticipantesPuntosMsg GetParticipantePuntosConDocumentosByRucPrincipal(string ruc)
+        {
+            var ms = GetParticipantePuntosByRucPrincipal(ruc);
+            ms.documentos = GetFacturasYNcByRucPrincipal(ruc);
             return ms;
         }
     }

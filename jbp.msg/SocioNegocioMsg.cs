@@ -49,6 +49,21 @@ namespace jbp.msg
         public SocioNegocioMsg() { }
 
     }
+    public class ParticipanteCampoMsg
+    {
+        public string nroDocumento { get; set; }
+        public List<ListaCamposMsg> listaCamposActualizar { get; set; }
+        public ParticipanteCampoMsg()
+        {
+            this.listaCamposActualizar = new List<ListaCamposMsg>();
+        }
+    }
+    public class ListaCamposMsg
+    {
+        public string valor { get; set; }
+
+        public string nombreCampo { get; set; }
+    }
     public class ParticipantesPuntosMsg
     {
         public bool Activo { get; set; }
@@ -69,6 +84,9 @@ namespace jbp.msg
         public string email { get; set; }
         public int estado { get; set; }
         private DateTime _FechaNacimiento;
+        public string nombreComercial;
+        public List<DocumentoParticipanteMsg> documentos;
+
         public DateTime FechaNacimiento
         {
             get { return this._FechaNacimiento; }
@@ -91,10 +109,47 @@ namespace jbp.msg
         public int tipoGenero { get; set; }
         public string vendedor { get; set; }
         public string Error { get; set; }
+        public string vendedorStr { get; set; }
+        public string correoVendedor { get; set; }
     }
     public class SocioNegocioItemMsg
     {
         public string Ruc { get; set; }
         public string Nombre { get; set; }
     }
+    public class ClientMsg
+    {
+        public object ruc;
+        public string birthDate;
+        public string priceListId;
+        public string telefono;
+
+        public string id { get; set; }
+        public string name { get; set; }
+        public string comercialName { get; set; }
+        public List<ClientDirectionMsg> directions { get; set; }
+        public List<ClientContactMsg> contacts { get; set; }
+        public List<ClientVendorOnservationMsg> observations { get; set; }
+        public string celular { get; set; }
+    }
+    public class ClientDirectionMsg
+    {
+        public string city;
+        public string direction;
+    }
+    public class ClientContactMsg
+    {
+        public string name;
+        public string direction;
+        public string phone;
+        public string cellular;
+        public string email;
+    }
+    public class ClientVendorOnservationMsg
+    {
+        public string observation { get; set; }
+        public DateTime date { get; set; }
+    }
+    
+    
 }

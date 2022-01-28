@@ -9,12 +9,13 @@ namespace jbp.business.hana
 {
     public class BaseBusiness
     {
-        public void EnviarPorCorreo(string titulo, string msg)
+        public void EnviarPorCorreo(string to, string titulo, string msg, string filePath=null)
         {
             MailUtils.Send(
-                conf.Default.CorreosNotificacionesPromotick,
+                to,
                 titulo,
-                msg
+                msg,
+                filePath
             );
         }
     }

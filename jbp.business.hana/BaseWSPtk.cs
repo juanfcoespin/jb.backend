@@ -19,5 +19,10 @@ namespace jbp.business.hana
                 AuthType = RestCall.eAuthType.Basic
             };
         }
+        public void EnviarPorCorreo(string titulo, string msg)
+        {
+            this.EnviarPorCorreo(conf.Default.CorreosNotificacionesPromotick, titulo, msg);
+            
+        }
     }
 }

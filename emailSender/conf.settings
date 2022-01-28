@@ -1,0 +1,16 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="emailSender" GeneratedClassName="conf">
+  <Profiles />
+  <Settings>
+    <Setting Name="asunto" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Rol de Pagos</Value>
+    </Setting>
+    <Setting Name="cuerpoMensaje" Type="System.String" Scope="User">
+      <Value Profile="(Default)">
+          Estimado Colaborador adjunto encontrará su rol de pagos 
+          Atte.
+          James Brown Pharma
+        </Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

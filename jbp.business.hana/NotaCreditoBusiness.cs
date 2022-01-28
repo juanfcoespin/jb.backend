@@ -20,8 +20,9 @@ namespace jbp.business.hana
                 // son las facturas del principal y las sucursales
                 var sql = @"
                 select 
-                 --top 25
+                 top 50
                  ""Id"",
+                 ""TipoDocumento"",
                  ""fechaFactura"",
                  ""NumFolio"",
                  ""RucPrincipal"",
@@ -34,7 +35,41 @@ namespace jbp.business.hana
                 ";
                 var bc = new BaseCore();
                 var dt = bc.GetDataTableByQuery(sql);
-                return new DocumentosPtkBusiness().GetListDocumentosPtkFromDt(dt, eTipoDocumentoPtk.NotaDeCredito);
+                return new DocumentosPtkBusiness().GetListDocumentosPtkFromDt(dt);
+            }
+            catch (Exception e)
+            {
+                e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
+                throw e;
+            }
+        }
+        internal List<DocumentoPromotickMsg> GetNCManualesParticipantesToSendPromotick()
+        {
+            try
+            {
+
+                // ojo: para una nueva carga hay que eliminar los datos de la tabla JBP_NC_MANUALES
+                //previo a cargar las nuevas NC manuales a enviar.
+
+                // son las facturas del principal y las sucursales
+                var sql = @"
+                select 
+                 0 ""Id"",
+                 'notaCreditoManual' ""TipoDocumento"",
+                 FECHA_FACTURA ""fechaFactura"",
+                 NUM_FOLIO ""NumFolio"",
+                 RUC_PRINCIPAL ""RucPrincipal"",
+                 -1*abs(MONTO_FACTURA) ""montoFactura"",
+                 -1*abs(PUNTOS) ""Puntos"",
+                 DESCRIPCION ""descripcion"",
+                 0 ""NumIntentos"",
+                 null ""RespWS""
+                from
+                 JBP_NC_MANUALES
+                ";
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql);
+                return new DocumentosPtkBusiness().GetListDocumentosPtkFromDt(dt);
             }
             catch (Exception e)
             {
@@ -43,6 +78,5 @@ namespace jbp.business.hana
             }
         }
 
-        
     }
 }

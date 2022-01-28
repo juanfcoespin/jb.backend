@@ -4,3 +4,13 @@ D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.msg\obj\R
 D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.msg\obj\Release\jbp.msg.csproj.CoreCompileInputs.cache
 D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.msg\obj\Release\jbp.msg.dll
 D:\ownCloud\1. Catálogo de servicios\4. Sistemas de Apoyo\10. JBP\jbp.msg\obj\Release\jbp.msg.pdb
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Release\jbp.msg.dll.config
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Release\jbp.msg.dll
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Release\jbp.msg.pdb
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Release\TechTools.Utils.dll
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Release\TechTools.Utils.pdb
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.csprojAssemblyReference.cache
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.csproj.CopyComplete
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.dll
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.pdb
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.csproj.CoreCompileInputs.cache

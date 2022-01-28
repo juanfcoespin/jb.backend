@@ -1,0 +1,34 @@
+﻿[
+  {
+  	"CodCliente": "C1204449258001",
+    "Comentario": "Comentario desde rest api2",
+    "Lines":[
+    	{
+        	"CodArticulo":"80000217",
+          	"CantSolicitada": 6,
+          	"CantBonificacion":2
+        },
+      	{
+        	"CodArticulo":"80000111",
+          	"CantSolicitada": 10,
+          	"CantBonificacion":3
+        }
+    ]
+  },
+  {
+  	"CodCliente": "C1792814391001",
+    "Comentario": "Comentario desde rest api3",
+    "Lines":[
+    	{
+        	"CodArticulo":"90200006",
+          	"CantSolicitada": 6,
+          	"CantBonificacion":2
+        },
+      	{
+        	"CodArticulo":"80000034",
+          	"CantSolicitada": 10,
+          	"CantBonificacion":3
+        }
+    ]
+  }
+]

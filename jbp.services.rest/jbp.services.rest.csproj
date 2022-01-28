@@ -133,13 +133,24 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AutorizacionesSRIController.cs" />
     <Compile Include="Controllers\CuentaController.cs" />
+    <Compile Include="Controllers\DirectorioController.cs" />
+    <Compile Include="Controllers\EntregaController.cs" />
     <Compile Include="Controllers\FacturaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\OrdenController.cs" />
+    <Compile Include="Controllers\ConfController.cs" />
+    <Compile Include="Controllers\OrdenFabricacionController.cs" />
+    <Compile Include="Controllers\ReaccionesController.cs" />
+    <Compile Include="Controllers\PagoController.cs" />
     <Compile Include="Controllers\periodoController.cs" />
+    <Compile Include="Controllers\TransportistaController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\PromotickController.cs" />
     <Compile Include="Controllers\SocioNegocioController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Controllers\CatalogosController.cs" />
+    <Compile Include="Controllers\VendedorController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -152,10 +163,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="OrderRequestExample.json" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -167,6 +180,10 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\Entrada\" />
+    <Folder Include="Views\Entrega\" />
+    <Folder Include="Views\OrdenFabricacion\" />
+    <Folder Include="Views\Pago\" />
     <Folder Include="Views\Promotick\" />
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +197,14 @@
     <ProjectReference Include="..\jbp.business.oracle9i\jbp.business.oracle9i.csproj">
       <Project>{1e48c5df-d8da-471c-a922-f30024446284}</Project>
       <Name>jbp.business.oracle9i</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\jbp.core.sapDiApi\jbp.core.sapDiApi.csproj">
+      <Project>{b860b304-07bf-4ce2-b125-695707941e0c}</Project>
+      <Name>jbp.core.sapDiApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\jbp.msg.sap\jbp.msg.sap.csproj">
+      <Project>{82573bbb-4437-46f2-b19d-f592d1b73000}</Project>
+      <Name>jbp.msg.sap</Name>
     </ProjectReference>
     <ProjectReference Include="..\jbp.msg\jbp.msg.csproj">
       <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
@@ -204,7 +229,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>58314</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:53627/</IISUrl>
+          <IISUrl>http://localhost:53628/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

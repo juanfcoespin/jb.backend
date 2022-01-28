@@ -20,5 +20,14 @@
     <Setting Name="CorreosNotificacionesPromotick" Type="System.String" Scope="Application">
       <Value Profile="(Default)">jespin@jbp.com.ec; acruz@jbp.com.ec; amejia@jbp.com.ec; sbrown@jbp.com.ec</Value>
     </Setting>
+    <Setting Name="correoPagos" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">jespin@jbp.com.ec</Value>
+    </Setting>
+    <Setting Name="ptkWsUrl2" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://apijames.promotick.com.pe/JamesBPApi/api</Value>
+    </Setting>
+    <Setting Name="pathComprobantesPago" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">c:\tmp\comprobantesPago</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

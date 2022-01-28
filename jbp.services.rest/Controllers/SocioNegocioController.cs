@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Collections.Generic;
 using System.Web.Http;
 
 using jbp.msg;
@@ -21,11 +17,17 @@ namespace jbp.services.rest.Controllers
             return jbp.business.oracle9i.SocioNegocioBusiness.GetByRuc(ruc);
         }
         [HttpGet]
+        [Route("api/socioNegocio/getByCodVendedor/{codVendedor}")]
+        public List<ClientMsg> GetByCodVendedor(string codVendedor)
+        {
+            return jbp.business.hana.SocioNegocioBusiness.GetByCodVendedor(codVendedor);
+        }
+        [HttpGet]
         [Route("api/socioNegocio/getParticipanteByRuc/{ruc}")]
         public ParticipantesPuntosMsg GetParticipanteByRuc(string ruc)
         {
             //return jbp.business.oracle9i.SocioNegocioBusiness.GetParticipanteByRuc(ruc);
-            return jbp.business.hana.ParticipantePtkBusiness.GetParticipantePuntosByRucPrincipal(ruc);
+            return jbp.business.hana.ParticipantePtkBusiness.GetParticipantePuntosConDocumentosByRucPrincipal(ruc);
         }
         [HttpGet]
         [Route("api/socioNegocio/getParticipanteByRucFromERP/{ruc}")]
@@ -41,16 +43,17 @@ namespace jbp.services.rest.Controllers
         }
         [HttpGet]
         [Route("api/socioNegocio/getVendedores")]
-        public List<string> GetVendedores()
+        public List<ItemCombo> GetVendedores()
         {
-            return jbp.business.oracle9i.SocioNegocioBusiness.GetVededores();
+            return jbp.business.hana.VendedorBusiness.GetList();
         }
 
         [HttpGet]
         [Route("api/socioNegocio/habilitadoParaCangearPuntos/{nroDocumento}")]
         public HabilitadoCanjearPuntosMS HabilitadoParaCangearPuntos(string nroDocumento)
         {
-            return new HabilitadoCanjearPuntosMS { CodResp=1, Resp=true};
+            //return new HabilitadoCanjearPuntosMS { CodResp=1, Resp=true};
+            return jbp.business.hana.SocioNegocioBusiness.HabilitadoParaCangearPuntos(nroDocumento);
         }
 
         [HttpGet]
