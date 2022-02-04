@@ -41,6 +41,8 @@ namespace jbp.business.hana
                  ""RespWS""
                 from
                  ""JbpVw_FacturasToSendPtk""
+                --where
+                 --""NumFolio""='001-010-000097892'
                 ";
                 var bc = new BaseCore();
                 var dt = bc.GetDataTableByQuery(sql);

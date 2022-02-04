@@ -228,11 +228,11 @@ namespace jbp.business.hana
             var sql = string.Format(@"
                 select count(*) from JBP_LOG_ENVIO_DOCUMENTOS_PTK
                 where 
-                 RUC ='{0}'
+                 ID_DOCUMENTO ={0}
                  and NRO_DOCUMENTO='{1}'
                  and TIPO_DOCUMENTO='{2}'                
             ",
-            documento.numDocumento, documento.numFactura, documento.tipoDocumento);
+            documento.id, documento.numFactura, documento.tipoDocumento);
             var numreg = new BaseCore().GetIntScalarByQuery(sql);
             return numreg > 0;
         }

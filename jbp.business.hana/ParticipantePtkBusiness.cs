@@ -179,8 +179,6 @@ namespace jbp.business.hana
         }
         public void ActualizacionMasivaParticipantes()
         {
-            EnviarPorCorreo("Test final smtp","test final correo <br><b>office 365</b>");
-            return;
             var participantes = GetParticipantesToUpdate();
             participantes.ForEach(p => RegistrarParticipante(p));
         }

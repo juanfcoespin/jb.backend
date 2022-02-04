@@ -14,7 +14,7 @@ namespace jbp.presentacion.EnvioDocumentosPromotick
         static void Main(string[] args)
         {
             //Console.WriteLine("Inicio Proceso");
-            //new DocumentosPtkBusiness().EnviarDocumentosAPromotick();
+            new DocumentosPtkBusiness().EnviarDocumentosAPromotick();
             //new DocumentosPtkBusiness().EnviarNotasCreditoManuales();
             //new DocumentosPtkBusiness().EnviarAjustes();
             //new DocumentosPtkBusiness().EnviarAceleradores("Oct-Dic 2021");
