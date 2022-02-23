@@ -46,6 +46,96 @@ namespace jbp.business.oracle9i
                 throw e;
             }
         }
+
+        public static FacturasHistoricasMS getFacturasByCliente(FacturasHistoricasME me)
+        {
+            var ms = new FacturasHistoricasMS();
+            
+            try
+            {
+               var sql = string.Format(@"
+               select  	
+                to_char(t0.fechaFactura,'yyyy-mm-dd') as fechaFactura,
+                o.RUCORDEN,
+                t0.codFactura,
+                t0.autorizacionSRI,
+	            p.descripcion as producto ,
+	            lae.lote,
+                lae.precioUnitario,
+	            lae.perfil,
+	            lae.CODORDEN, 
+ 	            sn.nombre as cliente,
+	            v.vendedor,
+	            lae.comentario,
+                t0.montoBruto,
+                t0.descuento,
+                t0.impuesto,
+                sum(lae.CANTIDADPRIMARIA) as CANTIDADPRIMARIA,
+                sum(lae.CANTIDADPRIMARIA) * lae.precioUnitario as subtotalLinea
+               from   jbpvw_ordenFactura o inner join   
+                JBPVW_LINEAACTIVIDADENVIO lae on lae.CODORDEN=o.CODORDEN inner join
+                JBPVW_PRODUCTO p on lae.idProducto=p.id inner join
+                JBPVW_SOCIONEGOCIO sn on o.rucorden=sn.ruc inner join
+                JBPVW_VENDEDOR v on v.IDSOCIONEGOCIO=sn.id  inner join
+                JBPVW_FACTURARESUMEN t0 on o.idFactura=t0.id
+               where
+                o.RUCORDEN='{0}' --1103007496001
+                AND TO_CHAR(t0.fechaFactura,'YYYY')={1}
+                and t0.tipo= 'factura'
+                --and rowNum<20
+               group by
+                t0.fechaFactura,
+                o.RUCORDEN,
+                t0.codFactura,
+                t0.autorizacionSRI,
+	            p.descripcion,
+	            lae.lote,
+                lae.precioUnitario,
+	            lae.perfil,
+	            lae.CODORDEN, 
+ 	            sn.nombre,
+	            v.vendedor,
+	            lae.comentario,
+                t0.montoBruto,
+                t0.descuento,
+                t0.impuesto
+               order by
+                t0.fechaFactura desc
+ 
+            ", me.ruc, me.year);
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql);
+                foreach (DataRow dr in dt.Rows)
+                {
+                    ms.facturas.Add(new FacturaHistorica {
+                        fecha = dr["fechaFactura"].ToString(),
+                        ruc = dr["RUCORDEN"].ToString(),
+                        numFactura = dr["codFactura"].ToString(),
+                        codOrden = dr["CODORDEN"].ToString(),
+                        perfil = dr["perfil"].ToString(),
+                        autorizacionSRI = dr["autorizacionSRI"].ToString(),
+                        total = bc.GetDecimal(dr["montoBruto"]),
+                        descuento = bc.GetDecimal(dr["descuento"]),
+                        impuesto = bc.GetDecimal(dr["impuesto"]),
+                        cliente = dr["cliente"].ToString(),
+                        vendedor = dr["vendedor"].ToString(),
+                        comentario = dr["comentario"].ToString(),
+                        producto = dr["producto"].ToString(),
+                        lote = dr["lote"].ToString(),
+                        cantidad = bc.GetDecimal(dr["CANTIDADPRIMARIA"]),
+                        precioUnitario = bc.GetDecimal(dr["precioUnitario"]),
+                        subtotalLinea = bc.GetDecimal(dr["subtotalLinea"]),
+
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+                ms.error = "Cpu: "+ CpuUtils.GetCpuType().ToString()+"\r\n" + e.Message;
+            }
+            return ms;
+        }
+
         public static bool RegistrarFacturaEnvioTerceros(List<RegistroFacturaTercerosMsg> me) {
             try
             {
@@ -111,7 +201,6 @@ namespace jbp.business.oracle9i
             var sql = FacturaCore.SqlObservacionFacturaById(id);
             return new BaseCore().GetScalarByQuery(sql);
         }
-
         public static void RegistrarAutorizacionSRI(string numAutorizacion, string idDocumento)
         {
             var sql = string.Format(@"
@@ -120,7 +209,6 @@ namespace jbp.business.oracle9i
                 numAutorizacion, idDocumento);
             new BaseCore().Execute(sql);
         }
-
         public static string GetBonificacionByIdFacturaIdRecurso(string idFactura, string codRecurso)
         {
             try
@@ -143,7 +231,6 @@ namespace jbp.business.oracle9i
                 throw e;
             }
         }
-        
         private static List<FacturaMsg> TraducirAFacturaMsg(DataTable dt)
         {
             try

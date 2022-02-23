@@ -17,8 +17,8 @@ namespace jbp.business.hana
             {
                 var ppb = new ParticipantePtkBusiness();
 
-                if (conf.Default.ptkEnviarFacturas)
-                    EnviarFacturas();
+                //if (conf.Default.ptkEnviarFacturas)
+                //    EnviarFacturas();
                 if (conf.Default.ptkEnviarNC)
                     EnviarNotasCredito();
             }

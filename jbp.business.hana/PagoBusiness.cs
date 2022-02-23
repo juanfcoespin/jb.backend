@@ -67,7 +67,16 @@ namespace jbp.business.hana
                         {
                             pago.facturasAPagar.ForEach(factura => {
                                 var folioNum = GetNumFolio(factura.numDoc);
+                                factura.folioNum = folioNum;
                                 factura.DocEntry = FacturaBusiness.GetDocEntryFromFolioNum(folioNum);
+                                if (factura.porcentajePP > 0)
+                                {
+                                    factura.descuentoPP = factura.toPay - factura.toPayMasProntoPago;
+                                    //se registra la nota de credito por pronto pago
+                                    var respNc=new NotaCreditoBusiness().SaveNCPP(factura,pago);
+                                    if(respNc!="ok")
+                                        throw new Exception(respNc);
+                                }
                             });
                             resp = sapPagoRecibido.Add(pago);
                             if (resp == "ok")
@@ -110,13 +119,17 @@ namespace jbp.business.hana
             msg += " <tr>";
             msg += "    <td style='border: solid 1px #000000'><b>Num Factura</b></td>";
             msg += "    <td style='border: solid 1px #000000'><b>Total Factura</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Saldo Vencido</b></td>";
+            msg += "    <td style='border: solid 1px #000000'><b>Valor a Pagar</b></td>";
+            msg += "    <td style='border: solid 1px #000000'><b>% Desc. Pronto Pago</b></td>";
+            msg += "    <td style='border: solid 1px #000000'><b>Descuento PP</b></td>";
             msg += " </tr>";
             pago.facturasAPagar.ForEach(factura => {
                 msg += "<tr>";
                 msg += "    <td style='border: solid 1px #000000'>" + factura.numDoc+"</td>";
                 msg += "    <td style='border: solid 1px #000000'>USD " + factura.total + "</td>";
-                msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPay+"</td>";
+                msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPayMasProntoPago +"</td>";
+                msg += "    <td style='border: solid 1px #000000'>USD " + factura.porcentajePP + "</td>";
+                msg += "    <td style='border: solid 1px #000000'>USD " + factura.descuentoPP + "</td>";
                 msg += "</tr>";
             });
             msg += "</table><br>";

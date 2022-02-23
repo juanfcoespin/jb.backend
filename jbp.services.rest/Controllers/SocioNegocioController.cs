@@ -17,6 +17,13 @@ namespace jbp.services.rest.Controllers
             return jbp.business.oracle9i.SocioNegocioBusiness.GetByRuc(ruc);
         }
         [HttpGet]
+        [Route("api/socioNegocio/getHistoricoClientesByNombre/{nombre}")]
+        public SocioNegocioItemMS GetHistoricoClientesByNombre(string nombre)
+        {
+            return jbp.business.oracle9i.SocioNegocioBusiness.GetHistoricoClientesByNombre(nombre);
+        }
+
+        [HttpGet]
         [Route("api/socioNegocio/getByCodVendedor/{codVendedor}")]
         public List<ClientMsg> GetByCodVendedor(string codVendedor)
         {

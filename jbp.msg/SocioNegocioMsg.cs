@@ -49,6 +49,13 @@ namespace jbp.msg
         public SocioNegocioMsg() { }
 
     }
+    public class SocioNegocioItemMS {
+        public string error { get; set; }
+        public List<SocioNegocioItemMsg> clientes { get; set; }
+        public SocioNegocioItemMS() { 
+            this.clientes = new List<SocioNegocioItemMsg>();
+        }
+    }
     public class ParticipanteCampoMsg
     {
         public string nroDocumento { get; set; }

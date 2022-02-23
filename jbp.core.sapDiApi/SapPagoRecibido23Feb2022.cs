@@ -8,9 +8,9 @@ using TechTools.Utils;
 
 namespace jbp.core.sapDiApi
 {
-    public class SapPagoRecibido:BaseSapObj
+    public class SapPagoRecibido_23Feb2022:BaseSapObj
     {
-        public SapPagoRecibido()
+        public SapPagoRecibido_23Feb2022()
         {
             //this.Connect();
         }
@@ -56,7 +56,6 @@ namespace jbp.core.sapDiApi
 
             foreach(var tipoPago in me.tiposPago) {
                 var pago = this.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oPaymentsDrafts);
-                
 
                 pago.DocObjectCode = SAPbobsCOM.BoPaymentsObjectType.bopot_IncomingPayments;
                 pago.CardCode = me.CodCliente;
@@ -128,7 +127,7 @@ namespace jbp.core.sapDiApi
 
         
 
-        ~SapPagoRecibido()
+        ~SapPagoRecibido_23Feb2022()
         {
             //cuando se destruye el objeto
             this.Disconnect();

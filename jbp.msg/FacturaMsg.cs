@@ -11,6 +11,40 @@ namespace jbp.msg
         public string CodOrden { get; set; }
         public OrdenMsg() { }
     }
+    public class FacturasHistoricasME
+    {
+        public string ruc;
+        public int year;
+    }
+    public class FacturasHistoricasMS
+    {
+        public string error;
+        public List<FacturaHistorica> facturas { get; set; }
+        public FacturasHistoricasMS() {
+            this.facturas = new List<FacturaHistorica>();
+        }
+    }
+    public class FacturaHistorica
+    {
+        public string fecha;
+        public string cliente;
+        public string numFactura;
+        public string codOrden;
+        public string perfil;
+        public string autorizacionSRI;
+        public decimal total;
+        public decimal descuento;
+        public decimal impuesto;
+        public string vendedor;
+        public string comentario;
+        public string producto;
+        public string lote;
+        public decimal cantidad;
+        public decimal precioUnitario;
+        public decimal subtotalLinea;
+
+        public string ruc { get; set; }
+    }
     public class FacturaServicioMsg:OrdenMsg {
         public int IdFactura { get; set; }
         public string CodFactura { get; set; }

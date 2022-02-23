@@ -4,21 +4,6 @@
     "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\TechTools\\TechTools.Utils\\TechTools.Utils.csproj": {
-      "restore": {
-        "projectUniqueName": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\TechTools\\TechTools.Utils\\TechTools.Utils.csproj",
-        "projectName": "TechTools.Utils",
-        "projectPath": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\TechTools\\TechTools.Utils\\TechTools.Utils.csproj",
-        "frameworks": {
-          "net472": {
-            "projectReferences": {}
-          }
-        }
-      },
-      "frameworks": {
-        "net472": {}
-      }
-    },
     "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj": {
       "restore": {
         "projectUniqueName": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj",
@@ -26,11 +11,7 @@
         "projectPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj",
         "frameworks": {
           "net472": {
-            "projectReferences": {
-              "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\TechTools\\TechTools.Utils\\TechTools.Utils.csproj": {
-                "projectPath": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\TechTools\\TechTools.Utils\\TechTools.Utils.csproj"
-              }
-            }
+            "projectReferences": {}
           }
         }
       },

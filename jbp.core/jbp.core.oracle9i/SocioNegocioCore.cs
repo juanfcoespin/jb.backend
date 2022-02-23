@@ -153,7 +153,8 @@ namespace jbp.core.oracle9i
                         nombre || ' ('||CONOCIDOCOMO||')'
 	            end nombre
             from JBPVW_SOCIONEGOCIO
-            where TIPOSOCIONEGOCIO not in ('BANCOS') {0}", searchCondition);
+            where TIPOSOCIONEGOCIO not in ('BANCOS') {0}
+            order by 2", searchCondition);
             return ms;
         }
         public bool ExisteParticipante(string nroDocumento)

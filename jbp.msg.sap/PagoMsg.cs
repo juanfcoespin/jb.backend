@@ -87,6 +87,10 @@ namespace jbp.msg.sap
         public string dueDate { get; set; }
         public int DocEntry { get; set; }
         public double pagado { get; set; }
+        public double toPayMasProntoPago { get; set; }
+        public int porcentajePP { get; set; }
+        public int folioNum { get; set; }
+        public double descuentoPP { get; set; }
 
         public object Clone()
         {

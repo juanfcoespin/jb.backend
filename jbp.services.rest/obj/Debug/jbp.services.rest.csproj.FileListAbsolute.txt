@@ -134,7 +134,7 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\Sap.Data.Hana.v4.5.dll.con
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.ValueTuple.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Threading.Tasks.Extensions.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Runtime.CompilerServices.Unsafe.xml
-D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csprojAssemblyReference.cache
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.AssemblyReference.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CoreCompileInputs.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CopyComplete
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.dll

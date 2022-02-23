@@ -186,9 +186,11 @@ namespace jbp.business.hana
         {
             var participantes = GetParticipantesToInactivate();
             participantes.ForEach(p => {
-                RegistrarParticipante(p);
-                QuitarParticipanteADesactivar(p.nroDocumento);
-            });
+                if (!string.IsNullOrEmpty(p.nombres)) {
+                    RegistrarParticipante(p);
+                    QuitarParticipanteADesactivar(p.nroDocumento);
+                }
+           });
         }
 
         private void QuitarParticipanteADesactivar(string ruc)
@@ -236,7 +238,10 @@ namespace jbp.business.hana
             foreach (DataRow dr in dtRucs.Rows)
             {
                 var rucPrincipal = dr[fieldRuc].ToString();
-                var participante = GetParticipantePuntosByRucPrincipal(rucPrincipal);
+                
+                var participante = (estado == -1)?
+                    GetParticipantePuntosByRucPrincipal(rucPrincipal,true):
+                    GetParticipantePuntosByRucPrincipal(rucPrincipal);
                 participante.estado = estado; 
                 ms.Add(participante);
             }
@@ -413,7 +418,7 @@ namespace jbp.business.hana
             var ms = bc.GetScalarByQuery(sql);
             return ms;
         }
-        public static ParticipantesPuntosMsg GetParticipantePuntosByRucPrincipal(string rucPrincipal)
+        public static ParticipantesPuntosMsg GetParticipantePuntosByRucPrincipal(string rucPrincipal, bool paraDesactivar=false)
         {
             var ms = new ParticipantesPuntosMsg();
             var bc = new BaseCore();
@@ -457,15 +462,18 @@ namespace jbp.business.hana
                  ""JbpVw_SocioNegocio"" t0 inner join
                  ""JbpVw_Vendedores"" t1 on t1.""CodVendedor"" = t0.""CodVendedor""
                 where
-                 t0.""RucPrincipal"" = '{0}'
-                 and t0.""Ruc""=""RucPrincipal""
-                 and ""AplicaPuntos"" = 'SI'
+                 t0.""Ruc"" = '{0}'
                  and ""CodTipoSocioNegocio"" = 'C'
             ", rucPrincipal);
+            if(!paraDesactivar)
+                sql+= @"
+                and ""AplicaPuntos"" = 'SI'
+                and t0.""Ruc""=""RucPrincipal""
+            ";
             var dt = bc.GetDataTableByQuery(sql);
             if (dt.Rows.Count > 0)
             {
-                ms.Activo = dt.Rows[0]["AplicaPuntos"].ToString() == "SI" ? true : false;
+                ms.Activo = !paraDesactivar;
                 ms.nombres = dt.Rows[0]["NombrePtk"].ToString();
                 if (string.IsNullOrEmpty(ms.nombres))
                     ms.nombres = dt.Rows[0]["Nombre"].ToString();

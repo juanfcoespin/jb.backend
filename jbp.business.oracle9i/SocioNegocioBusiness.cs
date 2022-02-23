@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,6 +44,18 @@ namespace jbp.business.oracle9i
                 ms.Error = sn.Error;
             return ms;
         }
+
+        public static SocioNegocioItemMS GetHistoricoClientesByNombre(string nombre)
+        {
+            var ms = new SocioNegocioItemMS();
+            try {
+                ms.clientes= new SocioNegocioCore().GetItemsBytoken(nombre);
+            } catch(Exception e) {
+                ms.error = e.Message;
+            }
+            return ms;
+        }
+
         public static SocioNegocioMsg GetByRuc(string ruc)
         {
             var ms = new SocioNegocioMsg();

@@ -135,8 +135,10 @@
     <Compile Include="Controllers\CuentaController.cs" />
     <Compile Include="Controllers\DirectorioController.cs" />
     <Compile Include="Controllers\EntregaController.cs" />
+    <Compile Include="Controllers\FacturaHistoricoController.cs" />
     <Compile Include="Controllers\FacturaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\EmisionProduccionController.cs" />
     <Compile Include="Controllers\OrdenController.cs" />
     <Compile Include="Controllers\ConfController.cs" />
     <Compile Include="Controllers\OrdenFabricacionController.cs" />
@@ -230,6 +232,8 @@
           <DevelopmentServerPort>58314</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:53628/</IISUrl>
+          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
+          <IISAppRootUrl>http://localhost:53628/</IISAppRootUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

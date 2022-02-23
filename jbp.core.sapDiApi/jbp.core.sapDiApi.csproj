@@ -48,7 +48,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>conf.settings</DependentUpon>
     </Compile>
+    <Compile Include="SapEmisionProduccion.cs" />
+    <Compile Include="SapNotaCredito_23Feb2022.cs" />
     <Compile Include="SapPagoRecibido - 15Dic2021.cs" />
+    <Compile Include="SapNotaCredito.cs" />
+    <Compile Include="SapPagoRecibido23Feb2022.cs" />
     <Compile Include="SapPagoRecibido.cs" />
     <Compile Include="SapOrder - Copy.cs" />
     <Compile Include="SapOrder.cs" />

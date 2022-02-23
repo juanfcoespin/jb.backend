@@ -56,5 +56,38 @@ namespace jbp.business.hana
             }
             return ms;
         }
+
+        internal static int GetIdByDocNum(int docNum)
+        {
+            var sql = string.Format(@"
+                select
+                ""Id""
+                from
+                 ""JbpVw_OrdenFabricacion""
+                where
+                 ""DocNum"" = {0}
+            ", docNum);
+            return new BaseCore().GetIntScalarByQuery(sql);
+        }
+
+        internal static bool EstaLiberada(int idOF)
+        {
+            var estado = GetEstado(idOF);
+            return estado == "Liberado";
+        }
+
+        public static string GetEstado(int idOF)
+        {
+            var sql = string.Format(@"
+                select
+                ""Estado""
+                from
+                 ""JbpVw_OrdenFabricacion""
+                where
+                 ""Id"" = {0}
+            ",idOF);
+            return new BaseCore().GetScalarByQuery(sql);
+        }
+        
     }
 }

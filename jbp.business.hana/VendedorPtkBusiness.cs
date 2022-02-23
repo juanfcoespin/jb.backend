@@ -166,7 +166,7 @@ namespace jbp.business.hana
                 from
                  OSLP
                 where
-                 U_SINCRONIZADO_PTK = 0--NO
+                 U_SINCRONIZADO_PTK = 0 --NO
             ");
             var dt = new BaseCore().GetDataTableByQuery(sql);
             if (dt.Rows.Count > 0)

@@ -4747,23 +4747,11 @@
       },
       "jbp.msg/1.0.0": {
         "type": "project",
-        "dependencies": {
-          "TechTools.Utils": "1.0.0"
-        },
         "compile": {
           "bin/placeholder/jbp.msg.dll": {}
         },
         "runtime": {
           "bin/placeholder/jbp.msg.dll": {}
-        }
-      },
-      "TechTools.Utils/1.0.0": {
-        "type": "project",
-        "compile": {
-          "bin/placeholder/TechTools.Utils.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/TechTools.Utils.dll": {}
         }
       }
     }
@@ -13102,11 +13090,6 @@
       "type": "project",
       "path": "../jbp.msg/jbp.msg.csproj",
       "msbuildProject": "../jbp.msg/jbp.msg.csproj"
-    },
-    "TechTools.Utils/1.0.0": {
-      "type": "project",
-      "path": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\TechTools\\TechTools.Utils\\TechTools.Utils.csproj",
-      "msbuildProject": "C:\\Users\\jespin\\Dropbox\\TechTools\\bibliotecaProyectosSoftware\\TechTools\\TechTools.Utils\\TechTools.Utils.csproj"
     }
   },
   "projectFileDependencyGroups": {

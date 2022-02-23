@@ -47,7 +47,7 @@ namespace jbp.core.sapDiApi
             }
         }
         public void Disconnect() {
-            if (this.Company.Connected)
+            if (this.Company!=null && this.Company.Connected)
                 this.Company.Disconnect();
             CheckIfIsDisconectedAsync();
         }
