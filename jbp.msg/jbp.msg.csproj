@@ -63,7 +63,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Utils\TechTools.Utils.csproj">
+    <ProjectReference Include="..\TechTools\TechTools.Utils\TechTools.Utils.csproj">
       <Project>{f5f4b36b-6166-4db9-998c-8aed8cade5b6}</Project>
       <Name>TechTools.Utils</Name>
     </ProjectReference>

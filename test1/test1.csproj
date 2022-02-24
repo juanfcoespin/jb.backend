@@ -62,18 +62,6 @@
       <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
       <Name>jbp.msg</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Core\TechTools.Core.Base\TechTools.Core.Base.csproj">
-      <Project>{4890096f-5313-401f-9366-74b7622aae8b}</Project>
-      <Name>TechTools.Core.Base</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Core\TechTools.Core.Hana\TechTools.Core.Hana.csproj">
-      <Project>{46a41246-2d2f-4504-94f1-76db57fd8b55}</Project>
-      <Name>TechTools.Core.Hana</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Core\TechTools.Core.Oracle9i\TechTools.Core.Oracle9i.csproj">
-      <Project>{293ff26d-c95f-4dd0-bc95-d3eb047c998d}</Project>
-      <Name>TechTools.Core.Oracle9i</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -55,39 +55,25 @@ namespace jbp.business.hana
                 {
                     var seConecto=sapPagoRecibido.Connect();//se conecta a sap
                 }
-                pagos.ForEach(pago =>
-                {
-                    try
-                    {
-                        
+                pagos.ForEach(pago =>{
+                    try{
                         var resp = "";
                         if (DuplicatePago(pago))
                             resp = "Anteriormente ya se procesó este item!";
-                        else
-                        {
+                        else{
                             pago.facturasAPagar.ForEach(factura => {
                                 var folioNum = GetNumFolio(factura.numDoc);
                                 factura.folioNum = folioNum;
                                 factura.DocEntry = FacturaBusiness.GetDocEntryFromFolioNum(folioNum);
-                                if (factura.porcentajePP > 0)
-                                {
-                                    factura.descuentoPP = factura.toPay - factura.toPayMasProntoPago;
-                                    //se registra la nota de credito por pronto pago
-                                    var respNc=new NotaCreditoBusiness().SaveNCPP(factura,pago);
-                                    if(respNc!="ok")
-                                        throw new Exception(respNc);
-                                }
                             });
                             resp = sapPagoRecibido.Add(pago);
-                            if (resp == "ok")
-                            {
+                            if (resp == "ok"){
                                 EnviarCorreoPago(pago);
                             }
                         }
                         ms.Add(resp);
                     }
-                    catch (Exception e)
-                    {
+                    catch (Exception e){
                         ms.Add(e.Message);
                     }
                 });
@@ -119,21 +105,24 @@ namespace jbp.business.hana
             msg += " <tr>";
             msg += "    <td style='border: solid 1px #000000'><b>Num Factura</b></td>";
             msg += "    <td style='border: solid 1px #000000'><b>Total Factura</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Valor a Pagar</b></td>";
+            msg += "    <td style='border: solid 1px #000000'><b>Saldo Factura</b></td>";
             msg += "    <td style='border: solid 1px #000000'><b>% Desc. Pronto Pago</b></td>";
             msg += "    <td style='border: solid 1px #000000'><b>Descuento PP</b></td>";
+            msg += "    <td style='border: solid 1px #000000'><b>Valor a Pagar</b></td>";
             msg += " </tr>";
             pago.facturasAPagar.ForEach(factura => {
                 msg += "<tr>";
                 msg += "    <td style='border: solid 1px #000000'>" + factura.numDoc+"</td>";
                 msg += "    <td style='border: solid 1px #000000'>USD " + factura.total + "</td>";
-                msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPayMasProntoPago +"</td>";
-                msg += "    <td style='border: solid 1px #000000'>USD " + factura.porcentajePP + "</td>";
+                msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPay +"</td>";
+                msg += "    <td style='border: solid 1px #000000'>" + factura.porcentajePP + "%</td>";
                 msg += "    <td style='border: solid 1px #000000'>USD " + factura.descuentoPP + "</td>";
+                msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPayMasProntoPago + "</td>";
                 msg += "</tr>";
             });
             msg += "</table><br>";
             msg += "<b>Detalles del Pago:</b> <br>";
+            msg += "<b>Total Pagado: USD " + pago.totalPagado + "</b><br>";
             msg += "<table>";
             msg += " <tr>";
             msg += "    <td style='border: solid 1px #000000'><b>Tipo Pago</b></td>";

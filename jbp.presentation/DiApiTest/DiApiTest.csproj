@@ -62,10 +62,6 @@
       <Project>{82573bbb-4437-46f2-b19d-f592d1b73000}</Project>
       <Name>jbp.msg.sap</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Rest\TechTools.Rest.csproj">
-      <Project>{ef5ef697-d4dc-4d87-b5e3-fcda91cd048e}</Project>
-      <Name>TechTools.Rest</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

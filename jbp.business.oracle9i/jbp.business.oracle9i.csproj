@@ -103,47 +103,47 @@
       <Project>{56530cb5-d16e-43c0-a4bd-f36a1da30f33}</Project>
       <Name>jbp.utils</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Core\TechTools.Core.Base\TechTools.Core.Base.csproj">
+    <ProjectReference Include="..\TechTools\TechTools.Core\TechTools.Core.Base\TechTools.Core.Base.csproj">
       <Project>{4890096f-5313-401f-9366-74b7622aae8b}</Project>
       <Name>TechTools.Core.Base</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Core\TechTools.Core.Oracle9i\TechTools.Core.Oracle9i.csproj">
+    <ProjectReference Include="..\TechTools\TechTools.Core\TechTools.Core.Oracle9i\TechTools.Core.Oracle9i.csproj">
       <Project>{293ff26d-c95f-4dd0-bc95-d3eb047c998d}</Project>
       <Name>TechTools.Core.Oracle9i</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.DelegatesAndEnums\TechTools.DelegatesAndEnums.csproj">
+    <ProjectReference Include="..\TechTools\TechTools.DelegatesAndEnums\TechTools.DelegatesAndEnums.csproj">
       <Project>{c6863cc0-e925-4f7c-a36c-21be93b4739e}</Project>
       <Name>TechTools.DelegatesAndEnums</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Exceptions\TechTools.Exceptions.csproj">
+    <ProjectReference Include="..\TechTools\TechTools.Exceptions\TechTools.Exceptions.csproj">
       <Project>{69440dba-7c87-4521-a8d0-4b5c51b76d20}</Project>
       <Name>TechTools.Exceptions</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Logs\TechTools.Logs.csproj">
+    <ProjectReference Include="..\TechTools\TechTools.Logs\TechTools.Logs.csproj">
       <Project>{a807f2ab-f463-43a8-99ca-a2187f62da7e}</Project>
       <Name>TechTools.Logs</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Msg\TechTools.Msg.csproj">
+    <ProjectReference Include="..\TechTools\TechTools.Msg\TechTools.Msg.csproj">
       <Project>{564bfb5a-f530-4b15-963b-6eef28258bfc}</Project>
       <Name>TechTools.Msg</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Net\TechTools.Net.csproj">
+    <ProjectReference Include="..\TechTools\TechTools.Net\TechTools.Net.csproj">
       <Project>{643a6933-20ee-45f0-85a4-43323a04f334}</Project>
       <Name>TechTools.Net</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Rest\TechTools.Rest.csproj">
+    <ProjectReference Include="..\TechTools\TechTools.Rest\TechTools.Rest.csproj">
       <Project>{ef5ef697-d4dc-4d87-b5e3-fcda91cd048e}</Project>
       <Name>TechTools.Rest</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Serializador\TechTools.Serializador.csproj">
+    <ProjectReference Include="..\TechTools\TechTools.Serializador\TechTools.Serializador.csproj">
       <Project>{bb3befa2-22a3-4223-b489-4a005fc53216}</Project>
       <Name>TechTools.Serializador</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.Utils\TechTools.Utils.csproj">
+    <ProjectReference Include="..\TechTools\TechTools.Utils\TechTools.Utils.csproj">
       <Project>{f5f4b36b-6166-4db9-998c-8aed8cade5b6}</Project>
       <Name>TechTools.Utils</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\jespin\Dropbox\TechTools\bibliotecaProyectosSoftware\TechTools\TechTools.WinServices\TechTools.WinServices.csproj">
+    <ProjectReference Include="..\TechTools\TechTools.WinServices\TechTools.WinServices.csproj">
       <Project>{fcf3d03f-fabb-4fba-b11d-99eddd47d101}</Project>
       <Name>TechTools.WinServices</Name>
     </ProjectReference>

@@ -16,55 +16,6 @@ namespace jbp.business.hana
 {
     public class NotaCreditoBusiness
     {
-        public static readonly object control = new object();
-        public static SapNotaCredito sapNC = new SapNotaCredito();
-
-        public string SaveNCPP(DocCarteraMsg factura, PagoMsg pago)
-        {
-            Monitor.Enter(control);
-            try
-            {
-                var ms = ProcessSaveNcPP(factura, pago);
-                return ms;
-            }
-            finally
-            {
-                Monitor.Exit(control);
-            }
-        }
-
-        private string ProcessSaveNcPP(DocCarteraMsg factura, PagoMsg pago)
-        {
-            if (factura != null)
-            {
-                if (sapNC == null) 
-                    sapNC = new SapNotaCredito();
-                if (!sapNC.IsConected())
-                {
-                    var seConecto = sapNC.Connect();//se conecta a sap
-                }
-                var me = getNcProntoPagoFromFactura(factura, pago);
-                return sapNC.AddNcProntoPago(me);
-            }
-            return null;
-        }
-        private NotaCreditoPPMsg getNcProntoPagoFromFactura(DocCarteraMsg factura, PagoMsg pago)
-        {
-            
-            var comentario = string.Format("Porcentaje Desc. PP: {0}%, valor: {1} Factura: {2}, Total Factura: {3}",
-                factura.porcentajePP, factura.descuentoPP, factura.numDoc, factura.total);
-            //pago.comment += comentario;
-            var ms = new NotaCreditoPPMsg
-            {
-                CodCliente = pago.CodCliente,
-                Comentario = comentario,
-                TipoDescPP = eNcPPType.Veterinario,
-                FolioNumFacturaRelacionada = factura.folioNum,
-                TotalNC = factura.descuentoPP
-            };
-            return ms;
-        }
-
         internal List<DocumentoPromotickMsg> GetNotasCreditoParticipantesToSendPromotick()
         {
             try
