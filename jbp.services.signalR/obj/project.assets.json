@@ -13105,8 +13105,8 @@
     },
     "TechTools.Utils/1.0.0": {
       "type": "project",
-      "path": "../TechTools/TechTools.Utils/TechTools.Utils.csproj",
-      "msbuildProject": "../TechTools/TechTools.Utils/TechTools.Utils.csproj"
+      "path": "../Techtools.net/TechTools.Utils/TechTools.Utils.csproj",
+      "msbuildProject": "../Techtools.net/TechTools.Utils/TechTools.Utils.csproj"
     }
   },
   "projectFileDependencyGroups": {

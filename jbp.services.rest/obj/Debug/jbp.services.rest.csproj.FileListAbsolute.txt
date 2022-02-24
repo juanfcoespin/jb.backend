@@ -83,7 +83,6 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.WinServices.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Logs.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Msg.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Serializador.dll
-D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\Sap.Data.Hana.v4.5.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.ValueTuple.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Threading.Tasks.Extensions.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Runtime.CompilerServices.Unsafe.dll
@@ -129,8 +128,6 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Logs.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Logs.dll.config
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Msg.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Serializador.pdb
-D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\Sap.Data.Hana.v4.5.xml
-D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\Sap.Data.Hana.v4.5.dll.config
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.ValueTuple.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Threading.Tasks.Extensions.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Runtime.CompilerServices.Unsafe.xml

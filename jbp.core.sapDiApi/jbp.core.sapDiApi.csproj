@@ -81,7 +81,7 @@
       <Project>{82573bbb-4437-46f2-b19d-f592d1b73000}</Project>
       <Name>jbp.msg.sap</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TechTools\TechTools.Utils\TechTools.Utils.csproj">
+    <ProjectReference Include="..\Techtools.net\TechTools.Utils\TechTools.Utils.csproj">
       <Project>{f5f4b36b-6166-4db9-998c-8aed8cade5b6}</Project>
       <Name>TechTools.Utils</Name>
     </ProjectReference>

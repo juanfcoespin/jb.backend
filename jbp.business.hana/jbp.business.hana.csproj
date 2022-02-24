@@ -94,27 +94,27 @@
       <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
       <Name>jbp.msg</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TechTools\TechTools.Core\TechTools.Core.Base\TechTools.Core.Base.csproj">
+    <ProjectReference Include="..\Techtools.net\TechTools.Core\TechTools.Core.Base\TechTools.Core.Base.csproj">
       <Project>{4890096f-5313-401f-9366-74b7622aae8b}</Project>
       <Name>TechTools.Core.Base</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TechTools\TechTools.Core\TechTools.Core.Hana\TechTools.Core.Hana.csproj">
+    <ProjectReference Include="..\Techtools.net\TechTools.Core\TechTools.Core.Hana\TechTools.Core.Hana.csproj">
       <Project>{46a41246-2d2f-4504-94f1-76db57fd8b55}</Project>
       <Name>TechTools.Core.Hana</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TechTools\TechTools.Exceptions\TechTools.Exceptions.csproj">
+    <ProjectReference Include="..\Techtools.net\TechTools.Exceptions\TechTools.Exceptions.csproj">
       <Project>{69440dba-7c87-4521-a8d0-4b5c51b76d20}</Project>
       <Name>TechTools.Exceptions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TechTools\TechTools.Net\TechTools.Net.csproj">
+    <ProjectReference Include="..\Techtools.net\TechTools.Net\TechTools.Net.csproj">
       <Project>{643a6933-20ee-45f0-85a4-43323a04f334}</Project>
       <Name>TechTools.Net</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TechTools\TechTools.Rest\TechTools.Rest.csproj">
+    <ProjectReference Include="..\Techtools.net\TechTools.Rest\TechTools.Rest.csproj">
       <Project>{ef5ef697-d4dc-4d87-b5e3-fcda91cd048e}</Project>
       <Name>TechTools.Rest</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TechTools\TechTools.Utils\TechTools.Utils.csproj">
+    <ProjectReference Include="..\Techtools.net\TechTools.Utils\TechTools.Utils.csproj">
       <Project>{f5f4b36b-6166-4db9-998c-8aed8cade5b6}</Project>
       <Name>TechTools.Utils</Name>
     </ProjectReference>

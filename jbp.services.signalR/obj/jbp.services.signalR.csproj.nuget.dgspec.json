@@ -12,8 +12,8 @@
         "frameworks": {
           "net472": {
             "projectReferences": {
-              "D:\\DesarrolloSw\\JBP\\jbp.backend\\TechTools\\TechTools.Utils\\TechTools.Utils.csproj": {
-                "projectPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\TechTools\\TechTools.Utils\\TechTools.Utils.csproj"
+              "D:\\DesarrolloSw\\JBP\\jbp.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj": {
+                "projectPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj"
               }
             }
           }
@@ -111,11 +111,11 @@
         }
       }
     },
-    "D:\\DesarrolloSw\\JBP\\jbp.backend\\TechTools\\TechTools.Utils\\TechTools.Utils.csproj": {
+    "D:\\DesarrolloSw\\JBP\\jbp.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj": {
       "restore": {
-        "projectUniqueName": "D:\\DesarrolloSw\\JBP\\jbp.backend\\TechTools\\TechTools.Utils\\TechTools.Utils.csproj",
+        "projectUniqueName": "D:\\DesarrolloSw\\JBP\\jbp.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj",
         "projectName": "TechTools.Utils",
-        "projectPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\TechTools\\TechTools.Utils\\TechTools.Utils.csproj",
+        "projectPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj",
         "frameworks": {
           "net472": {
             "projectReferences": {}

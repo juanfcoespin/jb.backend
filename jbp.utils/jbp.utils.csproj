@@ -64,7 +64,7 @@
       <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
       <Name>jbp.msg</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TechTools\TechTools.DelegatesAndEnums\TechTools.DelegatesAndEnums.csproj">
+    <ProjectReference Include="..\Techtools.net\TechTools.DelegatesAndEnums\TechTools.DelegatesAndEnums.csproj">
       <Project>{c6863cc0-e925-4f7c-a36c-21be93b4739e}</Project>
       <Name>TechTools.DelegatesAndEnums</Name>
     </ProjectReference>
