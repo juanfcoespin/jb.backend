@@ -21,5 +21,29 @@ namespace jbp.business.hana
             };
             return ms;
         }
+
+        internal static List<ItemCatalogo> GetCatalogByName(string catalogName)
+        {
+            var ms=new List<ItemCatalogo>();
+            var sql = string.Format(@"
+                SELECT 
+                 T0.ID,
+                 T0.VALUE
+                FROM 
+                 JB_CATALOG_VALUES T0 inner join
+                 JB_CATALOG T1 ON T1.ID=T0.ID_CATALOG
+                WHERE
+                 T1.NAME='{0}'
+            ",catalogName);
+            var bc = new BaseCore();
+            var dt=bc.GetDataTableByQuery(sql);
+            foreach (DataRow dr in dt.Rows) {
+                ms.Add(new ItemCatalogo { 
+                    id = bc.GetInt(dr["ID"]),
+                    name = dr["VALUE"].ToString()
+                });
+            }
+            return ms;
+        }
     }
 }

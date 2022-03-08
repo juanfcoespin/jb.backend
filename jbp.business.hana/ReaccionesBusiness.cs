@@ -32,6 +32,25 @@ namespace jbp.business.hana
             }
         }
 
+        public CatalogosReacciones GetCatalogos()
+        {
+            try
+            {
+                return new CatalogosReacciones { 
+                    quienPadecioReaccion = CatalogoBusiness.GetCatalogByName("quienPadecioReaccion"),
+                    viaAdministracion = CatalogoBusiness.GetCatalogByName("viaAdministracion"),
+                    quePasoConMedicamento = CatalogoBusiness.GetCatalogByName("quePasoConMedicamento"),
+                    rangoEdad = CatalogoBusiness.GetCatalogByName("rangoEdad")
+                };
+            }
+            catch (Exception e)
+            {
+                return new CatalogosReacciones {
+                    error = e.Message
+                };
+            }
+        }
+
         public List<ReaccionesMsg> GetReacciones()
         {
             var ms = new List<ReaccionesMsg>();

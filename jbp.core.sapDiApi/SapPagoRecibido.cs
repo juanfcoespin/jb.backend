@@ -105,6 +105,7 @@ namespace jbp.core.sapDiApi
                         if (saldo > 0 && factura.toPayMasProntoPago > 0 && factura.DocEntry > 0)
                         {
                             pago.Invoices.DocEntry = factura.DocEntry;
+                            
                             pago.Invoices.InvoiceType = SAPbobsCOM.BoRcptInvTypes.it_Invoice;
                             pago.Invoices.UserFields.Fields.Item("U_PORCENTAJE_PP").Value = factura.porcentajePP;
                             pago.Invoices.UserFields.Fields.Item("U_DESCUENTO_PP").Value = factura.descuentoPP;

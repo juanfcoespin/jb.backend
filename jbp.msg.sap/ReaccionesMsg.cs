@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using jbp.msg;
 
 namespace jbp.msg.sap
 {
+
     public class ReaccionesMsg
     {
         public string fechaRegistro { get; set; }
@@ -17,5 +19,14 @@ namespace jbp.msg.sap
         public int alturaCm { get; set; }
         public string quienPadecioReaccion { get; set; }
         public string padeceOtraEnfermedad { get; set; }
+    }
+    public class CatalogosReacciones
+    {
+        public  string error { get; set; }
+
+        public List<ItemCatalogo> quienPadecioReaccion { get; set; }
+        public List<ItemCatalogo> viaAdministracion { get; set; }
+        public List<ItemCatalogo> quePasoConMedicamento { get; set; }
+        public List<ItemCatalogo> rangoEdad { get; set; }
     }
 }

@@ -21,5 +21,12 @@ namespace jbp.services.rest.Controllers
             var ms = new ReaccionesBusiness().GetReacciones();
             return ms;
         }
+
+        [HttpGet]
+        [Route("api/reacciones/getCatalogos")]
+        public CatalogosReacciones getCatalogos() {
+            var ms = new ReaccionesBusiness().GetCatalogos();
+            return ms;
+        }
     }
 }

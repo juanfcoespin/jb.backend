@@ -37,6 +37,11 @@ namespace jbp.msg
             this.List = new List<T>();
         }
     }
+    public class ItemCatalogo
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+    }
     public class ItemCombo {
         public int Id { get; set; }
         public string Cod { get; set; }
