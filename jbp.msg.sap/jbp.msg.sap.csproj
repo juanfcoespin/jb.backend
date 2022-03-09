@@ -46,6 +46,7 @@
     <Compile Include="BodegaMsg.cs" />
     <Compile Include="CarteraMsg.cs" />
     <Compile Include="FacturaMsg.cs" />
+    <Compile Include="LoteMsg.cs" />
     <Compile Include="NotaCreditoMsg.cs" />
     <Compile Include="OrdenFabricacionMsg.cs" />
     <Compile Include="OrdenMsg.cs" />

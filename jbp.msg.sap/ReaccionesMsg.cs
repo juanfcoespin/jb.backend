@@ -7,7 +7,12 @@ using jbp.msg;
 
 namespace jbp.msg.sap
 {
-
+    public class MedicamentoConLotesMsg
+    {
+        public string codArticulo { get; set; }
+        public string articulo { get; set; }
+        public List<LoteMsg> lotes { get; set; }
+    }
     public class ReaccionesMsg
     {
         public string fechaRegistro { get; set; }
@@ -28,5 +33,6 @@ namespace jbp.msg.sap
         public List<ItemCatalogo> viaAdministracion { get; set; }
         public List<ItemCatalogo> quePasoConMedicamento { get; set; }
         public List<ItemCatalogo> rangoEdad { get; set; }
+        public List<MedicamentoConLotesMsg> medicamentosConLotes { get; set; }
     }
 }

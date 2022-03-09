@@ -36,11 +36,12 @@ namespace jbp.business.hana
         {
             try
             {
-                return new CatalogosReacciones { 
+                return new CatalogosReacciones {
                     quienPadecioReaccion = CatalogoBusiness.GetCatalogByName("quienPadecioReaccion"),
-                    viaAdministracion = CatalogoBusiness.GetCatalogByName("viaAdministracion"),
+                    viaAdministracion = CatalogoBusiness.GetCatalogByName("viaAdministracion", true),
                     quePasoConMedicamento = CatalogoBusiness.GetCatalogByName("quePasoConMedicamento"),
-                    rangoEdad = CatalogoBusiness.GetCatalogByName("rangoEdad")
+                    rangoEdad = CatalogoBusiness.GetCatalogByName("rangoEdad"),
+                    medicamentosConLotes = GetMedicamentosConLotes()
                 };
             }
             catch (Exception e)
@@ -49,6 +50,32 @@ namespace jbp.business.hana
                     error = e.Message
                 };
             }
+        }
+        public List<MedicamentoConLotesMsg> GetMedicamentosConLotes() { 
+            var ms=new List<MedicamentoConLotesMsg>();
+            var sql = @"
+            select 
+             ""CodArticulo"", 
+             ""Articulo"" 
+            from
+             ""JbpVw_Articulos""
+            where
+             ""Linea"" = 'Humana'
+             and ""TipoArticuloAbreviado"" = 'PT'
+            ";
+            var bc = new BaseCore();
+            var dtProductos=bc.GetDataTableByQuery(sql);
+            foreach (DataRow dr in dtProductos.Rows) {
+                ms.Add(new MedicamentoConLotesMsg
+                {
+                    codArticulo = dr["CodArticulo"].ToString(),
+                    articulo = dr["Articulo"].ToString()
+                }); 
+            }
+            ms.ForEach(articulo => {
+                articulo.lotes = LoteBusiness.GetLotesByCodArticulo(articulo.codArticulo);
+            });
+            return ms;
         }
 
         public List<ReaccionesMsg> GetReacciones()

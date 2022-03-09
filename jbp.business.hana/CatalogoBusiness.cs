@@ -22,7 +22,7 @@ namespace jbp.business.hana
             return ms;
         }
 
-        internal static List<ItemCatalogo> GetCatalogByName(string catalogName)
+        internal static List<ItemCatalogo> GetCatalogByName(string catalogName, bool ordenado=false)
         {
             var ms=new List<ItemCatalogo>();
             var sql = string.Format(@"
@@ -35,6 +35,8 @@ namespace jbp.business.hana
                 WHERE
                  T1.NAME='{0}'
             ",catalogName);
+            if (ordenado)
+                sql += " order by T0.VALUE";
             var bc = new BaseCore();
             var dt=bc.GetDataTableByQuery(sql);
             foreach (DataRow dr in dt.Rows) {

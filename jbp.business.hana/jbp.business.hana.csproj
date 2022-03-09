@@ -59,6 +59,7 @@
     <Compile Include="EmpleadoBusiness.cs" />
     <Compile Include="EntregaBusiness.cs" />
     <Compile Include="FacturaBusiness.cs" />
+    <Compile Include="LoteBusiness.cs" />
     <Compile Include="NotaCreditoBusiness.cs" />
     <Compile Include="OrdenFabricacionBusiness.cs" />
     <Compile Include="OrderBusiness_13Ene2021.cs" />
