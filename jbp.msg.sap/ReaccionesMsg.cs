@@ -34,5 +34,7 @@ namespace jbp.msg.sap
         public List<ItemCatalogo> quePasoConMedicamento { get; set; }
         public List<ItemCatalogo> rangoEdad { get; set; }
         public List<MedicamentoConLotesMsg> medicamentosConLotes { get; set; }
+        public List<ItemCatalogo> reacciones { get; set; }
+        public List<ItemCatalogo> estadoPersonaAfectada { get; set; }
     }
 }

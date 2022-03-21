@@ -41,7 +41,9 @@ namespace jbp.business.hana
                     viaAdministracion = CatalogoBusiness.GetCatalogByName("viaAdministracion", true),
                     quePasoConMedicamento = CatalogoBusiness.GetCatalogByName("quePasoConMedicamento"),
                     rangoEdad = CatalogoBusiness.GetCatalogByName("rangoEdad"),
-                    medicamentosConLotes = GetMedicamentosConLotes()
+                    medicamentosConLotes = GetMedicamentosConLotes(),
+                    reacciones = CatalogoBusiness.GetCatalogByName("reacciones"),
+                    estadoPersonaAfectada = CatalogoBusiness.GetCatalogByName("estadoPersonaAfectada"),
                 };
             }
             catch (Exception e)
@@ -62,6 +64,8 @@ namespace jbp.business.hana
             where
              ""Linea"" = 'Humana'
              and ""TipoArticuloAbreviado"" = 'PT'
+            order by
+             ""Articulo"" 
             ";
             var bc = new BaseCore();
             var dtProductos=bc.GetDataTableByQuery(sql);
