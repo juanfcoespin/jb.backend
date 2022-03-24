@@ -81,42 +81,149 @@ namespace jbp.business.hana
             });
             return ms;
         }
-
         public List<ReaccionesMsg> GetReacciones()
         {
             var ms = new List<ReaccionesMsg>();
             var sql = @"
                 select 
-                 FECHA_REGISTRO,
-                 NOMBRES,
-                 APELLIDOS,
-                 SEXO,
-                 RANGO_EDAD,
-                 PESO_KG,
-                 ALTURA_CM,
-                 QUIEN_PADECIO_REACCION,
-                 PADECE_OTRA_ENFERMEDAD
-                from JBP_REACCIONES_MEDICAMENTOS
+                 T0.id,
+                 T1.VALUE ""RangoEdad"",
+                 T2.VALUE ""QuienPadecioEnfermedad"",
+                 T0.FECHA_REGISTRO,
+                 T0.NOMBRES,
+                 T0.APELLIDOS,
+                 T0.SEXO,
+                 T0.PESO_KG,
+                 T0.ALTURA_CM,
+                 T0.PADECE_OTRA_ENFERMEDAD,
+                 t0.NOTIFICADOR,
+                 t0.NOTIFICADOR_MAIL,
+                 t0.NOTIFICADOR_TELEFONO,
+                 T0.OTRA_ENFERMEDAD,
+                 T0.REACCIONES
+                from JBP_REACCIONES T0 INNER JOIN
+                    JB_CATALOG_VALUES T1 ON T1.ID = T0.ID_RANGO_EDAD INNER JOIN
+                    JB_CATALOG_VALUES T2 ON T2.ID = T0.ID_QUIEN_PADECIO_REACCION
             ";
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
             foreach (DataRow dr in dt.Rows) {
-                ms.Add(new ReaccionesMsg
+
+                var reaccion=new ReaccionesMsg
                 {
+                    id=bc.GetInt(dr["id"]),
+                    rangoEdad = dr["RangoEdad"].ToString(),
+                    quienPadecioEnfermedad = dr["QuienPadecioEnfermedad"].ToString(),
                     fechaRegistro = dr["FECHA_REGISTRO"].ToString(),
                     nombres = dr["NOMBRES"].ToString(),
                     apellidos = dr["APELLIDOS"].ToString(),
                     sexo = getSexo(dr["SEXO"].ToString()),
-                    rangoEdad = dr["RANGO_EDAD"].ToString(),
                     pesoKg = bc.GetInt( dr["PESO_KG"].ToString()),
                     alturaCm = bc.GetInt( dr["ALTURA_CM"].ToString()),
-                    quienPadecioReaccion = dr["QUIEN_PADECIO_REACCION"].ToString(),
-                    padeceOtraEnfermedad = dr["PADECE_OTRA_ENFERMEDAD"].ToString()
+                    padeceOtraEnfermedad = bc.GetBoolean(dr["PADECE_OTRA_ENFERMEDAD"]),
+                    notificador = dr["NOTIFICADOR"].ToString(),
+                    notificadorMail = dr["NOTIFICADOR_MAIL"].ToString(),
+                    notificadorTelefono = dr["NOTIFICADOR_TELEFONO"].ToString(),
+                    otraEnfermedad = dr["OTRA_ENFERMEDAD"].ToString(),
+                    reaccionesStr= getReaccionesSrt(dr["REACCIONES"].ToString(),bc),
+                    
+                };
+                reaccion.medicamentos = getMedicamentosByIdReaccion(reaccion.id, bc);
+                reaccion.informacionesReaccion = getInfoReaccionesByIdReaccion(reaccion.id, bc);
+                ms.Add(reaccion);
+            }
+            return ms;
+        }
+        private List<InfoReaccion> getInfoReaccionesByIdReaccion(int idReaccion, BaseCore bc)
+        {
+            var ms = new List<InfoReaccion>();
+            var sql = string.Format(@"
+                select 
+                 T0.id,
+               	 t1.value ESTADO_PERSONA_AFECTADA,
+               	 to_char(T0.FECHA_INICIO,'yyyy-mm-dd') FECHA_INICIO,
+               	 to_char(T0.FECHA_FIN,'yyyy-mm-dd') FECHA_FIN,
+               	 T0.SIGUIO_TRATAMIENTO,
+               	 T0.SINTOMAS,
+               	 T0.TRATAMIENTO
+                from JBP_REACCIONES_INFO T0 INNER JOIN
+                    JB_CATALOG_VALUES T1 ON T1.ID = T0.ID_ESTADO_PERSONA_AFECTADA
+                where
+                 T0.ID_REACCION = {0}
+            ", idReaccion);
+            var dt = bc.GetDataTableByQuery(sql);
+            foreach (DataRow dr in dt.Rows)
+            {
+                ms.Add(new InfoReaccion
+                {
+                    id = bc.GetInt(dr["id"]),
+                    estadoPersonaAfectada = dr["ESTADO_PERSONA_AFECTADA"].ToString(),
+                    fechaInicio = dr["FECHA_INICIO"].ToString(),
+                    fechaFin = dr["FECHA_FIN"].ToString(),
+                    siguioTratamiento = bc.GetBoolean(dr["SIGUIO_TRATAMIENTO"]),
+                    sintomas = dr["SINTOMAS"].ToString(),
+                    tratamiento = dr["TRATAMIENTO"].ToString()
                 });
             }
             return ms;
         }
-
+        private List<MedicamentoItem> getMedicamentosByIdReaccion(int idReaccion, BaseCore bc)
+        {
+            var ms = new List<MedicamentoItem>();
+            var sql = string.Format(@"
+                select 
+                 T0.id,
+                 T1.VALUE ""ViaAdministracion"",
+                 T2.VALUE ""QuePasoConElMedicamento"",
+                 t3.""ItemName"" ""Medicamento"",
+                 T0.LOTE,
+                 T0.FECHA_VENCIMIENTO,
+                 T0.CANTIDAD_FRECUENCIA,
+                 to_char(T0.FECHA_UTILIZACION,'yyyy-mm-dd') ""FECHA_UTILIZACION"",
+                 to_char(T0.CUANDO_DEJO_USAR,'yyyy-mm-dd') ""CUANDO_DEJO_USAR"",
+                 T0.HA_VUELTO_REACCION,
+                 T0.PARA_QUE_UTILIZO,
+                 T0.POSOLOGIA
+                from JBP_REACCIONES_MEDICAMENTOS T0 INNER JOIN
+                    JB_CATALOG_VALUES T1 ON T1.ID = T0.ID_VIA_ADMINISTRACION INNER JOIN
+                    JB_CATALOG_VALUES T2 ON t2.ID = T0.ID_QUE_PASO_CON_MEDICAMENTO INNER JOIN
+                    OITM T3 ON T3.""ItemCode"" = t0.COD_ARTICULO
+                where
+                 T0.ID_REACCION = {0}
+            ", idReaccion);
+            var dt=bc.GetDataTableByQuery(sql);
+            foreach (DataRow dr in dt.Rows) {
+                ms.Add(new MedicamentoItem {
+                    id = bc.GetInt(dr["id"]),
+                    viaAdministracion = dr["ViaAdministracion"].ToString(),
+                    quePasoConMedicamento = dr["QuePasoConElMedicamento"].ToString(),
+                    medicamento = dr["Medicamento"].ToString(),
+                    lote = dr["LOTE"].ToString(),
+                    fechaVencimiento = dr["FECHA_VENCIMIENTO"].ToString(),
+                    cantidadFrecuencia = dr["CANTIDAD_FRECUENCIA"].ToString(),
+                    fechaUtilizacion = dr["FECHA_UTILIZACION"].ToString(),
+                    cuandoDejoUsar = dr["CUANDO_DEJO_USAR"].ToString(),
+                    haVueltoReaccion = bc.GetBoolean(dr["HA_VUELTO_REACCION"]),
+                    paraQueUtilizo = dr["PARA_QUE_UTILIZO"].ToString(),
+                    posologia = dr["POSOLOGIA"].ToString()
+                });
+            }
+            return ms;
+        }
+        private List<string> getReaccionesSrt(string me, BaseCore bc)
+        {
+            var ms=new List<string>();
+            var arr = me.Split(new char[] { ',' }).ToList();
+            arr.ForEach(idReaccion =>
+            {
+                var sql = string.Format(@"
+                    select value from JB_CATALOG_VALUES
+                    where id={0}
+                ",idReaccion);
+                ms.Add(bc.GetScalarByQuery(sql));
+            });
+            return ms;
+        }
         private string getSexo(string sexo)
         {
             switch (sexo.ToLower()) {
@@ -127,9 +234,9 @@ namespace jbp.business.hana
             }
             return "No Definido";
         }
-
         private List<string> ProcessReacciones(List<ReaccionesMsg> reacciones)
         {
+            var bc=new BaseCore();
             var ms = new List<string>();
             if (reacciones != null && reacciones.Count > 0)
             {
@@ -138,17 +245,54 @@ namespace jbp.business.hana
                     try
                     {
                         var sql = string.Format(@"
-                            insert into JBP_REACCIONES_MEDICAMENTOS(
-                                FECHA_REGISTRO, NOMBRES, APELLIDOS, SEXO, RANGO_EDAD,
-                                PESO_KG, ALTURA_CM, QUIEN_PADECIO_REACCION, PADECE_OTRA_ENFERMEDAD
+                            insert into JBP_REACCIONES(
+                                ID_RANGO_EDAD,
+                                ID_QUIEN_PADECIO_REACCION,
+                                FECHA_REGISTRO,
+                                NOMBRES, APELLIDOS, SEXO,
+                                PESO_KG, ALTURA_CM, 
+                                PADECE_OTRA_ENFERMEDAD,
+                                NOTIFICADOR,
+                                NOTIFICADOR_MAIL,
+                                NOTIFICADOR_TELEFONO,
+                                OTRA_ENFERMEDAD,
+                                REACCIONES
                             )VALUES(
-                                current_date, '{0}', '{1}',  '{2}', '{3}',   
-                                {4}, {5}, '{6}', '{7}'
+                                {0},
+                                {1},
+                                current_timestamp,
+                                '{2}', '{3}',  '{4}',
+                                {5}, {6},
+                                {7},
+                                '{8}',--NOTIFICADOR 
+                                '{9}',
+                                '{10}',
+                                '{11}',
+                                '{12}' --REACCIONES
                             )
-                        ",  reaccion.nombres, reaccion.apellidos, reaccion.sexo, reaccion.rangoEdad,
-                         reaccion.pesoKg, reaccion.alturaCm, reaccion.quienPadecioReaccion, reaccion.padeceOtraEnfermedad
+                        ",  
+                            reaccion.idRangoEdad,
+                            reaccion.idQuienPadecioReaccion,
+                            reaccion.nombres,reaccion.apellidos, reaccion.sexo,
+                            reaccion.pesoKg, reaccion.alturaCm,
+                            reaccion.padeceOtraEnfermedad,
+                            reaccion.notificador,
+                            reaccion.notificadorMail,
+                            reaccion.notificadorTelefono,
+                            reaccion.otraEnfermedad,
+                            getReaccionesChecked(reaccion.reacciones)
                         );
-                        new BaseCore().Execute(sql);
+                        bc.Execute(sql);
+                        sql = "select max(ID) from JBP_REACCIONES";
+                        var idReaccion = bc.GetIntScalarByQuery(sql);
+                        reaccion.medicamentos.ForEach(medicamento =>{
+                            medicamento.idReaccion = idReaccion;
+                            saveMedicamento(medicamento, bc);
+                        });
+                        reaccion.informacionesReaccion.ForEach(infoReaccion => {
+                            infoReaccion.idReaccion = idReaccion;
+                            saveInfoReaccion(infoReaccion, bc);
+                        });
                         ms.Add("ok");
                     }
                     catch (Exception e)
@@ -159,96 +303,97 @@ namespace jbp.business.hana
             }
             return ms;
         }
-        
-        private void EnviarCorreoPago(PagoMsg pago)
+        private void saveInfoReaccion(InfoReaccion infoReaccion, BaseCore bc)
         {
-            string titulo = "Pago Recibido - " + pago.client;
-            string msg = string.Empty;
-            var bddName = BaseCore.GetBddName();
-            msg += string.Format(@"
-                <h2>{5}</h2><br>
-                <b>Cliente:</b> {0} <br>
-                <b>CodCliente:</b> {1} <br>
-                <b>Monto Pagado:</b> USD {2} <br>
-                <b>Base de datos:</b> {3} <br>
-                <b>Comentario:</b><br>{4} <br><br>
-            ", pago.client, pago.CodCliente, pago.totalPagado,bddName , pago.comment, titulo);
-            msg += "<b>Facturas Pagadas:</b> <br>";
-            msg += "<table>";
-            msg += " <tr>";
-            msg += "    <td style='border: solid 1px #000000'><b>Num Factura</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Total Factura</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Saldo Vencido</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Pagado</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Saldo Pendiente</b></td>";
-            msg += " </tr>";
-            pago.facturasAPagar.ForEach(factura => {
-                var saldoPendiente = factura.toPay - factura.pagado;
-                msg += "<tr>";
-                msg += "    <td style='border: solid 1px #000000'>" + factura.numDoc+"</td>";
-                msg += "    <td style='border: solid 1px #000000'>USD " + factura.total + "</td>";
-                msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPay+"</td>";
-                msg += "    <td style='border: solid 1px #000000'>USD " + factura.pagado + "</td>";
-                msg += "    <td style='border: solid 1px #000000'>USD " + saldoPendiente.ToString("#.##") + "</td>";
-                msg += "</tr>";
-            });
-            msg += "</table><br>";
-            msg += "<b>Detalles del Pago:</b> <br>";
-            msg += "<table>";
-            msg += " <tr>";
-            msg += "    <td style='border: solid 1px #000000'><b>Tipo Pago</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Monto</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Banco</b></td>";
-            msg += " </tr>";
-            pago.tiposPago.ForEach(tp => {
-                msg += "<tr>";
-                msg += "    <td style='border: solid 1px #000000'>" + tp.tipoPago + "</td>";
-                msg += "    <td style='border: solid 1px #000000'>USD " + tp.monto + "</td>";
-                msg += "    <td style='border: solid 1px #000000'>" + tp.bancoTxt + "</td>";
-                msg += "</tr>";
-            });
-            msg += "</table><br>";
-            if (!string.IsNullOrEmpty(pago.photoComprobanteData))
-            {
-                msg += "<b>Comprobante Pago:</b> <br>";
-                msg += string.Format(@"<img src=""data: image / png; base64, {0}""/>", pago.photoComprobanteData);
-            }
-            msg += "<div><i><b>Nota: </b>Los pagos detallados en este correo están sujetos a revisión del departamento de cobranzas de James Brown Pharma</div></i>";
-            var destinatarios = conf.Default.correoPagos;
-            //para que no se envíe al cliente en ambiente de pruebas
-            if (!bddName.ToLower().Contains("prueba"))
-            {
-                var correoCliente = SocioNegocioBusiness.GetCorreoByCodigo(pago.CodCliente);
-                if (correoCliente != null && TechTools.Utils.ValidacionUtils.EmailValid(correoCliente))
-                    destinatarios += "; " + correoCliente;
-            }
-            
-            this.EnviarPorCorreo(destinatarios, titulo, msg);
+            var sql = string.Format(@"
+                insert into JBP_REACCIONES_INFO(
+                    ID_REACCION,
+                    ID_ESTADO_PERSONA_AFECTADA,
+                    FECHA_INICIO,
+                    FECHA_FIN,
+                    SIGUIO_TRATAMIENTO,
+                    SINTOMAS,
+                    TRATAMIENTO
+                )values(
+                    {0},
+                    {1},
+                    to_date('{2}','yyyy-mm-dd'),
+                    to_date('{3}','yyyy-mm-dd'),
+                    {4},
+                    '{5}',
+                    '{6}'
+                )
+            ",
+                infoReaccion.idReaccion,
+                infoReaccion.idEstadoPersonaAfectada,
+                infoReaccion.fechaInicio.Substring(0, 10),
+                infoReaccion.fechaFin.Substring(0, 10),
+                infoReaccion.siguioTratamiento,
+                infoReaccion.sintomas,
+                infoReaccion.tratamiento
+            );
+            bc.Execute(sql);
         }
-
-        private static bool DuplicatePago(PagoMsg pago)
+        private void saveMedicamento(MedicamentoItem medicamento, BaseCore bc)
         {
-            return false;
+            var sql = string.Format(@"
+                insert into JBP_REACCIONES_MEDICAMENTOS(
+                    ID_REACCION,
+                    ID_VIA_ADMINISTRACION,
+                    ID_QUE_PASO_CON_MEDICAMENTO,
+                    COD_ARTICULO,
+                    LOTE,
+                    FECHA_VENCIMIENTO,
+                    CANTIDAD_FRECUENCIA,
+                    FECHA_UTILIZACION,
+                    CUANDO_DEJO_USAR,
+                    HA_VUELTO_REACCION,
+                    PARA_QUE_UTILIZO,
+                    POSOLOGIA
+                )values(
+                    {0},
+                    {1},
+                    {2},
+                    '{3}',
+                    '{4}',
+                    '{5}',
+                    '{6}',
+                    to_date('{7}','yyyy-mm-dd'),
+                    to_date('{8}','yyyy-mm-dd'),
+                    {9},
+                    '{10}',
+                    '{11}'
+                )
+            ",
+                medicamento.idReaccion,
+                medicamento.codViaAdministracion,
+                medicamento.idQuePasoConMedicamento,
+                medicamento.codMedicamento,
+                medicamento.lote,
+                medicamento.fechaVencimiento,
+                medicamento.cantidadFrecuencia,
+                medicamento.fechaUtilizacion.Substring(0,10), //2022-03-15T10:52:00-05:00
+                medicamento.cuandoDejoUsar.Substring(0, 10),
+                medicamento.haVueltoReaccion,
+                medicamento.paraQueUtilizo,
+                medicamento.posologia
+            );
+            bc.Execute(sql);
         }
-        private static int GetNumFolio(string numDoc)
+        private string getReaccionesChecked(List<ReaccionItem> reacciones)
         {
-            //001-010-000081691
-            var matriz = numDoc.Split(new char[] { '-' });
-            var ex = new Exception("Numero de documento de factura incorrecto: " + numDoc);
-            if (matriz != null && matriz.Length > 0)
+            var ms = "";
+            var reaccionesSeleccionadas = reacciones.FindAll(r => r.selected);
+            var i = 0;
+            reaccionesSeleccionadas.ForEach(r =>
             {
-                var folioStr = matriz[matriz.Length - 1];
-                try
-                {
-                    return Convert.ToInt32(folioStr); //se quitan los 0s de la izq
-                }
-                catch
-                {
-                    throw ex;
-                }
-            }
-            else
-                throw ex;
+                if (i > 0)
+                    ms += ",";
+                ms += r.id;
+                i++;
+            });
+            //contiene los ids de las reacciones checkeadas
+            return ms;
         }
     }
 }

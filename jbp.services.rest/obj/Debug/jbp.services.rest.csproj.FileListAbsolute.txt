@@ -1,3 +1,5 @@
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.AssemblyReference.cache
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CoreCompileInputs.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.services.rest.dll.config
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.services.rest.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\jbp.services.rest.pdb
@@ -131,8 +133,6 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\TechTools.Serializador.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.ValueTuple.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Threading.Tasks.Extensions.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Runtime.CompilerServices.Unsafe.xml
-D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.AssemblyReference.cache
-D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CoreCompileInputs.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CopyComplete
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.pdb
