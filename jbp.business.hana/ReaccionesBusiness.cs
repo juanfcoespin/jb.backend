@@ -104,6 +104,8 @@ namespace jbp.business.hana
                 from JBP_REACCIONES T0 INNER JOIN
                     JB_CATALOG_VALUES T1 ON T1.ID = T0.ID_RANGO_EDAD INNER JOIN
                     JB_CATALOG_VALUES T2 ON T2.ID = T0.ID_QUIEN_PADECIO_REACCION
+                order by
+                    T0.FECHA_REGISTRO desc
             ";
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
@@ -173,6 +175,7 @@ namespace jbp.business.hana
             var sql = string.Format(@"
                 select 
                  T0.id,
+                 T0.PARA_QUE_UTILIZO,
                  T1.VALUE ""ViaAdministracion"",
                  T2.VALUE ""QuePasoConElMedicamento"",
                  t3.""ItemName"" ""Medicamento"",
@@ -236,6 +239,10 @@ namespace jbp.business.hana
         }
         private List<string> ProcessReacciones(List<ReaccionesMsg> reacciones)
         {
+            /*
+             de momento no se sabe como hacer transacciones en hana
+             por lo que se emulará una
+             */
             var bc=new BaseCore();
             var ms = new List<string>();
             if (reacciones != null && reacciones.Count > 0)
@@ -285,15 +292,24 @@ namespace jbp.business.hana
                         bc.Execute(sql);
                         sql = "select max(ID) from JBP_REACCIONES";
                         var idReaccion = bc.GetIntScalarByQuery(sql);
-                        reaccion.medicamentos.ForEach(medicamento =>{
-                            medicamento.idReaccion = idReaccion;
-                            saveMedicamento(medicamento, bc);
-                        });
-                        reaccion.informacionesReaccion.ForEach(infoReaccion => {
-                            infoReaccion.idReaccion = idReaccion;
-                            saveInfoReaccion(infoReaccion, bc);
-                        });
-                        ms.Add("ok");
+                        try
+                        {
+                            reaccion.medicamentos.ForEach(medicamento => {
+                                medicamento.idReaccion = idReaccion;
+                                saveMedicamento(medicamento, bc);
+                            });
+                            reaccion.informacionesReaccion.ForEach(infoReaccion => {
+                                infoReaccion.idReaccion = idReaccion;
+                                saveInfoReaccion(infoReaccion, bc);
+                            });
+                            //throw new Exception("Error de prueba de rollback");
+                            ms.Add("ok");
+                        }
+                        catch (Exception e) {
+                            var error=rollback(idReaccion,bc);
+                            error += e.Message;
+                            ms.Add(error);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -303,6 +319,33 @@ namespace jbp.business.hana
             }
             return ms;
         }
+
+        private string rollback(int idReaccion, BaseCore bc)
+        {
+            try
+            {
+                var sql = string.Format(@"
+                    DELETE FROM JBP_REACCIONES_MEDICAMENTOS            
+                    WHERE ID_REACCION={0}
+                ", idReaccion);
+                bc.Execute(sql);
+                sql = string.Format(@"
+                    DELETE FROM JBP_REACCIONES_INFO            
+                    WHERE ID_REACCION={0}
+                ", idReaccion);
+                bc.Execute(sql);
+                sql = string.Format(@"
+                    DELETE FROM JBP_REACCIONES
+                    WHERE ID={0}
+                ", idReaccion);
+                bc.Execute(sql);
+                return null;
+            }
+            catch(Exception e){
+                return e.Message+ " ,";
+            }
+        }
+
         private void saveInfoReaccion(InfoReaccion infoReaccion, BaseCore bc)
         {
             var sql = string.Format(@"
@@ -373,7 +416,7 @@ namespace jbp.business.hana
                 medicamento.fechaVencimiento,
                 medicamento.cantidadFrecuencia,
                 medicamento.fechaUtilizacion.Substring(0,10), //2022-03-15T10:52:00-05:00
-                medicamento.cuandoDejoUsar.Substring(0, 10),
+                (medicamento.cuandoDejoUsar!=null) ? medicamento.cuandoDejoUsar.Substring(0, 10):null,
                 medicamento.haVueltoReaccion,
                 medicamento.paraQueUtilizo,
                 medicamento.posologia
