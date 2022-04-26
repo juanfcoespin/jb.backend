@@ -55,6 +55,7 @@
       <DependentUpon>conf.settings</DependentUpon>
     </Compile>
     <Compile Include="DirectorioBusiness.cs" />
+    <Compile Include="TransferenciaStockBussiness.cs" />
     <Compile Include="EmisionProduccionBussiness.cs" />
     <Compile Include="EmpleadoBusiness.cs" />
     <Compile Include="EntregaBusiness.cs" />
