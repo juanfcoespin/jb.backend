@@ -34,8 +34,8 @@ namespace jbp.business.hana
                 if (me != null && me.DocNum>0)
                 {
                     if (me.DocBaseType == EDocBase.OrdenFabricacion) {
-                        me.IdDocBase = OrdenFabricacionBusiness.GetIdByDocNum(me.DocNum);
-                        if (!OrdenFabricacionBusiness.EstaLiberada(me.IdDocBase))
+                        me.IdOF = OrdenFabricacionBusiness.GetIdByDocNum(me.DocNum);
+                        if (!OrdenFabricacionBusiness.EstaLiberada(me.IdOF))
                             return String.Format("La orden de fabricacion: {0} no está en estado liberada!!", me.DocNum);
                         if (sapEmisionProduccion == null)
                             sapEmisionProduccion = new SapEmisionProduccion();

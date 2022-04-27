@@ -16,6 +16,7 @@ namespace jbp.msg.sap
         public int DocNum { get; set; }
         public EDocBase DocBaseType { get; set; }
         public int IdDocBase { get; set; }
+        public int IdOF { get; set; }
     }
 
     public class SalidaBodegaLineaMsg
