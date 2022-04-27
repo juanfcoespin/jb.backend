@@ -34,17 +34,19 @@ namespace jbp.business.hana
             {
                 if (me != null && me.DocNum>0)
                 {
-                    if (!OrdenFabricacionBusiness.EstaLiberada(me.IdOF))
-                        return String.Format("La orden de fabricacion: {0} no está en estado liberada!!", me.DocNum);
+                    
                     if (me.DocBaseType == EDocBase.SolicitudTransferencia)
                     {
                         me.IdDocBase = GetIdSTFromDocNumOF(me.DocNum);
+                        if (!OrdenFabricacionBusiness.EstaLiberada(me.IdDocBase))
+                            return String.Format("La orden de fabricacion: {0} no está en estado liberada!!", me.DocNum);
+                        if (sapTransferenciaStock == null)
+                            sapTransferenciaStock = new SapTransferenciaStock();
+                        if (!sapTransferenciaStock.IsConected())
+                            sapTransferenciaStock.Connect();//se conecta a sap
+                        return sapTransferenciaStock.Add(me);
                     }
-                    if (sapTransferenciaStock == null)
-                        sapTransferenciaStock = new SapTransferenciaStock();
-                    if (!sapTransferenciaStock.IsConected())
-                        sapTransferenciaStock.Connect();//se conecta a sap
-                    return sapTransferenciaStock.Add(me);
+                    
                 }
                 return null;
             }
