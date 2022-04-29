@@ -13,7 +13,37 @@ namespace jbp.core.sapDiApi
         {
             //this.Connect();
         }
-        public string Add(SalidaBodegaMsg me)
+        public string Add(TsBodegaMsg me)
+        {
+            this.obj = this.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oStockTransfer);
+            var ms = "ok";
+            this.obj.DocDate = DateTime.Now;
+            //this.obj.FromWarehouse = me.CodBodegaDesde;
+            //this.obj.ToWarehouse = me.CodBodegaHasta;
+
+            me.Lineas.ForEach(line =>
+            {
+                this.obj.Lines.ItemCode = line.CodArticulo;
+                this.obj.Lines.Quantity = line.Cantidad;
+                //this.obj.Lines.FromWarehouseCode = me.CodBodegaDesde;
+                this.obj.Lines.WarehouseCode = me.CodBodegaHasta;
+                
+                line.Lotes.ForEach(loteAsignado =>
+                {
+                    this.obj.Lines.BatchNumbers.BatchNumber = loteAsignado.Lote;
+                    this.obj.Lines.BatchNumbers.Quantity = loteAsignado.Cantidad;
+                });
+                this.obj.Lines.Add();
+                
+            });
+            var error = this.obj.Add();
+            if (error != 0)
+            {
+                ms = "Error: " + this.Company.GetLastErrorDescription();
+            }
+            return ms;
+        }
+        public string AddFromSt(SalidaBodegaMsg me)
         {
             this.obj = this.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oStockTransfer); 
             var ms = "ok";

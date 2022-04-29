@@ -12,4 +12,11 @@ namespace jbp.msg.sap
         public string fechaFab { get; set; }
         public string fechaVen { get; set; }
     }
+
+    public class CantidadLoteMsg
+    {
+        public double Disponible { get; set; }
+        public string Lote { get; set; }
+        public string CodBodega { get; set; }
+    }
 }

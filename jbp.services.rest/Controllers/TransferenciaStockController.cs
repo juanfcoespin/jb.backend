@@ -13,12 +13,13 @@ namespace jbp.services.rest.Controllers
 {
     public class TransferenciaStockController : ApiController
     {
-        
-        public string Post([FromBody]SalidaBodegaMsg me)
+        [HttpPost]
+        [Route("api/transferencia")]
+        public string Post([FromBody]TsBodegaMsg me)
         {
             try
             {
-                var ms = TransferenciaStockBussiness.Save(me);
+                var ms = TransferenciaStockBussiness.Transfer(me);
                 return ms;
             }
             catch (Exception e) {
@@ -26,10 +27,5 @@ namespace jbp.services.rest.Controllers
             }
             
         }
-        public string Get()
-        {
-            return "Hola";
-        }
-
     }
 }
