@@ -79,6 +79,7 @@ namespace jbp.business.hana
             try
             {
                 SetLotesFEFO(me);
+                //SetSerie(me); //La serie del documento
                 var ms = ProcessTS(me);
                 return ms;
             }
@@ -87,6 +88,16 @@ namespace jbp.business.hana
                 Monitor.Exit(control);
             }
         }
+
+        //private static void SetSerie(TsBodegaMsg me)
+        //{
+        //    if (me.CodBodegaHasta.ToUpper().Contains("1")) // Ej: MAT1, PSJ1, PROD1
+        //        me.Serie = "TR_HUM";
+        //    if (me.CodBodegaHasta.ToUpper().Contains("2")) // Ej: MAT2, PSJ2, PROD2
+        //        me.Serie = "TR_VET";
+        //    if (me.CodBodegaHasta.ToUpper().Contains("CUAR")) // A CUARENTENA
+        //        me.Serie = "TR_CC";
+        //}
 
         private static void SetLotesFEFO(TsBodegaMsg me)
         {
@@ -106,8 +117,7 @@ namespace jbp.business.hana
                             asignado = porAsignar;
                             porAsignar = 0;
                         }
-                        line.Lotes.Add(new LoteEscogidoMsg
-                        {
+                        line.Lotes.Add(new LoteEscogidoMsg{
                             Lote = cl.Lote,
                             Cantidad = asignado
                         });
@@ -141,7 +151,10 @@ namespace jbp.business.hana
                  ""CodArticulo"" = '{0}'
                  and ""CodAlmacen"" = '{1}'
                  and  ""Disponible"" > 0
-            ",codArticulo, codBodegaDesde);
+                 and ""FechaVencimiento"">=current_Date --lotes que no estén vencidos
+                order by
+                 ""FechaVencimiento"" -- Desde lo que esta mas próximo a vencerse
+            ", codArticulo, codBodegaDesde);
             var bc = new BaseCore();
             var dt=bc.GetDataTableByQuery(sql);
             foreach (DataRow dr in dt.Rows) {

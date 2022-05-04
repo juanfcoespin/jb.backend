@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using jbp.msg.sap;
+using SAPbobsCOM;
 
 namespace jbp.core.sapDiApi
 {
@@ -15,28 +16,31 @@ namespace jbp.core.sapDiApi
         }
         public string Add(TsBodegaMsg me)
         {
-            this.obj = this.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oStockTransfer);
+            StockTransfer stockTransfer= this.Company.GetBusinessObject(BoObjectTypes.oStockTransfer);
             var ms = "ok";
-            this.obj.DocDate = DateTime.Now;
-            //this.obj.FromWarehouse = me.CodBodegaDesde;
-            //this.obj.ToWarehouse = me.CodBodegaHasta;
+            stockTransfer.DocDate = DateTime.Now;
+            if(me.Serie>0)
+                stockTransfer.Series = me.Serie;
+            stockTransfer.FromWarehouse = me.CodBodegaDesde;
+            stockTransfer.ToWarehouse = me.CodBodegaHasta;
 
             me.Lineas.ForEach(line =>
             {
-                this.obj.Lines.ItemCode = line.CodArticulo;
-                this.obj.Lines.Quantity = line.Cantidad;
-                //this.obj.Lines.FromWarehouseCode = me.CodBodegaDesde;
-                this.obj.Lines.WarehouseCode = me.CodBodegaHasta;
+                stockTransfer.Lines.ItemCode = line.CodArticulo;
+                stockTransfer.Lines.Quantity = line.Cantidad;
+                stockTransfer.Lines.FromWarehouseCode = me.CodBodegaDesde;
+                stockTransfer.Lines.WarehouseCode = me.CodBodegaHasta;
                 
                 line.Lotes.ForEach(loteAsignado =>
                 {
-                    this.obj.Lines.BatchNumbers.BatchNumber = loteAsignado.Lote;
-                    this.obj.Lines.BatchNumbers.Quantity = loteAsignado.Cantidad;
+                    stockTransfer.Lines.BatchNumbers.BatchNumber = loteAsignado.Lote;
+                    stockTransfer.Lines.BatchNumbers.Quantity = loteAsignado.Cantidad;
+                    stockTransfer.Lines.BatchNumbers.Add();
                 });
-                this.obj.Lines.Add();
+                stockTransfer.Lines.Add();
                 
             });
-            var error = this.obj.Add();
+            var error = stockTransfer.Add();
             if (error != 0)
             {
                 ms = "Error: " + this.Company.GetLastErrorDescription();

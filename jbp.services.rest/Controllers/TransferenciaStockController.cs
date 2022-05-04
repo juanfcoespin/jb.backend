@@ -14,8 +14,8 @@ namespace jbp.services.rest.Controllers
     public class TransferenciaStockController : ApiController
     {
         [HttpPost]
-        [Route("api/transferencia")]
-        public string Post([FromBody]TsBodegaMsg me)
+        [Route("api/transferenciaStock")]
+        public string Transfer([FromBody]TsBodegaMsg me)
         {
             try
             {

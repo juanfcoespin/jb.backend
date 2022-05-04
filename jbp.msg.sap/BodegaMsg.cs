@@ -32,13 +32,23 @@ namespace jbp.msg.sap
     public class TsBodegaMsg {
         public string CodBodegaDesde { get; set; }
         public string CodBodegaHasta { get; set; }
-        public List<TsBodegaLineaMsg> Lineas { get; set; }
+        private List<TsBodegaLineaMsg> _Lineas=new List<TsBodegaLineaMsg>();
+        public List<TsBodegaLineaMsg> Lineas { 
+            get { return this._Lineas; }
+            set { this._Lineas = value; }
+        }
+
+        public int Serie { get; set; }
     }
     
     public class TsBodegaLineaMsg
     {
         public double Cantidad { get; set; }
-        public List<LoteEscogidoMsg> Lotes { get; set; }
+        private List<LoteEscogidoMsg> _Lotes=new List<LoteEscogidoMsg>();
+        public List<LoteEscogidoMsg> Lotes { 
+            get { return this._Lotes; }
+            set { this._Lotes = value; }   
+        }
         public string CodArticulo { get; set; }
     }
     public class LoteEscogidoMsg
