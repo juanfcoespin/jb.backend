@@ -239,9 +239,7 @@ namespace jbp.business.hana
             {
                 var rucPrincipal = dr[fieldRuc].ToString();
                 
-                var participante = (estado == -1)?
-                    GetParticipantePuntosByRucPrincipal(rucPrincipal,true):
-                    GetParticipantePuntosByRucPrincipal(rucPrincipal);
+                var participante = GetParticipantePuntosByRucPrincipal(rucPrincipal);
                 participante.estado = estado; 
                 ms.Add(participante);
             }
@@ -418,30 +416,37 @@ namespace jbp.business.hana
             var ms = bc.GetScalarByQuery(sql);
             return ms;
         }
-        public static ParticipantesPuntosMsg GetParticipantePuntosByRucPrincipal(string rucPrincipal, bool paraDesactivar=false)
+        public static ParticipantesPuntosMsg GetParticipantePuntosByRucPrincipal(string ruc)
         {
+            /*
+             No importa si el parámetro ruc es principal o secundario
+             el algoritmo trae al principal
+             
+             Solo trae los participantes activos
+             */
             var ms = new ParticipantesPuntosMsg();
             var bc = new BaseCore();
             var sql = string.Format(@"
                 select
-                 ""AplicaPuntos"",
-                 ""Nombre"",
-                 ""NombreComercial"",
-                 ""NombrePtk"",
-                 ""ApellidoPtk"",
-                 ""EmailPtk"",
+                 top 1 -- por si hay mas de un secundario
+                 t0.""AplicaPuntos"",
+                 t0.""Nombre"",
+                 t0.""NombreComercial"",
+                 t0.""NombrePtk"",
+                 t0.""ApellidoPtk"",
+                 t0.""EmailPtk"",
                  case
-                    when ""CodTipoIdentificacion"" = 'C' then 1--cedula
-                    when ""CodTipoIdentificacion"" = 'R' then 2--ruc
+                    when t0.""CodTipoIdentificacion"" = 'C' then 1--cedula
+                    when t0.""CodTipoIdentificacion"" = 'R' then 2--ruc
                  end ""TipoDocumento"",
-                 ""Ruc"",
-                 SUBSTRING(""Ruc"", 5, 6) ""Clave"",
-                 to_char(""FechaCumpleaños"", 'dd/mm/yyyy') ""FechaNacimiento"",
-                 ""CelularPtk"",
-                 ""TelefonoConvencionalPtk"",
+                 t0.""Ruc"",
+                 SUBSTRING(t0.""Ruc"", 5, 6) ""Clave"",
+                 to_char(t0.""FechaCumpleaños"", 'dd/mm/yyyy') ""FechaNacimiento"",
+                 t0.""CelularPtk"",
+                 t0.""TelefonoConvencionalPtk"",
                  case
-                    when ""Genero"" = 'M' then 1
-                    when ""Genero"" = 'F' then 2
+                    when t0.""Genero"" = 'M' then 1
+                    when t0.""Genero"" = 'F' then 2
                     else 1 --da error en la plataforma de promotick cuando no se envia un valor
                  end ""TipoGenero"",
                  case
@@ -450,30 +455,32 @@ namespace jbp.business.hana
                     else 0
                  end ""IdCatalogo"",
                  case
-                    when ""EsElite"" = 'SI' then 1
-                    when ""EsElite"" = 'NO' then 2
+                    when t0.""EsElite"" = 'SI' then 1
+                    when t0.""EsElite"" = 'NO' then 2
                  end ""TipoCatalogo"",
                  t1.""Cedula"" ""Vendedor"",
                  t1.""Vendedor"" ""VendedorStr"",
                  t1.""Email"" ""correoVendedor"",
+                 t1.""CodVendedor"",
                  t0.""MetaCompras"",
                  t0.""RucPrincipal""
                 from
-                 ""JbpVw_SocioNegocio"" t0 inner join
+                 ""JbpVw_SocioNegocio"" t0 inner join --principal
+                 ""JbpVw_SocioNegocio"" t2 on t2.""RucPrincipal""=t0.""Ruc"" inner join --secundario
                  ""JbpVw_Vendedores"" t1 on t1.""CodVendedor"" = t0.""CodVendedor""
                 where
-                 t0.""Ruc"" = '{0}'
-                 and ""CodTipoSocioNegocio"" = 'C'
-            ", rucPrincipal);
-            if(!paraDesactivar)
-                sql+= @"
-                and ""AplicaPuntos"" = 'SI'
-                and t0.""Ruc""=""RucPrincipal""
-            ";
+                 t2.""Ruc"" = '{0}'
+                 and t2.""Activo""='Y'                 
+                 and t0.""Activo""='Y'                 
+                 and t2.""AplicaPuntos"" = 'SI'
+                 and t0.""AplicaPuntos"" = 'SI'
+                 and t2.""CodTipoSocioNegocio"" = 'C'
+            ", ruc);
+            
             var dt = bc.GetDataTableByQuery(sql);
             if (dt.Rows.Count > 0)
             {
-                ms.Activo = !paraDesactivar;
+                ms.Activo = true;
                 ms.nombres = dt.Rows[0]["NombrePtk"].ToString();
                 if (string.IsNullOrEmpty(ms.nombres))
                     ms.nombres = dt.Rows[0]["Nombre"].ToString();
@@ -499,6 +506,7 @@ namespace jbp.business.hana
                 ms.correoVendedor = dt.Rows[0]["correoVendedor"].ToString();
                 ms.RucPrincipal = dt.Rows[0]["RucPrincipal"].ToString();
                 ms.metaAnual = bc.GetInt(dt.Rows[0]["MetaCompras"]);
+                ms.idVendedor= dt.Rows[0]["CodVendedor"].ToString();
             }
             return ms;
         }

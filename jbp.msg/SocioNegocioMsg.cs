@@ -118,6 +118,7 @@ namespace jbp.msg
         public string Error { get; set; }
         public string vendedorStr { get; set; }
         public string correoVendedor { get; set; }
+        public string idVendedor { get; set; }
     }
     public class SocioNegocioItemMsg
     {
