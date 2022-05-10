@@ -134,6 +134,7 @@
     <Compile Include="Controllers\AutorizacionesSRIController.cs" />
     <Compile Include="Controllers\CuentaController.cs" />
     <Compile Include="Controllers\DirectorioController.cs" />
+    <Compile Include="Controllers\EntradaMercanciaController.cs" />
     <Compile Include="Controllers\TransferenciaStockController.cs" />
     <Compile Include="Controllers\EntregaController.cs" />
     <Compile Include="Controllers\FacturaHistoricoController.cs" />

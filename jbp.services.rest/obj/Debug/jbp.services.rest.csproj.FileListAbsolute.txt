@@ -136,10 +136,6 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Runtime.CompilerSer
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CopyComplete
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.pdb
-D:\proyectos\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.AssemblyReference.cache
-D:\proyectos\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CoreCompileInputs.cache
-D:\proyectos\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.dll
-D:\proyectos\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.pdb
 D:\proyectos\jb.backend\jbp.services.rest\bin\jbp.services.rest.dll.config
 D:\proyectos\jb.backend\jbp.services.rest\bin\jbp.services.rest.dll
 D:\proyectos\jb.backend\jbp.services.rest\bin\jbp.services.rest.pdb
@@ -273,4 +269,8 @@ D:\proyectos\jb.backend\jbp.services.rest\bin\TechTools.Serializador.pdb
 D:\proyectos\jb.backend\jbp.services.rest\bin\System.ValueTuple.xml
 D:\proyectos\jb.backend\jbp.services.rest\bin\System.Threading.Tasks.Extensions.xml
 D:\proyectos\jb.backend\jbp.services.rest\bin\System.Runtime.CompilerServices.Unsafe.xml
+D:\proyectos\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.AssemblyReference.cache
+D:\proyectos\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CoreCompileInputs.cache
 D:\proyectos\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CopyComplete
+D:\proyectos\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.dll
+D:\proyectos\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.pdb

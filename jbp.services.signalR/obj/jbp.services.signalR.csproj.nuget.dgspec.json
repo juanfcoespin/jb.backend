@@ -1,19 +1,19 @@
 {
   "format": 1,
   "restore": {
-    "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj": {}
+    "D:\\proyectos\\jb.backend\\jbp.services.signalR\\jbp.services.signalR.csproj": {}
   },
   "projects": {
-    "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj": {
+    "D:\\proyectos\\jb.backend\\jbp.msg\\jbp.msg.csproj": {
       "restore": {
-        "projectUniqueName": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj",
+        "projectUniqueName": "D:\\proyectos\\jb.backend\\jbp.msg\\jbp.msg.csproj",
         "projectName": "jbp.msg",
-        "projectPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj",
+        "projectPath": "D:\\proyectos\\jb.backend\\jbp.msg\\jbp.msg.csproj",
         "frameworks": {
           "net472": {
             "projectReferences": {
-              "D:\\DesarrolloSw\\JBP\\jbp.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj": {
-                "projectPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj"
+              "D:\\proyectos\\jb.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj": {
+                "projectPath": "D:\\proyectos\\jb.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj"
               }
             }
           }
@@ -23,17 +23,17 @@
         "net472": {}
       }
     },
-    "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj": {
+    "D:\\proyectos\\jb.backend\\jbp.services.signalR\\jbp.services.signalR.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj",
+        "projectUniqueName": "D:\\proyectos\\jb.backend\\jbp.services.signalR\\jbp.services.signalR.csproj",
         "projectName": "jbp.services.signalR",
-        "projectPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj",
-        "packagesPath": "C:\\Users\\jespin\\.nuget\\packages\\",
-        "outputPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.services.signalR\\obj\\",
+        "projectPath": "D:\\proyectos\\jb.backend\\jbp.services.signalR\\jbp.services.signalR.csproj",
+        "packagesPath": "C:\\Users\\Juanfco\\.nuget\\packages\\",
+        "outputPath": "D:\\proyectos\\jb.backend\\jbp.services.signalR\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\jespin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Juanfco\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -47,8 +47,8 @@
           "netcoreapp2.2": {
             "targetAlias": "netcoreapp2.2",
             "projectReferences": {
-              "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj": {
-                "projectPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.msg\\jbp.msg.csproj"
+              "D:\\proyectos\\jb.backend\\jbp.msg\\jbp.msg.csproj": {
+                "projectPath": "D:\\proyectos\\jb.backend\\jbp.msg\\jbp.msg.csproj"
               }
             }
           }
@@ -107,15 +107,15 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.200\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\DesarrolloSw\\JBP\\jbp.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj": {
+    "D:\\proyectos\\jb.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj": {
       "restore": {
-        "projectUniqueName": "D:\\DesarrolloSw\\JBP\\jbp.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj",
+        "projectUniqueName": "D:\\proyectos\\jb.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj",
         "projectName": "TechTools.Utils",
-        "projectPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj",
+        "projectPath": "D:\\proyectos\\jb.backend\\Techtools.net\\TechTools.Utils\\TechTools.Utils.csproj",
         "frameworks": {
           "net472": {
             "projectReferences": {}
