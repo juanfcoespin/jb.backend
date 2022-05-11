@@ -10,5 +10,6 @@ namespace jbp.msg.sap
     {
         public string CodProveedor { get; set; }
         public List<LineaMsg> Lineas { get; set; }
+        public string CodBodega { get; set; }
     }
 }
