@@ -10,6 +10,7 @@ namespace jbp.msg.sap
     public class CarteraMsg
     {
         public string CodSocioNegocio { get; set; }
+
         public string TipoDocumento { get; set; }
         public string Vendedor { get; set; }
         public string NumFolio { get; set; }

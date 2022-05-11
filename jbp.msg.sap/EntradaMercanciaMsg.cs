@@ -9,5 +9,6 @@ namespace jbp.msg.sap
     public class EntradaMercanciaMsg
     {
         public string CodProveedor { get; set; }
+        public List<LineaMsg> Lineas { get; set; }
     }
 }

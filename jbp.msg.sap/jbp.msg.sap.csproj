@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArticuloMsg.cs" />
+    <Compile Include="BaseMsg.cs" />
     <Compile Include="BodegaMsg.cs" />
     <Compile Include="CarteraMsg.cs" />
     <Compile Include="EntradaMercanciaMsg.cs" />

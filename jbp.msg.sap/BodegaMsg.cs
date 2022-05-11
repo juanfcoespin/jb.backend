@@ -41,15 +41,13 @@ namespace jbp.msg.sap
         public int Serie { get; set; }
     }
     
-    public class TsBodegaLineaMsg
+    public class TsBodegaLineaMsg: LineaMsg
     {
-        public double Cantidad { get; set; }
         private List<LoteEscogidoMsg> _Lotes=new List<LoteEscogidoMsg>();
         public List<LoteEscogidoMsg> Lotes { 
             get { return this._Lotes; }
             set { this._Lotes = value; }   
         }
-        public string CodArticulo { get; set; }
     }
     public class LoteEscogidoMsg
     {
