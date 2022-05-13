@@ -11,29 +11,44 @@ namespace jbp.business.hana
 {
     public class OrdenFabricacionBusiness
     {
-        public static List<string> GetOfLiberadas()
+        public static List<OrdenFabricacionLiberadaPesajeMsg> GetOfLiberadasPesaje()
         {
-            var ms = new List<string>();
+            var ms = new List<OrdenFabricacionLiberadaPesajeMsg>();
             var sql = @"
-                select ""DocNum"" from ""JbpVw_OrdenFabricacion""
-                where ""Estado"" = 'Liberado'
+                select 
+                 ""DocNum"",
+                 ""CodArticulo"",
+                 ""Articulo""
+                from ""JbpVw_OrdenFabricacion""
+                where
+                 ""Estado"" = 'Liberado'
+                 and (""CodArticulo"" like '450%' or ""CodArticulo"" like '451%')
             ";
-            var dt = new BaseCore().GetDataTableByQuery(sql);
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
             foreach (DataRow dr in dt.Rows) {
-                ms.Add(dr["DocNum"].ToString());
+                ms.Add(new OrdenFabricacionLiberadaPesajeMsg() { 
+                    NumOrdenFabricacion=bc.GetInt(dr["DocNum"]),
+                    CodigoArticulo= dr["CodArticulo"].ToString(),
+                    Descripcion= dr["Articulo"].ToString()
+                });
             }
             return ms;
         }
 
-        public static List<OrdenFabricacionMsg> GetComponentesOfByDocNum(int docNum)
+        public static OFMasComponentesMsg GetComponentesAPesarOfByDocNum(int docNum)
         {
-            var ms = new List<OrdenFabricacionMsg>();
-            var sql = string.Format( @"
+            var ms = new OFMasComponentesMsg();
+            ms.NumOrdenFabricacion=docNum;
+            var sql = string.Format(@"
                 select 
+                 t1.""CodArticulo"",
+                 t1.""Articulo"",
                  t2.""CodInsumo"",
                  t2.""UnidadMedida"",
                  t2.""Insumo"",
-                 t0.""CantidadPlanificada"" 
+                 t0.""CantidadPlanificada"",
+                 t1.""Articulo""
                 from 
                  ""JbpVw_OrdenFabricacionLinea"" t0 inner join
                  ""JbpVw_OrdenFabricacion"" t1 on t1.""Id""=t0.""IdOrdenFabricacion"" inner join
@@ -41,17 +56,50 @@ namespace jbp.business.hana
                 where
                  t1.""DocNum""={0}
                  and t2.""TipoInsumo""='Artículo'
+                 and lower(t2.""UnidadMedida"")='kg' --solo componentes sujetos a pesarse
 
-            ",docNum);
+            ", docNum);
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
+
             foreach (DataRow dr in dt.Rows)
             {
-                ms.Add(new OrdenFabricacionMsg { 
-                    Codigo = dr["CodInsumo"].ToString(),
+                if (ms.Descripcion == null)
+                    ms.Descripcion = dr["Articulo"].ToString();
+                var componente = new ComponentesMsg{
+                    CodigoArticulo = dr["CodInsumo"].ToString(),
                     UnidadMedida = dr["UnidadMedida"].ToString(),
                     Descripcion = dr["Insumo"].ToString(),
-                    Cantidad = bc.GetDecimal(dr["CantidadPlanificada"])
+                    CantidadTotal = bc.GetDecimal(dr["CantidadPlanificada"])
+                };
+                componente.CantidadesPorLote = GetCantidadesPorLote(docNum, componente.CodigoArticulo);
+                ms.Componentes.Add(componente);
+            }
+            return ms;
+        }
+
+        private static List<CantidadLoteOFMsg> GetCantidadesPorLote(int docNumOF, string codigoArticulo)
+        {
+            var ms=new List<CantidadLoteOFMsg>();
+            try
+            {
+                var sql = string.Format(@"
+                    call ""JbSP_LotesTransferidosPorArticuloOF""('{0}', '{1}')
+                ", docNumOF, codigoArticulo);
+                var bc = new BaseCore();
+                var dt=bc.GetDataTableByQuery(sql);
+                foreach (DataRow dr in dt.Rows) {
+                    ms.Add(new CantidadLoteOFMsg
+                    {
+                        Lote = dr["Lote"].ToString(),
+                        Cantidad = bc.GetDecimal(dr["Cantidad"])
+                    }); ;
+                }
+            }
+            catch(Exception e){//en vez del lote se inyecta el error
+                ms.Add(new CantidadLoteOFMsg
+                {
+                    Lote = string.Format("Error: {0}", e.Message)
                 });
             }
             return ms;

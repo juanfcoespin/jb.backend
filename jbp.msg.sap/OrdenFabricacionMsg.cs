@@ -6,11 +6,33 @@ using System.Threading.Tasks;
 
 namespace jbp.msg.sap
 {
-    public class OrdenFabricacionMsg
+    public class ComponentesMsg: OFBaseMsg
     {
-        public string Codigo { get; set; }
         public string UnidadMedida { get; set; }
-        public string Descripcion { get; set; }
+        public decimal CantidadTotal { get; set; }
+        public bool RequiereRepesaje { get; set; }
+        public List<CantidadLoteOFMsg> CantidadesPorLote { get; set; }
+    }
+    public class CantidadLoteOFMsg {
+        public string Lote { get; set; }
         public decimal Cantidad { get; set; }
+    }
+    public class OFBaseMsg
+    {
+        public string CodigoArticulo { get; set; }
+        public string Descripcion { get; set; }
+        
+    }
+    public class OrdenFabricacionLiberadaPesajeMsg : OFBaseMsg
+    {
+        public int NumOrdenFabricacion { get; set; }
+    }
+    public class OFMasComponentesMsg {
+        public int NumOrdenFabricacion { get; set; }
+        public string Descripcion { get; set; }
+        public List<ComponentesMsg> Componentes { get; set; }
+        public OFMasComponentesMsg() {
+            this.Componentes = new List<ComponentesMsg>();
+        }
     }
 }

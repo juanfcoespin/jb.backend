@@ -12,17 +12,17 @@ namespace jbp.services.rest.Controllers
     public class OrdenFabricacionController : ApiController
     {
         [HttpGet]
-        [Route("api/of/getOfLiberadas")]
-        public List<string> GetOfLiberadas()
+        [Route("api/of/getOfLiberadasPesaje")]
+        public List<OrdenFabricacionLiberadaPesajeMsg> GetOfLiberadasPesaje()
         {
-            return OrdenFabricacionBusiness.GetOfLiberadas();
+            return OrdenFabricacionBusiness.GetOfLiberadasPesaje();
         }
 
         [HttpGet]
         [Route("api/of/getComponentesOf/{docNum}")]
-        public List<OrdenFabricacionMsg> GetComponentesOfByDocNum(int docNum)
+        public OFMasComponentesMsg GetComponentesOfByDocNum(int docNum)
         {
-            return OrdenFabricacionBusiness.GetComponentesOfByDocNum(docNum);
+            return OrdenFabricacionBusiness.GetComponentesAPesarOfByDocNum(docNum);
         }
     }
 }
