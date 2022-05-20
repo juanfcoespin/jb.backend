@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="EnvioCorreosClientes" GeneratedClassName="conf">
+  <Profiles />
+  <Settings>
+    <Setting Name="pathImagen" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">c:\tmp\NuevoLogoJB-correo.png</Value>
+    </Setting>
+    <Setting Name="titulo" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">JB Cambia su Logo</Value>
+    </Setting>
+    <Setting Name="urlImagen" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://app.jbp.com.ec/assets/images/mailing/NuevoLogoJB-correo.png</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

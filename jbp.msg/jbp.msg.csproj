@@ -44,6 +44,7 @@
     <Compile Include="CuentaMsg.cs" />
     <Compile Include="EntregaMsg.cs" />
     <Compile Include="FacturaSriMsg.cs" />
+    <Compile Include="MailMsg.cs" />
     <Compile Include="PeriodoMsg.cs" />
     <Compile Include="PlanCuentasProcesadoMsg.cs" />
     <Compile Include="ProductMsg.cs" />

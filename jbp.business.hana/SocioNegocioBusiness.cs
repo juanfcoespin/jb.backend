@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using jbp.msg;
+using jbp.msg.sap;
 using TechTools.Core.Hana;
 using TechTools.Exceptions;
 using System.Data;
@@ -27,6 +28,64 @@ namespace jbp.business.hana
             ",codArticulo, codSocioNegocio);
             var ms = new BaseCore().GetDoubleScalarByQuery(sql);
             return ms;
+        }
+
+        public static ClientesToSendMailMs GetClientesToSendMail()
+        {
+            var ms = new ClientesToSendMailMs();
+            try
+            {
+                var sql = @"
+                    select
+                     TOP 500
+                     t0.""Id"",
+                     t0.""Nombre"",
+                     t0.""Email""
+                    from
+                     ""JbpVw_SocioNegocio"" t0
+                    where
+                     t0.""CodTipoSocioNegocio"" = 'C'--cliente
+                      and t0.""Activo"" = 'Y'
+                      and t0.""Email"" is not null
+                     --and t0.""CodSocioNegocio"" = 'C1803281631'
+                     and t0.""Id"" not in(
+                         select ID_CLIENTE
+                        FROM JB_ENVIO_MAILS_CLIENTES
+                        WHERE
+                         TO_CHAR(FECHA_ENVIO, 'YYYY-MM-DD') in ('2022-05-19','2022-05-20')
+                         and ENVIADO = TRUE
+                     )
+                ";
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql);
+                foreach (DataRow dr in dt.Rows) {
+                    var email=dr["Email"].ToString();
+                    if (email.Contains(";") || email.Contains(",")) { //se trae el primer correo 
+                        var arr=email.Split(new char[] { ';',','});
+                        email=arr[0];
+                    }
+                    ms.Clientes.Add(new ClienteMsg { 
+                        Id=bc.GetInt(dr["Id"]),
+                        Nombre= dr["Nombre"].ToString(),
+                        Email=email
+                    });
+                }
+                
+            }
+            catch (Exception e)
+            {
+                ms.Error = e.Message;
+            }
+            return ms;
+        }
+
+        public static void SaveEmailToClient(MailMsg me)
+        {
+            var sql = string.Format(@"
+                insert into JB_ENVIO_MAILS_CLIENTES(FECHA_ENVIO, TITULO, ID_CLIENTE, ENVIADO)
+                values(current_timestamp, '{0}', {1}, {2})
+            ",me.Titulo, me.IdCliente, me.Enviado);
+            new BaseCore().Execute(sql);
         }
 
         internal static string GetVendedorByCodSocioNegocio(string codCliente)
