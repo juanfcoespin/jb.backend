@@ -14,10 +14,10 @@ namespace jbp.services.rest.Controllers
     public class EntradaMercanciaController : ApiController
     {
         [HttpPost]
-        [Route("api/EntradaMercancia")]
+        [Route("api/EntradaMercanciaCompra")]
         public string EntradaMercancia([FromBody]EntradaMercanciaMsg me)
         {
-            var ms = EntradaMercanciaBussiness.Ingresar(me);
+            var ms = EntradaMercanciaBussiness.IngresarPorCompra(me);
             return ms;
         }
     }

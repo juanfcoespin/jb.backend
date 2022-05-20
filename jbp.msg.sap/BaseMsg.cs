@@ -11,4 +11,9 @@ namespace jbp.msg.sap
         public double Cantidad { get; set; }
         public string CodArticulo { get; set; }
     }
+    public class AsignacionLoteMsg
+    {
+        public string Lote { get; set; }
+        public double Cantidad { get; set; }
+    }
 }

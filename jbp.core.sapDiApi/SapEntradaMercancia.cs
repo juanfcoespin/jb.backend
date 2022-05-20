@@ -14,7 +14,7 @@ namespace jbp.core.sapDiApi
         {
             //this.Connect();
         }
-        public string Add(EntradaMercanciaMsg me)
+        public string AddPorCompra(EntradaMercanciaMsg me)
         {
             var entradaMercancia= this.Company.GetBusinessObject(BoObjectTypes.oPurchaseDeliveryNotes);
             var ms = "ok";
@@ -23,15 +23,19 @@ namespace jbp.core.sapDiApi
             me.Lineas.ForEach(line =>
             {
                 entradaMercancia.Lines.ItemCode = line.CodArticulo;
-                entradaMercancia.Lines.Quantity = line.Cantidad;
+                //entradaMercancia.Lines.Quantity = line.Cantidad;
                 entradaMercancia.Lines.WarehouseCode = me.CodBodega;
-
-                //line.Lotes.ForEach(loteAsignado =>
-                //{
-                //    stockTransfer.Lines.BatchNumbers.BatchNumber = loteAsignado.Lote;
-                //    stockTransfer.Lines.BatchNumbers.Quantity = loteAsignado.Cantidad;
-                //    stockTransfer.Lines.BatchNumbers.Add();
-                //});
+                double cantidadLinea = 0;
+                line.AsignacionesLote.ForEach(asignacionLote =>
+                {
+                    cantidadLinea += asignacionLote.Cantidad;
+                    entradaMercancia.Lines.BatchNumbers.BatchNumber = asignacionLote.Lote;
+                    entradaMercancia.Lines.BatchNumbers.ManufacturingDate = Convert.ToDateTime(asignacionLote.FechaFabricacion);
+                    entradaMercancia.Lines.BatchNumbers.ExpiryDate = Convert.ToDateTime(asignacionLote.FechaVencimiento);
+                    entradaMercancia.Lines.BatchNumbers.Quantity = asignacionLote.Cantidad;
+                    entradaMercancia.Lines.BatchNumbers.Add();
+                });
+                entradaMercancia.Lines.Quantity = cantidadLinea;
                 entradaMercancia.Lines.Add();
                 
             });
@@ -40,7 +44,7 @@ namespace jbp.core.sapDiApi
             {
                 ms = "Error: " + this.Company.GetLastErrorDescription();
             }
-            return ms;
+            return ms+ this.Company.GetNewObjectKey();
         }
         
         ~SapEntradaMercancia()

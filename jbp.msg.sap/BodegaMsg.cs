@@ -43,15 +43,11 @@ namespace jbp.msg.sap
     
     public class TsBodegaLineaMsg: LineaMsg
     {
-        private List<LoteEscogidoMsg> _Lotes=new List<LoteEscogidoMsg>();
-        public List<LoteEscogidoMsg> Lotes { 
+        private List<AsignacionLoteMsg> _Lotes=new List<AsignacionLoteMsg>();
+        public List<AsignacionLoteMsg> Lotes { 
             get { return this._Lotes; }
             set { this._Lotes = value; }   
         }
     }
-    public class LoteEscogidoMsg
-    {
-        public string Lote { get; set; }
-        public double Cantidad { get; set; }
-    }
+    
 }

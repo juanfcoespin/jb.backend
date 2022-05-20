@@ -16,12 +16,12 @@ namespace jbp.business.hana
         public static readonly object control = new object();
         public static SapEntradaMercancia sapEntradaMercancia = new SapEntradaMercancia();
 
-        public static string Ingresar(EntradaMercanciaMsg me)
+        public static string IngresarPorCompra(EntradaMercanciaMsg me)
         {
             Monitor.Enter(control);
             try
             {
-                var ms = ProcessEM(me);
+                var ms = ProcessEMPorCompra(me);
                 return ms;
             }
             finally
@@ -31,17 +31,18 @@ namespace jbp.business.hana
         }
 
         
-        private static string ProcessEM(EntradaMercanciaMsg me)
+        private static string ProcessEMPorCompra(EntradaMercanciaMsg me)
         {
             try
             {
                 if (me != null)
                 {
+                    me.CodBodega = "CUAR1"; //por defecto toda compra va a cuarentena
                     if (sapEntradaMercancia == null)
                         sapEntradaMercancia = new SapEntradaMercancia();
                     if (!sapEntradaMercancia.IsConected())
                         sapEntradaMercancia.Connect();//se conecta a sap
-                    return sapEntradaMercancia.Add(me);
+                    return sapEntradaMercancia.AddPorCompra(me);
                 }
                 return null;
             }

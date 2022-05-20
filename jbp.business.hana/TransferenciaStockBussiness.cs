@@ -117,7 +117,7 @@ namespace jbp.business.hana
                             asignado = porAsignar;
                             porAsignar = 0;
                         }
-                        line.Lotes.Add(new LoteEscogidoMsg{
+                        line.Lotes.Add(new AsignacionLoteMsg{
                             Lote = cl.Lote,
                             Cantidad = asignado
                         });
