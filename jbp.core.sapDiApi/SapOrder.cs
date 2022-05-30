@@ -25,6 +25,8 @@ namespace jbp.core.sapDiApi
             {
                 this.obj.Lines.ItemCode = line.CodArticulo;
                 var type = this.obj.Lines.Price.GetType();
+                if(!string.IsNullOrEmpty(line.CodBodega))
+                    this.obj.Lines.WarehouseCode = line.CodBodega; // caso contrario coge la bodega por defecto del dato maestro del artículo
                 this.obj.Lines.UserFields.Fields.Item("U_IXX_PRECIO_UNI").Value = line.price;
                 this.obj.Lines.UserFields.Fields.Item("U_IXX_CANT_SOL").Value = line.CantSolicitada;
                 this.obj.Lines.UserFields.Fields.Item("U_IXX_CANT_BON").Value = line.CantBonificacion;

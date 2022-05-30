@@ -55,6 +55,8 @@ namespace jbp.business.hana
                         {
                             order.Vendedor = SocioNegocioBusiness.GetVendedorByCodSocioNegocio(order.CodCliente);
                             order.Lines.ForEach(line => {
+                                if (EsProductoVeterinaria(line.CodArticulo))
+                                    line.CodBodega = "PICK2"; //es la bodega de despachos de veterinaria
                                 line.price = SocioNegocioBusiness.GetPrecioByCodSocioNegocioCodArticulo(order.CodCliente, line.CodArticulo);
                             });
 
@@ -69,6 +71,22 @@ namespace jbp.business.hana
                 });
             }
             return ms;
+        }
+
+        private static bool EsProductoVeterinaria(string codArticulo)
+        {
+            try
+            {
+                // Si los 3 dígitos iniciale del código están entre 800 y 802 es un producto de veterinaria
+                var inicioCodigo = codArticulo.Substring(0, 3);
+                int intInicioCodigo=Convert.ToInt32(inicioCodigo);
+                return (intInicioCodigo >= 800 && intInicioCodigo <= 802);
+            }
+            catch
+            {
+                return false;
+            }
+            
         }
 
         public static bool DuplicateOrder(OrdenMsg order)

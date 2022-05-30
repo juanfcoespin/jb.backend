@@ -64,6 +64,8 @@ namespace jbp.business.hana
 
             foreach (DataRow dr in dt.Rows)
             {
+                if (ms.CodArticulo == null)
+                    ms.CodArticulo = dr["CodArticulo"].ToString();
                 if (ms.Descripcion == null)
                     ms.Descripcion = dr["Articulo"].ToString();
                 var componente = new ComponentesMsg{

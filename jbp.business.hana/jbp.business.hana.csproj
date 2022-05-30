@@ -56,6 +56,7 @@
     </Compile>
     <Compile Include="DirectorioBusiness.cs" />
     <Compile Include="EntradaMercanciaBusiness.cs" />
+    <Compile Include="BodegaBusiness.cs" />
     <Compile Include="TransferenciaStockBussiness.cs" />
     <Compile Include="EmisionProduccionBussiness.cs" />
     <Compile Include="EmpleadoBusiness.cs" />

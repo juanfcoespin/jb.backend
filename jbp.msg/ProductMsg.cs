@@ -13,6 +13,7 @@ namespace jbp.msg
         public List<PriceListMsg> prices;
         public decimal stock;
         public List<LoteMsg> lotes;
+        
     }
     public class LoteMsg
     {

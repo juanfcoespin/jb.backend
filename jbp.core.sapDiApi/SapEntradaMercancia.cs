@@ -14,17 +14,15 @@ namespace jbp.core.sapDiApi
         {
             //this.Connect();
         }
-        public string AddPorCompra(EntradaMercanciaMsg me)
+        public EntradaMercanciaMsg Add(EntradaMercanciaMsg me)
         {
             var entradaMercancia= this.Company.GetBusinessObject(BoObjectTypes.oPurchaseDeliveryNotes);
-            var ms = "ok";
             entradaMercancia.DocDate = DateTime.Now;
             entradaMercancia.CardCode = me.CodProveedor;
             me.Lineas.ForEach(line =>
             {
                 entradaMercancia.Lines.ItemCode = line.CodArticulo;
-                //entradaMercancia.Lines.Quantity = line.Cantidad;
-                entradaMercancia.Lines.WarehouseCode = me.CodBodega;
+                entradaMercancia.Lines.WarehouseCode = line.CodBodega;
                 double cantidadLinea = 0;
                 line.AsignacionesLote.ForEach(asignacionLote =>
                 {
@@ -42,11 +40,49 @@ namespace jbp.core.sapDiApi
             var error = entradaMercancia.Add();
             if (error != 0)
             {
-                ms = "Error: " + this.Company.GetLastErrorDescription();
+                me.Error = "Error: " + this.Company.GetLastErrorDescription();
             }
-            return ms+ this.Company.GetNewObjectKey();
+            me.IdEM=this.Company.GetNewObjectKey();
+            return me;
         }
-        
+
+        public EntradaMercanciaMsg AddPorCompra(EntradaMercanciaMsg me)
+        {
+            var entradaMercancia = this.Company.GetBusinessObject(BoObjectTypes.oPurchaseDeliveryNotes);
+            entradaMercancia.DocDate = DateTime.Now;
+            entradaMercancia.CardCode = me.CodProveedor;
+            me.Lineas.ForEach(line =>
+            {
+                entradaMercancia.Lines.BaseType = (int)BoObjectTypes.oPurchaseOrders;
+                entradaMercancia.Lines.BaseEntry = me.IdOrdenCompra;
+                entradaMercancia.Lines.BaseLine = line.NumLinea;
+                entradaMercancia.Lines.WarehouseCode = line.CodBodega;
+                double cantidadLinea = 0;
+                line.AsignacionesLote.ForEach(asignacionLote =>
+                {
+                    cantidadLinea += asignacionLote.Cantidad;
+                    entradaMercancia.Lines.BatchNumbers.BatchNumber = asignacionLote.Lote;
+                    entradaMercancia.Lines.BatchNumbers.ManufacturingDate = Convert.ToDateTime(asignacionLote.FechaFabricacion);
+                    entradaMercancia.Lines.BatchNumbers.ExpiryDate = Convert.ToDateTime(asignacionLote.FechaVencimiento);
+                    entradaMercancia.Lines.BatchNumbers.Quantity = asignacionLote.Cantidad;
+                    entradaMercancia.Lines.BatchNumbers.ManufacturerSerialNumber = asignacionLote.Fabricante;
+                    entradaMercancia.Lines.BatchNumbers.InternalSerialNumber = asignacionLote.LoteFabricante;
+                    entradaMercancia.Lines.BatchNumbers.UserFields.Fields.Item("U_FecRet").Value = Convert.ToDateTime(asignacionLote.FechaRetest); ;
+                    entradaMercancia.Lines.BatchNumbers.Add();
+                });
+                entradaMercancia.Lines.Quantity = cantidadLinea;
+                entradaMercancia.Lines.Add();
+
+            });
+            var error = entradaMercancia.Add();
+            if (error != 0)
+            {
+                me.Error = "Error: " + this.Company.GetLastErrorDescription();
+            }
+            me.IdEM= this.Company.GetNewObjectKey();
+            return me;
+        }
+
         ~SapEntradaMercancia()
         {
             //cuando se destruye el objeto

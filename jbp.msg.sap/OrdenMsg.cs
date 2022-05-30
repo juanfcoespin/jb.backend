@@ -45,6 +45,7 @@ namespace jbp.msg.sap
             }
         }
 
+        public string CodBodega { get; set; }
     }
 
     public class OrdenAppMsg

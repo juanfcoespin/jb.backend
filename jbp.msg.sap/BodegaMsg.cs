@@ -49,5 +49,11 @@ namespace jbp.msg.sap
             set { this._Lotes = value; }   
         }
     }
-    
+    public class SubNivelBodegaMsg
+    {
+        public int id;
+        public string codigo;
+        public string descripcion;
+    }
+
 }

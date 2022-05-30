@@ -16,12 +16,12 @@ namespace jbp.business.hana
         public static readonly object control = new object();
         public static SapEntradaMercancia sapEntradaMercancia = new SapEntradaMercancia();
 
-        public static string IngresarPorCompra(EntradaMercanciaMsg me)
+        public static EntradaMercanciaMsg Ingresar(EntradaMercanciaMsg me, bool porCompra)
         {
             Monitor.Enter(control);
             try
             {
-                var ms = ProcessEMPorCompra(me);
+                var ms = ProcessEM(me, porCompra);
                 return ms;
             }
             finally
@@ -30,29 +30,80 @@ namespace jbp.business.hana
             }
         }
 
-        
-        private static string ProcessEMPorCompra(EntradaMercanciaMsg me)
+        private static EntradaMercanciaMsg ProcessEM(EntradaMercanciaMsg me, bool porCompra)
         {
             try
             {
                 if (me != null)
                 {
-                    me.CodBodega = "CUAR1"; //por defecto toda compra va a cuarentena
+                    
                     if (sapEntradaMercancia == null)
                         sapEntradaMercancia = new SapEntradaMercancia();
                     if (!sapEntradaMercancia.IsConected())
                         sapEntradaMercancia.Connect();//se conecta a sap
-                    return sapEntradaMercancia.AddPorCompra(me);
+                    SetNewLotesAndBodega(me); //se asigna los lotes nuevos desde la bdd
+                    if (porCompra)
+                        SetAdicionalesPedidoCompra(me); //pone el id y el codProveedor del pedido de compra
+                    
+                    var ms=(porCompra)? sapEntradaMercancia.AddPorCompra(me): sapEntradaMercancia.Add(me);
+                    if (string.IsNullOrEmpty(ms.Error))//si no hay error
+                        ms.DocNumEntradaMercancia = GetDocNumById(ms.IdEM);
+                    return ms;
                 }
                 return null;
             }
             catch (Exception e)
             {
-                return e.Message;
+                return new EntradaMercanciaMsg { Error = e.Message };
             }
         }
-       
+        public static int GetDocNumById(string idEntradaMercancia) {
+            var sql = string.Format(@"
+            select
+             ""DocNum""
+            from
+             ""JbpVw_EntradaMercancia""
+            where
+             ""Id"" = {0}
+            ", idEntradaMercancia);
+            return new BaseCore().GetIntScalarByQuery(sql);
+        }
+        private static void SetAdicionalesPedidoCompra(EntradaMercanciaMsg me)
+        {
+            var sql = string.Format(@"
+            select
+             ""Id"",
+             ""CodProveedor""
+            from
+             ""JbpVw_Pedidos""
+            where
+             ""DocNum"" = {0}
+            ", me.CodPedidoCompra);
+            var bc = new BaseCore();
+            var dt=bc.GetDataTableByQuery(sql);
+            if (dt != null) {
+                me.IdOrdenCompra = bc.GetInt(dt.Rows[0]["Id"]);
+                me.CodProveedor= dt.Rows[0]["CodProveedor"].ToString();
+            }
+        }
+
+        private static void SetNewLotesAndBodega(EntradaMercanciaMsg me)
+        {
+            //Ej.: JB-220530142909
+            // Se genera en la base de datos para garantizar que no se duplique el lote
+            // (con la fecha y hora del servidor de base de datos)
+            me.Lineas.ForEach(line => {
+                if (string.IsNullOrEmpty(line.CodBodega))
+                    line.CodBodega = "CUAR1"; //por defecto se va a cuarentena a no ser que el usuario mande a otra bodega
+                line.AsignacionesLote.ForEach(al => {
+                    if (string.IsNullOrEmpty(al.Lote))
+                    {
+                        var sql = "call SBO_SP_LOTES_OP('EP','');";
+                        al.Lote = new BaseCore().GetScalarByQuery(sql);
+                    }
+                });
+            });
+            
+        }
     }
-    
-        
 }

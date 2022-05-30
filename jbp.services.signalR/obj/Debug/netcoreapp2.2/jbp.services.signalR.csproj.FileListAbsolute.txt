@@ -30,7 +30,6 @@ D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\j
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.csprojAssemblyReference.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\appsettings.Development.json
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\appsettings.json
-D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\Properties\launchSettings.json
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp.services.signalR.deps.json
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp.services.signalR.runtimeconfig.json
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp.services.signalR.runtimeconfig.dev.json
@@ -41,7 +40,6 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp.msg.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp.msg.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\jbp.msg.dll.config
-D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.csprojAssemblyReference.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.RazorAssemblyInfo.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.RazorAssemblyInfo.cs
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.AssemblyInfoInputs.cache
@@ -63,3 +61,9 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.csproj.CopyComplete
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.pdb
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\TechTools.Utils.dll
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\bin\Debug\netcoreapp2.2\TechTools.Utils.pdb
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.csproj.AssemblyReference.cache
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.GeneratedMSBuildEditorConfig.editorconfig
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.csproj.CoreCompileInputs.cache
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.signalR\obj\Debug\netcoreapp2.2\jbp.services.signalR.genruntimeconfig.cache
