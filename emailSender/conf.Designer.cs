@@ -12,7 +12,7 @@ namespace emailSender {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.3.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.0.3.0")]
     internal sealed partial class conf : global::System.Configuration.ApplicationSettingsBase {
         
         private static conf defaultInstance = ((conf)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new conf())));
@@ -37,8 +37,8 @@ namespace emailSender {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\r\n          Estimado Colaborador adjunto encontrará su rol de pagos \r\n          A" +
-            "tte.\r\n          James Brown Pharma\r\n        ")]
+        [global::System.Configuration.DefaultSettingValueAttribute("\r\n          Estimado Colaborador {br}\r\n          Adjunto encontrará su rol de pag" +
+            "os {br}{br}\r\n          Atte.{br}\r\n          {b}James Brown Pharma{/b}\r\n        ")]
         public string cuerpoMensaje {
             get {
                 return ((string)(this["cuerpoMensaje"]));

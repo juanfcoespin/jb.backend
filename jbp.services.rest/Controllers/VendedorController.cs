@@ -21,7 +21,7 @@ namespace jbp.services.rest.Controllers
 
         [HttpPost]
         [Route("api/vendor/login")]
-        public RespAuthVendorMsg Login([FromBody]LoginMsg me)
+        public RespAuthMsg Login([FromBody]LoginMsg me)
         {
             return UserBusiness.GetVendorUser(me);
         }

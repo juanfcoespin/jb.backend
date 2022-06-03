@@ -20,8 +20,6 @@ namespace jbp.services.rest.Controllers
             
         }
 
-        
-
         // GET api/<controller>/5
         public string Get(int id)
         {

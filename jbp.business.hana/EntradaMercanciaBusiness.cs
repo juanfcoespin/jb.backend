@@ -98,7 +98,7 @@ namespace jbp.business.hana
                 line.AsignacionesLote.ForEach(al => {
                     if (string.IsNullOrEmpty(al.Lote))
                     {
-                        var sql = "call SBO_SP_LOTES_OP('EP','');";
+                        var sql = "call SBO_SP_LOTES_OP('EP','');"; // se pasa como parámetro EP, para indicar a la base que es EM por compra
                         al.Lote = new BaseCore().GetScalarByQuery(sql);
                     }
                 });

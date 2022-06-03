@@ -18,6 +18,8 @@ namespace jbp.msg
         public List<string> GruposDirectorioActivo{ get; set; }
         public string Error { get; set; }
         public string correo { get; set; }
+        public int IdUserSap { get; set; }
+        public int IdVendor { get; set; }
 
         public RespAuthMsg() {
             this.Perfiles = new List<string>();
@@ -32,9 +34,6 @@ namespace jbp.msg
             }
             return false;
         }
-    }
-    public class RespAuthVendorMsg: RespAuthMsg {
-        public int IdVendor { get; set; }
     }
     public class UserMsg :LoginMsg{
         public string Nombre { get; set; }

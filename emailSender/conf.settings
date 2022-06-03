@@ -7,9 +7,10 @@
     </Setting>
     <Setting Name="cuerpoMensaje" Type="System.String" Scope="User">
       <Value Profile="(Default)">
-          Estimado Colaborador adjunto encontrará su rol de pagos 
-          Atte.
-          James Brown Pharma
+          Estimado Colaborador {br}
+          Adjunto encontrará su rol de pagos {br}{br}
+          Atte.{br}
+          {b}James Brown Pharma{/b}
         </Value>
     </Setting>
   </Settings>

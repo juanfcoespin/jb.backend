@@ -42,9 +42,9 @@ namespace jbp.business.hana
             }
             return ms;
         }
-        public static RespAuthVendorMsg GetVendorUser(LoginMsg me)
+        public static RespAuthMsg GetVendorUser(LoginMsg me)
         {
-            var ms = new RespAuthVendorMsg();
+            var ms = new RespAuthMsg();
             var user = GetUser(me);
             if (user.Perfiles.Count > 0)
             {
