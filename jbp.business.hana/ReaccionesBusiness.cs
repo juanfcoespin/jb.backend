@@ -8,6 +8,7 @@ using jbp.core.sapDiApi;
 using TechTools.Core.Hana;
 using System.Threading;
 using System.Data;
+using TechTools.Utils;
 
 
 
@@ -113,7 +114,7 @@ namespace jbp.business.hana
 
                 var reaccion=new ReaccionesMsg
                 {
-                    id=bc.GetInt(dr["id"]),
+                    id= bc.GetInt(dr["id"]),
                     rangoEdad = dr["RangoEdad"].ToString(),
                     quienPadecioEnfermedad = dr["QuienPadecioEnfermedad"].ToString(),
                     fechaRegistro = dr["FECHA_REGISTRO"].ToString(),
@@ -130,6 +131,7 @@ namespace jbp.business.hana
                     reaccionesStr= getReaccionesSrt(dr["REACCIONES"].ToString(),bc),
                     
                 };
+                reaccion.idStr = "H-RAM-"+StringUtils.PonerCerosIzquierda(4, bc.GetInt(dr["id"]).ToString());
                 reaccion.medicamentos = getMedicamentosByIdReaccion(reaccion.id, bc);
                 reaccion.informacionesReaccion = getInfoReaccionesByIdReaccion(reaccion.id, bc);
                 ms.Add(reaccion);

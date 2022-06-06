@@ -15,6 +15,8 @@ namespace jbp.msg.sap
     }
     public class ReaccionesMsg
     {
+        public string idStr;
+
         public int idRangoEdad { get; set; }
         public int idQuienPadecioReaccion { get; set; }
         public string nombres { get; set; }

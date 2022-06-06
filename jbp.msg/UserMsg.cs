@@ -11,6 +11,11 @@ namespace jbp.msg
         public string User{ get; set; }
         public string Pwd { get; set; }
     }
+    public class ModulosAccesoMS {
+        public bool Ventas { get; set; }
+        public bool Bodega { get; set; }
+        public bool FarmacoVigilancia { get; set; }
+    }
     public class RespAuthMsg
     {
         public string Nombre { get; set; }
@@ -20,6 +25,8 @@ namespace jbp.msg
         public string correo { get; set; }
         public int IdUserSap { get; set; }
         public int IdVendor { get; set; }
+        public string UserName { get; set; }
+        public ModulosAccesoMS ModulosAcceso { get; set; }
 
         public RespAuthMsg() {
             this.Perfiles = new List<string>();

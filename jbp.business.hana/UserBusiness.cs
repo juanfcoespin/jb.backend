@@ -27,18 +27,50 @@ namespace jbp.business.hana
                 if (LogOnAD(me.User,me.Pwd)) {
                     var domain = new PrincipalContext(ContextType.Domain);
                     var user = UserPrincipal.FindByIdentity(domain, me.User);
+                    ms.UserName = me.User;
                     ms.Nombre = user.DisplayName ?? user.Name;
                     ms.correo= user.EmailAddress;
                     foreach (var group in user.GetGroups()) {
                         ms.GruposDirectorioActivo.Add(group.Name);
                     }
                     ms.Perfiles = GetPerfilesByUserName(me.User);
+                    ms.ModulosAcceso = GetModulosAcceso(ms);
                 }
             }
             catch (Exception e)
             {
                 e=ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
                 ms.Error = e.Message;
+            }
+            return ms;
+        }
+        public static ModulosAccesoMS GetModulosAcceso(RespAuthMsg me) {
+            var ms = new ModulosAccesoMS();
+            // Por usuario
+            if (me.UserName == "jespin"){
+                ms.Bodega = true;
+                ms.Ventas = true;
+                ms.FarmacoVigilancia = true;
+            }
+            if (me.UserName == "sbrown"){
+                ms.Ventas = true;
+            }
+
+            // Por grupo de AD
+            if (me.GruposDirectorioActivo!=null)
+            {
+                me.GruposDirectorioActivo.ForEach(grupo => {
+                    if (grupo.ToLower() == "ventas"){
+                        ms.Ventas = true;
+                    }
+                    if (grupo.ToLower() == "bodega"){
+                        ms.Bodega = true;
+                    }
+                    if (grupo.ToLower() == "asuntosregulatorios")
+                    {
+                        ms.FarmacoVigilancia = true;
+                    }
+                });
             }
             return ms;
         }
