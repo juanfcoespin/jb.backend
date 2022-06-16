@@ -76,5 +76,12 @@ namespace jbp.services.rest.Controllers
             return new jbp.business.oracle9i.SocioNegocioBusiness().SaveParticipante(me);
         }
         
+        [HttpGet]
+        [Route("api/socioNegocio/getProveedores")]
+        public List<SocioNegocioItemMsg> GetProveedores(string nroDocumento)
+        {
+            return jbp.business.hana.SocioNegocioBusiness.GetProveedores();
+        }
+
     }
 }

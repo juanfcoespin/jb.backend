@@ -35,6 +35,8 @@ namespace jbp.business.hana
                     }
                     ms.Perfiles = GetPerfilesByUserName(me.User);
                     ms.ModulosAcceso = GetModulosAcceso(ms);
+                    if (ms.IsVendor())
+                        ms.IdVendor = GetIdVendorByUserName(me.User);
                 }
             }
             catch (Exception e)
@@ -56,9 +58,16 @@ namespace jbp.business.hana
                 ms.Ventas = true;
             }
 
+            if(me.IdVendor>0)
+                ms.Ventas = true;
+
             // Por grupo de AD
             if (me.GruposDirectorioActivo!=null)
             {
+                me.Perfiles.ForEach(perfil => { 
+                    if(perfil.ToLower()== "vendedor")
+                        ms.Ventas = true;
+                });
                 me.GruposDirectorioActivo.ForEach(grupo => {
                     if (grupo.ToLower() == "ventas"){
                         ms.Ventas = true;

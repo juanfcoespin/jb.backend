@@ -122,6 +122,7 @@ namespace jbp.msg
     }
     public class SocioNegocioItemMsg
     {
+        public string Codigo { get; set; }
         public string Ruc { get; set; }
         public string Nombre { get; set; }
     }

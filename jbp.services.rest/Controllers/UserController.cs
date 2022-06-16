@@ -17,7 +17,6 @@ namespace jbp.services.rest.Controllers
         public RespAuthMsg Login ([FromBody]LoginMsg me)
         {
             return UserBusiness.GetUser(me);
-            
         }
 
         // GET api/<controller>/5
