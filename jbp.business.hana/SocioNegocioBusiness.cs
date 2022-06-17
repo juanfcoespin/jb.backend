@@ -112,7 +112,14 @@ namespace jbp.business.hana
                  from ""JbpVw_SocioNegocio""
                 where
                  ""CodTipoSocioNegocio"" = 'S'
-                 and ""Activo"" = 'Y'
+                 and ""CodSocioNegocio"" in(
+                     select
+                     distinct(""CodProveedor"")
+                    from
+                     ""JbpVw_Pedidos""
+                    where
+                     lower(""Estado"") like '%abierto%'
+                 )
                 order by 2
             ";
             var dt=new BaseCore().GetDataTableByQuery(sql);

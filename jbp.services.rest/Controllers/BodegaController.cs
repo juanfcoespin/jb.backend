@@ -21,5 +21,11 @@ namespace jbp.services.rest.Controllers
             return BodegaBusiness.GetSubnivelesAlmacen();
         }
 
+        [HttpGet]
+        [Route("api/bodega/getPedidosPorProveedor/{codProveedor}")]
+        public PedidosPorProveedorMsg GetPedidosPorProveedor(string codProveedor)
+        {
+            return BodegaBusiness.GetPedidosPorProveedor(codProveedor);
+        }
     }
 }

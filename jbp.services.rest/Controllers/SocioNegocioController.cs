@@ -78,7 +78,7 @@ namespace jbp.services.rest.Controllers
         
         [HttpGet]
         [Route("api/socioNegocio/getProveedores")]
-        public List<SocioNegocioItemMsg> GetProveedores(string nroDocumento)
+        public List<SocioNegocioItemMsg> GetProveedores()
         {
             return jbp.business.hana.SocioNegocioBusiness.GetProveedores();
         }

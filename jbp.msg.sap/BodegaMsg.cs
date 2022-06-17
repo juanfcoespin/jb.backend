@@ -55,5 +55,31 @@ namespace jbp.msg.sap
         public string codigo;
         public string descripcion;
     }
+    public class PedidosPorProveedorMsg {
+        public string Error { get; set; }
+        public List<PedidoMsg> Pedidos { get; set; }
+        public PedidosPorProveedorMsg() {
+            this.Pedidos = new List<PedidoMsg>();
+        }
+    }
+    public class PedidoMsg {
+
+        public List<PedidoLineaMsg> Lineas { get; set; }
+        public string NumPedido { get; set; }
+        public string FechaPedido { get; set; }
+
+        public PedidoMsg() {
+            this.Lineas = new List<PedidoLineaMsg>();
+        }
+    }
+    public class PedidoLineaMsg
+    {
+        public int LineNum { get; set; }
+        public string CodArticulo { get; set; }
+        public string Articulo { get; set; }
+        public decimal CantidadPedido { get; set; }
+        public decimal CantidadEntregada { get; set; }
+        public decimal CantidadPendiente { get; set; }
+    }
 
 }
