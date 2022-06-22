@@ -70,8 +70,9 @@ namespace jbp.business.hana
                      ""JbpVw_EntradaMercanciaLinea"" t3 on t3.""BaseEntry"" = t0.""IdPedido"" and t3.""BaseLine"" = t0.""LineNum"" left outer join
                      ""JbpVw_EntradaMercancia"" t4 on t4.""Id"" = t3.""IdEntradaMercancia""
                     where
-                     lower(t1.""Estado"") like '%abierto%'
-                     and t1.""CodProveedor"" = '{0}'
+                     t1.""CodProveedor"" = '{0}'
+                     and lower(t1.""Estado"") like '%abierto%'
+                     and t0.""LineStatus""='O' --lineas abiertas
                     group by
                      t1.""DocNum"",
                      t1.""Fecha"",
@@ -79,7 +80,8 @@ namespace jbp.business.hana
                      t0.""CodArticulo"",
                      t0.""Articulo"",
                      t0.""Cantidad""
-                ",codProveedor);
+                    order by t1.""DocNum""
+                ", codProveedor);
                 var bc = new BaseCore();
                 var dt = bc.GetDataTableByQuery(sql);
                 var numPedidoAnterior = "";
