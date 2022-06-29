@@ -240,8 +240,10 @@ namespace jbp.business.hana
                 var rucPrincipal = dr[fieldRuc].ToString();
                 
                 var participante = GetParticipantePuntosByRucPrincipal(rucPrincipal);
-                participante.estado = estado; 
-                ms.Add(participante);
+                if (participante != null && !string.IsNullOrEmpty(participante.RucPrincipal)) {
+                    participante.estado = estado;
+                    ms.Add(participante);
+                }
             }
             return ms;
         }

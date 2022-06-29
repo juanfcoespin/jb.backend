@@ -46,8 +46,10 @@ namespace jbp.business.hana
                         SetAdicionalesPedidoCompra(me); //pone el id y el codProveedor del pedido de compra
                     
                     var ms=(porCompra)? sapEntradaMercancia.AddPorCompra(me): sapEntradaMercancia.Add(me);
-                    if (string.IsNullOrEmpty(ms.Error))//si no hay error
+                    if (string.IsNullOrEmpty(ms.Error)) { //si no hay error
                         ms.DocNumEntradaMercancia = GetDocNumById(ms.IdEM);
+                        UpdateResponsableEM(me.responsable, ms.IdEM);
+                    }
                     return ms;
                 }
                 return null;
@@ -57,6 +59,17 @@ namespace jbp.business.hana
                 return new EntradaMercanciaMsg { Error = e.Message };
             }
         }
+
+        private static void UpdateResponsableEM(string responsable, string idEM)
+        {
+            var sql = string.Format(@"
+                update OPDN
+                set ""Comments""='** Responsable Ingreso: {0} **   ' ||  ""Comments""
+                where ""DocEntry"" = {1}
+            ",responsable,idEM );
+            new BaseCore().Execute(sql);
+        }
+
         public static int GetDocNumById(string idEntradaMercancia) {
             var sql = string.Format(@"
             select
@@ -78,7 +91,7 @@ namespace jbp.business.hana
              ""JbpVw_Pedidos""
             where
              ""DocNum"" = {0}
-            ", me.CodPedidoCompra);
+            ", me.NumPedido);
             var bc = new BaseCore();
             var dt=bc.GetDataTableByQuery(sql);
             if (dt != null) {
@@ -100,6 +113,7 @@ namespace jbp.business.hana
                     {
                         var sql = "call SBO_SP_LOTES_OP('EP','');"; // se pasa como parámetro EP, para indicar a la base que es EM por compra
                         al.Lote = new BaseCore().GetScalarByQuery(sql);
+                        System.Threading.Thread.Sleep(1000); //para que se genere un nuevo lote
                     }
                 });
             });

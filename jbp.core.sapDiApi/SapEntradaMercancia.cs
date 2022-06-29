@@ -55,7 +55,7 @@ namespace jbp.core.sapDiApi
             {
                 entradaMercancia.Lines.BaseType = (int)BoObjectTypes.oPurchaseOrders;
                 entradaMercancia.Lines.BaseEntry = me.IdOrdenCompra;
-                entradaMercancia.Lines.BaseLine = line.NumLinea;
+                entradaMercancia.Lines.BaseLine = line.LineNum;
                 entradaMercancia.Lines.WarehouseCode = line.CodBodega;
                 double cantidadLinea = 0;
                 line.AsignacionesLote.ForEach(asignacionLote =>
@@ -65,7 +65,8 @@ namespace jbp.core.sapDiApi
                     entradaMercancia.Lines.BatchNumbers.ManufacturingDate = Convert.ToDateTime(asignacionLote.FechaFabricacion);
                     entradaMercancia.Lines.BatchNumbers.ExpiryDate = Convert.ToDateTime(asignacionLote.FechaVencimiento);
                     entradaMercancia.Lines.BatchNumbers.Quantity = asignacionLote.Cantidad;
-                    entradaMercancia.Lines.BatchNumbers.ManufacturerSerialNumber = asignacionLote.Fabricante;
+                    entradaMercancia.Lines.BatchNumbers.ManufacturerSerialNumber =
+                        asignacionLote.Fabricante.Length>31?asignacionLote.Fabricante.Substring(0,31): asignacionLote.Fabricante; //da error si es mas grande
                     entradaMercancia.Lines.BatchNumbers.InternalSerialNumber = asignacionLote.LoteFabricante;
                     entradaMercancia.Lines.BatchNumbers.UserFields.Fields.Item("U_FecRet").Value = Convert.ToDateTime(asignacionLote.FechaRetest); ;
                     entradaMercancia.Lines.BatchNumbers.Add();
