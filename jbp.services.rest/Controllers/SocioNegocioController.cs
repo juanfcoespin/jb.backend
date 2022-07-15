@@ -77,10 +77,18 @@ namespace jbp.services.rest.Controllers
         }
         
         [HttpGet]
-        [Route("api/socioNegocio/getProveedores")]
+        [Route("api/socioNegocio/getProveedoresConPedidos")]
         public List<SocioNegocioItemMsg> GetProveedores()
         {
             return jbp.business.hana.SocioNegocioBusiness.GetProveedores();
+        }
+
+        [HttpGet]
+        [Route("api/socioNegocio/getProveedoresEM")]
+        public List<SocioNegocioItemMsg> GetProveedoresEM()
+        {
+            // trae los proveedores que tengas entradas de mercancía para 
+            return jbp.business.hana.SocioNegocioBusiness.GetProveedoresEM();
         }
 
     }

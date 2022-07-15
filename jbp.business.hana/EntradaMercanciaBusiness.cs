@@ -49,6 +49,7 @@ namespace jbp.business.hana
                     if (string.IsNullOrEmpty(ms.Error)) { //si no hay error
                         ms.DocNumEntradaMercancia = GetDocNumById(ms.IdEM);
                         UpdateResponsableEM(me.responsable, ms.IdEM);
+                        //InsertResumenEM(ms);
                     }
                     return ms;
                 }
@@ -59,6 +60,11 @@ namespace jbp.business.hana
                 return new EntradaMercanciaMsg { Error = e.Message };
             }
         }
+
+        //private static void InsertResumenEM(EntradaMercanciaMsg ms)
+        //{
+            
+        //}
 
         private static void UpdateResponsableEM(string responsable, string idEM)
         {

@@ -50,6 +50,68 @@ namespace jbp.business.hana
             return ms;
         }
 
+        public static EMProveedorMsg GetEMPorProveedor(string codProveedor)
+        {
+            var ms = new EMProveedorMsg();
+            try
+            {
+                var sql = String.Format(@"
+                    select
+                     top 20
+                     t1.""DocNum"",
+                     t2.""CodArticulo"",
+                     t2.""Articulo"",
+                     t2.""Cantidad"",
+                     t3.""Fabricante"",
+                     t3.""Lote"",
+                     t3.""Bultos"",
+                     to_char(t3.""FechaIngreso"", 'yyyy-mm-dd') ""FechaIngreso"",
+                     to_char(t3.""FechaFabricacion"", 'yyyy-mm-dd') ""FechaFabricacion"",
+                     to_char(t3.""FechaVencimiento"", 'yyyy-mm-dd') ""FechaVencimiento"",
+                     to_char(t3.""FechaRetesteo"", 'yyyy-mm-dd') ""FechaRetesteo""
+                    from
+                     ""JbpVw_EntradaMercanciaLinea"" t0 inner join
+                     ""JbpVw_EntradaMercancia"" t1 on t1.""Id"" = t0.""IdEntradaMercancia"" inner join
+                     ""JbpVw_OperacionesLote"" t2 on t2.""IdDocBase"" = t1.""Id""
+
+                         and t2.""BaseType"" = t1.""IdTipoDocumento""
+
+                         and t2.""CodArticulo"" = t0.""CodArticulo"" inner join
+                     ""JbpVw_Lotes"" t3 on t2.""Lote"" = t3.""Lote""
+                    where
+                     t1.""IdProveedor"" = '{0}'
+                     and t1.""Cancelado"" = 'N'
+                    order by
+                     t1.""DocNum"" desc
+                ", codProveedor);
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql);
+                foreach (DataRow dr in dt.Rows) {
+                    ms.EntradasMercancia.Add(
+                        new EntradaMercanciaQRMsg
+                        {
+                            DocNum = dr["DocNum"].ToString(),
+                            CodArticulo = dr["CodArticulo"].ToString(),
+                            Articulo = dr["Articulo"].ToString(),
+                            Cantidad = bc.GetDecimal(dr["Cantidad"]),
+                            Fabricante = dr["Fabricante"].ToString(),
+                            Lote = dr["Lote"].ToString(),
+                            Bultos = bc.GetInt(dr["Bultos"]),
+                            FechaIngreso = dr["FechaIngreso"].ToString(),
+                            FechaFabricacion = dr["FechaFabricacion"].ToString(),
+                            FechaVencimiento = dr["FechaVencimiento"].ToString(),
+                            FechaRetest = dr["FechaRetesteo"].ToString(),
+                        }
+                    ); ;
+                }
+            }
+            catch (Exception e)
+            {
+                ms.Error = e.Message;
+            }
+            return ms;
+        }
+
         public static PedidosPorProveedorMsg GetPedidosPorProveedor(string codProveedor)
         {
             var ms = new PedidosPorProveedorMsg();

@@ -125,6 +125,9 @@ namespace jbp.msg
         public string Codigo { get; set; }
         public string Ruc { get; set; }
         public string Nombre { get; set; }
+        public string name { get {
+                return String.IsNullOrEmpty(this.Ruc)?this.Nombre:this.Nombre + " (" + this.Ruc + ")";    
+        } }
     }
     public class ClientMsg
     {

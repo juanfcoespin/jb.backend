@@ -101,6 +101,41 @@ namespace jbp.business.hana
             return new BaseCore().GetScalarByQuery(sql);
         }
 
+        public static List<SocioNegocioItemMsg> GetProveedoresEM()
+        {
+            var ms = new List<SocioNegocioItemMsg>();
+            var sql = @"
+                select
+                 ""CodSocioNegocio"",
+                 ""Nombre"",
+                 ""Ruc""
+                 from ""JbpVw_SocioNegocio""
+                where
+                 ""CodTipoSocioNegocio"" = 'S'
+                 and ""CodSocioNegocio"" in(
+                    select
+                     distinct(""IdProveedor"")
+                    from
+                     ""JbpVw_EntradaMercancia""
+                    where
+                     ""Cancelado"" = 'N'
+                 )
+                order by 2
+            ";
+            var dt = new BaseCore().GetDataTableByQuery(sql);
+            foreach (DataRow dr in dt.Rows)
+            {
+                ms.Add(new SocioNegocioItemMsg
+                {
+                    Codigo = dr["CodSocioNegocio"].ToString(),
+                    Ruc = dr["Ruc"].ToString(),
+                    Nombre = dr["Nombre"].ToString(),
+                });
+            }
+            return ms;
+
+        }
+
         public static List<SocioNegocioItemMsg> GetProveedores()
         {
             var ms = new List<SocioNegocioItemMsg>();

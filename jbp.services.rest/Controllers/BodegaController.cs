@@ -27,5 +27,12 @@ namespace jbp.services.rest.Controllers
         {
             return BodegaBusiness.GetPedidosPorProveedor(codProveedor);
         }
+
+        [HttpGet]
+        [Route("api/bodega/getEMPorProveedor/{codProveedor}")]
+        public EMProveedorMsg GetEMPorProveedor(string codProveedor)
+        {
+            return BodegaBusiness.GetEMPorProveedor(codProveedor);
+        }
     }
 }

@@ -62,6 +62,29 @@ namespace jbp.msg.sap
             this.Pedidos = new List<PedidoMsg>();
         }
     }
+    public class EMProveedorMsg
+    {
+        public string Error { get; set; }
+        public List<EntradaMercanciaQRMsg> EntradasMercancia { get; set; }
+        public EMProveedorMsg()
+        {
+            this.EntradasMercancia = new List<EntradaMercanciaQRMsg>();
+        }
+    }
+    public class EntradaMercanciaQRMsg {
+        public string DocNum { get; set; }
+        public string Articulo { get; set; }
+        public string CodArticulo { get; set; }
+        public string Fabricante { get; set; }
+        public string Lote { get; set; }
+        public string FechaIngreso { get; set; }
+        public string FechaFabricacion { get; set; }
+        public string FechaVencimiento { get; set; }
+        public string FechaRetest { get; set; }
+        public decimal Cantidad { get; set; }
+        public int Bultos { get; set; }
+    }
+
     public class PedidoMsg {
 
         public List<PedidoLineaMsg> Lineas { get; set; }
