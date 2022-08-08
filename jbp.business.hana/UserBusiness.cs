@@ -30,6 +30,7 @@ namespace jbp.business.hana
                     ms.UserName = me.User;
                     ms.Nombre = user.DisplayName ?? user.Name;
                     ms.correo= user.EmailAddress;
+                    
                     foreach (var group in user.GetGroups()) {
                         ms.GruposDirectorioActivo.Add(group.Name);
                     }
@@ -37,6 +38,7 @@ namespace jbp.business.hana
                     ms.ModulosAcceso = GetModulosAcceso(ms);
                     if (ms.IsVendor())
                         ms.IdVendor = GetIdVendorByUserName(me.User);
+                    LogLogin(ms, me.AppName);
                 }
             }
             catch (Exception e)
@@ -46,6 +48,33 @@ namespace jbp.business.hana
             }
             return ms;
         }
+
+        private static void LogLogin(RespAuthMsg me, string AppName)
+        {
+            var logMe = new LogMsg
+            {
+                UserName = me.Nombre,
+                AppName = AppName,
+                Obs = "Login"
+            };
+            Log(logMe);
+        }
+        public static string Log(LogMsg me)
+        {
+            try
+            {
+                var sql = string.Format(@"
+                insert into JB_LOG(USER, APP_NAME, FECHA, OBS)
+                VALUES('{0}', '{1}', CURRENT_TIMESTAMP, '{2}')
+                ", me.UserName, me.AppName, me.Obs);
+                new BaseCore().Execute(sql);
+                return "ok";
+            }
+            catch(Exception e) {
+                return e.Message;
+            }
+        }
+
         public static ModulosAccesoMS GetModulosAcceso(RespAuthMsg me) {
             var ms = new ModulosAccesoMS();
             // Por usuario

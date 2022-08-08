@@ -36,5 +36,6 @@ namespace jbp.msg.sap
         public string FechaRetest { get; set; }
         public string LoteFabricante { get; set; }
         public string Fabricante { get; set; }
+        public int Bultos { get; set; }
     }
 }

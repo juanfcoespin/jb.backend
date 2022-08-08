@@ -50,6 +50,53 @@ namespace jbp.business.hana
             return ms;
         }
 
+        public static UbicacionesPorLoteMS GetUbicacionesYDetArticuloPorLote(string lote)
+        {
+            var ms=new UbicacionesPorLoteMS();
+            try
+            {
+                var sql = string.Format(@"
+                    select 
+                     t0.""CodArticulo"",
+                     t2.""Articulo"",
+                     t2.""Lote"",
+                     t1.""Ubicacion"",
+                     t0.""Cantidad""
+                    from ""JbpVw_UbicacionPorLote"" t0 inner join
+                    ""JbpVw_Ubicaciones"" t1 on t1.""Id"" = t0.""IdUbicacion"" inner join
+                    ""JbpVw_Lotes"" t2 on t2.""Id"" = t0.""IdLote""
+                    where
+                     t2.""Lote"" = '{0}'
+                ",lote);
+                var bc = new BaseCore();
+                var dt=bc.GetDataTableByQuery(sql);
+                var seRegistroInfoArticulo = false;
+                if (dt == null || dt.Rows.Count == 0) {
+                    ms.Error = "No se ha encontrado información de este lote en el inventario";
+                    return ms;
+                }
+                foreach (DataRow dr in dt.Rows) {
+                    if (!seRegistroInfoArticulo) {
+                        ms.CodArticulo = dr["CodArticulo"].ToString();
+                        ms.Articulo = dr["Articulo"].ToString();
+                        ms.Lote = dr["Lote"].ToString();
+                    }
+                    ms.UbicacionesCantidad.Add(
+                        new UbicacionCantidad { 
+                            Ubicacion= dr["Ubicacion"].ToString(),
+                            Cantidad =bc.GetDecimal(dr["Cantidad"])
+                        }
+                    );
+                }
+                return ms;
+            }
+            catch (Exception e)
+            {
+                ms.Error = e.Message;
+                return ms;
+            }
+        }
+
         public static EMProveedorMsg GetEMPorProveedor(string codProveedor)
         {
             var ms = new EMProveedorMsg();

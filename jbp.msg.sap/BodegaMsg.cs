@@ -6,6 +6,21 @@ using System.Threading.Tasks;
 
 namespace jbp.msg.sap
 {
+    public class UbicacionesPorLoteMS
+    {
+        public string Error { get; set; }
+        public string CodArticulo { get; set; }
+        public string Articulo { get; set; }
+        public string Lote { get; set; }
+        public List<UbicacionCantidad> UbicacionesCantidad { get; set; }
+        public UbicacionesPorLoteMS() { 
+            this.UbicacionesCantidad = new List<UbicacionCantidad>();
+        }
+    }
+    public class UbicacionCantidad {
+        public string Ubicacion { get; set; }
+        public decimal Cantidad { get; set; }
+    }
     public enum EDocBase { 
         OrdenFabricacion,
         SolicitudTransferencia

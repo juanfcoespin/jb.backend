@@ -19,6 +19,13 @@ namespace jbp.services.rest.Controllers
             return UserBusiness.GetUser(me);
         }
 
+        [HttpPost]
+        [Route("api/user/log")]
+        public string Log([FromBody] LogMsg me)
+        {
+            return UserBusiness.Log(me);
+        }
+
         // GET api/<controller>/5
         public string Get(int id)
         {

@@ -10,11 +10,18 @@ namespace jbp.msg
     {
         public string User{ get; set; }
         public string Pwd { get; set; }
+        public string AppName { get; set; }
     }
     public class ModulosAccesoMS {
         public bool Ventas { get; set; }
         public bool Bodega { get; set; }
         public bool FarmacoVigilancia { get; set; }
+    }
+    public class LogMsg
+    {
+        public string UserName { get; set; }
+        public string AppName { get; set; }
+        public string Obs { get; set; }
     }
     public class RespAuthMsg
     {

@@ -350,6 +350,15 @@ namespace jbp.business.hana
 
         private void saveInfoReaccion(InfoReaccion infoReaccion, BaseCore bc)
         {
+            string fechaFin = null;
+            if (string.IsNullOrEmpty(infoReaccion.fechaFin))
+            {
+                fechaFin = "null";
+            }
+            else {
+                fechaFin = string.Format("to_date('{0}','yyyy-mm-dd')",infoReaccion.fechaFin.Substring(0, 10));
+            }
+
             var sql = string.Format(@"
                 insert into JBP_REACCIONES_INFO(
                     ID_REACCION,
@@ -363,7 +372,7 @@ namespace jbp.business.hana
                     {0},
                     {1},
                     to_date('{2}','yyyy-mm-dd'),
-                    to_date('{3}','yyyy-mm-dd'),
+                    {3},
                     {4},
                     '{5}',
                     '{6}'
@@ -372,7 +381,7 @@ namespace jbp.business.hana
                 infoReaccion.idReaccion,
                 infoReaccion.idEstadoPersonaAfectada,
                 infoReaccion.fechaInicio.Substring(0, 10),
-                infoReaccion.fechaFin.Substring(0, 10),
+                fechaFin,
                 infoReaccion.siguioTratamiento,
                 infoReaccion.sintomas,
                 infoReaccion.tratamiento

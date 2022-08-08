@@ -72,7 +72,8 @@ namespace jbp.core.sapDiApi
                         entradaMercancia.Lines.BatchNumbers.ManufacturerSerialNumber =
                             asignacionLote.Fabricante.Length > 31 ? asignacionLote.Fabricante.Substring(0, 31) : asignacionLote.Fabricante; //da error si es mas grande
                         entradaMercancia.Lines.BatchNumbers.InternalSerialNumber = asignacionLote.LoteFabricante;
-                        entradaMercancia.Lines.BatchNumbers.UserFields.Fields.Item("U_FecRet").Value = Convert.ToDateTime(asignacionLote.FechaRetest); ;
+                        entradaMercancia.Lines.BatchNumbers.UserFields.Fields.Item("U_FecRet").Value = Convert.ToDateTime(asignacionLote.FechaRetest);
+                        entradaMercancia.Lines.BatchNumbers.UserFields.Fields.Item("U_IXX_CANT_BULTOS").Value = asignacionLote.Bultos ;
                         entradaMercancia.Lines.BatchNumbers.Add();
                     });
                     entradaMercancia.Lines.Quantity = cantidadLinea;
