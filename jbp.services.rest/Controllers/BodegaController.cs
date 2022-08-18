@@ -41,5 +41,18 @@ namespace jbp.services.rest.Controllers
         {
             return BodegaBusiness.GetUbicacionesYDetArticuloPorLote(lote);
         }
+
+        [HttpGet]
+        [Route("api/bodega/getBodegasConUbicaciones")]
+        public BodegasConUbicacionMS GetBodegasConUbicaciones()
+        {
+            return BodegaBusiness.GetBodegasConUbicaciones();
+        }
+        [HttpGet]
+        [Route("api/bodega/getUbicaciones")]
+        public UbicacionesMS GetUbicaciones()
+        {
+            return BodegaBusiness.GetUbicaciones();
+        }
     }
 }

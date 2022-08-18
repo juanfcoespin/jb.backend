@@ -19,6 +19,7 @@ namespace jbp.msg.sap
         public string FechaPedido { get; set; }
         public string responsable { get; set; }
     }
+    
     public class EntradaMercanciaLineaMsg {
         public string id { get; set; }
         public string Articulo { get; set; }

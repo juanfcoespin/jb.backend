@@ -8,6 +8,7 @@ using jbp.core.sapDiApi;
 using System.Threading;
 using TechTools.Core.Hana;
 using System.Data;
+using jbp.msg.sap;
 
 namespace jbp.business.hana
 {
@@ -73,69 +74,94 @@ namespace jbp.business.hana
                 return 0;
         }
         #endregion
-        public static string Transfer(TsBodegaMsg me)
+        public static DocSapInsertadoMsg Transfer(TsBodegaMsg me)
         {
             Monitor.Enter(control);
-            try
-            {
-                SetLotesFEFO(me);
-                //SetSerie(me); //La serie del documento
+            try{
+                if (!string.IsNullOrEmpty(me.UbicacionHasta)) { //si se envia la ubicación destino explicitamente
+                    me.IdUbicacionHasta = BodegaBusiness.GetIdUbicacionByName(me.UbicacionHasta);
+                }
+                foreach (var line in me.Lineas) {
+                    if (line.Lotes.Count == 0)// si no tiene lotes se asiga lotes segun FEFO
+                        SetLotesFEFO(line, me.CodBodegaDesde);
+                    if (line.Lotes.Count > 0)
+                        line.Cantidad = 0;
+                    foreach (var lote in line.Lotes) {
+                        if(lote.UbicacionesCantidadDesde.Count>0)
+                            lote.Cantidad = 0;
+                        foreach (var uc in lote.UbicacionesCantidadDesde){//si se envían ubicacones explicitamente
+                            if (!string.IsNullOrEmpty(me.UbicacionHasta) && uc.Ubicacion == me.UbicacionHasta) {
+                                return new DocSapInsertadoMsg
+                                {
+                                   Error = "Error: La ubicación destino no puede ser igual a la de origen (" + uc.Ubicacion + ")"
+                                };
+                            }
+                            uc.IdUbicacion = BodegaBusiness.GetIdUbicacionByName(uc.Ubicacion);
+                            lote.Cantidad += uc.Cantidad;
+                        }
+                        line.Cantidad+=lote.Cantidad;
+                    }
+                }
                 var ms = ProcessTS(me);
+                if (string.IsNullOrEmpty(ms.Error)) {
+                    ms.DocNum = GetDocNumBYId(ms.Id);
+                }
                 return ms;
             }
-            finally
-            {
+            finally{
                 Monitor.Exit(control);
             }
         }
 
-        //private static void SetSerie(TsBodegaMsg me)
-        //{
-        //    if (me.CodBodegaHasta.ToUpper().Contains("1")) // Ej: MAT1, PSJ1, PROD1
-        //        me.Serie = "TR_HUM";
-        //    if (me.CodBodegaHasta.ToUpper().Contains("2")) // Ej: MAT2, PSJ2, PROD2
-        //        me.Serie = "TR_VET";
-        //    if (me.CodBodegaHasta.ToUpper().Contains("CUAR")) // A CUARENTENA
-        //        me.Serie = "TR_CC";
-        //}
-
-        private static void SetLotesFEFO(TsBodegaMsg me)
+        private static int GetDocNumBYId(string id)
         {
-            me.Lineas.ForEach(line =>
+            var sql = string.Format(@"
+            select
+             ""DocNum""
+            from
+             ""JbpVw_TransferenciaStock""
+            where
+             ""Id"" = {0}
+            ", id);
+            return new BaseCore().GetIntScalarByQuery(sql);
+        }
+
+        private static void SetLotesFEFO(TsBodegaLineaMsg line, string CodBodegaDesde)
+        {
+            
+            var cantlotes = GetLotesByCodArt_CodBodega(line.CodArticulo, CodBodegaDesde);
+            double asignado = 0;
+            double porAsignar = line.Cantidad;
+            cantlotes.ForEach(cl =>
             {
-                var cantlotes = GetLotesByCodArt_CodBodega(line.CodArticulo, me.CodBodegaDesde);
-                double asignado = 0;
-                double porAsignar = line.Cantidad;
-                cantlotes.ForEach(cl =>
-                {
-                    if (porAsignar > 0) {
-                        if (cl.Disponible <= porAsignar){
-                            asignado = cl.Disponible;
-                            porAsignar -= cl.Disponible;
-                        }
-                        else{
-                            asignado = porAsignar;
-                            porAsignar = 0;
-                        }
-                        line.Lotes.Add(new AsignacionLoteMsg{
-                            Lote = cl.Lote,
-                            Cantidad = asignado
-                        });
-                    }
-                    
-                });
-                //si no hay suficiente cantidad en lotes para transferir se lanza una excepcion
                 if (porAsignar > 0) {
-                    var err = string.Format("No existe cantidad en lotes suficiente para transferir {0} unidades del artículo {1}", line.Cantidad, line.CodArticulo);
-                    if (cantlotes.Count > 0) {
-                        err += "Información de lotes encontrados: ";
-                        cantlotes.ForEach(cl => {
-                            err += string.Format("Lote: {0}, Cantidad: {1}, Bodega: {2} ",cl.Lote, cl.Disponible, cl.CodBodega);
-                        });
+                    if (cl.Disponible <= porAsignar){
+                        asignado = cl.Disponible;
+                        porAsignar -= cl.Disponible;
                     }
-                    throw new Exception(err);
+                    else{
+                        asignado = porAsignar;
+                        porAsignar = 0;
+                    }
+                    line.Lotes.Add(new AsignacionLoteMsg{
+                        Lote = cl.Lote,
+                        Cantidad = asignado
+                    });
                 }
+                    
             });
+            //si no hay suficiente cantidad en lotes para transferir se lanza una excepcion
+            if (porAsignar > 0) {
+                var err = string.Format("No existe cantidad en lotes suficiente para transferir {0} unidades del artículo {1}", line.Cantidad, line.CodArticulo);
+                if (cantlotes.Count > 0) {
+                    err += "Información de lotes encontrados: ";
+                    cantlotes.ForEach(cl => {
+                        err += string.Format("Lote: {0}, Cantidad: {1}, Bodega: {2} ",cl.Lote, cl.Disponible, cl.CodBodega);
+                    });
+                }
+                throw new Exception(err);
+            }
+            
         }
 
         private static List<CantidadLoteMsg> GetLotesByCodArt_CodBodega(string codArticulo, string codBodegaDesde)
@@ -168,7 +194,7 @@ namespace jbp.business.hana
             return ms;
         }
 
-        private static string ProcessTS(TsBodegaMsg me)
+        private static DocSapInsertadoMsg ProcessTS(TsBodegaMsg me)
         {
             try
             {
@@ -184,7 +210,9 @@ namespace jbp.business.hana
             }
             catch (Exception e)
             {
-                return e.Message;
+                return new DocSapInsertadoMsg { 
+                    Error = e.Message
+                };
             }
         }
        

@@ -14,37 +14,48 @@ namespace jbp.core.sapDiApi
         {
             //this.Connect();
         }
-        public string Add(TsBodegaMsg me)
+        public DocSapInsertadoMsg Add(TsBodegaMsg me)
         {
+            var ms = new DocSapInsertadoMsg();
             StockTransfer stockTransfer= this.Company.GetBusinessObject(BoObjectTypes.oStockTransfer);
-            var ms = "ok";
             stockTransfer.DocDate = DateTime.Now;
-            if(me.Serie>0)
-                stockTransfer.Series = me.Serie;
             stockTransfer.FromWarehouse = me.CodBodegaDesde;
             stockTransfer.ToWarehouse = me.CodBodegaHasta;
-
             me.Lineas.ForEach(line =>
             {
                 stockTransfer.Lines.ItemCode = line.CodArticulo;
                 stockTransfer.Lines.Quantity = line.Cantidad;
                 stockTransfer.Lines.FromWarehouseCode = me.CodBodegaDesde;
                 stockTransfer.Lines.WarehouseCode = me.CodBodegaHasta;
-                
                 line.Lotes.ForEach(loteAsignado =>
                 {
                     stockTransfer.Lines.BatchNumbers.BatchNumber = loteAsignado.Lote;
                     stockTransfer.Lines.BatchNumbers.Quantity = loteAsignado.Cantidad;
                     stockTransfer.Lines.BatchNumbers.Add();
+                    loteAsignado.UbicacionesCantidadDesde.ForEach(uc => { //si no se ha mandado ubicaciones solo hace transferencia entre bodegas
+                        stockTransfer.Lines.BinAllocations.BinActionType = SAPbobsCOM.BinActionTypeEnum.batFromWarehouse;
+                        stockTransfer.Lines.BinAllocations.SerialAndBatchNumbersBaseLine = 0; //0 porque por defecto coge el lote que se agrego antes
+                        stockTransfer.Lines.BinAllocations.BinAbsEntry = uc.IdUbicacion;
+                        stockTransfer.Lines.BinAllocations.Quantity = uc.Cantidad;
+                        stockTransfer.Lines.BinAllocations.Add();
+                    });
+                    // se asigna la ubicación de destino si fue enviada en el mensaje
+                    if (me.IdUbicacionHasta > 0) {
+                        stockTransfer.Lines.BinAllocations.BinActionType = SAPbobsCOM.BinActionTypeEnum.batToWarehouse;
+                        stockTransfer.Lines.BinAllocations.SerialAndBatchNumbersBaseLine = 0;
+                        stockTransfer.Lines.BinAllocations.BinAbsEntry = me.IdUbicacionHasta;
+                        stockTransfer.Lines.BinAllocations.Quantity = loteAsignado.Cantidad;
+                        stockTransfer.Lines.BinAllocations.Add();
+                    }
                 });
                 stockTransfer.Lines.Add();
                 
             });
             var error = stockTransfer.Add();
             if (error != 0)
-            {
-                ms = "Error: " + this.Company.GetLastErrorDescription();
-            }
+                ms.Error = "Error: " + this.Company.GetLastErrorDescription();
+            else
+                ms.Id = this.Company.GetNewObjectKey();
             return ms;
         }
         public string AddFromSt(SalidaBodegaMsg me)

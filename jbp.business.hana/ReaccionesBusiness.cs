@@ -161,6 +161,7 @@ namespace jbp.business.hana
                 ms.Add(new InfoReaccion
                 {
                     id = bc.GetInt(dr["id"]),
+                    idReaccion=idReaccion,
                     estadoPersonaAfectada = dr["ESTADO_PERSONA_AFECTADA"].ToString(),
                     fechaInicio = dr["FECHA_INICIO"].ToString(),
                     fechaFin = dr["FECHA_FIN"].ToString(),
@@ -200,6 +201,7 @@ namespace jbp.business.hana
             foreach (DataRow dr in dt.Rows) {
                 ms.Add(new MedicamentoItem {
                     id = bc.GetInt(dr["id"]),
+                    idReaccion=idReaccion,
                     viaAdministracion = dr["ViaAdministracion"].ToString(),
                     quePasoConMedicamento = dr["QuePasoConElMedicamento"].ToString(),
                     medicamento = dr["Medicamento"].ToString(),

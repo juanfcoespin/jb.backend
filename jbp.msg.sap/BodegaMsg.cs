@@ -17,6 +17,22 @@ namespace jbp.msg.sap
             this.UbicacionesCantidad = new List<UbicacionCantidad>();
         }
     }
+    public class BodegasConUbicacionMS {
+        public string Error { get; set; }
+        public List<string> Bodegas { get; set; }
+        public BodegasConUbicacionMS() { 
+            this.Bodegas = new List<string>(); 
+        }
+    }
+    public class UbicacionesMS
+    {
+        public string Error { get; set; }
+        public List<string> Ubicaciones { get; set; }
+        public UbicacionesMS()
+        {
+            this.Ubicaciones = new List<string>();
+        }
+    }
     public class UbicacionCantidad {
         public string Ubicacion { get; set; }
         public decimal Cantidad { get; set; }
@@ -54,6 +70,9 @@ namespace jbp.msg.sap
         }
 
         public int Serie { get; set; }
+        //UbicacionCantidadLoteMsg
+        public string UbicacionHasta { get; set; }
+        public int IdUbicacionHasta { get; set; }
     }
     
     public class TsBodegaLineaMsg: LineaMsg

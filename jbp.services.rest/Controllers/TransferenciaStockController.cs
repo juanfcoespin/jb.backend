@@ -15,17 +15,9 @@ namespace jbp.services.rest.Controllers
     {
         [HttpPost]
         [Route("api/transferenciaStock")]
-        public string Transfer([FromBody]TsBodegaMsg me)
+        public DocSapInsertadoMsg Transfer([FromBody]TsBodegaMsg me)
         {
-            try
-            {
-                var ms = TransferenciaStockBussiness.Transfer(me);
-                return ms;
-            }
-            catch (Exception e) {
-                return e.Message;
-            }
-            
+            return TransferenciaStockBussiness.Transfer(me);
         }
     }
 }

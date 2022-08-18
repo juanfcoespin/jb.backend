@@ -44,8 +44,8 @@ namespace jbp.core.sapDiApi
             if (error != 0)
             {
                 me.Error = "Error: " + this.Company.GetLastErrorDescription();
-            }
-            me.IdEM=this.Company.GetNewObjectKey();
+            }else
+                me.IdEM=this.Company.GetNewObjectKey();
             return me;
         }
 

@@ -50,6 +50,55 @@ namespace jbp.business.hana
             return ms;
         }
 
+        public static BodegasConUbicacionMS GetBodegasConUbicaciones()
+        {
+            
+            var ms = new BodegasConUbicacionMS();
+            try
+            {
+                var sql = @"
+                select distinct(""CodBodega"") ""CodBodega"" from ""JbpVw_Ubicaciones"" order by 1
+            ";
+                var dt = new BaseCore().GetDataTableByQuery(sql);
+                foreach (DataRow dr in dt.Rows)
+                {
+                    ms.Bodegas.Add(dr["CodBodega"].ToString());
+                }
+            }
+            catch (Exception e)
+            {
+                ms.Error = e.Message;
+            }
+            return ms;
+            
+        }
+
+        public static UbicacionesMS GetUbicaciones()
+        {
+            var ms = new UbicacionesMS();
+            try
+            {
+                var sql = @"
+                select
+                     distinct(""Ubicacion"") ""Ubicacion""
+                    from
+                     ""JbpVw_Ubicaciones""
+                    where
+                     ""Ubicacion"" not like '%SYSTEM-BIN-LOCATION%'
+                ";
+                var dt = new BaseCore().GetDataTableByQuery(sql);
+                foreach (DataRow dr in dt.Rows)
+                {
+                    ms.Ubicaciones.Add(dr["Ubicacion"].ToString());
+                }
+            }
+            catch (Exception e)
+            {
+                ms.Error = e.Message;
+            }
+            return ms;
+        }
+
         public static UbicacionesPorLoteMS GetUbicacionesYDetArticuloPorLote(string lote)
         {
             var ms=new UbicacionesPorLoteMS();
@@ -95,6 +144,24 @@ namespace jbp.business.hana
                 ms.Error = e.Message;
                 return ms;
             }
+        }
+
+        internal static int GetIdLoteByNameAndCodArticulo(string lote, string codArticulo)
+        {
+            var sql = string.Format(@"
+                select ""Id"" from ""JbpVw_Lotes"" 
+                where ""Lote""='{0}' and ""CodArticulo""='{1}'
+            ", lote, codArticulo);
+            return new BaseCore().GetIntScalarByQuery(sql);
+        }
+
+        internal static int GetIdUbicacionByName(string ubicacion)
+        {
+            var sql = string.Format(@"
+                select ""Id"" from ""JbpVw_Ubicaciones"" 
+                where ""Ubicacion""='{0}'
+            ",ubicacion);
+            return new BaseCore().GetIntScalarByQuery(sql);
         }
 
         public static EMProveedorMsg GetEMPorProveedor(string codProveedor)
