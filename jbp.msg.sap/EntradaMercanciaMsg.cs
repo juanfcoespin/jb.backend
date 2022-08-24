@@ -18,6 +18,7 @@ namespace jbp.msg.sap
         public int DocNumEntradaMercancia { get; set; }
         public string FechaPedido { get; set; }
         public string responsable { get; set; }
+        public string Comentario { get; set; }
     }
     
     public class EntradaMercanciaLineaMsg {
@@ -30,7 +31,7 @@ namespace jbp.msg.sap
         public decimal CantidadPendiente { get; set; }
         public int LineNum { get; set; }
     }
-    public class AsignacionLoteEMMsg : AsignacionLoteMsg {
+    public class AsignacionLoteEMMsg {
         public string id { get; set; }
         public string FechaFabricacion { get; set; } //yyyy-mm-dd
         public string FechaVencimiento { get; set; }
@@ -38,5 +39,7 @@ namespace jbp.msg.sap
         public string LoteFabricante { get; set; }
         public string Fabricante { get; set; }
         public int Bultos { get; set; }
+        public double Cantidad { get; set; }
+        public string Lote { get; set; }
     }
 }

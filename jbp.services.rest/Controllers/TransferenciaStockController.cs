@@ -13,11 +13,19 @@ namespace jbp.services.rest.Controllers
 {
     public class TransferenciaStockController : ApiController
     {
+        //esta api utiliza el sistema de balanzas pesaje Espinoza - Paez
         [HttpPost]
         [Route("api/transferenciaStock")]
-        public DocSapInsertadoMsg Transfer([FromBody]TsBodegaMsg me)
+        public DocSapInsertadoMsg TransferFromBalanzas([FromBody] TsBalanzasMsg me)
         {
-            return TransferenciaStockBussiness.Transfer(me);
+            return TransferenciaStockBussiness.TransferFromBalanzas(me);
+        }
+
+        [HttpPost]
+        [Route("api/tsUbicaciones")]
+        public DocSapInsertadoMsg TransferUbicaciones([FromBody] TsBodegaMsg me)
+        {
+            return TransferenciaStockBussiness.TransferToUbicaciones(me);
         }
     }
 }

@@ -61,28 +61,43 @@ namespace jbp.msg.sap
         public string Lote { get; set; }
     }
     public class TsBodegaMsg {
+        public string Responsable { get; set; }
+        public string CodArticulo { get; set; }
+        public string Lote { get; set; }
+        public string CodBodegaDesde { get; set; }
+        public int IdUbicacionDesde { get; set; }
+        public string UbicacionDesde { get; set; }
+        public string CodBodegaHasta { get; set; }
+        public double CantidadTotal { get; set; }
+        public List<UbicacionCantidadMsg> UbicacionesCantidadHasta { get; set; }
+
+        public TsBodegaMsg() {
+            this.UbicacionesCantidadHasta = new List<UbicacionCantidadMsg>();
+        }
+    }
+    public class UbicacionCantidadMsg
+    {
+        public string Ubicacion { get; set; }
+        public double Cantidad { get; set; }
+        public int IdUbicacion { get; set; }
+    }
+    public class TsBalanzasMsg
+    {
         public string CodBodegaDesde { get; set; }
         public string CodBodegaHasta { get; set; }
-        private List<TsBodegaLineaMsg> _Lineas=new List<TsBodegaLineaMsg>();
-        public List<TsBodegaLineaMsg> Lineas { 
-            get { return this._Lineas; }
-            set { this._Lineas = value; }
+        public List<TsBalanzasLineaMsg> Lineas { get; set; }
+        public TsBalanzasMsg() {
+            this.Lineas = new List<TsBalanzasLineaMsg>();
         }
+    }
 
-        public int Serie { get; set; }
-        //UbicacionCantidadLoteMsg
-        public string UbicacionHasta { get; set; }
-        public int IdUbicacionHasta { get; set; }
-    }
-    
-    public class TsBodegaLineaMsg: LineaMsg
+    public class TsBalanzasLineaMsg
     {
-        private List<AsignacionLoteMsg> _Lotes=new List<AsignacionLoteMsg>();
-        public List<AsignacionLoteMsg> Lotes { 
-            get { return this._Lotes; }
-            set { this._Lotes = value; }   
-        }
+        public string CodArticulo { get; set; }
+        public double Cantidad { get; set; }
+        public string Lote { get; set; }
     }
+
     public class SubNivelBodegaMsg
     {
         public int id;

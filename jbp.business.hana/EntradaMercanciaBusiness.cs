@@ -48,7 +48,7 @@ namespace jbp.business.hana
                     var ms=(porCompra)? sapEntradaMercancia.AddPorCompra(me): sapEntradaMercancia.Add(me);
                     if (string.IsNullOrEmpty(ms.Error)) { //si no hay error
                         ms.DocNumEntradaMercancia = GetDocNumById(ms.IdEM);
-                        UpdateResponsableEM(me.responsable, ms.IdEM);
+                        UpdateResponsableEM(me, ms.IdEM);
                         //InsertResumenEM(ms);
                     }
                     return ms;
@@ -66,13 +66,13 @@ namespace jbp.business.hana
             
         //}
 
-        private static void UpdateResponsableEM(string responsable, string idEM)
+        private static void UpdateResponsableEM(EntradaMercanciaMsg me, string idEM)
         {
             var sql = string.Format(@"
                 update OPDN
-                set ""Comments""='** Responsable Ingreso: {0} **   ' ||  ""Comments""
-                where ""DocEntry"" = {1}
-            ",responsable,idEM );
+                set ""Comments""='** {0} Responsable Ingreso: {1} **   ' ||  ""Comments""
+                where ""DocEntry"" = {2}
+            ", me.Comentario, me.responsable,idEM );
             new BaseCore().Execute(sql);
         }
 

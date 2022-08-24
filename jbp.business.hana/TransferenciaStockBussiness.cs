@@ -31,6 +31,37 @@ namespace jbp.business.hana
                 Monitor.Exit(control);
             }
         }
+        //sistema balanzas espinoza paez
+        public static DocSapInsertadoMsg TransferFromBalanzas(TsBalanzasMsg me)
+        {
+
+            Monitor.Enter(control);
+            var ms = new DocSapInsertadoMsg();
+            try
+            {
+                if (me != null)
+                {
+                    if (sapTransferenciaStock == null)
+                        sapTransferenciaStock = new SapTransferenciaStock();
+                    if (!sapTransferenciaStock.IsConected())
+                        sapTransferenciaStock.Connect();//se conecta a sap
+                    ms= sapTransferenciaStock.AddFromBalazas(me);
+                }
+                if (string.IsNullOrEmpty(ms.Error))
+                {
+                    ms.DocNum = GetDocNumBYId(ms.Id);
+                    UpdateResponsableTS("Sistema Balanzas Espinoza Paez", ms.Id);
+                }
+            }
+            catch (Exception e)
+            {
+                ms.Error = e.Message;
+                
+            }
+            Monitor.Exit(control);
+            return ms;
+        }
+
         private static string ProcessTSFromST(SalidaBodegaMsg me)
         {
             try
@@ -74,43 +105,45 @@ namespace jbp.business.hana
                 return 0;
         }
         #endregion
-        public static DocSapInsertadoMsg Transfer(TsBodegaMsg me)
+
+        // app bodega
+        public static DocSapInsertadoMsg TransferToUbicaciones(TsBodegaMsg me)
         {
             Monitor.Enter(control);
             try{
-                if (!string.IsNullOrEmpty(me.UbicacionHasta)) { //si se envia la ubicación destino explicitamente
-                    me.IdUbicacionHasta = BodegaBusiness.GetIdUbicacionByName(me.UbicacionHasta);
+                if (!string.IsNullOrEmpty(me.UbicacionDesde)) { //si se envia la ubicación destino explicitamente
+                    me.IdUbicacionDesde = BodegaBusiness.GetIdUbicacionByName(me.UbicacionDesde);
                 }
-                foreach (var line in me.Lineas) {
-                    if (line.Lotes.Count == 0)// si no tiene lotes se asiga lotes segun FEFO
-                        SetLotesFEFO(line, me.CodBodegaDesde);
-                    if (line.Lotes.Count > 0)
-                        line.Cantidad = 0;
-                    foreach (var lote in line.Lotes) {
-                        if(lote.UbicacionesCantidadDesde.Count>0)
-                            lote.Cantidad = 0;
-                        foreach (var uc in lote.UbicacionesCantidadDesde){//si se envían ubicacones explicitamente
-                            if (!string.IsNullOrEmpty(me.UbicacionHasta) && uc.Ubicacion == me.UbicacionHasta) {
-                                return new DocSapInsertadoMsg
-                                {
-                                   Error = "Error: La ubicación destino no puede ser igual a la de origen (" + uc.Ubicacion + ")"
-                                };
-                            }
-                            uc.IdUbicacion = BodegaBusiness.GetIdUbicacionByName(uc.Ubicacion);
-                            lote.Cantidad += uc.Cantidad;
-                        }
-                        line.Cantidad+=lote.Cantidad;
+                me.CantidadTotal = 0;
+                foreach (var uch in me.UbicacionesCantidadHasta) {
+                    if (!string.IsNullOrEmpty(me.UbicacionDesde) && uch.Ubicacion == me.UbicacionDesde) {
+                        return new DocSapInsertadoMsg
+                        {
+                            Error = "Error: La ubicación destino no puede ser igual a la de origen (" + uch.Ubicacion + ")"
+                        };
                     }
+                    uch.IdUbicacion = BodegaBusiness.GetIdUbicacionByName(uch.Ubicacion);
+                    me.CantidadTotal += uch.Cantidad;
                 }
                 var ms = ProcessTS(me);
                 if (string.IsNullOrEmpty(ms.Error)) {
                     ms.DocNum = GetDocNumBYId(ms.Id);
+                    UpdateResponsableTS(me.Responsable, ms.Id);
                 }
                 return ms;
             }
             finally{
                 Monitor.Exit(control);
             }
+        }
+        private static void UpdateResponsableTS(string responsable, string id)
+        {
+            var sql = string.Format(@"
+                update OWTR
+                set ""Comments""='** Responsable Ingreso: {0} **   ' ||  ""Comments""
+                where ""DocEntry"" = {1}
+            ", responsable, id);
+            new BaseCore().Execute(sql);
         }
 
         private static int GetDocNumBYId(string id)
@@ -126,7 +159,7 @@ namespace jbp.business.hana
             return new BaseCore().GetIntScalarByQuery(sql);
         }
 
-        private static void SetLotesFEFO(TsBodegaLineaMsg line, string CodBodegaDesde)
+        /*private static void SetLotesFEFO(TsBodegaLineaMsg line, string CodBodegaDesde)
         {
             
             var cantlotes = GetLotesByCodArt_CodBodega(line.CodArticulo, CodBodegaDesde);
@@ -162,7 +195,7 @@ namespace jbp.business.hana
                 throw new Exception(err);
             }
             
-        }
+        }*/
 
         private static List<CantidadLoteMsg> GetLotesByCodArt_CodBodega(string codArticulo, string codBodegaDesde)
         {
@@ -204,7 +237,7 @@ namespace jbp.business.hana
                         sapTransferenciaStock = new SapTransferenciaStock();
                     if (!sapTransferenciaStock.IsConected())
                         sapTransferenciaStock.Connect();//se conecta a sap
-                    return sapTransferenciaStock.Add(me);
+                    return sapTransferenciaStock.TranferUbicaciones(me);
                 }
                 return null;
             }
