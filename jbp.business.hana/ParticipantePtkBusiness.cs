@@ -161,7 +161,7 @@ namespace jbp.business.hana
             if (string.IsNullOrEmpty(ruc))
                 return;
             var me = GetParticipantePuntosByRucPrincipal(ruc);
-            RegistrarParticipante(me, numFactura);
+            RegistrarParticipante(me);
         }
         internal void SetRucInRucPrincipalNull()
         {
@@ -247,7 +247,7 @@ namespace jbp.business.hana
             }
             return ms;
         }
-        public void RegistrarParticipante(ParticipantesPuntosMsg me, string numFactura = null) {
+        public void RegistrarParticipante(ParticipantesPuntosMsg me) {
             try
             {
                 var errorParticipante = "";
@@ -256,13 +256,17 @@ namespace jbp.business.hana
 
                 this.RucParticipante = me.nroDocumento;
 
-                var url = string.Format("{0}/{1}", conf.Default.ptkWsUrl, "gstparticipantes");
+                //var url = string.Format("{0}/{1}", conf.Default.ptkWsUrl, "gstparticipantes");
+                var url = string.Format("{0}/{1}", conf.Default.ptkWsUrl, "gstparticipantes/actualizar");
                 var rc = new RestCall();
-                var resp = (RespWsMsg)rc.SendPostOrPut(url, typeof(RespWsMsg), me, typeof(ParticipantesPuntosMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
+                //promotick cambió el mensaje de entrada
+                var newMe = traducirMensaje(me);
+                var resp = (RespWsMsg)rc.SendPostOrPut(url, typeof(RespWsMsg), newMe, typeof(UpdateParticipanteMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
 
                 RegistrarParticipanteEnLog(me, resp);
                 GestionarRespuestaRegistrarParticipante(resp, me);
-                new SocioNegocioBusiness().RegistrarParticipanteComoSincronizado(me.nroDocumento);
+                if(resp.codigo == 1)
+                    new SocioNegocioBusiness().RegistrarParticipanteComoSincronizado(me.nroDocumento);
             }
             catch (Exception e)
             {
@@ -272,6 +276,96 @@ namespace jbp.business.hana
             }
             
         }
+
+        private UpdateParticipanteMsg traducirMensaje(ParticipantesPuntosMsg me)
+        {
+            var ms = new UpdateParticipanteMsg();
+            ms.nroDocumento=me.nroDocumento;
+            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "estado",
+                valor = me.estado.ToString()
+            });
+            ms.listaCamposActualizar.Add(new CamposModificarMsg { 
+                nombreCampo="nombres",
+                valor=me.nombres
+            });
+            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "apellidos",
+                valor = me.apellidos
+            });
+            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "email",
+                valor = me.email
+            });
+            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "tipoDocumento",
+                valor = me.tipoDocumento.ToString()
+            });
+            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "nroDocumento",
+                valor = me.nroDocumento
+            });
+            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "clave",
+                valor = me.clave
+            });
+            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "fechaNacimiento",
+                valor = me.fechaNacimiento
+            });
+            
+            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "celular",
+                valor = me.celular
+            });
+            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "telefono",
+                valor = me.telefono
+            });
+            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "tipoGenero",
+                valor = me.tipoGenero.ToString()
+            });
+            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "idCatalogo",
+                valor = me.idCatalogo.ToString()
+            });
+            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "tipoCatalogo",
+                valor = me.tipoCatalogo.ToString()
+            });
+            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "vendedor",
+                valor = me.vendedor.ToString()
+            });
+
+            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "metaAnual",
+                valor = me.metaAnual.ToString()
+            });
+            /*falta implementar esta lógica
+             * ms.listaCamposActualizar.Add(new CamposModificarMsg
+            {
+                nombreCampo = "usuarioVendedor",
+                valor = me.usuarioVendedor
+            });*/
+            return ms;
+        }
+
         public void RegistrarParticipanteEnLog(ParticipantesPuntosMsg me, RespWsMsg resp)
         {
             var sql = string.Format(@"

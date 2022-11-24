@@ -71,6 +71,17 @@ namespace jbp.msg
 
         public string nombreCampo { get; set; }
     }
+    public class UpdateParticipanteMsg {
+        public string nroDocumento { get; set; }
+        public List<CamposModificarMsg> listaCamposActualizar { get; set; }
+        public UpdateParticipanteMsg() {
+            this.listaCamposActualizar = new List<CamposModificarMsg>();
+        }
+    }
+    public class CamposModificarMsg {
+        public string nombreCampo { get; set; }
+        public string valor { get; set; }
+    }
     public class ParticipantesPuntosMsg
     {
         public bool Activo { get; set; }
@@ -93,6 +104,7 @@ namespace jbp.msg
         private DateTime _FechaNacimiento;
         public string nombreComercial;
         public List<DocumentoParticipanteMsg> documentos;
+        public string usuarioVendedor;
 
         public DateTime FechaNacimiento
         {

@@ -18,12 +18,17 @@ namespace jbp.business.hana
         public static SapTransferenciaStock sapTransferenciaStock = new SapTransferenciaStock();
 
         #region Desde solicitud de transferencia
-        public static string SaveFromST(SalidaBodegaMsg me)
+        public static DocSapInsertadoMsg SaveFromST(TsFromPickingME me)
         {
             Monitor.Enter(control);
             try
             {
                 var ms = ProcessTSFromST(me);
+                if (string.IsNullOrEmpty(ms.Error))
+                {
+                    ms.DocNum = GetDocNumBYId(ms.Id);
+                    UpdateResponsableTS(me.Responsable, ms.Id);
+                }
                 return ms;
             }
             finally
@@ -62,32 +67,30 @@ namespace jbp.business.hana
             return ms;
         }
 
-        private static string ProcessTSFromST(SalidaBodegaMsg me)
+        public static DocSapInsertadoMsg TransferFromPicking(TsFromPickingME me)
         {
+            throw new NotImplementedException();
+        }
+
+        private static DocSapInsertadoMsg ProcessTSFromST(TsFromPickingME me)
+        {
+            var ms= new DocSapInsertadoMsg();
             try
             {
-                if (me != null && me.DocNum > 0)
-                {
-                    me.IdOF = OrdenFabricacionBusiness.GetIdByDocNum(me.DocNum);
-                    if (!OrdenFabricacionBusiness.EstaLiberada(me.IdOF))
-                        return String.Format("La orden de fabricacion: {0} no está en estado liberada!!", me.DocNum);
-                    if (me.DocBaseType == EDocBase.SolicitudTransferencia)
-                    {
-                        me.IdDocBase = GetIdSTFromDocNumOF(me.DocNum);
-                        if (sapTransferenciaStock == null)
-                            sapTransferenciaStock = new SapTransferenciaStock();
-                        if (!sapTransferenciaStock.IsConected())
-                            sapTransferenciaStock.Connect();//se conecta a sap
-                        return sapTransferenciaStock.AddFromSt(me);
-                    }
-
-                }
-                return null;
+                if (sapTransferenciaStock == null)
+                    sapTransferenciaStock = new SapTransferenciaStock();
+                if (!sapTransferenciaStock.IsConected())
+                    sapTransferenciaStock.Connect();//se conecta a sap
+                me.Componentes.ForEach(c => { 
+                    c.IdUbicacion = BodegaBusiness.GetIdUbicacionByName(c.ubicacionSeleccionada);
+                });
+                ms= sapTransferenciaStock.AddFromSt(me);
             }
             catch (Exception e)
             {
-                return e.Message;
+                ms.Error=e.Message;
             }
+            return ms;
         }
         private static int GetIdSTFromDocNumOF(int docNum)
         {

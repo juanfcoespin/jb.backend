@@ -27,5 +27,17 @@ namespace jbp.services.rest.Controllers
         {
             return TransferenciaStockBussiness.TransferToUbicaciones(me);
         }
+
+        [HttpPost]
+        [Route("api/tsFromST")]
+        public DocSapInsertadoMsg TransferFromPicking([FromBody] TsFromPickingME me)
+        {
+            return TransferenciaStockBussiness.SaveFromST(me);
+        }
+
+        private SalidaBodegaMsg translate(TsFromPickingME me)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

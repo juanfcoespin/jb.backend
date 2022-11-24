@@ -17,10 +17,28 @@ namespace jbp.msg.sap
             this.UbicacionesCantidad = new List<UbicacionCantidad>();
         }
     }
-    public class BodegasConUbicacionMS {
+    public class ContenidoUbicacionMS
+    {
+        public List<ContenidoUbicacionItemMS> Items { get; set; }
+        public string Error { get; set; }
+        public ContenidoUbicacionMS()
+        {
+            this.Items = new List<ContenidoUbicacionItemMS>();
+        }
+    }
+    public class ContenidoUbicacionItemMS
+    {
+        public string Lote { get; set; }
+        public string CodBodega { get; set; }
+        public string CodArticulo { get; set; }
+        public decimal Cantidad { get; set; }
+        public string UnidadMedida { get; set; }
+        public string Articulo { get; set; }
+    }
+    public class BodegasMS {
         public string Error { get; set; }
         public List<string> Bodegas { get; set; }
-        public BodegasConUbicacionMS() { 
+        public BodegasMS() { 
             this.Bodegas = new List<string>(); 
         }
     }
@@ -50,6 +68,7 @@ namespace jbp.msg.sap
         public int IdOF { get; set; }
         public string From { get; set; }
         public string To { get; set; }
+        public string Responsable { get; set; }
     }
 
     public class SalidaBodegaLineaMsg
@@ -74,6 +93,28 @@ namespace jbp.msg.sap
         public TsBodegaMsg() {
             this.UbicacionesCantidadHasta = new List<UbicacionCantidadMsg>();
         }
+    }
+    public class TsFromPickingME
+    {
+        public string Responsable { get; set; }
+        public List<ComponenteMsg> Componentes { get; set; }
+        public int Id { get; set; }
+        public string BodegaDestino { get; set; }
+        public string BodegaOrigen { get; set; }
+
+        public TsFromPickingME() { 
+            this.Componentes = new List<ComponenteMsg>();
+        }
+    }
+    public class ComponenteMsg
+    {
+        public int LineNum { get; set; }
+        public double Cantidad { get; set; }
+        public string Lote { get; set; }
+        public string ubicacionSeleccionada { get; set; }
+        public int IdUbicacion { get; set; }
+        public string BodegaDestino { get; set; }
+        public string BodegaOrigen { get; set; }
     }
     public class UbicacionCantidadMsg
     {
@@ -132,6 +173,7 @@ namespace jbp.msg.sap
         public string FechaRetest { get; set; }
         public decimal Cantidad { get; set; }
         public int Bultos { get; set; }
+        public string UnidadMedida { get; set; }
     }
 
     public class PedidoMsg {
@@ -152,6 +194,7 @@ namespace jbp.msg.sap
         public decimal CantidadPedido { get; set; }
         public decimal CantidadEntregada { get; set; }
         public decimal CantidadPendiente { get; set; }
+        public string UnidadMedida { get; set; }
     }
 
 }

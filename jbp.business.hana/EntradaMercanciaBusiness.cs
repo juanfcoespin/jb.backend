@@ -112,8 +112,19 @@ namespace jbp.business.hana
             // Se genera en la base de datos para garantizar que no se duplique el lote
             // (con la fecha y hora del servidor de base de datos)
             me.Lineas.ForEach(line => {
-                if (string.IsNullOrEmpty(line.CodBodega))
-                    line.CodBodega = "CUAR1"; //por defecto se va a cuarentena a no ser que el usuario mande a otra bodega
+                if (string.IsNullOrEmpty(line.CodBodega)){//por defecto se va a cuarentena a no ser que el usuario mande a otra bodega
+                    var bodegasCUAR_PorArticulo = GetBodegasCUAR_PorArticulo(line.CodArticulo);
+                    if (bodegasCUAR_PorArticulo.Count == 0)
+                        throw new Exception("No se ha parametrizado ninguna bodega de cuarentena para el articulo: " + line.CodArticulo);
+                    else {
+                        if (bodegasCUAR_PorArticulo.Contains("CUAR1"))
+                            line.CodBodega = "CUAR1";
+                        else if (bodegasCUAR_PorArticulo.Contains("CUAR2"))
+                            line.CodBodega = "CUAR2";
+                        else
+                            line.CodBodega = bodegasCUAR_PorArticulo[0]; //la primera bodega de cuarentena que encuentre que no sea CUAR1 ni CUAR2
+                    }
+                }
                 line.AsignacionesLote.ForEach(al => {
                     if (string.IsNullOrEmpty(al.Lote))
                     {
@@ -124,6 +135,22 @@ namespace jbp.business.hana
                 });
             });
             
+        }
+        public static List<string> GetBodegasCUAR_PorArticulo(string codArticulo) { 
+            var ms=new List<string>();
+            var sql = string.Format(@"
+                select distinct(""CodBodega"") ""CodBodega""
+                 from ""JbpVw_ArticulosPorBodega""
+                where
+                 upper(""CodBodega"") like '%CUAR%'
+                 and ""CodArticulo"" = '{0}'
+
+            ",codArticulo);
+            var dt=new BaseCore().GetDataTableByQuery(sql);
+            foreach (DataRow dr in dt.Rows) {
+                ms.Add(dr["CodBodega"].ToString());
+            }
+            return ms;
         }
     }
 }

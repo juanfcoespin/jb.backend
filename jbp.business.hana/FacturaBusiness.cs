@@ -42,7 +42,7 @@ namespace jbp.business.hana
                 from
                  ""JbpVw_FacturasToSendPtk""
                 --where
-                 --""NumFolio""='001-010-000099397'
+                 --""NumFolio""='001-010-000103191'
                  --""RucPrincipal""='0101766582001'   
                 ";
                 var bc = new BaseCore();

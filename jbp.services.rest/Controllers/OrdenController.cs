@@ -26,6 +26,5 @@ namespace jbp.services.rest.Controllers
         {
             return OrderBusiness.GetOrdersByVendor(codVendor);
         }
-
     }
 }

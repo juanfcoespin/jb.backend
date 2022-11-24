@@ -50,10 +50,10 @@ namespace jbp.business.hana
             return ms;
         }
 
-        public static BodegasConUbicacionMS GetBodegasConUbicaciones()
+        public static BodegasMS GetBodegasConUbicaciones()
         {
             
-            var ms = new BodegasConUbicacionMS();
+            var ms = new BodegasMS();
             try
             {
                 var sql = @"
@@ -71,6 +71,71 @@ namespace jbp.business.hana
             }
             return ms;
             
+        }
+        public static BodegasMS GetBodegas()
+        {
+
+            var ms = new BodegasMS();
+            try
+            {
+                var sql = @"
+                select distinct ""CodBodega"" from ""JbpVw_Bodegas"" order by 1
+            ";
+                var dt = new BaseCore().GetDataTableByQuery(sql);
+                foreach (DataRow dr in dt.Rows)
+                {
+                    ms.Bodegas.Add(dr["CodBodega"].ToString());
+                }
+            }
+            catch (Exception e)
+            {
+                ms.Error = e.Message;
+            }
+            return ms;
+
+        }
+
+        public static ContenidoUbicacionMS GetContenidoUbicacion(string ubicacion)
+        {
+            var ms = new ContenidoUbicacionMS();
+            try
+            {
+                var sql = string.Format(@"
+                select
+                 t2.""Lote"",
+                 t0.""CodBodega"",
+                 t0.""CodArticulo"",
+                 t3.""Articulo"",
+                 t0.""Cantidad"",
+                 t3.""UnidadMedida""
+                from ""JbpVw_UbicacionPorLote"" t0 inner join
+                 ""JbpVw_Ubicaciones"" t1 on t1.""Id"" = t0.""IdUbicacion"" inner join
+                 ""JbpVw_Lotes"" t2 on t0.""IdLote"" = t2.""Id"" inner join
+                 ""JbpVw_Articulos"" t3 on t3.""CodArticulo"" = t0.""CodArticulo""
+                where
+                 t1.""Ubicacion"" like '%{0}%'
+                ",ubicacion);
+                var bc = new BaseCore();
+                var dt = new BaseCore().GetDataTableByQuery(sql);
+                
+                foreach (DataRow dr in dt.Rows)
+                {
+                    ms.Items.Add(new ContenidoUbicacionItemMS
+                    {
+                        Lote= dr["Lote"].ToString(),
+                        CodBodega = dr["CodBodega"].ToString(),
+                        CodArticulo = dr["CodArticulo"].ToString(),
+                        Articulo = dr["Articulo"].ToString(),
+                        Cantidad =  bc.GetDecimal(dr["Cantidad"]),
+                        UnidadMedida = dr["UnidadMedida"].ToString(),
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+                ms.Error = e.Message;
+            }
+            return ms;
         }
 
         public static UbicacionesMS GetUbicaciones()
@@ -171,11 +236,11 @@ namespace jbp.business.hana
             {
                 var sql = String.Format(@"
                     select
-                     top 20
                      t1.""DocNum"",
                      t2.""CodArticulo"",
-                     t2.""Articulo"",
+                     t4.""Articulo"",
                      t2.""Cantidad"",
+                     t4.""UnidadMedida"",
                      t3.""Fabricante"",
                      t3.""Lote"",
                      t3.""Bultos"",
@@ -191,13 +256,27 @@ namespace jbp.business.hana
                          and t2.""BaseType"" = t1.""IdTipoDocumento""
 
                          and t2.""CodArticulo"" = t0.""CodArticulo"" inner join
-                     ""JbpVw_Lotes"" t3 on t2.""Lote"" = t3.""Lote""
+                     ""JbpVw_Lotes"" t3 on t2.""Lote"" = t3.""Lote"" inner join
+                     ""JbpVw_Articulos"" t4 on t4.""CodArticulo"" = t2.""CodArticulo""
+
                     where
                      t1.""IdProveedor"" = '{0}'
                      and t1.""Cancelado"" = 'N'
+                     and t3.""Id"" in (--solo las entradas de mercancia que tengan lotes con stock
+
+                         select
+
+                          distinct(""IdLote"")
+
+                         from
+
+                          ""JbpVw_UbicacionPorLote""
+
+                         where ""Cantidad"" > 0
+                     )
                     order by
                      t1.""DocNum"" desc
-                ", codProveedor);
+                                    ", codProveedor);
                 var bc = new BaseCore();
                 var dt = bc.GetDataTableByQuery(sql);
                 foreach (DataRow dr in dt.Rows) {
@@ -208,6 +287,7 @@ namespace jbp.business.hana
                             CodArticulo = dr["CodArticulo"].ToString(),
                             Articulo = dr["Articulo"].ToString(),
                             Cantidad = bc.GetDecimal(dr["Cantidad"]),
+                            UnidadMedida = dr["UnidadMedida"].ToString(),
                             Fabricante = dr["Fabricante"].ToString(),
                             Lote = dr["Lote"].ToString(),
                             Bultos = bc.GetInt(dr["Bultos"]),
@@ -239,25 +319,28 @@ namespace jbp.business.hana
                      t0.""CodArticulo"",
                      t0.""Articulo"",
                      t0.""Cantidad"" ""CantidadPedido"",
+                     t5.""UnidadMedida"",
                      sum(ifnull(t3.""Cantidad"", 0)) ""CantidadEntregada""
                     from
                      ""JbpVw_PedidosLinea"" t0 inner join
                      ""JbpVw_Pedidos"" t1 on t1.""Id"" = t0.""IdPedido"" left outer join
                      ""JbpVw_EntradaMercanciaLinea"" t3 on t3.""BaseEntry"" = t0.""IdPedido"" and t3.""BaseLine"" = t0.""LineNum"" left outer join
-                     ""JbpVw_EntradaMercancia"" t4 on t4.""Id"" = t3.""IdEntradaMercancia""
+                     ""JbpVw_EntradaMercancia"" t4 on t4.""Id"" = t3.""IdEntradaMercancia"" inner join
+                     ""JbpVw_Articulos"" t5 on t5.""CodArticulo""=t0.""CodArticulo""
                     where
                      t1.""CodProveedor"" = '{0}'
-                     and lower(t1.""Estado"") like '%abierto%'
-                     and t0.""LineStatus""='O' --lineas abiertas
+                     and lower(t1.""Estado"") like '%{1}%'
+                     and t0.""LineStatus""='{2}' --lineas abiertas
                     group by
                      t1.""DocNum"",
                      t1.""Fecha"",
                      t0.""LineNum"",
                      t0.""CodArticulo"",
                      t0.""Articulo"",
-                     t0.""Cantidad""
+                     t0.""Cantidad"",
+                     t5.""UnidadMedida""
                     order by t1.""DocNum""
-                ", codProveedor);
+                ", codProveedor, "abierto", "O");
                 var bc = new BaseCore();
                 var dt = bc.GetDataTableByQuery(sql);
                 var numPedidoAnterior = "";
@@ -277,7 +360,8 @@ namespace jbp.business.hana
                         CodArticulo = dr["CodArticulo"].ToString(),
                         Articulo = dr["Articulo"].ToString(),
                         CantidadPedido = bc.GetDecimal(dr["CantidadPedido"]),
-                        CantidadEntregada = bc.GetDecimal(dr["CantidadEntregada"])
+                        CantidadEntregada = bc.GetDecimal(dr["CantidadEntregada"]),
+                        UnidadMedida = dr["UnidadMedida"].ToString(),
                     };
                     linea.CantidadPendiente = linea.CantidadPedido - linea.CantidadEntregada;
                     pedido.Lineas.Add(linea);

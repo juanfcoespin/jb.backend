@@ -96,31 +96,78 @@ namespace jbp.core.sapDiApi
             return ms;
         }
 
-        public string AddFromSt(SalidaBodegaMsg me)
+        /*public DocSapInsertadoMsg AddFromSt2(TsFromPickingME me)
         {
-            this.obj = this.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oStockTransfer); 
-            var ms = "ok";
-            this.obj.DocDueDate = DateTime.Now; 
-            
-            
-            me.Lineas.ForEach(line =>
+            var ms = new DocSapInsertadoMsg();
+            StockTransfer oTransferReq = this.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oInventoryTransferRequest);
+            if (oTransferReq.GetByKey(me.Id)) //Load a transfer request
             {
-                if (me.DocBaseType == EDocBase.SolicitudTransferencia) {
-                    this.obj.Lines.BaseType = (int)SAPbobsCOM.InvBaseDocTypeEnum.InventoryTransferRequest; // Solicitud de transferencia
-                    this.obj.Lines.BaseEntry = me.IdDocBase;
-                    this.obj.Lines.BaseLine = line.LineNum;
-                    this.obj.Lines.Quantity = line.Cantidad;
+                //initialize a stock transfer
+                StockTransfer oStTransfer = this.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oStockTransfer);
+                oStTransfer.DocDate = DateTime.Now;
+
+                //Read lines from Transfer Request
+                for (int i = 0; i < oTransferReq.Lines.Count; i++)
+                {
+                    oTransferReq.Lines.SetCurrentLine(i);
+                    if (oStTransfer.Lines.BaseEntry != 0)
+                        oStTransfer.Lines.Add();
+                    //Set the reference for the transfer request, sap will copy the other infos automatically.
+                    oStTransfer.Lines.BaseEntry = oTransferReq.DocEntry;
+                    oStTransfer.Lines.BaseLine = oTransferReq.Lines.LineNum;
+                    oStTransfer.Lines.BaseType = InvBaseDocTypeEnum.InventoryTransferRequest;
+
                     //lotes
-                    this.obj.Lines.BatchNumbers.BatchNumber = line.Lote;
-                    this.obj.Lines.BatchNumbers.Quantity = line.Cantidad;
-                    this.obj.Lines.Add();
+                    oStTransfer.Lines.BatchNumbers.BatchNumber = oTransferReq.Lines.BatchNumbers.BatchNumber;
+                    oStTransfer.Lines.BatchNumbers.Quantity = oTransferReq.Lines.BatchNumbers.Quantity;
+                    oStTransfer.Lines.BatchNumbers.Add();
                 }
-            });
-            var error = this.obj.Add();
-            if (error != 0)
-            {
-                ms= "Error: "+this.Company.GetLastErrorDescription();
+                var error = oStTransfer.Add();
+                if (error != 0)
+                    ms.Error = "Error: " + this.Company.GetLastErrorDescription();
+                else
+                    ms.Id = this.Company.GetNewObjectKey();
             }
+            return ms;
+        }*/
+        public DocSapInsertadoMsg AddFromSt(TsFromPickingME me)
+        {
+            var ms = new DocSapInsertadoMsg();
+            StockTransfer stockTransfer = this.Company.GetBusinessObject(BoObjectTypes.oStockTransfer);
+            stockTransfer.FromWarehouse = me.BodegaOrigen;
+            stockTransfer.ToWarehouse = me.BodegaDestino;
+            stockTransfer.DocDate = DateTime.Now; 
+            me.Componentes.ForEach(line =>
+            {
+                stockTransfer.Lines.BaseType = SAPbobsCOM.InvBaseDocTypeEnum.InventoryTransferRequest; // Solicitud de transferencia
+                stockTransfer.Lines.BaseEntry = me.Id;
+                stockTransfer.Lines.BaseLine = line.LineNum;
+                stockTransfer.Lines.FromWarehouseCode = line.BodegaOrigen;
+                stockTransfer.Lines.WarehouseCode = line.BodegaDestino;
+                stockTransfer.Lines.Quantity = line.Cantidad;
+                
+                //lotes
+                stockTransfer.Lines.BatchNumbers.BatchNumber = line.Lote;
+                stockTransfer.Lines.BatchNumbers.Quantity = line.Cantidad;
+                stockTransfer.Lines.BatchNumbers.Add();
+                
+
+                //ubicacion desde
+                if (line.IdUbicacion > 0)
+                {
+                    stockTransfer.Lines.BinAllocations.BinActionType = SAPbobsCOM.BinActionTypeEnum.batFromWarehouse;
+                    stockTransfer.Lines.BinAllocations.SerialAndBatchNumbersBaseLine = 0;
+                    stockTransfer.Lines.BinAllocations.BinAbsEntry = line.IdUbicacion;
+                    stockTransfer.Lines.BinAllocations.Quantity = line.Cantidad;
+                    stockTransfer.Lines.BinAllocations.Add();
+                }
+                stockTransfer.Lines.Add();
+            });
+            var error = stockTransfer.Add();
+            if (error != 0)
+                ms.Error = "Error: " + this.Company.GetLastErrorDescription();
+            else
+                ms.Id = this.Company.GetNewObjectKey();
             return ms;
         }
         public OrdenMsg GetById(int id)

@@ -44,15 +44,27 @@ namespace jbp.services.rest.Controllers
 
         [HttpGet]
         [Route("api/bodega/getBodegasConUbicaciones")]
-        public BodegasConUbicacionMS GetBodegasConUbicaciones()
+        public BodegasMS GetBodegasConUbicaciones()
         {
             return BodegaBusiness.GetBodegasConUbicaciones();
+        }
+        [HttpGet]
+        [Route("api/bodega/getBodegas")]
+        public BodegasMS GetBodegas()
+        {
+            return BodegaBusiness.GetBodegas();
         }
         [HttpGet]
         [Route("api/bodega/getUbicaciones")]
         public UbicacionesMS GetUbicaciones()
         {
             return BodegaBusiness.GetUbicaciones();
+        }
+        [HttpGet]
+        [Route("api/bodega/consultaubicacion/{ubicacion}")]
+        public ContenidoUbicacionMS GetContenidoUbicacion(string ubicacion)
+        {
+            return BodegaBusiness.GetContenidoUbicacion(ubicacion);
         }
     }
 }

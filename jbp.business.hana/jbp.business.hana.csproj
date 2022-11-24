@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="BaseBusiness.cs" />
     <Compile Include="BaseWSPtk.cs" />
+    <Compile Include="SolicitudTransferenciaBusiness.cs" />
     <Compile Include="conf.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
