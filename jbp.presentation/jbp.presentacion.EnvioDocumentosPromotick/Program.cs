@@ -20,6 +20,7 @@ namespace jbp.presentacion.EnvioDocumentosPromotick
             //new DocumentosPtkBusiness().EnviarAceleradores("Jul-Sep 2022");
             //new ParticipantePtkBusiness().InactivarParticipantes();
             new ParticipantePtkBusiness().ActualizacionMasivaParticipantes();
+            //new BaseBusiness().testCorreo("<b>Cabecera</b><br> Esto es una prueba");
             //new ParticipantePtkBusiness().AsignacionMasivaVendedor();
             //new VendedorPtkBusiness().ActualizacionMasivaVendedores(eTipoOperacionVendedor.insert);
             //Console.WriteLine("Fin Proceso");

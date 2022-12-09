@@ -76,15 +76,17 @@ namespace jbp.core.sapDiApi
             stockTransfer.ToWarehouse = me.CodBodegaHasta;
             me.Lineas.ForEach(line =>
             {
+                var cantLinea = 0.0;
                 stockTransfer.Lines.ItemCode = line.CodArticulo;
-                stockTransfer.Lines.Quantity = line.Cantidad;
                 stockTransfer.Lines.FromWarehouseCode = me.CodBodegaDesde;
                 stockTransfer.Lines.WarehouseCode = me.CodBodegaHasta;
-                if (!string.IsNullOrEmpty(line.Lote)) {
-                    stockTransfer.Lines.BatchNumbers.BatchNumber = line.Lote;
-                    stockTransfer.Lines.BatchNumbers.Quantity = line.Cantidad;
+                line.Lotes.ForEach(lote => {
+                    cantLinea += lote.Cantidad;
+                    stockTransfer.Lines.BatchNumbers.BatchNumber = lote.Lote;
+                    stockTransfer.Lines.BatchNumbers.Quantity = lote.Cantidad;
                     stockTransfer.Lines.BatchNumbers.Add();
-                }
+                });
+                stockTransfer.Lines.Quantity = cantLinea;
                 stockTransfer.Lines.Add();
 
             });

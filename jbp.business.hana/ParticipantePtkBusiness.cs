@@ -37,6 +37,8 @@ namespace jbp.business.hana
             }
         }
 
+      
+
         public void AsignacionMasivaVendedor()
         {
             var participantes = new List<ParticipanteCampoMsg>();

@@ -135,6 +135,13 @@ namespace jbp.msg.sap
     public class TsBalanzasLineaMsg
     {
         public string CodArticulo { get; set; }
+        public List<TsBalanzasLoteMsg> Lotes { get; set; }
+        public TsBalanzasLineaMsg() {
+            this.Lotes = new List<TsBalanzasLoteMsg>();
+        }
+    }
+    public class TsBalanzasLoteMsg
+    {
         public double Cantidad { get; set; }
         public string Lote { get; set; }
     }

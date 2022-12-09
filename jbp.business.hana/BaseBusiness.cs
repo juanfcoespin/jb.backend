@@ -18,5 +18,19 @@ namespace jbp.business.hana
                 filePath
             );
         }
+
+        public void testCorreo(string msg)
+        {
+            try
+            {
+                EnviarPorCorreo("jespin@jbp.com.ec", "Msg prueba", msg);
+            }
+            catch (Exception e)
+            {
+                msg = e.Message;
+                throw;
+            }
+            
+        }
     }
 }
