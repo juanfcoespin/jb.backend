@@ -16,6 +16,8 @@ namespace jbp.business.hana
 
         public void SendDocumentosToPromotickWS(List<DocumentoPromotickMsg> documentos)
         {
+            if (documentos != null && documentos.Count == 0)
+                return;
             //valida si los datos del participante están correctos
             //previo a enviar a promotick
             var documentosAQuitar = new List<DocumentoPromotickMsg>();

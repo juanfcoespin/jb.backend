@@ -19,8 +19,8 @@ namespace jbp.business.hana
 
                 if (conf.Default.ptkEnviarFacturas)
                     EnviarFacturas();
-                //if (conf.Default.ptkEnviarNC)
-                    //EnviarNotasCredito();
+                if (conf.Default.ptkEnviarNC)
+                    EnviarNotasCredito();
             }
             catch (Exception e)
             {

@@ -179,18 +179,23 @@ namespace jbp.business.hana
                 new BaseCore().Execute(sql);
             });
         }
+        public void RegistroMasivoParticipantes()
+        {
+            var participantes = GetParticipantesToUpdate();
+            participantes.ForEach(p => RegistrarParticipante(p,false)); //se para como parametro false cuando se va a registrar nuevo participante
+        }
         public void ActualizacionMasivaParticipantes()
         {
             var participantes = GetParticipantesToUpdate();
-            participantes.ForEach(p => RegistrarParticipante(p));
+            participantes.ForEach(p => RegistrarParticipante(p, true)); //se para como parametro true para actualizar uno o varios campos del participante
         }
         public void InactivarParticipantes()
         {
             var participantes = GetParticipantesToInactivate();
             participantes.ForEach(p => {
                 if (!string.IsNullOrEmpty(p.nombres)) {
-                    RegistrarParticipante(p);
-                    QuitarParticipanteADesactivar(p.nroDocumento);
+                    if(RegistrarParticipante(p, false)) //se pone false para escoger la api de registro / inactivacion 
+                        QuitarParticipanteADesactivar(p.nroDocumento);
                 }
            });
         }
@@ -211,6 +216,7 @@ namespace jbp.business.hana
                  RUC
                 from
                  JBP_PARTICIPANTES_A_DESACTIVAR
+                -- where RUC='1311218786'
             ";
             var dtRucs = new BaseCore().GetDataTableByQuery(sql);
             var ms = GetParticipantesByRucs(dtRucs, "RUC", -1); //estado -1 para desactivar
@@ -228,6 +234,7 @@ namespace jbp.business.hana
                  ""AplicaPuntos"" = 'SI'
                  and ""Ruc"" = ""RucPrincipal""
                  and ""SincronizadoConBddPromotick"" = 'NO'
+                 --and ""Ruc""='0911221224001'
             ";
             var dtRucs = new BaseCore().GetDataTableByQuery(sql);
             var ms = GetParticipantesByRucs(dtRucs, "Ruc",1); //estado 1 para actualizar o insertar
@@ -249,26 +256,37 @@ namespace jbp.business.hana
             }
             return ms;
         }
-        public void RegistrarParticipante(ParticipantesPuntosMsg me) {
+        public bool RegistrarParticipante(ParticipantesPuntosMsg me, bool actualizar=true) {
             try
             {
+                // si actualizar es false quiere decir que voy a registrar participantes
                 var errorParticipante = "";
                 if (!ParticipanteValido(me, ref errorParticipante))
-                    return;
+                    return false;
 
                 this.RucParticipante = me.nroDocumento;
 
-                //var url = string.Format("{0}/{1}", conf.Default.ptkWsUrl, "gstparticipantes");
-                var url = string.Format("{0}/{1}", conf.Default.ptkWsUrl, "gstparticipantes/actualizar");
+                
+                var url = string.Format("{0}/{1}", conf.Default.ptkWsUrl, (actualizar)?"gstparticipantes/actualizar": "gstparticipantes");
+                
                 var rc = new RestCall();
                 //promotick cambió el mensaje de entrada
-                var newMe = traducirMensaje(me);
-                var resp = (RespWsMsg)rc.SendPostOrPut(url, typeof(RespWsMsg), newMe, typeof(UpdateParticipanteMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
-
+                var resp = new RespWsMsg();
+                if (actualizar) {
+                    var newMe = traducirMensaje(me);
+                    resp = (RespWsMsg)rc.SendPostOrPut(url, typeof(RespWsMsg), newMe, typeof(UpdateParticipanteMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
+                    GestionarRespuestaRegistrarParticipante(resp,  newMe, this.RucParticipante);
+                }
+                else
+                {
+                    resp = (RespWsMsg)rc.SendPostOrPut(url, typeof(RespWsMsg), me, typeof(ParticipantesPuntosMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
+                    GestionarRespuestaRegistrarParticipante(resp, me, this.RucParticipante);
+                }
                 RegistrarParticipanteEnLog(me, resp);
-                GestionarRespuestaRegistrarParticipante(resp, me);
                 if(resp.codigo == 1)
-                    new SocioNegocioBusiness().RegistrarParticipanteComoSincronizado(me.nroDocumento);
+                {
+                    return true;
+                }
             }
             catch (Exception e)
             {
@@ -276,89 +294,132 @@ namespace jbp.business.hana
                 e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
                 EnviarPorCorreo("Error en el registro del Participante", strJsonParticipante + e.Message);
             }
-            
+            return false;
         }
 
         private UpdateParticipanteMsg traducirMensaje(ParticipantesPuntosMsg me)
         {
             var ms = new UpdateParticipanteMsg();
             ms.nroDocumento=me.nroDocumento;
+            
             ms.listaCamposActualizar.Add(new CamposModificarMsg
             {
                 nombreCampo = "estado",
                 valor = me.estado.ToString()
             });
-            ms.listaCamposActualizar.Add(new CamposModificarMsg { 
-                nombreCampo="nombres",
-                valor=me.nombres
-            });
-            ms.listaCamposActualizar.Add(new CamposModificarMsg
+            if (!string.IsNullOrEmpty(me.nombres))
             {
-                nombreCampo = "apellidos",
-                valor = me.apellidos
-            });
-            ms.listaCamposActualizar.Add(new CamposModificarMsg
+                ms.listaCamposActualizar.Add(new CamposModificarMsg
+                {
+                    nombreCampo = "nombres",
+                    valor = me.nombres
+                });
+            }
+            if (!string.IsNullOrEmpty(me.apellidos))
             {
-                nombreCampo = "email",
-                valor = me.email
-            });
-            ms.listaCamposActualizar.Add(new CamposModificarMsg
+                ms.listaCamposActualizar.Add(new CamposModificarMsg
+                {
+                    nombreCampo = "apellidos",
+                    valor = me.apellidos
+                });
+            }
+            if (!string.IsNullOrEmpty(me.email))
             {
-                nombreCampo = "tipoDocumento",
-                valor = me.tipoDocumento.ToString()
-            });
-            ms.listaCamposActualizar.Add(new CamposModificarMsg
+                ms.listaCamposActualizar.Add(new CamposModificarMsg
+                {
+                    nombreCampo = "email",
+                    valor = me.email
+                });
+            }
+            if (me.tipoDocumento>0)
             {
-                nombreCampo = "nroDocumento",
-                valor = me.nroDocumento
-            });
-            ms.listaCamposActualizar.Add(new CamposModificarMsg
+                ms.listaCamposActualizar.Add(new CamposModificarMsg
+                {
+                    nombreCampo = "tipoDocumento",
+                    valor = me.tipoDocumento.ToString()
+                });
+            }
+            if (!string.IsNullOrEmpty(me.nroDocumento))
             {
-                nombreCampo = "clave",
-                valor = me.clave
-            });
-            ms.listaCamposActualizar.Add(new CamposModificarMsg
+                ms.listaCamposActualizar.Add(new CamposModificarMsg
+                {
+                    nombreCampo = "nroDocumento",
+                    valor = me.nroDocumento
+                });
+            }
+            if (!string.IsNullOrEmpty(me.clave))
             {
-                nombreCampo = "fechaNacimiento",
-                valor = me.fechaNacimiento
-            });
-            
-            ms.listaCamposActualizar.Add(new CamposModificarMsg
+                ms.listaCamposActualizar.Add(new CamposModificarMsg
+                {
+                    nombreCampo = "clave",
+                    valor = me.clave
+                });
+            }
+            if (!string.IsNullOrEmpty(me.fechaNacimiento))
             {
-                nombreCampo = "celular",
-                valor = me.celular
-            });
-            ms.listaCamposActualizar.Add(new CamposModificarMsg
+                ms.listaCamposActualizar.Add(new CamposModificarMsg
+                {
+                    nombreCampo = "fechaNacimiento",
+                    valor = me.fechaNacimiento
+                });
+            }
+            if (!string.IsNullOrEmpty(me.celular))
             {
-                nombreCampo = "telefono",
-                valor = me.telefono
-            });
-            ms.listaCamposActualizar.Add(new CamposModificarMsg
+                ms.listaCamposActualizar.Add(new CamposModificarMsg
+                {
+                    nombreCampo = "celular",
+                    valor = me.celular
+                });
+            }
+            if (!string.IsNullOrEmpty(me.telefono))
             {
-                nombreCampo = "tipoGenero",
-                valor = me.tipoGenero.ToString()
-            });
-            ms.listaCamposActualizar.Add(new CamposModificarMsg
+                ms.listaCamposActualizar.Add(new CamposModificarMsg
+                {
+                    nombreCampo = "telefono",
+                    valor = me.telefono
+                });
+            }
+            if (me.tipoGenero>0)
             {
-                nombreCampo = "idCatalogo",
-                valor = me.idCatalogo.ToString()
-            });
-            ms.listaCamposActualizar.Add(new CamposModificarMsg
+                ms.listaCamposActualizar.Add(new CamposModificarMsg
+                {
+                    nombreCampo = "tipoGenero",
+                    valor = me.tipoGenero.ToString()
+                });
+            }
+            if (me.idCatalogo>0)
             {
-                nombreCampo = "tipoCatalogo",
-                valor = me.tipoCatalogo.ToString()
-            });
-            ms.listaCamposActualizar.Add(new CamposModificarMsg
+                ms.listaCamposActualizar.Add(new CamposModificarMsg
+                {
+                    nombreCampo = "idCatalogo",
+                    valor = me.idCatalogo.ToString()
+                });
+            }
+            if (me.tipoCatalogo>0)
             {
-                nombreCampo = "vendedor",
-                valor = me.vendedor.ToString()
-            });
+                ms.listaCamposActualizar.Add(new CamposModificarMsg
+                {
+                    nombreCampo = "tipoCatalogo",
+                    valor = me.tipoCatalogo.ToString()
 
-            ms.listaCamposActualizar.Add(new CamposModificarMsg
+                });
+            }
+            if (!string.IsNullOrEmpty(me.vendedor))
             {
-                nombreCampo = "metaAnual",
-                valor = me.metaAnual.ToString()
-            });
+                ms.listaCamposActualizar.Add(new CamposModificarMsg
+                {
+                    nombreCampo = "vendedor",
+                    valor = me.vendedor
+                });
+            }
+            if (me.metaAnual>0)
+            {
+                ms.listaCamposActualizar.Add(new CamposModificarMsg
+                {
+                    nombreCampo = "metaAnual",
+                    valor = me.metaAnual.ToString()
+                });
+            }
             /*falta implementar esta lógica
              * ms.listaCamposActualizar.Add(new CamposModificarMsg
             {
@@ -488,16 +549,18 @@ namespace jbp.business.hana
             return !error;
         }
 
-        private void GestionarRespuestaRegistrarParticipante(RespWsMsg respWS, ParticipantesPuntosMsg me)
+        private void GestionarRespuestaRegistrarParticipante(RespWsMsg respWS, object me, string ruc)
         {
             if (respWS.codigo != 1) //proceso exitoso
             {
                 var titulo = "Error en el registro del Participante " + this.RucParticipante;
                 var strJsonParticipante = new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(me);
                 var msg = "<b>Respuesta Servidor:</b> " + respWS.mensaje;
-                msg+= "<br /><br /><b>Participante:</b><br />" + strJsonParticipante;
+                msg += "<br /><br /><b>Participante:</b><br />" + strJsonParticipante;
                 EnviarPorCorreo(titulo, msg);
             }
+            else
+                new SocioNegocioBusiness().RegistrarParticipanteComoSincronizado(ruc);
         }
         public string GetRucClienteFromLogByNumDocumento(string numDocumento)
         {
@@ -545,34 +608,37 @@ namespace jbp.business.hana
                  case
                     when t0.""Genero"" = 'M' then 1
                     when t0.""Genero"" = 'F' then 2
-                    else 1 --da error en la plataforma de promotick cuando no se envia un valor
-                 end ""TipoGenero"",
+                    else 1--da error en la plataforma de promotick cuando no se envia un valor
+                end ""TipoGenero"",
                  case
-                    when T0.""MetaCompras"">=10000 then 1
-                    when T0.""MetaCompras""<10000 then 2
+                    when T0.""MetaCompras"" >= 10000 then 1
+                    when T0.""MetaCompras"" < 10000 then 2
                     else 0
                  end ""IdCatalogo"",
                  case
                     when t0.""EsElite"" = 'SI' then 1
                     when t0.""EsElite"" = 'NO' then 2
                  end ""TipoCatalogo"",
+                 
                  t1.""Cedula"" ""Vendedor"",
+                 
                  t1.""Vendedor"" ""VendedorStr"",
+                 
                  t1.""Email"" ""correoVendedor"",
+                 
                  t1.""CodVendedor"",
+                 
                  t0.""MetaCompras"",
                  t0.""RucPrincipal""
                 from
-                 ""JbpVw_SocioNegocio"" t0 inner join --principal
-                 ""JbpVw_SocioNegocio"" t2 on t2.""RucPrincipal""=t0.""Ruc"" inner join --secundario
+                 ""JbpVw_SocioNegocio"" t0 inner join--principal
                  ""JbpVw_Vendedores"" t1 on t1.""CodVendedor"" = t0.""CodVendedor""
                 where
-                 t2.""Ruc"" = '{0}'
-                 and t2.""Activo""='Y'                 
-                 and t0.""Activo""='Y'                 
-                 and t2.""AplicaPuntos"" = 'SI'
+                 t0.""Ruc"" = t0.""RucPrincipal""
+                 and t0.""Ruc"" = '{0}'
+                 and t0.""Activo"" = 'Y'
                  and t0.""AplicaPuntos"" = 'SI'
-                 and t2.""CodTipoSocioNegocio"" = 'C'
+                 and t0.""CodTipoSocioNegocio"" = 'C'
             ", ruc);
             
             var dt = bc.GetDataTableByQuery(sql);

@@ -172,6 +172,7 @@ namespace jbp.business.hana
             var ms = new List<OrdenAppMsg>();
             var sql = string.Format(@"
                 select
+                 top 1000
                  t0.""CodCliente"",
                  t0.""Comentarios"",
                  t1.""Nombre"",

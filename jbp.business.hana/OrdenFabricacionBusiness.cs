@@ -56,7 +56,7 @@ namespace jbp.business.hana
                 where
                  t1.""DocNum""={0}
                  and t2.""TipoInsumo""='Artículo'
-                 and lower(t2.""UnidadMedida"")='kg' --solo componentes sujetos a pesarse
+                 and lower(t2.""UnidadMedida"")='kg' --solo componentes sujetos a pesarse ver si se incluyen litros
 
             ", docNum);
             var bc = new BaseCore();
