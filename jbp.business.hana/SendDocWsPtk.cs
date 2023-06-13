@@ -123,7 +123,7 @@ namespace jbp.business.hana
             });
         }
 
-        private void InsertarDocumentosAEnviar(List<DocumentoPromotickMsg> documentos)
+        public void InsertarDocumentosAEnviar(List<DocumentoPromotickMsg> documentos)
         {
             if (documentos == null)
                 return;

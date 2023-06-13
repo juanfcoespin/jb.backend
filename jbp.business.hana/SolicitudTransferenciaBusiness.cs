@@ -16,6 +16,10 @@ namespace jbp.business.hana
     {
         public static List<ST_OF_LiberadasMsg> GetST_OF_Liberadas()
         {
+            /*
+             Son las St correspondientes a las OF liberadas que usualmente se requiere para hacer el picking 
+             de  producción desde el app de gestión de bodegas 
+            */
             var ms = new List<ST_OF_LiberadasMsg>();
             var sql = @"
                select 
@@ -31,14 +35,13 @@ namespace jbp.business.hana
                  t0.""BodegaDestino""
                 from
                  ""JbpVw_SolicitudTraslado"" t0 inner join
-                 ""JbpVw_OrdenFabricacion"" t1 on t1.""DocNum"" = t0.""DocNumOrdenFabricacion""
+                 ""JbpVw_OrdenFabricacion"" t1 on cast(t1.""DocNum"" as nvarchar(50)) = t0.""DocNumOrdenFabricacion""
                 where
-                 ISNUMERIC(t0.""DocNumOrdenFabricacion"") = 1
-                 and t0.""DocStatus""='O' --Abierto
-                 and t1.""Estado"" = 'Liberado'
+                 t0.""DocStatus"" = 'O'--Abierto
+                  and t1.""Estado"" = 'Liberado'
+                  and t1.""FraccionadoPesaje"" != 'SI'  
                 order by
-                 t1.""FechaInicio"" desc,
-                 t1.""Articulo""
+                 t1.""Id"" desc
             ";
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);

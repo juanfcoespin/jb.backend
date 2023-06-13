@@ -44,18 +44,26 @@ namespace jbp.business.hana
             var ms = new DocSapInsertadoMsg();
             try
             {
+                
                 if (me != null)
                 {
-                    if (sapTransferenciaStock == null)
-                        sapTransferenciaStock = new SapTransferenciaStock();
-                    if (!sapTransferenciaStock.IsConected())
-                        sapTransferenciaStock.Connect();//se conecta a sap
-                    ms= sapTransferenciaStock.AddFromBalazas(me);
+                    if (me.DocNumOF > 0)
+                    {
+                        if (sapTransferenciaStock == null)
+                            sapTransferenciaStock = new SapTransferenciaStock();
+                        if (!sapTransferenciaStock.IsConected())
+                            sapTransferenciaStock.Connect();//se conecta a sap
+                        ms = sapTransferenciaStock.AddFromBalazas(me);
+                    }
+                    else
+                        throw new Exception("No se ha pasado como parámetro en número de orden de fabricación 'DocNumOF'");
+                    
                 }
                 if (string.IsNullOrEmpty(ms.Error))
                 {
                     ms.DocNum = GetDocNumBYId(ms.Id);
                     UpdateResponsableTS("Sistema Balanzas Espinoza Paez", ms.Id);
+                    setOfComoFraccionada(me.DocNumOF);
                 }
             }
             catch (Exception e)
@@ -85,6 +93,7 @@ namespace jbp.business.hana
                     c.IdUbicacion = BodegaBusiness.GetIdUbicacionByName(c.ubicacionSeleccionada);
                 });
                 ms= sapTransferenciaStock.AddFromSt(me);
+                
             }
             catch (Exception e)
             {
@@ -92,6 +101,15 @@ namespace jbp.business.hana
             }
             return ms;
         }
+
+        private static void setOfComoFraccionada(int docNumOf)
+        {
+            if (docNumOf > 0) {
+                var sql = string.Format(@"update OWOR set ""U_JbFraccionadoPesaje""='SI' where ""DocNum""={0}", docNumOf);
+                new BaseCore().Execute(sql);
+            }
+        }
+
         private static int GetIdSTFromDocNumOF(int docNum)
         {
             var sql = string.Format(@"

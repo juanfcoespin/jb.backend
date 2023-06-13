@@ -165,6 +165,7 @@ namespace jbp.core.sapDiApi
                 }
                 stockTransfer.Lines.Add();
             });
+           
             var error = stockTransfer.Add();
             if (error != 0)
                 ms.Error = "Error: " + this.Company.GetLastErrorDescription();

@@ -15,7 +15,7 @@ namespace jbp.business.hana
         {
             var ms = new List<OrdenFabricacionLiberadaPesajeMsg>();
             var sql = @"
-                select 
+                select
                  ""DocNum"",
                  ""CodArticulo"",
                  ""Articulo""
@@ -23,6 +23,8 @@ namespace jbp.business.hana
                 where
                  ""Estado"" = 'Liberado'
                  and (""CodArticulo"" like '450%' or ""CodArticulo"" like '451%')
+                 and ""FraccionadoPesaje"" != 'SI'
+                order by ""Id"" desc            
             ";
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
@@ -42,6 +44,7 @@ namespace jbp.business.hana
             ms.NumOrdenFabricacion=docNum;
             var sql = string.Format(@"
                 select 
+                 t1.""DocNum"",
                  t1.""CodArticulo"",
                  t1.""Articulo"",
                  t2.""CodInsumo"",
@@ -64,10 +67,16 @@ namespace jbp.business.hana
 
             foreach (DataRow dr in dt.Rows)
             {
-                if (ms.CodArticulo == null)
+                if (ms.CodArticulo == null) // para registrar la cabecera del mensaje
+                {
                     ms.CodArticulo = dr["CodArticulo"].ToString();
-                if (ms.Descripcion == null)
                     ms.Descripcion = dr["Articulo"].ToString();
+                    var docNumOf = bc.GetInt(dr["DocNum"]);
+                    // bodega origen y destino para los componentes fraccionados
+                    var bodegasComponentes = GetBodegasComponentes(docNumOf);
+                    ms.BodegaDesde = bodegasComponentes.BodegaDesde;
+                    ms.BodegaHasta = bodegasComponentes.BodegaHasta;
+                }
                 var componente = new ComponentesMsg{
                     CodigoArticulo = dr["CodInsumo"].ToString(),
                     UnidadMedida = dr["UnidadMedida"].ToString(),
@@ -76,6 +85,35 @@ namespace jbp.business.hana
                 };
                 componente.CantidadesPorLote = GetCantidadesPorLote(docNum, componente.CodigoArticulo);
                 ms.Componentes.Add(componente);
+            }
+            return ms;
+        }
+        public class BodegaComponenteMsg
+        {
+            public string BodegaDesde { get; internal set; }
+            public string BodegaHasta { get; internal set; }
+        }
+
+        private static BodegaComponenteMsg GetBodegasComponentes(int docNumOf)
+        {
+            var ms = new BodegaComponenteMsg();
+            var sql = @"
+                select 
+                 top 1
+                 t0.""BodegaDestino"" ""BodegaDesde"",
+                 t2.""Bodega"" ""BodegaHasta""
+                from
+                  ""JbpVw_OrdenFabricacion"" t1 inner join
+                  ""JbpVw_OrdenFabricacionLinea"" t2 on t2.""IdOrdenFabricacion"" = t1.""Id"" left outer join
+                  ""JbpVw_SolicitudTraslado"" t0 on t0.""DocNumOrdenFabricacion"" = cast(t1.""DocNum"" as nvarchar(50))
+                 where
+                  t1.""DocNum"" = '1292'
+            ";
+            var dt = new BaseCore().GetDataTableByQuery(sql);
+            foreach(DataRow dr in dt.Rows)
+            {
+                ms.BodegaDesde=dr["BodegaDesde"].ToString();
+                ms.BodegaHasta = dr["BodegaHasta"].ToString();
             }
             return ms;
         }

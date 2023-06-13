@@ -126,6 +126,7 @@ namespace jbp.msg.sap
     {
         public string CodBodegaDesde { get; set; }
         public string CodBodegaHasta { get; set; }
+        public int DocNumOF { get; set; }
         public List<TsBalanzasLineaMsg> Lineas { get; set; }
         public TsBalanzasMsg() {
             this.Lineas = new List<TsBalanzasLineaMsg>();

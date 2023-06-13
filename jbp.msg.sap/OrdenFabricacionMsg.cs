@@ -31,7 +31,11 @@ namespace jbp.msg.sap
         public int NumOrdenFabricacion { get; set; }
         public string CodArticulo { get; set; }
         public string Descripcion { get; set; }
+        public string BodegaDesde { get; set; }
+        public string BodegaHasta { get; set; }
         public List<ComponentesMsg> Componentes { get; set; }
+        
+
         public OFMasComponentesMsg() {
             this.Componentes = new List<ComponentesMsg>();
         }

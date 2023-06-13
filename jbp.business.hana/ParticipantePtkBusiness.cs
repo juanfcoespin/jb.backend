@@ -629,7 +629,8 @@ namespace jbp.business.hana
                  t1.""CodVendedor"",
                  
                  t0.""MetaCompras"",
-                 t0.""RucPrincipal""
+                 t0.""RucPrincipal"",
+                 t0.""Comentario""
                 from
                  ""JbpVw_SocioNegocio"" t0 inner join--principal
                  ""JbpVw_Vendedores"" t1 on t1.""CodVendedor"" = t0.""CodVendedor""
@@ -671,6 +672,7 @@ namespace jbp.business.hana
                 ms.RucPrincipal = dt.Rows[0]["RucPrincipal"].ToString();
                 ms.metaAnual = bc.GetInt(dt.Rows[0]["MetaCompras"]);
                 ms.idVendedor= dt.Rows[0]["CodVendedor"].ToString();
+                ms.Comentario = dt.Rows[0]["Comentario"].ToString();
             }
             return ms;
         }

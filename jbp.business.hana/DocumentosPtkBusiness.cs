@@ -51,14 +51,17 @@ namespace jbp.business.hana
                     numFactura = dr["NUMFACTURA"].ToString(),
                     numDocumento = dr["NUMDOCUMENTO"].ToString(),
                     montoFactura = bc.GetInt(dr["MONTOFACTURA"]),
-                    puntos = bc.GetInt(dr["PUNTOS"])
+                    puntos = bc.GetInt(dr["PUNTOS"]),
+                    tipoDocumento = "Ajuste"
                 };
-                //por defecto en descripcion se iyecta el tipo de documento
+                //por defecto en descripcion se inyecta el tipo de documento
                 documento._customDescription = true;
                 documento._description = dr["DESCRIPCION"].ToString();
                 documentos.Add(documento); 
             }
-            new SendDocWsPtk().SendDocumentosToWS(documentos, true);
+            var obj = new SendDocWsPtk();
+            obj.InsertarDocumentosAEnviar(documentos);
+            obj.SendDocumentosToWS(documentos, false); // true en el segundo parametro cuando es NC 
         }
 
         public void EnviarAceleradores(string periodo)

@@ -14,10 +14,10 @@ namespace jbp.presentacion.EnvioDocumentosPromotick
         static void Main(string[] args)
         {
             //Console.WriteLine("Inicio Proceso");
-            new DocumentosPtkBusiness().EnviarDocumentosAPromotick();
+            //new DocumentosPtkBusiness().EnviarDocumentosAPromotick();
             //new DocumentosPtkBusiness().EnviarNotasCreditoManuales();
-            //new DocumentosPtkBusiness().EnviarAjustes();
-            //new DocumentosPtkBusiness().EnviarAceleradores("Oct-Dic 2022");
+            new DocumentosPtkBusiness().EnviarAjustes();
+            //new DocumentosPtkBusiness().EnviarAceleradores("Ene-Mar 2023");
             //new ParticipantePtkBusiness().InactivarParticipantes();
             //new ParticipantePtkBusiness().ActualizacionMasivaParticipantes();
             //new ParticipantePtkBusiness().RegistroMasivoParticipantes();
