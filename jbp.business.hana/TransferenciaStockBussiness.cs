@@ -36,48 +36,88 @@ namespace jbp.business.hana
                 Monitor.Exit(control);
             }
         }
+        public static List<LotesCuarMS> GetLotesCuarentena() { 
+            var ms = new List<LotesCuarMS>();
+            var sql = @"
+                select 
+                 t0.""CodArticulo"",
+                 t1.""Lote"",
+                 t1.""Estado"",
+                 t0.""CodBodega"",
+                 round(t0.""Cantidad"",4) ""Cantidad""
+                from
+                 ""JbpVw_CantidadesPorLote"" t0 inner join
+                 ""JbpVw_Lotes"" t1 on t1.""Id"" = t0.""IdLote"" and t0.""CodArticulo"" = t1.""CodArticulo""
+                where
+                  t0.""CodBodega"" like 'CUAR%'
+                  and t0.""Cantidad"" != 0
+            ";
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
+            foreach (DataRow dr in dt.Rows) {
+                ms.Add(new LotesCuarMS {
+                    CodArticulo = dr["CodArticulo"].ToString(),
+                    Lote = dr["Lote"].ToString(),
+                    Estado = dr["Estado"].ToString(),
+                    CodBodega = dr["CodBodega"].ToString(),
+                    Cantidad = dr["Cantidad"].ToString()
+                });
+            }
+            return ms;
+        }
         //sistema balanzas espinoza paez
         public static DocSapInsertadoMsg TransferFromBalanzas(TsBalanzasMsg me)
         {
-
-            Monitor.Enter(control);
             var ms = new DocSapInsertadoMsg();
             try
             {
-                
-                if (me != null)
+                if (me.DocNumOF > 0)
                 {
-                    if (me.DocNumOF > 0)
+                    ms = TS_ConLotes(me);
+                    if (string.IsNullOrEmpty(ms.Error))
                     {
-                        if (sapTransferenciaStock == null)
-                            sapTransferenciaStock = new SapTransferenciaStock();
-                        if (!sapTransferenciaStock.IsConected())
-                            sapTransferenciaStock.Connect();//se conecta a sap
-                        ms = sapTransferenciaStock.AddFromBalazas(me);
+                        UpdateResponsableTS("Sistema Balanzas Espinoza Paez", ms.Id);
+                        setOfComoFraccionada(me.DocNumOF);
                     }
-                    else
-                        throw new Exception("No se ha pasado como parámetro en número de orden de fabricación 'DocNumOF'");
-                    
                 }
-                if (string.IsNullOrEmpty(ms.Error))
-                {
-                    ms.DocNum = GetDocNumBYId(ms.Id);
-                    UpdateResponsableTS("Sistema Balanzas Espinoza Paez", ms.Id);
-                    setOfComoFraccionada(me.DocNumOF);
-                }
+                else
+                    throw new Exception("No se ha pasado como parámetro en número de orden de fabricación 'DocNumOF'");
+                
             }
             catch (Exception e)
             {
                 ms.Error = e.Message;
                 
             }
-            Monitor.Exit(control);
             return ms;
         }
-
-        public static DocSapInsertadoMsg TransferFromPicking(TsFromPickingME me)
+        public static DocSapInsertadoMsg TS_ConLotes(TsBalanzasMsg me)
         {
-            throw new NotImplementedException();
+
+            Monitor.Enter(control);
+            var ms = new DocSapInsertadoMsg();
+            try
+            {
+                if (me != null)
+                {
+                    if (sapTransferenciaStock == null)
+                        sapTransferenciaStock = new SapTransferenciaStock();
+                    if (!sapTransferenciaStock.IsConected())
+                        sapTransferenciaStock.Connect();//se conecta a sap
+                    ms = sapTransferenciaStock.TransferirSinUbicaciones(me);
+                }
+                if (string.IsNullOrEmpty(ms.Error))
+                {
+                    ms.DocNum = GetDocNumBYId(ms.Id);
+                }
+            }
+            catch (Exception e)
+            {
+                ms.Error = e.Message;
+
+            }
+            Monitor.Exit(control);
+            return ms;
         }
 
         private static DocSapInsertadoMsg ProcessTSFromST(TsFromPickingME me)
@@ -146,7 +186,18 @@ namespace jbp.business.hana
                     uch.IdUbicacion = BodegaBusiness.GetIdUbicacionByName(uch.Ubicacion);
                     me.CantidadTotal += uch.Cantidad;
                 }
+                var estadoLote = getEstadoLote(me); 
+                /*
+                 solo se permiten hacer transferencias de stock en lotes liberados
+                 Por esto para que desde bodega puedan mover los artículos temporalmente 
+                 se cambia el estado del lote a liberado, luego se vuelve a poner el estado
+                 anterior del lote
+                */
+                if(estadoLote!=Convert.ToInt32(eEstadoLote.Liberado).ToString())
+                    CambiarEstadoLote(eEstadoLote.Liberado, me);
                 var ms = ProcessTS(me);
+                if (estadoLote != Convert.ToInt32(eEstadoLote.Liberado).ToString())
+                    CambiarEstadoLote(estadoLote, me);//vuelte al estado anterior
                 if (string.IsNullOrEmpty(ms.Error)) {
                     ms.DocNum = GetDocNumBYId(ms.Id);
                     UpdateResponsableTS(me.Responsable, ms.Id);
@@ -156,6 +207,32 @@ namespace jbp.business.hana
             finally{
                 Monitor.Exit(control);
             }
+        }
+        private static string getEstadoLote(TsBodegaMsg me)
+        {
+            var sql = string.Format(@"
+             select ""Status""
+             from OBTN
+             where 
+              ""DistNumber""='{0}'
+              and ""ItemCode""='{1}'
+            ", me.Lote, me.CodArticulo);
+            var ms=new BaseCore().GetScalarByQuery(sql);
+            return ms;
+        }
+        private static void CambiarEstadoLote(eEstadoLote estado, TsBodegaMsg me) {
+            CambiarEstadoLote(Convert.ToInt32(estado).ToString(), me);
+        }
+        private static void CambiarEstadoLote(string estado, TsBodegaMsg me)
+        {
+            var sql = string.Format(@"
+             update OBTN
+              set ""Status""={0}
+             where 
+              ""DistNumber""='{1}'
+              and ""ItemCode""='{2}'
+            ", estado, me.Lote, me.CodArticulo);
+            new BaseCore().Execute(sql);
         }
         private static void UpdateResponsableTS(string responsable, string id)
         {
@@ -258,7 +335,7 @@ namespace jbp.business.hana
                         sapTransferenciaStock = new SapTransferenciaStock();
                     if (!sapTransferenciaStock.IsConected())
                         sapTransferenciaStock.Connect();//se conecta a sap
-                    return sapTransferenciaStock.TranferUbicaciones(me);
+                    return sapTransferenciaStock.TranferirEntreUbicaciones(me);
                 }
                 return null;
             }
@@ -269,8 +346,5 @@ namespace jbp.business.hana
                 };
             }
         }
-       
     }
-    
-        
 }

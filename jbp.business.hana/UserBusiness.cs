@@ -7,8 +7,11 @@ using jbp.msg;
 using System.Runtime.InteropServices;
 using TechTools.Exceptions;
 using System.DirectoryServices.AccountManagement;
+using System.DirectoryServices;
 using TechTools.Core.Hana;
 using System.Data;
+
+
 
 namespace jbp.business.hana
 {
@@ -17,8 +20,52 @@ namespace jbp.business.hana
         // para autenticarse con active directory
         [DllImport("advapi32.dll")]
         public static extern bool LogonUser(string name, string domain, string pss, int logType, int logpv, ref IntPtr pht);
-        
-        
+
+
+        public static bool LogOnAD(string user, string pwd)
+        {
+            var th = IntPtr.Zero;
+            return LogonUser(user, GetDomainName(), pwd, 2, 0, ref th);
+        }
+
+        public static RespAuthMsg newUserAppMovil(string userMail)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Extrae el nombre del dominio del equipo
+        /// </summary>
+        /// <param name="connectedServer">Ej svr1.jbp.com.ec</param>
+        /// <returns>jbp.com.ec</returns>
+        private static string GetDomainName()
+        {
+            var domain = new PrincipalContext(ContextType.Domain);
+            var ms = string.Empty;
+            var connectedServer = domain.ConnectedServer;
+            var vect = connectedServer.Split(new char[] { '.' });
+            var hostName = vect[0] + ".";
+            ms = connectedServer.Replace(hostName, null);
+            return ms;
+        }
+
+        public static object GetUserDetails(string userName)
+        {
+            using (PrincipalContext context = new PrincipalContext(ContextType.Domain))
+            {
+                UserPrincipal user = UserPrincipal.FindByIdentity(context, IdentityType.SamAccountName, userName);
+                if (user != null)
+                {
+                    return new {
+                        userDisplayName = user.DisplayName,
+                        userMail = user.EmailAddress
+                    };
+                }
+                return null;
+            }
+        }
+
+
         public static RespAuthMsg GetUser(LoginMsg me)
         {
             var ms = new RespAuthMsg();
@@ -34,10 +81,9 @@ namespace jbp.business.hana
                     foreach (var group in user.GetGroups()) {
                         ms.GruposDirectorioActivo.Add(group.Name);
                     }
-                    ms.Perfiles = GetPerfilesByUserName(me.User);
+                    //ms.Perfiles = GetPerfilesByUserName(me.User);
                     ms.ModulosAcceso = GetModulosAcceso(ms);
-                    if (ms.IsVendor())
-                        ms.IdVendor = GetIdVendorByUserName(me.User);
+                    ms.IdVendor = GetIdVendorByUserName(me.User);
                     LogLogin(ms, me.AppName);
                 }
             }
@@ -75,31 +121,32 @@ namespace jbp.business.hana
             }
         }
 
+        public static List<string> GetModulosAcceso()
+        {
+            var ms = new List<string>();
+            ms = TechTools.Utils.ObjectUtils.GetMemberNames(typeof(ModulosAccesoMS));
+            return ms;
+        }
+        
         public static ModulosAccesoMS GetModulosAcceso(RespAuthMsg me) {
             var ms = new ModulosAccesoMS();
-            // Por usuario
-            if (me.UserName == "jespin"){
-                ms.Bodega = true;
-                ms.Ventas = true;
-                ms.FarmacoVigilancia = true;
-            }
-            if (me.UserName == "sbrown"){
-                ms.Ventas = true;
-            }
-
-            if(me.IdVendor>0)
-                ms.Ventas = true;
-
             // Por grupo de AD
             if (me.GruposDirectorioActivo!=null)
             {
-                me.Perfiles.ForEach(perfil => { 
-                    if(perfil.ToLower()== "vendedor")
-                        ms.Ventas = true;
-                });
                 me.GruposDirectorioActivo.ForEach(grupo => {
+                    if (grupo.ToLower() == "tics") //administrador
+                    {
+                        ms.Bodega = true;
+                        ms.Ventas = true;
+                        ms.FarmacoVigilancia = true;
+                        ms.Dashboards = true;
+                    }
                     if (grupo.ToLower() == "ventas"){
                         ms.Ventas = true;
+                    }
+                    if (grupo.ToLower() == "dashboards")
+                    {
+                        ms.Dashboards = true;
                     }
                     if (grupo.ToLower() == "bodega"){
                         ms.Bodega = true;
@@ -112,84 +159,17 @@ namespace jbp.business.hana
             }
             return ms;
         }
-        public static RespAuthMsg GetVendorUser(LoginMsg me)
-        {
-            var ms = new RespAuthMsg();
-            var user = GetUser(me);
-            if (user.Perfiles.Count > 0)
-            {
-                ms.Nombre = user.Nombre;
-                ms.Perfiles = user.Perfiles;
-                ms.GruposDirectorioActivo = user.GruposDirectorioActivo;
-                if (user.IsVendor())
-                    ms.IdVendor = GetIdVendorByUserName(me.User);
-            }
-            return ms;
-        }
-
         private static int GetIdVendorByUserName(string userName)
         {
             var ms = 0;
-            var userEmail = GetUserEmailFromUserName(userName);
             var sql = string.Format(@"
                 select ""CodVendedor""
                 from ""JbpVw_Vendedores""
-                where ""Email"" = '{0}'
-            ", userEmail);
+                where ""Email"" = '{0}@jbp.com.ec'
+            ", userName);
             ms = new BaseCore().GetIntScalarByQuery(sql);
             return ms;
         }
 
-        private static List<string> GetPerfilesByUserName(string userName)
-        {
-            var profiles = new List<string>();
-            var userEmail = GetUserEmailFromUserName(userName);
-            var sql = string.Format(@"
-                SELECT 
-                 T1.PROFILE
-                FROM JBP_USER_PROFILE T0 INNER JOIN
-                 JBP_PROFILE T1 ON T1.ID=T0.ID_PROFILE INNER JOIN
-                 JBP_USER T2 ON T2.ID=T0.ID_USER
-                WHERE
-                 T2.MAIL='{0}'
-            ", userEmail);
-            var dt = new BaseCore().GetDataTableByQuery(sql);
-            foreach(DataRow dr in dt.Rows)
-            {
-                profiles.Add(dr["PROFILE"].ToString());
-            }
-            return profiles;
-        }
-
-        private static object GetUserEmailFromUserName(string userName)
-        {
-            var domain = "jbp.com.ec";
-            var ms = userName.Replace("jamesbrownpharma.com", domain);
-            if (!userName.Contains(domain))
-            {
-                ms = string.Format("{0}@{1}", userName, domain);
-            }
-            return ms;
-        }
-
-        public static bool LogOnAD(string user, string pwd) {
-            var domain = new PrincipalContext(ContextType.Domain);
-            var th = IntPtr.Zero;
-            return LogonUser(user, GetDomainName(domain.ConnectedServer), pwd, 2, 0, ref th);
-        }
-
-        /// <summary>
-        /// Extrae el nombre del dominio del equipo
-        /// </summary>
-        /// <param name="connectedServer">Ej svr1.jbp.com.ec</param>
-        /// <returns>jbp.com.ec</returns>
-        private static string GetDomainName(string connectedServer)
-        {
-            var ms = string.Empty;
-            var vect = connectedServer.Split(new char[] {'.'});
-            var hostName = vect[0] + ".";
-            ms = connectedServer.Replace(hostName, null);
-            return ms;
-        }
     }
 }

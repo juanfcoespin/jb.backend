@@ -12,11 +12,30 @@ namespace jbp.services.rest.Controllers
 {
     public class UserController : ApiController
     {
+        [HttpGet]
+        [Route("api/user/GetUserDetails/{userName}")]
+        public object GetUserDetails(string userName)
+        {
+            return UserBusiness.GetUserDetails(userName);
+        }
+
+        [HttpGet]
+        [Route("api/user/newUserAppMovil/{userMail}")]
+        public RespAuthMsg newUserAppMovil(string userMail)
+        {
+            return UserBusiness.newUserAppMovil(userMail);
+        }
+
         [HttpPost]
         [Route("api/user/login")]
         public RespAuthMsg Login ([FromBody]LoginMsg me)
         {
             return UserBusiness.GetUser(me);
+        }
+        [HttpGet]
+        [Route("api/user/getModulosAcceso")]
+        public List<string> GetModulosAcceso() { 
+            return UserBusiness.GetModulosAcceso();
         }
 
         [HttpPost]
@@ -26,25 +45,6 @@ namespace jbp.services.rest.Controllers
             return UserBusiness.Log(me);
         }
 
-        // GET api/<controller>/5
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<controller>
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/<controller>/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/<controller>/5
-        public void Delete(int id)
-        {
-        }
+        
     }
 }

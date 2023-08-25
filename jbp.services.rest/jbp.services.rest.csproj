@@ -132,6 +132,7 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AutorizacionesSRIController.cs" />
+    <Compile Include="Controllers\MarketingController.cs" />
     <Compile Include="Controllers\SolicitudTransferenciaController.cs" />
     <Compile Include="Controllers\CuentaController.cs" />
     <Compile Include="Controllers\DirectorioController.cs" />

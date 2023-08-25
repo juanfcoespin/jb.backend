@@ -13,6 +13,70 @@ namespace jbp.business.hana
 {
     public class SocioNegocioBusiness
     {
+        public static List<CarteraMsg> GetCarteraByRucPrincipalCliente(string rucPrincipal)
+        {
+            var ms = new List<CarteraMsg>();
+            var sql = string.Format(@"
+              select
+                 t0.""DocNum"",
+                 t1.""CodSocioNegocio"", 
+                 t0.""TipoDocumento"",
+                 t0.""Vendedor"",
+                 t0.""NumFolio"",
+                 to_char(t0.""FechaDocumento"", 'yyyy-mm-dd') ""FechaDocumento"",
+                 t0.""TotalDocumento"",
+                 to_char(t0.""FechaVencimiento"", 'yyyy-mm-dd') ""FechaVencimiento"",
+                 t0.""DiasVencido"",
+                 t0.""TotalPago"",
+                 t0.""SaldoVencido"",
+                 t0.""RangoDiasVencido"",
+                 t0.""OrdenRango"",
+                 t0.""OrdenTipoDocumento""
+                from ""JbpVw_Cartera"" t0  inner join
+                ""JbpVw_SocioNegocio"" t1 on t1.""CodSocioNegocio"" = t0.""CodCliente""
+                where
+                 t1.""RucPrincipal""='{0}'
+                order by
+                 t1.""CodSocioNegocio"",
+                 t0.""OrdenRango""
+            ",rucPrincipal);
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dt.Rows)
+                {
+                    ms.Add(new CarteraMsg
+                    {
+                        DocNum = bc.GetInt(dr["DocNum"]),
+                        CodSocioNegocio = dr["CodSocioNegocio"].ToString(),
+                        TipoDocumento = dr["TipoDocumento"].ToString(),
+                        Vendedor = dr["Vendedor"].ToString(),
+                        NumFolio = dr["NumFolio"].ToString(),
+                        FechaDocumento = dr["FechaDocumento"].ToString(),
+                        TotalDocumento = bc.GetDecimal(dr["TotalDocumento"]),
+                        FechaVencimiento = dr["FechaVencimiento"].ToString(),
+                        DiasVencido = bc.GetInt(dr["DiasVencido"]),
+                        TotalPago = bc.GetDecimal(dr["TotalPago"]),
+                        SaldoVencido = bc.GetDecimal(dr["SaldoVencido"]),
+                        RangoDiasVencido = dr["RangoDiasVencido"].ToString(),
+                        OrdenRango = bc.GetInt(dr["OrdenRango"]),
+                        OrdenTipoDocumento = bc.GetInt(dr["OrdenTipoDocumento"])
+
+                    });
+                }
+            }
+            //se agregan pagos y retenciones a las facturas
+            ms.ForEach(fact =>
+            {
+                if (fact.TipoDocumento == "Factura")
+                {
+                    fact.Retenciones = FacturaBusiness.GetRetencionesByDocNum(fact.DocNum);
+                    fact.Pagos = FacturaBusiness.GetPagosByDocNum(fact.DocNum);
+                }
+            });
+            return ms;
+        }
         public static double GetPrecioByCodSocioNegocioCodArticulo(string codSocioNegocio, string codArticulo)
         {
             var sql = string.Format(@"
@@ -103,39 +167,64 @@ namespace jbp.business.hana
 
         public static List<SocioNegocioItemMsg> GetProveedoresEM()
         {
-            var ms = new List<SocioNegocioItemMsg>();
-            var sql = @"
-                select
-                 ""CodSocioNegocio"",
-                 ""Nombre"",
-                 ""Ruc""
-                 from ""JbpVw_SocioNegocio""
-                where
-                 ""CodTipoSocioNegocio"" = 'S'
-                 and ""CodSocioNegocio"" in(
-                    select
-                     distinct(""IdProveedor"")
-                    from
-                     ""JbpVw_EntradaMercancia""
-                    where
-                     ""Cancelado"" = 'N'
-                 )
-                order by 2
-            ";
-            var dt = new BaseCore().GetDataTableByQuery(sql);
-            foreach (DataRow dr in dt.Rows)
+            try
             {
+                var ms = new List<SocioNegocioItemMsg>();
+                //todos los proveedores con entradas de mercancia que tiene lotes con stock>0
+                var sql = @"
+                select
+                 t0.""CodSocioNegocio"",
+                 t0.""Nombre"",
+                 t0.""Ruc""
+                from ""JbpVw_SocioNegocio"" t0 inner join
+                (
+                 select
+                  distinct(t1.""IdProveedor"") ""CodProveedor""
+                 from
+                  ""JbpVw_EntradaMercanciaLinea"" t0 inner join
+                  ""JbpVw_EntradaMercancia"" t1 on t1.""Id"" = t0.""IdEntradaMercancia"" inner join
+                  ""JbpVw_OperacionesLote"" t2 on t2.""IdDocBase"" = t1.""Id""
+                     and t2.""BaseType"" = t1.""IdTipoDocumento""
+                     and t2.""CodArticulo"" = t0.""CodArticulo"" inner join
+                  ""JbpVw_Lotes"" t3 on t2.""Lote"" = t3.""Lote"" inner join
+                  ""JbpVw_Articulos"" t4 on t4.""CodArticulo"" = t2.""CodArticulo""
+                 where
+                  t1.""Cancelado"" = 'N'
+                  and t3.""Id"" in (--solo las entradas de mercancia que tengan lotes con stock
+                     select
+                      distinct(""IdLote"")
+                     from
+                      ""JbpVw_UbicacionPorLote""
+                     where ""Cantidad"" > 0
+                  )
+                 )t1 on t1.""CodProveedor"" = t0.""CodSocioNegocio""
+                 order by 2
+            ";
+                var dt = new BaseCore().GetDataTableByQuery(sql);
+                foreach (DataRow dr in dt.Rows)
+                {
+                    ms.Add(new SocioNegocioItemMsg
+                    {
+                        Codigo = dr["CodSocioNegocio"].ToString(),
+                        Ruc = dr["Ruc"].ToString(),
+                        Nombre = dr["Nombre"].ToString(),
+                    });
+                }
+                return ms;
+            }
+            catch (Exception e)
+            {
+                var ms = new List<SocioNegocioItemMsg>();
                 ms.Add(new SocioNegocioItemMsg
                 {
-                    Codigo = dr["CodSocioNegocio"].ToString(),
-                    Ruc = dr["Ruc"].ToString(),
-                    Nombre = dr["Nombre"].ToString(),
+                    error = e.Message
                 });
+                return ms;
             }
-            return ms;
+            
 
         }
-
+        
         public static List<SocioNegocioItemMsg> GetProveedores()
         {
             var ms = new List<SocioNegocioItemMsg>();
@@ -309,11 +398,13 @@ namespace jbp.business.hana
                 ""JbpFn_GetCumple""(""FechaCumpleaños"") ""FecCumple"",
                 ""IdListaPrecio"",
                 ""Telefono"",
-                ""Celular""
+                ""Celular"",
+                ""PorcentajeDescuentoFinanciero""
                from
                 ""JbpVw_SocioNegocio""
                where
                 ""Activo""='Y'
+                and ""CodTipoSocioNegocio""='C'
             ";
             if (!string.IsNullOrEmpty(codVendedor) && codVendedor!="0") { //no aplica para usuarios administradores
                 sql += string.Format(@"
@@ -323,7 +414,8 @@ namespace jbp.business.hana
             sql+=@"   
                order by 2
             ";
-            var dt = new BaseCore().GetDataTableByQuery(sql);
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
             if(dt!=null && dt.Rows.Count > 0)
             {
                 foreach(DataRow dr in dt.Rows)
@@ -340,9 +432,9 @@ namespace jbp.business.hana
                         telefono = dr["Telefono"].ToString(),
                         celular = dr["Celular"].ToString(),
                         directions = GetDirectionsById(codSocioNegocio),
-                        
                         contacts = GetContactsById(codSocioNegocio),
-                        observations = GetVendorObservationsById(codSocioNegocio)
+                        observations = GetVendorObservationsById(codSocioNegocio),
+                        porcentajeDescuentoFinanciero = bc.GetDecimal(dr["PorcentajeDescuentoFinanciero"])
                     });
                 }
             }

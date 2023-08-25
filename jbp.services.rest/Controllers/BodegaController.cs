@@ -37,7 +37,7 @@ namespace jbp.services.rest.Controllers
 
         [HttpGet]
         [Route("api/bodega/getUbicacionesYDetArticuloPorLote/{lote}")]
-        public UbicacionesPorLoteMS GetUbicacionesYDetArticuloPorLote(string lote)
+        public object GetUbicacionesYDetArticuloPorLote(string lote)
         {
             return BodegaBusiness.GetUbicacionesYDetArticuloPorLote(lote);
         }

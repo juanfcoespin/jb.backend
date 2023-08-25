@@ -19,7 +19,7 @@ namespace jbp.core.sapDiApi
         {
             this.Company= new SAPbobsCOM.Company();
             this.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB;
-            this.Company.Server = conf.Default.server;
+            this.Company.Server = conf.Default.server; 
             this.Company.language= SAPbobsCOM.BoSuppLangs.ln_Spanish;
             this.Company.UseTrusted = false;
             this.Company.DbUserName = conf.Default.dbUser;

@@ -134,6 +134,8 @@ namespace jbp.msg
     }
     public class SocioNegocioItemMsg
     {
+        public string error;
+
         public string Codigo { get; set; }
         public string Ruc { get; set; }
         public string Nombre { get; set; }
@@ -155,6 +157,7 @@ namespace jbp.msg
         public List<ClientContactMsg> contacts { get; set; }
         public List<ClientVendorOnservationMsg> observations { get; set; }
         public string celular { get; set; }
+        public decimal porcentajeDescuentoFinanciero { get; set; }
     }
     public class ClientDirectionMsg
     {

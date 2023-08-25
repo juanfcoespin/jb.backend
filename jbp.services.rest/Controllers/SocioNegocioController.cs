@@ -2,6 +2,7 @@
 using System.Web.Http;
 
 using jbp.msg;
+using jbp.msg.sap;
 using jbp.business.oracle9i;
 using jbp.business.hana;
 
@@ -9,13 +10,12 @@ namespace jbp.services.rest.Controllers
 {
     public class SocioNegocioController : ApiController
     {
-        
         [HttpGet]
-        [Route("api/socioNegocio/getByRuc/{ruc}")]
-        public SocioNegocioMsg GetByRuc(string ruc)
-        {
-            return jbp.business.oracle9i.SocioNegocioBusiness.GetByRuc(ruc);
+        [Route("api/socioNegocio/getCarteraByRucPrincipal/{rucPrincipal}")]
+        public List<CarteraMsg> getCarteraByRucPrincipal(string rucPrincipal) { 
+            return jbp.business.hana.SocioNegocioBusiness.GetCarteraByRucPrincipalCliente(rucPrincipal);
         }
+
         [HttpGet]
         [Route("api/socioNegocio/getHistoricoClientesByNombre/{nombre}")]
         public SocioNegocioItemMS GetHistoricoClientesByNombre(string nombre)
@@ -36,12 +36,7 @@ namespace jbp.services.rest.Controllers
             //return jbp.business.oracle9i.SocioNegocioBusiness.GetParticipanteByRuc(ruc);
             return jbp.business.hana.ParticipantePtkBusiness.GetParticipantePuntosConDocumentosByRucPrincipal(ruc);
         }
-        [HttpGet]
-        [Route("api/socioNegocio/getParticipanteByRucFromERP/{ruc}")]
-        public ParticipantesPuntosMsg GetParticipanteByRucFromERP(string ruc)
-        {
-            return jbp.business.oracle9i.SocioNegocioBusiness.GetParticipanteByRucFromERP(ruc);
-        }
+        
         [HttpGet]
         [Route("api/socioNegocio/getItemsByToken/{token}")]
         public List<SocioNegocioItemMsg> GetItemsBytoken(string token)
@@ -63,12 +58,7 @@ namespace jbp.services.rest.Controllers
             //return jbp.business.hana.SocioNegocioBusiness.HabilitadoParaCangearPuntos(nroDocumento);
         }
 
-        [HttpGet]
-        [Route("api/socioNegocio/existeParticipante/{nroDocumento}")]
-        public bool ExisteParticipante(string nroDocumento)
-        {
-            return jbp.business.oracle9i.SocioNegocioBusiness.ExisteParticipante(nroDocumento);
-        }
+        
 
         [HttpPost]
         [Route("api/socioNegocio/SaveParticipante")]

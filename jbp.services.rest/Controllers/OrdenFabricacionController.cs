@@ -6,11 +6,18 @@ using System.Net.Http;
 using System.Web.Http;
 using jbp.business.hana;
 using jbp.msg.sap;
+using jbp.msg;
 
 namespace jbp.services.rest.Controllers
 {
     public class OrdenFabricacionController : ApiController
     {
+        [HttpPost]
+        [Route("api/setCantPesadaComponenteOF")]
+        public BoolMs TransferFromBalanzas([FromBody] CantPesadaComponenteOF me)
+        {
+            return BodegaBusiness.SetCantPesadaComponenteOF(me);
+        }
         [HttpGet]
         [Route("api/of/getOfLiberadasPesaje")]
         public List<OrdenFabricacionLiberadaPesajeMsg> GetOfLiberadasPesaje()

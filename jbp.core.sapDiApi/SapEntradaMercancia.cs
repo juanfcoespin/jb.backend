@@ -60,11 +60,17 @@ namespace jbp.core.sapDiApi
                     entradaMercancia.Lines.BaseType = (int)BoObjectTypes.oPurchaseOrders;
                     entradaMercancia.Lines.BaseEntry = me.IdOrdenCompra;
                     entradaMercancia.Lines.BaseLine = line.LineNum;
-                    entradaMercancia.Lines.WarehouseCode = line.CodBodega;
+                    if(!string.IsNullOrEmpty(line.CodBodega))
+                        entradaMercancia.Lines.WarehouseCode = line.CodBodega;
                     double cantidadLinea = 0;
                     line.AsignacionesLote.ForEach(asignacionLote =>
                     {
                         cantidadLinea += asignacionLote.Cantidad;
+                    });
+                    entradaMercancia.Lines.Quantity = cantidadLinea;
+                    var i = 0;
+                    line.AsignacionesLote.ForEach(asignacionLote =>
+                    {
                         entradaMercancia.Lines.BatchNumbers.BatchNumber = asignacionLote.Lote;
                         entradaMercancia.Lines.BatchNumbers.ManufacturingDate = Convert.ToDateTime(asignacionLote.FechaFabricacion);
                         entradaMercancia.Lines.BatchNumbers.ExpiryDate = Convert.ToDateTime(asignacionLote.FechaVencimiento);
@@ -75,8 +81,18 @@ namespace jbp.core.sapDiApi
                         entradaMercancia.Lines.BatchNumbers.UserFields.Fields.Item("U_FecRet").Value = Convert.ToDateTime(asignacionLote.FechaRetest);
                         entradaMercancia.Lines.BatchNumbers.UserFields.Fields.Item("U_IXX_CANT_BULTOS").Value = asignacionLote.Bultos ;
                         entradaMercancia.Lines.BatchNumbers.Add();
+
+                        if (!string.IsNullOrEmpty(asignacionLote.Ubicacion)) {
+                            //se asigna ubicacion destino
+                            //entradaMercancia.Lines.BinAllocations.BinActionType = SAPbobsCOM.BinActionTypeEnum.;
+                            entradaMercancia.Lines.BinAllocations.SerialAndBatchNumbersBaseLine = i; //0 porque por defecto coge el lote que se agrego antes
+                            entradaMercancia.Lines.BinAllocations.BinAbsEntry = asignacionLote.IdUbicacion;
+                            entradaMercancia.Lines.BinAllocations.Quantity = asignacionLote.Cantidad;
+                            entradaMercancia.Lines.BinAllocations.Add();
+                        }
+                        i++;
                     });
-                    entradaMercancia.Lines.Quantity = cantidadLinea;
+                    
                     entradaMercancia.Lines.Add();
                 }
             });

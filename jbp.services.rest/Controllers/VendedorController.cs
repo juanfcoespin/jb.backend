@@ -18,12 +18,5 @@ namespace jbp.services.rest.Controllers
         {
             return VendedorBusiness.GetCarteraByCodVendedor(codVendedor);
         }
-
-        [HttpPost]
-        [Route("api/vendor/login")]
-        public RespAuthMsg Login([FromBody]LoginMsg me)
-        {
-            return UserBusiness.GetVendorUser(me);
-        }
     }
 }

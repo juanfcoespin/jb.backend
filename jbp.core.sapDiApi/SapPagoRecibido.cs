@@ -133,13 +133,11 @@ namespace jbp.core.sapDiApi
 
                 }
                 this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
-
                 return ms;
             }
             catch (Exception ex)
             {
-                this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
-                throw ex;
+                return ex.Message;
             }
         }
 

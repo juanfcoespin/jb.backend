@@ -4,16 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{82573BBB-4437-46F2-B19D-F592D1B73000}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>jbp.msg.sap</RootNamespace>
-    <AssemblyName>jbp.msg.sap</AssemblyName>
+    <ProjectGuid>{1D6CA55A-EB7A-4468-8A43-DC0F53AC4F71}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>MigrarCUAR</RootNamespace>
+    <AssemblyName>MigrarCUAR</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -21,9 +22,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -42,25 +43,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArticuloMsg.cs" />
-    <Compile Include="BaseMsg.cs" />
-    <Compile Include="MarketingMsg.cs" />
-    <Compile Include="SolicitudTrasladoMsg.cs" />
-    <Compile Include="BodegaMsg.cs" />
-    <Compile Include="CarteraMsg.cs" />
-    <Compile Include="EntradaMercanciaMsg.cs" />
-    <Compile Include="FacturaMsg.cs" />
-    <Compile Include="LoteMsg.cs" />
-    <Compile Include="NotaCreditoMsg.cs" />
-    <Compile Include="OrdenFabricacionMsg.cs" />
-    <Compile Include="OrdenMsg.cs" />
-    <Compile Include="PagoMsg.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReaccionesMsg.cs" />
-    <Compile Include="RentencionMsgcs.cs" />
-    <Compile Include="SocioNegocioMsg.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\jbp.business.hana\jbp.business.hana.csproj">
+      <Project>{9ed95a00-f6c4-4249-84e4-7f822dc813bf}</Project>
+      <Name>jbp.business.hana</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\jbp.core.sapDiApi\jbp.core.sapDiApi.csproj">
+      <Project>{b860b304-07bf-4ce2-b125-695707941e0c}</Project>
+      <Name>jbp.core.sapDiApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\jbp.msg.sap\jbp.msg.sap.csproj">
+      <Project>{82573bbb-4437-46f2-b19d-f592d1b73000}</Project>
+      <Name>jbp.msg.sap</Name>
+    </ProjectReference>
     <ProjectReference Include="..\jbp.msg\jbp.msg.csproj">
       <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
       <Name>jbp.msg</Name>

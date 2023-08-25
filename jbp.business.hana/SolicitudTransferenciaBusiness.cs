@@ -110,7 +110,7 @@ namespace jbp.business.hana
                  t0.""CodArticulo"",
                  t0.""Articulo"",
                  t2.""Lote"",
-                 t0.""CantidadAbierta"" ""Cantidad"",
+                 t2.""Cantidad"",
                  t1.""UnidadMedida"",
                  t3.""Id"" ""IdLote"",
                  t0.""BodegaOrigen"",

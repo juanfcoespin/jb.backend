@@ -6,17 +6,32 @@ using System.Threading.Tasks;
 
 namespace jbp.msg.sap
 {
-    public class UbicacionesPorLoteMS
+    /*public class InfoDetalladaLoteMS
     {
+        public decimal cantTotal;
+
         public string Error { get; set; }
         public string CodArticulo { get; set; }
         public string Articulo { get; set; }
         public string Lote { get; set; }
         public List<UbicacionCantidad> UbicacionesCantidad { get; set; }
-        public UbicacionesPorLoteMS() { 
+        public string Estado { get; set; }
+        public string CodPoe { get; set; }
+        public string UnidadMedida { get; set; }
+        public string LoteProveedor { get; set; }
+        public string Fabricante { get; set; }
+        public string FechaFabricacion { get; set; }
+        public string FechaVencimiento { get; set; }
+        public string FechaRetest { get; set; }
+        public string Proveedor { get; set; }
+        public string CondicionAlmacenamiento { get; set; }
+        public string Bultos { get; set; }
+        public string Observaciones { get; set; }
+
+        public InfoDetalladaLoteMS() { 
             this.UbicacionesCantidad = new List<UbicacionCantidad>();
         }
-    }
+    }*/
     public class ContenidoUbicacionMS
     {
         public List<ContenidoUbicacionItemMS> Items { get; set; }
@@ -25,6 +40,14 @@ namespace jbp.msg.sap
         {
             this.Items = new List<ContenidoUbicacionItemMS>();
         }
+    }
+    public class LotesCuarMS
+    {
+        public string CodArticulo { get; set; }
+        public string Lote { get; set; }
+        public string Estado { get; set; }
+        public string CodBodega { get; set; }
+        public string Cantidad { get; set; }
     }
     public class ContenidoUbicacionItemMS
     {
@@ -70,7 +93,11 @@ namespace jbp.msg.sap
         public string To { get; set; }
         public string Responsable { get; set; }
     }
-
+    public enum eEstadoLote { 
+        Liberado=0,
+        AccesoDenegado=1,
+        Bloqueado=2
+    }
     public class SalidaBodegaLineaMsg
     {
         public string CodArticulo { get; set; }
@@ -110,6 +137,7 @@ namespace jbp.msg.sap
     {
         public int LineNum { get; set; }
         public double Cantidad { get; set; }
+        public double cantidadEnviada { get; set; }
         public string Lote { get; set; }
         public string ubicacionSeleccionada { get; set; }
         public int IdUbicacion { get; set; }
@@ -121,6 +149,18 @@ namespace jbp.msg.sap
         public string Ubicacion { get; set; }
         public double Cantidad { get; set; }
         public int IdUbicacion { get; set; }
+    }
+    public class CamposOF
+    {
+        public string Estado { get; set; }
+        public double CantidadPlanificada { get; set; }
+        public string UnidadMedida { get; set; }
+    }
+    public class CantPesadaComponenteOF
+    {
+        public double CantPesada { get; set; }
+        public int IdOf { get; set; }
+        public string CodArticulo { get; set; }
     }
     public class TsBalanzasMsg
     {
@@ -182,6 +222,7 @@ namespace jbp.msg.sap
         public decimal Cantidad { get; set; }
         public int Bultos { get; set; }
         public string UnidadMedida { get; set; }
+        public string LoteFabricante { get; set; }
     }
 
     public class PedidoMsg {

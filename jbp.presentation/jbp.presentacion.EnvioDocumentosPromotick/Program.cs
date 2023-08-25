@@ -16,8 +16,8 @@ namespace jbp.presentacion.EnvioDocumentosPromotick
             //Console.WriteLine("Inicio Proceso");
             //new DocumentosPtkBusiness().EnviarDocumentosAPromotick();
             //new DocumentosPtkBusiness().EnviarNotasCreditoManuales();
-            new DocumentosPtkBusiness().EnviarAjustes();
-            //new DocumentosPtkBusiness().EnviarAceleradores("Ene-Mar 2023");
+            //new DocumentosPtkBusiness().EnviarAjustes();
+            new DocumentosPtkBusiness().EnviarAceleradores("Abr-Jun 2023");
             //new ParticipantePtkBusiness().InactivarParticipantes();
             //new ParticipantePtkBusiness().ActualizacionMasivaParticipantes();
             //new ParticipantePtkBusiness().RegistroMasivoParticipantes();

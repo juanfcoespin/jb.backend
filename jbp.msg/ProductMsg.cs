@@ -21,6 +21,8 @@ namespace jbp.msg
         public string fechaFabricacion;
         public string fechaVencimiento;
         public int cantidad;
+
+        public string codBodega { get; set; }
     }
 
     public class PriceListMsg

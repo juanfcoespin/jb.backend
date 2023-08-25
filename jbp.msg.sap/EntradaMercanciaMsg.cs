@@ -25,6 +25,7 @@ namespace jbp.msg.sap
         public string id { get; set; }
         public string Articulo { get; set; }
         public string CodArticulo { get; set; }
+        public string UnidadMedida { get; set; }
         public List<AsignacionLoteEMMsg> AsignacionesLote { get; set; }
         public string CodBodega { get; set; }
         public decimal CantidadPedido { get; set; }
@@ -41,5 +42,7 @@ namespace jbp.msg.sap
         public int Bultos { get; set; }
         public double Cantidad { get; set; }
         public string Lote { get; set; }
+        public string Ubicacion { get; set; }
+        public dynamic IdUbicacion { get; set; }
     }
 }

@@ -15,7 +15,15 @@ namespace jbp.msg
     public class ModulosAccesoMS {
         public bool Ventas { get; set; }
         public bool Bodega { get; set; }
+        public bool Produccion { get; set; }
         public bool FarmacoVigilancia { get; set; }
+        public bool Dashboards { get; set; }
+    }
+    public class ModulosMsg
+    {
+        public string Name { get; set; }
+        public bool Checked { get; set; }
+        
     }
     public class LogMsg
     {
@@ -26,7 +34,7 @@ namespace jbp.msg
     public class RespAuthMsg
     {
         public string Nombre { get; set; }
-        public List<string> Perfiles { get; set; }
+        //public List<string> Perfiles { get; set; }
         public List<string> GruposDirectorioActivo{ get; set; }
         public string Error { get; set; }
         public string correo { get; set; }
@@ -36,17 +44,7 @@ namespace jbp.msg
         public ModulosAccesoMS ModulosAcceso { get; set; }
 
         public RespAuthMsg() {
-            this.Perfiles = new List<string>();
             this.GruposDirectorioActivo = new List<string>();
-        }
-
-        public bool IsVendor()
-        {
-            if (this.Perfiles.Count> 0)
-            {
-                return this.Perfiles.Exists(p => p.ToLower().Equals("vendedor"));
-            }
-            return false;
         }
     }
     public class UserMsg :LoginMsg{

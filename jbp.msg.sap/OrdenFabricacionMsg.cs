@@ -12,6 +12,7 @@ namespace jbp.msg.sap
         public decimal CantidadTotal { get; set; }
         public bool RequiereRepesaje { get; set; }
         public List<CantidadLoteOFMsg> CantidadesPorLote { get; set; }
+        public decimal CantidadPesada { get; set; }
     }
     public class CantidadLoteOFMsg {
         public string Lote { get; set; }
@@ -28,14 +29,13 @@ namespace jbp.msg.sap
         public int NumOrdenFabricacion { get; set; }
     }
     public class OFMasComponentesMsg {
+        public int IdOf { get; set; }
         public int NumOrdenFabricacion { get; set; }
         public string CodArticulo { get; set; }
         public string Descripcion { get; set; }
         public string BodegaDesde { get; set; }
         public string BodegaHasta { get; set; }
         public List<ComponentesMsg> Componentes { get; set; }
-        
-
         public OFMasComponentesMsg() {
             this.Componentes = new List<ComponentesMsg>();
         }

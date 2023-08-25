@@ -34,18 +34,25 @@ namespace jbp.business.hana
                     var prices = GetPriceListByCodArticulo(codArticulo);
                     if (prices.Count > 0)
                     {
-                        ms.Add(new ProductMsg
+                        var product = new ProductMsg
                         {
                             id = codArticulo,
                             name = dr["Articulo"].ToString(),
-                            stock = GetStockByCodArticulo(codArticulo),
-                            lotes= GetLotes(codArticulo),
+                            lotes = GetLotes(codArticulo),
                             prices = prices
-                        });
+                        };
+                        product.stock = GetStockByLotes(product.lotes);
+                        ms.Add(product);
                     }
-                 
                 }
             }
+            return ms;
+        }
+
+        private static decimal GetStockByLotes(List<LoteMsg> lotes)
+        {
+            var ms = 0;
+            lotes.ForEach(lote => ms += lote.cantidad);
             return ms;
         }
 
@@ -99,6 +106,7 @@ namespace jbp.business.hana
                 select
                  distinct
                  t1.""Lote"",
+                 t0.""CodBodega"",
                  t0.""Cantidad"",
                  to_char(t1.""FechaFabricacion"", 'yyyy-mm-dd') ""FechaFabricacion"",
                  to_char(t1.""FechaVencimiento"", 'yyyy-mm-dd') ""FechaVencimiento""
@@ -106,9 +114,10 @@ namespace jbp.business.hana
                 ""JbpVw_CantidadesPorLote"" t0 inner join
                 ""JbpVw_Lotes"" t1 on t1.""Id"" = t0.""IdLote""
                 where
-                 t0.""Cantidad"" > 0 and
-                 t0.""CodArticulo"" = '{0}' and
-                 t0.""CodBodega"" in ('PT2', 'PT4', 'PICK2')
+                 t0.""Cantidad"" > 0
+                 and t1.""Estado"" = 'Liberado'
+                 and t0.""CodArticulo"" = '{0}'
+                 and t0.""CodBodega"" in ('PT2', 'PT4', 'PICK2')
                 order by t1.""FechaVencimiento""
             ", codArticulo);
             var bc = new BaseCore();
@@ -118,7 +127,8 @@ namespace jbp.business.hana
                 ms.Add(new LoteMsg()
                 {
                     lote = dr["Lote"].ToString(),
-                    cantidad= bc.GetInt(dr["Cantidad"]),
+                    codBodega = dr["CodBodega"].ToString(),
+                    cantidad = bc.GetInt(dr["Cantidad"]),
                     fechaFabricacion = dr["FechaFabricacion"].ToString(),
                     fechaVencimiento = dr["FechaVencimiento"].ToString(),
                 });
@@ -154,19 +164,6 @@ namespace jbp.business.hana
                 }
             }
             return ms;
-        }
-        public static decimal GetStockByCodArticulo(string codArticulo)
-        {       
-            var sql = string.Format(@"
-               select
-                sum(""Stock"") ""stock""
-               from
-                ""JbpVw_ArticulosPorBodega""
-               where
-                ""CodBodega"" in ('PT2', 'PT4', 'PICK2') --no se incluye PT3 y BAL3 que es de guayaquil por petición de gardenia
-                and ""CodArticulo"" = '{0}'
-            ", codArticulo);
-            return new BaseCore().GetDecimalScalarByQuery(sql);
         }
     }
 }

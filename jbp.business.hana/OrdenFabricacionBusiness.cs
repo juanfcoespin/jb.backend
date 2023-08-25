@@ -44,6 +44,7 @@ namespace jbp.business.hana
             ms.NumOrdenFabricacion=docNum;
             var sql = string.Format(@"
                 select 
+                 t1.""Id"",
                  t1.""DocNum"",
                  t1.""CodArticulo"",
                  t1.""Articulo"",
@@ -51,6 +52,7 @@ namespace jbp.business.hana
                  t2.""UnidadMedida"",
                  t2.""Insumo"",
                  t0.""CantidadPlanificada"",
+                 t0.""CantidadPesada"",
                  t1.""Articulo""
                 from 
                  ""JbpVw_OrdenFabricacionLinea"" t0 inner join
@@ -69,6 +71,7 @@ namespace jbp.business.hana
             {
                 if (ms.CodArticulo == null) // para registrar la cabecera del mensaje
                 {
+                    ms.IdOf = bc.GetInt(dr["Id"].ToString());
                     ms.CodArticulo = dr["CodArticulo"].ToString();
                     ms.Descripcion = dr["Articulo"].ToString();
                     var docNumOf = bc.GetInt(dr["DocNum"]);
@@ -81,7 +84,8 @@ namespace jbp.business.hana
                     CodigoArticulo = dr["CodInsumo"].ToString(),
                     UnidadMedida = dr["UnidadMedida"].ToString(),
                     Descripcion = dr["Insumo"].ToString(),
-                    CantidadTotal = bc.GetDecimal(dr["CantidadPlanificada"])
+                    CantidadTotal = bc.GetDecimal(dr["CantidadPlanificada"]),
+                    CantidadPesada = bc.GetDecimal(dr["CantidadPesada"])
                 };
                 componente.CantidadesPorLote = GetCantidadesPorLote(docNum, componente.CodigoArticulo);
                 ms.Componentes.Add(componente);
