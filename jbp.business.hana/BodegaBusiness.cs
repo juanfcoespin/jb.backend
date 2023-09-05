@@ -456,33 +456,35 @@ namespace jbp.business.hana
                 var sql = String.Format(@"
                     select 
                      t1.""DocNum"" ""NumPedido"",
-                     to_char(t1.""Fecha"",'yyyy-mm-dd')  ""FechaPedido"",
+                     to_char(t1.""Fecha"", 'yyyy-mm-dd')  ""FechaPedido"",
                      t0.""LineNum"",
                      t0.""CodArticulo"",
                      t0.""Articulo"",
-                     round(t0.""Cantidad"",4) ""CantidadPedido"",
+                     round(t0.""Cantidad"", 4) ""CantidadPedido"",
                      t5.""UnidadMedida"",
                      sum(ifnull(t3.""Cantidad"", 0)) ""CantidadEntregada""
+
                     from
                      ""JbpVw_PedidosLinea"" t0 inner join
+                     ""JbpVw_Articulos"" t5 on t5.""CodArticulo"" = t0.""CodArticulo"" inner join
                      ""JbpVw_Pedidos"" t1 on t1.""Id"" = t0.""IdPedido"" left outer join
-                     ""JbpVw_EntradaMercanciaLinea"" t3 on t3.""BaseEntry"" = t0.""IdPedido"" and t3.""BaseLine"" = t0.""LineNum"" left outer join
-                     ""JbpVw_EntradaMercancia"" t4 on t4.""Id"" = t3.""IdEntradaMercancia"" inner join
-                     ""JbpVw_Articulos"" t5 on t5.""CodArticulo""=t0.""CodArticulo""
+                     ""JbpVw_EntradaMercanciaLinea"" t3 on t3.""BaseEntry"" = t0.""IdPedido"" and t3.""BaseLine"" = t0.""LineNum"" and t3.""CodArticulo"" = t0.""CodArticulo"" left outer join
+                     ""JbpVw_EntradaMercancia"" t4 on t4.""Id"" = t3.""IdEntradaMercancia""
                     where
                      t1.""CodProveedor"" = '{0}'
-                     and lower(t1.""Estado"") like '%{1}%'
-                     and t0.""LineStatus""='{2}' --lineas abiertas
+                     and lower(t1.""Estado"") like '%abierto%'
+                     and t0.""LineStatus"" = 'O'--lineas abiertas
+                     and(t4.""Cancelado"" is null or t4.""Cancelado"" <> 'Y')
                     group by
                      t1.""DocNum"",
-                     t1.""Fecha"",
+                     to_char(t1.""Fecha"", 'yyyy-mm-dd'),
                      t0.""LineNum"",
                      t0.""CodArticulo"",
                      t0.""Articulo"",
-                     t0.""Cantidad"",
+                     round(t0.""Cantidad"", 4),
                      t5.""UnidadMedida""
                     order by t1.""DocNum"" desc
-                ", codProveedor, "abierto", "O");
+                ", codProveedor);
                 var bc = new BaseCore();
                 var dt = bc.GetDataTableByQuery(sql);
                 var numPedidoAnterior = "";
