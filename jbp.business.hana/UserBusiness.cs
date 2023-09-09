@@ -140,6 +140,7 @@ namespace jbp.business.hana
                         ms.Ventas = true;
                         ms.FarmacoVigilancia = true;
                         ms.Dashboards = true;
+                        ms.ControlCalidad = true;
                     }
                     if (grupo.ToLower() == "ventas"){
                         ms.Ventas = true;
@@ -150,6 +151,10 @@ namespace jbp.business.hana
                     }
                     if (grupo.ToLower() == "bodega"){
                         ms.Bodega = true;
+                    }
+                    if (grupo.ToLower() == "controlcalidad")
+                    {
+                        ms.ControlCalidad = true;
                     }
                     if (grupo.ToLower() == "asuntosregulatorios")
                     {

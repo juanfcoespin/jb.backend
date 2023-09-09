@@ -15,6 +15,20 @@ namespace jbp.services.rest.Controllers
     {
 
         [HttpGet]
+        [Route("api/bodega/getLotesConStockByCodArticulo/{codArticulo}")]
+        public object GetLotesConStockByCodArticulo(string codArticulo)
+        {
+            return BodegaBusiness.GetLotesConStockByCodArticulo(codArticulo);
+        }
+
+        [HttpGet]
+        [Route("api/bodega/getArticulosConStock")]
+        public object GetArticulosConStock()
+        {
+            return BodegaBusiness.GetArticulosConStock();
+        }
+
+        [HttpGet]
         [Route("api/bodega/getSubnivelesAlmacen")]
         public List<SubNivelBodegaMsg> GetSubnivelesAlmacen()
         {

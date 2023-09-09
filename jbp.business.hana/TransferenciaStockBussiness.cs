@@ -171,40 +171,61 @@ namespace jbp.business.hana
         public static DocSapInsertadoMsg TransferToUbicaciones(TsBodegaMsg me)
         {
             Monitor.Enter(control);
-            try{
-                if (!string.IsNullOrEmpty(me.UbicacionDesde)) { //si se envia la ubicación destino explicitamente
-                    me.IdUbicacionDesde = BodegaBusiness.GetIdUbicacionByName(me.UbicacionDesde);
-                }
-                me.CantidadTotal = 0;
-                foreach (var uch in me.UbicacionesCantidadHasta) {
-                    if (!string.IsNullOrEmpty(me.UbicacionDesde) && uch.Ubicacion == me.UbicacionDesde) {
-                        return new DocSapInsertadoMsg
+            try
+            {
+                string error = null;
+                me.movimientos.ForEach(movimiento => {
+                    if (error == null) {
+                        if (movimiento.UbicacionDesde == movimiento.UbicacionHasta)
                         {
-                            Error = "Error: La ubicación destino no puede ser igual a la de origen (" + uch.Ubicacion + ")"
-                        };
+                            error = "Error: La ubicación destino no puede ser igual a la de origen (" + movimiento.UbicacionDesde + ")";
+                        }
+                        if (error == null)
+                        {
+                            if (!string.IsNullOrEmpty(movimiento.UbicacionDesde))
+                            { //si se envia la ubicación destino explicitamente
+                                movimiento.IdUbicacionDesde = BodegaBusiness.GetIdUbicacionByName(movimiento.UbicacionDesde);
+                            }
+                            if (!string.IsNullOrEmpty(movimiento.UbicacionHasta))
+                            { //si se envia la ubicación destino explicitamente
+                                movimiento.IdUbicacionHasta = BodegaBusiness.GetIdUbicacionByName(movimiento.UbicacionHasta);
+                            }
+                        }
                     }
-                    uch.IdUbicacion = BodegaBusiness.GetIdUbicacionByName(uch.Ubicacion);
-                    me.CantidadTotal += uch.Cantidad;
+                });
+                if (error != null) {
+                    return new DocSapInsertadoMsg
+                    {
+                        Error = error
+                    };
                 }
-                var estadoLote = getEstadoLote(me); 
+                var estadoLote = getEstadoLote(me);
                 /*
                  solo se permiten hacer transferencias de stock en lotes liberados
                  Por esto para que desde bodega puedan mover los artículos temporalmente 
                  se cambia el estado del lote a liberado, luego se vuelve a poner el estado
                  anterior del lote
                 */
-                if(estadoLote!=Convert.ToInt32(eEstadoLote.Liberado).ToString())
+                if (estadoLote != Convert.ToInt32(eEstadoLote.Liberado).ToString())
                     CambiarEstadoLote(eEstadoLote.Liberado, me);
                 var ms = ProcessTS(me);
                 if (estadoLote != Convert.ToInt32(eEstadoLote.Liberado).ToString())
                     CambiarEstadoLote(estadoLote, me);//vuelte al estado anterior
-                if (string.IsNullOrEmpty(ms.Error)) {
+                if (string.IsNullOrEmpty(ms.Error))
+                {
                     ms.DocNum = GetDocNumBYId(ms.Id);
                     UpdateResponsableTS(me.Responsable, ms.Id);
                 }
                 return ms;
             }
-            finally{
+            catch (Exception ex) {
+                return new DocSapInsertadoMsg
+                {
+                    Error = ex.Message
+                };
+            }
+            finally
+            {
                 Monitor.Exit(control);
             }
         }

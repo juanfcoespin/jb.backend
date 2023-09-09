@@ -18,6 +18,7 @@ namespace jbp.msg
         public bool Produccion { get; set; }
         public bool FarmacoVigilancia { get; set; }
         public bool Dashboards { get; set; }
+        public bool ControlCalidad { get; set; }
     }
     public class ModulosMsg
     {

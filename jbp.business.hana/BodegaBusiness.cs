@@ -50,6 +50,111 @@ namespace jbp.business.hana
             return ms;
         }
 
+        public static object GetLotesConStockByCodArticulo(string codArticulo)
+        {
+            try { 
+                var lotes=new List<object>();
+                var sql = String.Format(@"
+                    select
+                     t0.""CodArticulo"",
+                     t2.""Articulo"",
+                     t0.""Cantidad"",
+                     t2.""UnidadMedida"",
+                     t1.""Fabricante"",
+                     t1.""LoteProveedor"",
+                     t1.""Lote"",
+                     t1.""Bultos"",
+                     to_char(t1.""FechaIngreso"", 'yyyy-mm-dd') ""FechaIngreso"",
+                     to_char(t1.""FechaFabricacion"", 'yyyy-mm-dd') ""FechaFabricacion"",
+                     to_char(t1.""FechaVencimiento"", 'yyyy-mm-dd') ""FechaVencimiento"",
+                     to_char(t1.""FechaRetesteo"", 'yyyy-mm-dd') ""FechaRetesteo""
+                    from
+                     ""JbpVw_CantidadesPorLote"" t0 inner join
+                     ""JbpVw_Lotes"" t1 on t1.""Id"" = t0.""IdLote"" inner join
+                     ""JbpVw_Articulos"" t2 on t2.""CodArticulo""=t0.""CodArticulo""
+                    where
+                     t0.""CodArticulo"" = '{0}'
+                     and t0.""Cantidad"">0
+                     and t1.""Bultos"">0
+                    order by
+                     t1.""Fabricante"",
+                     t1.""Lote""
+                ", codArticulo);
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql);
+                foreach (DataRow dr in dt.Rows)
+                {
+                    lotes.Add(
+                        new 
+                        {
+                            CodArticulo = dr["CodArticulo"].ToString(),
+                            Articulo = dr["Articulo"].ToString(),
+                            Cantidad = bc.GetDecimal(dr["Cantidad"], 4),
+                            UnidadMedida = dr["UnidadMedida"].ToString(),
+                            Fabricante = dr["Fabricante"].ToString(),
+                            Lote = dr["Lote"].ToString(),
+                            LoteFabricante = dr["LoteProveedor"].ToString(),
+                            Bultos = bc.GetInt(dr["Bultos"]),
+                            FechaIngreso = dr["FechaIngreso"].ToString(),
+                            FechaFabricacion = dr["FechaFabricacion"].ToString(),
+                            FechaVencimiento = dr["FechaVencimiento"].ToString(),
+                            FechaRetest = dr["FechaRetesteo"].ToString(),
+                        }
+                    ); 
+                }
+                return new{
+                    Lotes=lotes
+                };
+            }
+            catch (Exception e)
+            {
+                return new {
+                    Error = e.Message
+                };
+            }
+            
+        }
+
+        public static object GetArticulosConStock()
+        {
+            try
+            {
+                var articulos = new List<object>();
+                var sql = @"
+                   select
+                    distinct
+                    t0.""CodArticulo"",
+                    t1.""Articulo""
+                   from 
+                    ""JbpVw_CantidadesPorLote"" t0 inner join
+                    ""JbpVw_Articulos"" t1 on t1.""CodArticulo"" = t0.""CodArticulo""
+                   where 
+                    ""Cantidad"">0
+                  order by 2
+                ";
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql);
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        articulos.Add(new
+                        {
+                            CodArticulo = dr["CodArticulo"].ToString(),
+                            name = dr["Articulo"].ToString()
+                        });
+                    }
+                }
+                return new
+                {
+                    Articulos = articulos
+                };
+            }
+            catch (Exception e) { 
+                return new {Error=e.Message};
+            }
+        }
+
         public static BoolMs SetCantPesadaComponenteOF(CantPesadaComponenteOF me)
         {
             try
@@ -118,10 +223,9 @@ namespace jbp.business.hana
             try
             {
                 var sql = @"
-                select distinct(""CodBodega"") ""CodBodega"" from ""JbpVw_Ubicaciones""
+                select distinct(""CodBodega"") ""CodBodega"" from ""JbpVw_Bodegas""
                 where 
                  ""CodBodega"" not like '%CUAR%'
-                 and ""CodBodega"" not like '%RECH%'
                 order by 1
             ";
                 var dt = new BaseCore().GetDataTableByQuery(sql);
@@ -221,7 +325,7 @@ namespace jbp.business.hana
                     from
                      ""JbpVw_Ubicaciones""
                     where
-                     ""Ubicacion"" not like '%SYSTEM-BIN-LOCATION%'
+                     ""CodBodega"" not like '%CUAR%'
                 ";
                 var dt = new BaseCore().GetDataTableByQuery(sql);
                 foreach (DataRow dr in dt.Rows)

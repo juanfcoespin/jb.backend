@@ -107,20 +107,26 @@ namespace jbp.msg.sap
         public string Lote { get; set; }
     }
     public class TsBodegaMsg {
-        public string Responsable { get; set; }
+        
         public string CodArticulo { get; set; }
         public string Lote { get; set; }
-        public string CodBodegaDesde { get; set; }
-        public int IdUbicacionDesde { get; set; }
-        public string UbicacionDesde { get; set; }
-        public string CodBodegaHasta { get; set; }
-        public double CantidadTotal { get; set; }
-        public List<UbicacionCantidadMsg> UbicacionesCantidadHasta { get; set; }
+        public string Responsable { get; set; }
+        
+        public List<MovimientoTsMsg> movimientos { get; set; }
 
         public TsBodegaMsg() {
-            this.UbicacionesCantidadHasta = new List<UbicacionCantidadMsg>();
+            this.movimientos = new List<MovimientoTsMsg>();
         }
     }
+    public class MovimientoTsMsg {
+        public double Cantidad { get; set; }
+        public string CodBodegaDesde { get; set; }
+        public string UbicacionDesde { get; set; }
+        public string CodBodegaHasta { get; set; }
+        public string UbicacionHasta { get; set; }
+        public int IdUbicacionDesde { get; set; }
+        public int IdUbicacionHasta { get; set; }
+    }    
     public class TsFromPickingME
     {
         public string Responsable { get; set; }
@@ -149,6 +155,8 @@ namespace jbp.msg.sap
         public string Ubicacion { get; set; }
         public double Cantidad { get; set; }
         public int IdUbicacion { get; set; }
+        public string CodBodegaHasta { get; set; }
+        
     }
     public class CamposOF
     {

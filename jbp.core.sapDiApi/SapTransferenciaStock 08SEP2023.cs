@@ -8,13 +8,13 @@ using SAPbobsCOM;
 
 namespace jbp.core.sapDiApi
 {
-    public class LineaMsg {
+    public class LineaMsg2 {
         public string bd { get; set; }
         public string bh { get; set; }
     }
-    public class SapTransferenciaStock:BaseSapObj
+    public class SapTransferenciaStock2:BaseSapObj
     {
-        public SapTransferenciaStock()
+        public SapTransferenciaStock2()
         {
             //this.Connect();
         }
@@ -94,7 +94,7 @@ namespace jbp.core.sapDiApi
                     stockTransfer.Lines.BinAllocations.Quantity = cantUbicacion;
                     stockTransfer.Lines.BinAllocations.Add();
                  });
-                //ubicaciones hasta unica
+                //ubicaciones hasta
                 ubicacionesHasta.ForEach(idUbicacion => {
                     var cantUbicacion = 0.0;
                     movimientosPorLinea.ForEach(m => {
@@ -211,7 +211,7 @@ namespace jbp.core.sapDiApi
             ms.Cliente = this.obj.CardName;
             return ms;
         }
-        ~SapTransferenciaStock()
+        ~SapTransferenciaStock2()
         {
             //cuando se destruye el objeto
             this.Disconnect();
