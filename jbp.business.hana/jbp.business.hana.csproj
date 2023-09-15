@@ -70,7 +70,6 @@
     <Compile Include="OrderBusiness_13Ene2021.cs" />
     <Compile Include="OrderBusiness.cs" />
     <Compile Include="ReaccionesBusiness.cs" />
-    <Compile Include="PagoBusiness_21Sep2021.cs" />
     <Compile Include="PagoBusiness.cs" />
     <Compile Include="CatalogoBusiness.cs" />
     <Compile Include="TransportistaBusiness.cs" />

@@ -17,7 +17,7 @@ namespace jbp.presentacion.EnvioDocumentosPromotick
             //new DocumentosPtkBusiness().EnviarDocumentosAPromotick();
             //new DocumentosPtkBusiness().EnviarNotasCreditoManuales();
             //new DocumentosPtkBusiness().EnviarAjustes();
-            new DocumentosPtkBusiness().EnviarAceleradores("Abr-Jun 2023");
+            //new DocumentosPtkBusiness().EnviarAceleradores("Abr-Jun 2023");
             //new ParticipantePtkBusiness().InactivarParticipantes();
             //new ParticipantePtkBusiness().ActualizacionMasivaParticipantes();
             //new ParticipantePtkBusiness().RegistroMasivoParticipantes();

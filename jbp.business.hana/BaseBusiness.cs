@@ -9,13 +9,13 @@ namespace jbp.business.hana
 {
     public class BaseBusiness
     {
-        public void EnviarPorCorreo(string to, string titulo, string msg, string filePath=null)
+        public void EnviarPorCorreo(string to, string titulo, string msg, List<string> filePaths=null)
         {
             MailUtils.Send(
                 to,
                 titulo,
                 msg,
-                filePath
+                filePaths
             );
         }
 

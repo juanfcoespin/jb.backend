@@ -20,7 +20,7 @@ namespace jbp.business.hana
         public static readonly object control = new object();
         public static SapPagoRecibido sapPagoRecibido = new SapPagoRecibido();
 
-        public List<string> SavePagos(List<PagoMsg> pagos)
+        public List<string> SavePagos(List<PagosMsg> pagos)
         {
             /*
             var ms = new List<string>();
@@ -44,16 +44,20 @@ namespace jbp.business.hana
             }
             
         }
-        private List<string> ProcessPagos(List<PagoMsg> pagos)
+        private List<string> ProcessPagos(List<PagosMsg> pagos)
         {
             var ms = new List<string>();
             if (pagos != null && pagos.Count > 0)
             {
                 if (sapPagoRecibido == null)
                     sapPagoRecibido = new SapPagoRecibido();
-                if (!sapPagoRecibido.IsConected())
-                {
-                    var seConecto=sapPagoRecibido.Connect();//se conecta a sap
+                var seConecto = sapPagoRecibido.IsConected();
+                if (!seConecto)
+                    seConecto = sapPagoRecibido.Connect();//se conecta a sap
+                else {
+                    var error = "Desde la api no se pudo conectar a SAP, revise las coneccines concurrentes del manager!!";
+                    ms.Add(error);
+                    return ms;
                 }
                 pagos.ForEach(pago =>{
                     try{
@@ -66,7 +70,7 @@ namespace jbp.business.hana
                                 factura.folioNum = folioNum;
                                 factura.DocEntry = FacturaBusiness.GetDocEntryFromFolioNum(folioNum);
                             });
-                            resp = sapPagoRecibido.Add(pago);
+                            resp = sapPagoRecibido.SafePagos(pago);
                             if (resp == "ok"){
                                 EnviarCorreoPago(pago);
                             }
@@ -80,18 +84,23 @@ namespace jbp.business.hana
             }
             return ms;
         }
-        
-        private void EnviarCorreoPago(PagoMsg pago)
+
+        private void EnviarCorreoPago(PagosMsg pago)
         {
             string titulo = "Pago Recibido - " + pago.client;
             string msg = string.Empty;
             var bddName = BaseCore.GetBddName();
-            string imgPath = null;
-            if (pago.photoComprobanteData != null)
+            var fotosPath = new List<string>();
+            var i = 0;
+            if (pago.fotosComprobantes != null)
             {
-                var nombreCoprobantePago = getNombreComprobantePago();
-                imgPath = downloadComprobatePago(pago.photoComprobanteData, nombreCoprobantePago);
+                pago.fotosComprobantes.ForEach(foto => {
+                    i++;
+                    var nombreCoprobantePago = getNombreComprobantePago(pago.CodCliente,i);
+                    fotosPath.Add(downloadComprobatePago(foto, nombreCoprobantePago));
+                });
             }
+            var totalPagado = pago.GetTotalPagado();
             msg += string.Format(@"
                 <h2>{5}</h2><br>
                 <b>Cliente:</b> {0} <br>
@@ -99,7 +108,7 @@ namespace jbp.business.hana
                 <b>Monto Pagado:</b> USD {2} <br>
                 <b>Base de datos:</b> {3} <br>
                 <b>Comentario:</b><br>{4} <br><br>
-            ", pago.client, pago.CodCliente, pago.totalPagado,bddName , pago.comment, titulo);
+            ", pago.client, pago.CodCliente, totalPagado, bddName , pago.comment, titulo);
             msg += "<b>Facturas Pagadas:</b> <br>";
             msg += "<table>";
             msg += " <tr>";
@@ -122,19 +131,41 @@ namespace jbp.business.hana
             });
             msg += "</table><br>";
             msg += "<b>Detalles del Pago:</b> <br>";
-            msg += "<b>Total Pagado: USD " + pago.totalPagado + "</b><br>";
-            msg += "<table>";
-            msg += " <tr>";
-            msg += "    <td style='border: solid 1px #000000'><b>Tipo Pago</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Monto</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Banco</b></td>";
-            msg += " </tr>";
-            pago.tiposPago.ForEach(tp => {
-                msg += "<tr>";
-                msg += "    <td style='border: solid 1px #000000'>" + tp.tipoPago + "</td>";
-                msg += "    <td style='border: solid 1px #000000'>USD " + tp.monto + "</td>";
-                msg += "    <td style='border: solid 1px #000000'>" + tp.bancoTxt + "</td>";
-                msg += "</tr>";
+            msg += "<b>Total Pagado: USD " + totalPagado + "</b><br>";
+            msg += @"<table>
+                        <thead>
+                            <th style='border: solid 1px #000000'><b>Tipo Pago</b></th>
+                            <th style='border: solid 1px #000000'><b>Monto</b></th>
+                            <th style='border: solid 1px #000000'><b>Banco</b></th>
+                            <th style='border: solid 1px #000000'>Num Transfer</th>
+                            <th style='border: solid 1px #000000'> Num Cheque </th>
+                            <th style='border: solid 1px #000000'> Fecha Venc. </th>
+                        </thead>
+            ";
+            pago.tiposPagoToSave.ForEach(tp => {
+                if (tp.tipoPago == "Efectivo" || tp.tipoPago == "Transferencia") 
+                {
+                    msg += @"<tr>";
+                    msg += "    <td style='border: solid 1px #000000'>" + tp.tipoPago + "</td>";
+                    msg += "    <td style='border: solid 1px #000000'>USD " + tp.monto + "</td>";
+                    msg += "    <td style='border: solid 1px #000000'>" + tp.bancoTxt + "</td>";
+                    msg += "    <td style='border: solid 1px #000000'>" + tp.NumTransferencia + "</td>";
+                    msg += "    <td style='border: solid 1px #000000'></td>";
+                    msg += "    <td style='border: solid 1px #000000'></td>";
+                    msg += "</tr>";
+                }
+                else {
+                    tp.cheques.ForEach(cheque => {
+                        msg += @"<tr>";
+                        msg += "    <td style='border: solid 1px #000000'>" + tp.tipoPago + "</td>";
+                        msg += "    <td style='border: solid 1px #000000'>USD " + cheque.monto + "</td>";
+                        msg += "    <td style='border: solid 1px #000000'>" + cheque.bancoTxt + "</td>";
+                        msg += "    <td style='border: solid 1px #000000'></td>";
+                        msg += "    <td style='border: solid 1px #000000'>" + cheque.NumCheque + "</td>";
+                        msg += "    <td style='border: solid 1px #000000'>" + cheque.FechaVencimientoCheque + "</td>";
+                        msg += "</tr>";
+                    });
+                }
             });
             msg += "</table><br>";
             /*
@@ -154,7 +185,7 @@ namespace jbp.business.hana
                 if (correoCliente != null && TechTools.Utils.ValidacionUtils.EmailValid(correoCliente))
                     destinatarios += "; " + correoCliente;
             }
-            this.EnviarPorCorreo(destinatarios, titulo, msg, imgPath);
+            this.EnviarPorCorreo(destinatarios, titulo, msg, fotosPath);
         }
 
         private string downloadComprobatePago(string photoComprobanteData, string nombreCoprobantePago)
@@ -169,13 +200,13 @@ namespace jbp.business.hana
             return compleateImgPath;
         }
 
-        private string getNombreComprobantePago()
+        private string getNombreComprobantePago(string codCliente, int numFile)
         {
-            var ms = string.Format("{0}.png", DateTime.Now.ToString("yyyyMMddhhmmss"));
+            var ms = string.Format("{0}_{1}_{2}.png",codCliente, DateTime.Now.ToString("yyyyMMddhhmm"),numFile.ToString());
             return ms;
         }
 
-        private static bool DuplicatePago(PagoMsg pago)
+        private static bool DuplicatePago(PagosMsg pago)
         {
             return false;
         }

@@ -41,7 +41,9 @@ namespace EnvioCorreosClientes
                     </p>
                 ", cliente.Nombre, conf.Default.urlImagen);
                 Console.WriteLine(String.Format("Enviando a {0} ({1})...", cliente.Nombre, cliente.Email));
-                mailMsg.Enviado = MailUtils.Send(mailMsg.Correo,mailMsg.Titulo, mailMsg.Mensaje, conf.Default.pathImagen);
+                var files=new List<string>();
+                files.Add(conf.Default.pathImagen);
+                mailMsg.Enviado = MailUtils.Send(mailMsg.Correo,mailMsg.Titulo, mailMsg.Mensaje, files);
                 SocioNegocioBusiness.SaveEmailToClient(mailMsg);
                 Console.WriteLine(String.Format("Enviado: {0}",mailMsg.Enviado));
             });

@@ -3,23 +3,28 @@ using System;
 
 namespace jbp.msg.sap
 {
-    public class PagoMsg: ICloneable
+    public class PagosMsg: ICloneable
     {
         public double totalAPagar { get; set; }
-        public double totalPagado {
-            get
-            {
-                double _totalPagado = 0;
-                if (tiposPago!=null && tiposPago.Count > 0)
+        public double GetTotalPagado() {
+                double ms = 0;
+                if (this.tiposPagoToSave!=null && this.tiposPagoToSave.Count > 0)
                 {
-                    this.tiposPago.ForEach(tp => _totalPagado += tp.monto);
+                    this.tiposPagoToSave.ForEach(tp => {
+                        if (tp.cheques != null && tp.cheques.Count > 0)
+                        {
+                            tp.cheques.ForEach(cheque => ms += cheque.monto);
+                        }
+                        else
+                            ms += tp.monto;
+                        
+                    });
                 }
-                return _totalPagado;
-            }
+                return ms;
         }
         public List<DocCarteraMsg> facturasAPagar { get; set; }
-        public List<TipoPagoMsg> tiposPago { get; set; }
-        public string photoComprobanteData { get; set; }
+        public List<TipoPagoMsg> tiposPagoToSave { get; set; }
+        public List<string> fotosComprobantes { get; set; }
         public string CodCliente { get; set; }
         public string client { get; set; }
         public string comment { get; set; }
@@ -27,14 +32,14 @@ namespace jbp.msg.sap
 
         public object Clone()
         {
-            var ms = (PagoMsg)MemberwiseClone();
+            var ms = (PagosMsg)MemberwiseClone();
             ms.facturasAPagar = new List<DocCarteraMsg>();
             this.facturasAPagar.ForEach(f => {
                 ms.facturasAPagar.Add((DocCarteraMsg)f.Clone());
             });
-            ms.tiposPago = new List<TipoPagoMsg>();
-            this.tiposPago.ForEach(tipoPago => {
-                ms.tiposPago.Add((TipoPagoMsg)tipoPago.Clone());
+            ms.tiposPagoToSave = new List<TipoPagoMsg>();
+            this.tiposPagoToSave.ForEach(tipoPago => {
+                ms.tiposPagoToSave.Add((TipoPagoMsg)tipoPago.Clone());
             });
             return ms;
         }
@@ -43,6 +48,27 @@ namespace jbp.msg.sap
     {
         public string tipoPago { get; set; }
         public double monto { get; set; }
+        public List<ChequeMsg> cheques { get; set; }
+
+        //Transferencia
+        public string CodigoCuentaJB { get; set; }
+        public int NumTransferencia { get; set; }
+        public string bancoTxt { get; set; }
+        public double saldo { get; set; }
+
+        public TipoPagoMsg() { 
+            this.cheques = new List<ChequeMsg>();
+        }
+        public object Clone()
+        {
+            return (TipoPagoMsg)MemberwiseClone();
+        }
+    }
+
+    public class ChequeMsg
+    {
+        public dynamic monto;
+
         //cheque
         public string CodigoCuentaCheque { get; set; }
         public string FechaVencimientoChequeStr { get; set; }
@@ -66,20 +92,12 @@ namespace jbp.msg.sap
         public string CodigoBanco { get; set; }
         public int NumCheque { get; set; }
         public string Posfechado { get; set; }
-
-        //Transferencia
-        public string CodigoCuentaJB { get; set; }
-        public int NumTransferencia { get; set; }
         public string bancoTxt { get; set; }
-
-        public object Clone()
-        {
-            return (TipoPagoMsg)MemberwiseClone();
-        }
     }
-
     public class DocCarteraMsg: ICloneable
     {
+        public double saldo;
+
         public decimal total { get; set; }
         public double toPay { get; set; }
         public string numDoc { get; set; }

@@ -58,7 +58,6 @@ namespace jbp.business.hana
                     select
                      t0.""CodArticulo"",
                      t2.""Articulo"",
-                     t0.""Cantidad"",
                      t2.""UnidadMedida"",
                      t1.""Fabricante"",
                      t1.""LoteProveedor"",
@@ -67,15 +66,29 @@ namespace jbp.business.hana
                      to_char(t1.""FechaIngreso"", 'yyyy-mm-dd') ""FechaIngreso"",
                      to_char(t1.""FechaFabricacion"", 'yyyy-mm-dd') ""FechaFabricacion"",
                      to_char(t1.""FechaVencimiento"", 'yyyy-mm-dd') ""FechaVencimiento"",
-                     to_char(t1.""FechaRetesteo"", 'yyyy-mm-dd') ""FechaRetesteo""
+                     to_char(t1.""FechaRetesteo"", 'yyyy-mm-dd') ""FechaRetesteo"",
+                     sum(t0.""Cantidad"") ""Cantidad""
                     from
                      ""JbpVw_CantidadesPorLote"" t0 inner join
                      ""JbpVw_Lotes"" t1 on t1.""Id"" = t0.""IdLote"" inner join
-                     ""JbpVw_Articulos"" t2 on t2.""CodArticulo""=t0.""CodArticulo""
+                     ""JbpVw_Articulos"" t2 on t2.""CodArticulo"" = t0.""CodArticulo""
                     where
                      t0.""CodArticulo"" = '{0}'
-                     and t0.""Cantidad"">0
-                     and t1.""Bultos"">0
+                     and t1.""Bultos"" > 0
+                    group by
+                     t0.""CodArticulo"",
+                     t2.""Articulo"",
+                     t2.""UnidadMedida"",
+                     t1.""Fabricante"",
+                     t1.""LoteProveedor"",
+                     t1.""Lote"",
+                     t1.""Bultos"",
+                     t1.""FechaIngreso"",
+                     t1.""FechaFabricacion"",
+                     t1.""FechaVencimiento"",
+                     t1.""FechaRetesteo""
+                    having
+                     sum(t0.""Cantidad"") > 0
                     order by
                      t1.""Fabricante"",
                      t1.""Lote""
@@ -124,6 +137,7 @@ namespace jbp.business.hana
                    select
                     distinct
                     t0.""CodArticulo"",
+                    t0.""CodBodega"",
                     t1.""Articulo""
                    from 
                     ""JbpVw_CantidadesPorLote"" t0 inner join
@@ -353,11 +367,8 @@ namespace jbp.business.hana
                      t1.""Articulo"",
                      t1.""Lote"",
                       case
-
-                         when t1.""Estado"" = 'Acceso Denegado' then 'FOR-BPH-009 Rev.01 / I-POE-BPH-001'-- cuarentena
-
+                        when t1.""Estado"" = 'Acceso Denegado' then 'FOR-BPH-009 Rev.01 / I-POE-BPH-001'-- cuarentena
                         when t1.""Estado"" = 'Liberado' then 'FOR-CCQ-079 Rev.01 / I-POE-CCQ-033'-- liberado
-
                         when t1.""Estado"" = 'Bloqueado' then 'FOR-ASC-060 Rev.02 / I-POE-ASC-023'-- Rechazado
 
                      end ""CodPoe"",
@@ -365,6 +376,7 @@ namespace jbp.business.hana
                      t2.""UnidadMedida"",
                      t1.""LoteProveedor"",
                      t1.""Fabricante"",
+                     to_char(t1.""FechaIngreso"", 'yyyy-mm-dd') ""FechaIngreso"",
                      to_char(t1.""FechaFabricacion"", 'yyyy-mm-dd') ""FechaFabricacion"",
                      to_char(t1.""FechaVencimiento"", 'yyyy-mm-dd') ""FechaVencimiento"",
                      to_char(t1.""FechaRetesteo"", 'yyyy-mm-dd') ""FechaRetest"",
@@ -397,6 +409,7 @@ namespace jbp.business.hana
                         UnidadMedida = dr["UnidadMedida"].ToString(),
                         LoteProveedor = dr["LoteProveedor"].ToString(),
                         Fabricante = dr["Fabricante"].ToString(),
+                        FechaIngreso = dr["FechaIngreso"].ToString(),
                         FechaFabricacion = dr["FechaFabricacion"].ToString(),
                         FechaVencimiento = dr["FechaVencimiento"].ToString(),
                         FechaRetest = dr["FechaRetest"].ToString(),

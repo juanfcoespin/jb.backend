@@ -11,7 +11,7 @@ namespace jbp.services.rest.Controllers
 {
     public class PagoController : ApiController
     {
-        public List<string> Post([FromBody] List<PagoMsg> pagos)
+        public List<string> Post([FromBody] List<PagosMsg> pagos)
         {
             var ms = new PagoBusiness().SavePagos(pagos);
             return ms;

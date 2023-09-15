@@ -84,7 +84,9 @@ namespace emailSender
                     ms.Usuario = matrix[1];
                     ms.Mail = mail;
                     var error = "";
-                    var enviado= MailUtils.SendAndGetError(ref error, mail,conf.Default.asunto, msg, rolFileWithPath);
+                    var files=new List<string>();
+                    files.Add(rolFileWithPath);
+                    var enviado= MailUtils.SendAndGetError(ref error, mail,conf.Default.asunto, msg, files);
                     if (enviado)
                         this.ui.CorreosEnviados++;
                     else
