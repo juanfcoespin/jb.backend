@@ -149,6 +149,9 @@ namespace jbp.msg
         public string birthDate;
         public string priceListId;
         public string telefono;
+        public string metaCompras;
+        public string rucPrincipal;
+        public string emailPtk;
 
         public string id { get; set; }
         public string name { get; set; }

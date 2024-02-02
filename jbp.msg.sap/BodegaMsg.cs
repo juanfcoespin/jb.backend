@@ -236,8 +236,10 @@ namespace jbp.msg.sap
     public class PedidoMsg {
 
         public List<PedidoLineaMsg> Lineas { get; set; }
-        public string NumPedido { get; set; }
-        public string FechaPedido { get; set; }
+        public string DocNumOrigen { get; set; }
+        public string Fecha { get; set; }
+        public string IdDocOrigen { get; set; }
+        public string CodProveedor { get; set; }
 
         public PedidoMsg() {
             this.Lineas = new List<PedidoLineaMsg>();

@@ -24,6 +24,12 @@ namespace jbp.services.rest.Controllers
         {
             return OrdenFabricacionBusiness.GetOfLiberadasPesaje();
         }
+        [HttpGet]
+        [Route("api/of/getOfLiberadasPesaje/{codInsumo}")]
+        public List<OrdenFabricacionLiberadaPesajeMsg> GetOfLiberadasPesaje(string codInsumo)
+        {
+            return OrdenFabricacionBusiness.GetOfLiberadasPesaje(codInsumo);
+        }
 
         [HttpGet]
         [Route("api/of/getComponentesOf/{docNum}")]

@@ -93,7 +93,7 @@ namespace jbp.business.hana
                     {
                         CodArticulo = dr["CodArticulo"].ToString(),
                         Articulo = dr["Articulo"].ToString(),
-                        Cantidad = bc.GetDecimal(dr["Cantidad"]),
+                        Cantidad = bc.GetDecimal(dr["Cantidad"],4),
                         UnidadMedida = dr["UnidadMedida"].ToString(),
                         BodegaDestino = dr["BodegaDestino"].ToString(),
                         LineNum = bc.GetInt(dr["LineNum"]),
@@ -110,7 +110,7 @@ namespace jbp.business.hana
                  t0.""CodArticulo"",
                  t0.""Articulo"",
                  t2.""Lote"",
-                 t2.""Cantidad"",
+                 t0.""CantidadAbierta"" ""Cantidad"",
                  t1.""UnidadMedida"",
                  t3.""Id"" ""IdLote"",
                  t0.""BodegaOrigen"",
@@ -127,6 +127,7 @@ namespace jbp.business.hana
                  t0.""IdSolicitudTraslado"" = {0}
                  and t0.""LineStatus""='O' --abierto
                  and t2.""DireccionTexto"" = 'Asignada'
+                 and t2.""Cantidad"">0
             ", id);
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
@@ -139,7 +140,7 @@ namespace jbp.business.hana
                         CodArticulo = dr["CodArticulo"].ToString(),
                         Articulo = dr["Articulo"].ToString(),
                         Lote = dr["Lote"].ToString(),
-                        Cantidad = bc.GetDecimal(dr["Cantidad"]),
+                        Cantidad = bc.GetDecimal(dr["Cantidad"],4),
                         UnidadMedida = dr["UnidadMedida"].ToString(),
                         BodegaOrigen = dr["BodegaOrigen"].ToString(),
                         BodegaDestino = dr["BodegaDestino"].ToString(),
@@ -174,7 +175,7 @@ namespace jbp.business.hana
                 {
                     ms.Add(new UbicacionLoteMsg{
                         Ubicacion = dr["Ubicacion"].ToString(),
-                        Cantidad = bc.GetDecimal(dr["Cantidad"]),
+                        Cantidad = bc.GetDecimal(dr["Cantidad"],4),
                     });
                 }
             }

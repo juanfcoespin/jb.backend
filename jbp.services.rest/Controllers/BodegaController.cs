@@ -41,6 +41,12 @@ namespace jbp.services.rest.Controllers
         {
             return BodegaBusiness.GetPedidosPorProveedor(codProveedor);
         }
+        [HttpGet]
+        [Route("api/bodega/getFacturasReservaPorProveedor/{codProveedor}")]
+        public object GetFacturasReservaPorProveedor(string codProveedor)
+        {
+            return BodegaBusiness.GetFacturasReservaPorProveedor(codProveedor);
+        }
 
         [HttpGet]
         [Route("api/bodega/getEMPorProveedor/{codProveedor}")]

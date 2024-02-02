@@ -15,6 +15,12 @@ namespace jbp.services.rest.Controllers
         public List<CarteraMsg> getCarteraByRucPrincipal(string rucPrincipal) { 
             return jbp.business.hana.SocioNegocioBusiness.GetCarteraByRucPrincipalCliente(rucPrincipal);
         }
+        [HttpGet]
+        [Route("api/socioNegocio/getVentasYPuntosMes/{rucPrincipal}")]
+        public object getVentasYPuntosMes(string rucPrincipal)
+        {
+            return jbp.business.hana.SocioNegocioBusiness.getVentasYPuntosMesPorRucPrincipal(rucPrincipal);
+        }
 
         [HttpGet]
         [Route("api/socioNegocio/getHistoricoClientesByNombre/{nombre}")]
@@ -68,9 +74,15 @@ namespace jbp.services.rest.Controllers
         
         [HttpGet]
         [Route("api/socioNegocio/getProveedoresConPedidos")]
-        public List<SocioNegocioItemMsg> GetProveedores()
+        public object GetProveedoresConPedidos()
         {
-            return jbp.business.hana.SocioNegocioBusiness.GetProveedores();
+            return jbp.business.hana.SocioNegocioBusiness.GetProveedoresConPedidos();
+        }
+        [HttpGet]
+        [Route("api/socioNegocio/getProveedoresConFacturasReserva")]
+        public object GetProveedoresConFacturasReserva()
+        {
+            return jbp.business.hana.SocioNegocioBusiness.GetProveedoresConFacturasReserva();
         }
 
         [HttpGet]

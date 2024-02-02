@@ -77,6 +77,83 @@ namespace jbp.business.hana
             });
             return ms;
         }
+
+        public static object getVentasYPuntosMesPorRucPrincipal(string rucPrincipal)
+        {
+            try
+            {
+                var sql = string.Format(@"
+                      select 
+	                    sum(t1.""montoFactura"") ""Ventas"",
+                        sum(t1.""Puntos"") ""Puntos""
+                     from
+                      ""JbpVw_SocioNegocio"" t0 inner join
+                      ""JbpVw_FacturasMasNCParticipantes"" t1 on t1.""RucPrincipal"" = t0.""RucPrincipal""
+                     where
+                      t0.""RucPrincipal"" = '{0}'
+                      and t1.""fechaFactura"" like '%' || to_char(current_date, 'mm/yyyy') || '%'
+                ",rucPrincipal);
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql);    
+                if(dt.Rows.Count>0)
+                    return new
+                    {
+                        ventas = bc.GetInt(dt.Rows[0]["Ventas"]),
+                        puntos = bc.GetInt(dt.Rows[0]["Puntos"])
+                    };
+                return null;
+
+            }
+            catch (Exception e) {
+                return new {
+                    error="Error: " + e.Message
+                };
+            }
+        }
+
+        public static object GetProveedoresConFacturasReserva()
+        {
+            try
+            {
+                /*
+                 Todos los proveedores que tengan asociadas facturas de reserva sin entrada de mercancía
+                 */
+                var ms=new { 
+                    data=new List<object>()
+                }; 
+                
+                var sql = @"
+                   select 
+	                distinct
+	                  t0.""CodProveedor"",
+                      t0.""Proveedor""
+                    from
+                     ""JbpVw_FacturasProveedores"" t0 inner join
+                     ""JbpVw_FacturaProveedorLinea"" t1 on t1.""IdFactProveedor"" = t0.""Id"" left outer join
+                     ""JbpVw_EntradaMercanciaLinea"" t2 on
+                         t2.""BaseEntry"" = t0.""Id""
+                         and t2.""IdTipoDocumento"" = 18--factura de reserva
+                       and t2.""CodArticulo"" = t1.""CodArticulo""
+                    where
+                     t0.""FacturaDeReserva"" = 'Si'
+                     and t0.""Cancelado"" = 'No'
+                     and t0.""Estado"" = 'Abierto'
+                     and t1.""Cantidad"" - ifnull(t2.""Cantidad"", 0) > 0-- CantPendiente por ingresar > 0
+                ";
+                var dt=new BaseCore().GetDataTableByQuery(sql);
+                foreach (DataRow dr in dt.Rows) {
+                    ms.data.Add(new { 
+                     codProveedor=dr["CodProveedor"].ToString(),
+                     name = dr["Proveedor"].ToString()
+                    });
+                }
+                return ms;
+            }
+            catch (Exception e) {
+                return new { error = e.Message };
+            }
+        }
+
         public static double GetPrecioByCodSocioNegocioCodArticulo(string codSocioNegocio, string codArticulo)
         {
             var sql = string.Format(@"
@@ -225,14 +302,15 @@ namespace jbp.business.hana
 
         }
         
-        public static List<SocioNegocioItemMsg> GetProveedores()
+        public static object GetProveedoresConPedidos()
         {
-            var ms = new List<SocioNegocioItemMsg>();
-            var sql = @"
+            try
+            {
+                var data = new List<object>();
+                var sql = @"
                 select
                  ""CodSocioNegocio"",
-                 ""Nombre"",
-                 ""Ruc""
+                 ""Nombre""
                  from ""JbpVw_SocioNegocio""
                 where
                  ""CodTipoSocioNegocio"" = 'S'
@@ -246,15 +324,26 @@ namespace jbp.business.hana
                  )
                 order by 2
             ";
-            var dt=new BaseCore().GetDataTableByQuery(sql);
-            foreach (DataRow dr in dt.Rows) {
-                ms.Add(new SocioNegocioItemMsg { 
-                    Codigo=dr["CodSocioNegocio"].ToString(),
-                    Ruc = dr["Ruc"].ToString(),
-                    Nombre = dr["Nombre"].ToString()
-                });                
+                var dt = new BaseCore().GetDataTableByQuery(sql);
+                foreach (DataRow dr in dt.Rows)
+                {
+                    data.Add(new
+                    {
+                        codProveedor = dr["CodSocioNegocio"].ToString(),
+                        name = dr["Nombre"].ToString()
+                    });
+                }
+                return new { 
+                    data=data
+                };
             }
-            return ms;
+            catch (Exception e)
+            {
+                return new {
+                    error = e.Message
+                };
+            }
+            
         }
 
         public static List<SocioNegocioItemMsg> GetItemsBytoken(string token)
@@ -395,11 +484,14 @@ namespace jbp.business.hana
                 ""Nombre"",
                 ""NombreComercial"",
                 ""Ruc"",
+                ""RucPrincipal"",
                 ""JbpFn_GetCumple""(""FechaCumpleaños"") ""FecCumple"",
                 ""IdListaPrecio"",
                 ""Telefono"",
                 ""Celular"",
-                ""PorcentajeDescuentoFinanciero""
+                ""MetaCompras"",
+                ""PorcentajeDescuentoFinanciero"",
+                ""EmailPtk""
                from
                 ""JbpVw_SocioNegocio""
                where
@@ -427,14 +519,17 @@ namespace jbp.business.hana
                         name = dr["Nombre"].ToString(),
                         comercialName = dr["NombreComercial"].ToString(),
                         ruc= dr["Ruc"].ToString(),
+                        rucPrincipal = dr["RucPrincipal"].ToString(),
                         birthDate = dr["FecCumple"].ToString(),
+                        metaCompras = dr["MetaCompras"].ToString(),
                         priceListId = dr["IdListaPrecio"].ToString(),
                         telefono = dr["Telefono"].ToString(),
                         celular = dr["Celular"].ToString(),
                         directions = GetDirectionsById(codSocioNegocio),
                         contacts = GetContactsById(codSocioNegocio),
                         observations = GetVendorObservationsById(codSocioNegocio),
-                        porcentajeDescuentoFinanciero = bc.GetDecimal(dr["PorcentajeDescuentoFinanciero"])
+                        porcentajeDescuentoFinanciero = bc.GetDecimal(dr["PorcentajeDescuentoFinanciero"]),
+                        emailPtk = dr["EmailPtk"].ToString(),
                     });
                 }
             }

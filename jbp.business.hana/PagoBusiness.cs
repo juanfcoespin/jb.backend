@@ -119,13 +119,14 @@ namespace jbp.business.hana
             msg += "    <td style='border: solid 1px #000000'><b>Descuento PP</b></td>";
             msg += "    <td style='border: solid 1px #000000'><b>Valor a Pagar</b></td>";
             msg += " </tr>";
+            //TODO: Incluir en el correo el valor de la retención aplicada
             pago.facturasAPagar.ForEach(factura => {
                 msg += "<tr>";
                 msg += "    <td style='border: solid 1px #000000'>" + factura.numDoc+"</td>";
                 msg += "    <td style='border: solid 1px #000000'>USD " + factura.total + "</td>";
                 msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPay +"</td>";
                 msg += "    <td style='border: solid 1px #000000'>" + factura.porcentajePP + "%</td>";
-                msg += "    <td style='border: solid 1px #000000'>USD " + factura.descuentoPP + "</td>";
+                msg += "    <td style='border: solid 1px #000000'>USD " + Math.Round(factura.descuentoPP,2) + "</td>";
                 msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPayMasProntoPago + "</td>";
                 msg += "</tr>";
             });

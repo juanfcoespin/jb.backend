@@ -9,7 +9,7 @@ namespace jbp.msg.sap
     public class ComponentesMsg: OFBaseMsg
     {
         public string UnidadMedida { get; set; }
-        public decimal CantidadTotal { get; set; }
+        public decimal CantidadRequerida { get; set; }
         public bool RequiereRepesaje { get; set; }
         public List<CantidadLoteOFMsg> CantidadesPorLote { get; set; }
         public decimal CantidadPesada { get; set; }

@@ -6,19 +6,31 @@ using System.Threading.Tasks;
 
 namespace jbp.msg.sap
 {
+    public class GastosAdicionalesMsg
+    {
+        public dynamic LineNum { get; set; }
+        public dynamic ObjType { get; set; }
+        public dynamic DocEntry { get; set; }
+        
+    }
     public class EntradaMercanciaMsg
     {
+        public EntradaMercanciaMsg() {
+            this.GastosAdicionales = new List<GastosAdicionalesMsg>();
+        }
         public string CodProveedor { get; set; }
         public List<EntradaMercanciaLineaMsg> Lineas { get; set; }
         
-        public int NumPedido { get; set; }
-        public int IdOrdenCompra { get; set; }
+        public int DocNumOrigen { get; set; }
+        public int IdDocOrigen { get; set; }
         public string Error { get; set; }
         public string IdEM { get; set; }
         public int DocNumEntradaMercancia { get; set; }
         public string FechaPedido { get; set; }
         public string responsable { get; set; }
         public string Comentario { get; set; }
+        public string tipo { get; set; }
+        public List<GastosAdicionalesMsg> GastosAdicionales { get; set; }
     }
     
     public class EntradaMercanciaLineaMsg {

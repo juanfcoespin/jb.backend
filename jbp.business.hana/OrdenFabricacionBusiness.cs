@@ -38,6 +38,39 @@ namespace jbp.business.hana
             return ms;
         }
 
+        public static List<OrdenFabricacionLiberadaPesajeMsg> GetOfLiberadasPesaje(string codInsumo)
+        {
+            var ms = new List<OrdenFabricacionLiberadaPesajeMsg>();
+            var sql = string.Format(@"
+                select
+                 t0.""DocNum"",
+                 t0.""CodArticulo"",
+                 t0.""Articulo"",
+                 t1.""CodInsumo""
+                from
+                 ""JbpVw_OrdenFabricacion"" t0 inner join
+                 ""JbpVw_OrdenFabricacionLinea"" t1 on t1.""IdOrdenFabricacion"" = t0.""Id""
+                where
+                 t0.""Estado"" = 'Liberado'
+                 and(t0.""CodArticulo"" like '450%' or t0.""CodArticulo"" like '451%')
+                 and t0.""FraccionadoPesaje"" != 'SI'
+                 and t1.""CodInsumo"" = '{0}'
+                order by t0.""Id"" desc
+            ", codInsumo);
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
+            foreach (DataRow dr in dt.Rows)
+            {
+                ms.Add(new OrdenFabricacionLiberadaPesajeMsg()
+                {
+                    NumOrdenFabricacion = bc.GetInt(dr["DocNum"]),
+                    CodigoArticulo = dr["CodArticulo"].ToString(),
+                    Descripcion = dr["Articulo"].ToString()
+                });
+            }
+            return ms;
+        }
+
         public static OFMasComponentesMsg GetComponentesAPesarOfByDocNum(int docNum)
         {
             var ms = new OFMasComponentesMsg();
@@ -88,8 +121,8 @@ namespace jbp.business.hana
                     CodigoArticulo = dr["CodInsumo"].ToString(),
                     UnidadMedida = dr["UnidadMedida"].ToString(),
                     Descripcion = dr["Insumo"].ToString(),
-                    CantidadTotal = bc.GetDecimal(dr["CantidadPlanificada"]),
-                    CantidadPesada = bc.GetDecimal(dr["CantidadPesada"])
+                    CantidadRequerida = bc.GetDecimal(dr["CantidadPlanificada"],6),
+                    CantidadPesada = bc.GetDecimal(dr["CantidadPesada"],6)
                 };
                 componente.CantidadesPorLote = GetCantidadesPorLote(docNum, componente.CodigoArticulo);
                 ms.Componentes.Add(componente);
@@ -105,7 +138,7 @@ namespace jbp.business.hana
         private static BodegaComponenteMsg GetBodegasComponentes(int docNumOf)
         {
             var ms = new BodegaComponenteMsg();
-            var sql = @"
+            var sql = string.Format(@"
                 select 
                  top 1
                  t0.""BodegaDestino"" ""BodegaDesde"",
@@ -115,8 +148,8 @@ namespace jbp.business.hana
                   ""JbpVw_OrdenFabricacionLinea"" t2 on t2.""IdOrdenFabricacion"" = t1.""Id"" left outer join
                   ""JbpVw_SolicitudTraslado"" t0 on t0.""DocNumOrdenFabricacion"" = cast(t1.""DocNum"" as nvarchar(50))
                  where
-                  t1.""DocNum"" = '1292'
-            ";
+                  t1.""DocNum"" = {0}
+            ",docNumOf);
             var dt = new BaseCore().GetDataTableByQuery(sql);
             foreach(DataRow dr in dt.Rows)
             {
@@ -140,7 +173,7 @@ namespace jbp.business.hana
                     ms.Add(new CantidadLoteOFMsg
                     {
                         Lote = dr["Lote"].ToString(),
-                        Cantidad = bc.GetDecimal(dr["Cantidad"])
+                        Cantidad = bc.GetDecimal(dr["Cantidad"],6)
                     }); ;
                 }
             }

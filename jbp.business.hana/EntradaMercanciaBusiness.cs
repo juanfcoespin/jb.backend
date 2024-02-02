@@ -42,8 +42,6 @@ namespace jbp.business.hana
                     if (!sapEntradaMercancia.IsConected())
                         sapEntradaMercancia.Connect();//se conecta a sap
                     SetNewLotes(me); //se asigna los lotes nuevos desde la bdd
-                    if (porCompra)
-                        SetAdicionalesPedidoCompra(me); //pone el id y el codProveedor del pedido de compra
                     me.Lineas.ForEach(line => {
                         line.AsignacionesLote.ForEach(al => {
                             if (!string.IsNullOrEmpty(al.Ubicacion)) { 
@@ -51,10 +49,11 @@ namespace jbp.business.hana
                             }
                         });
                     });
+                    SetGastosAdicionales(ref me);
                     var ms=(porCompra)? sapEntradaMercancia.AddPorCompra(me): sapEntradaMercancia.Add(me);
                     if (string.IsNullOrEmpty(ms.Error)) { //si no hay error
                         ms.DocNumEntradaMercancia = GetDocNumById(ms.IdEM);
-                        UpdateResponsableEM(me, ms.IdEM);
+                        SetComentarioAndUpdateResponsableEM(me, ms.IdEM);
                         ms.Lineas.ForEach(l => {
                             l.AsignacionesLote.ForEach(al => {
                                 ActualizarEstadoLoteCuarentena(al.Lote);
@@ -76,6 +75,27 @@ namespace jbp.business.hana
             catch (Exception e)
             {
                 return new EntradaMercanciaMsg { Error = e.Message };
+            }
+        }
+
+        private static void SetGastosAdicionales(ref EntradaMercanciaMsg me)
+        {
+            if (me.tipo == "Factura de Reserva") {
+                var sql = string.Format(@"
+                   select 
+                    ""ObjType"",
+                    ""DocEntry"",
+                    ""LineNum""
+                     from PCH3 where ""DocEntry"" = {0}
+                ", me.IdDocOrigen);
+                var dt = new BaseCore().GetDataTableByQuery(sql);
+                foreach (DataRow dr in dt.Rows) {
+                    me.GastosAdicionales.Add(new GastosAdicionalesMsg { 
+                        ObjType = dr["ObjType"].ToString(),
+                        DocEntry = dr["DocEntry"].ToString(),
+                        LineNum = dr["LineNum"].ToString()
+                    });
+                }
             }
         }
 
@@ -121,14 +141,30 @@ namespace jbp.business.hana
 
         //}
 
-        private static void UpdateResponsableEM(EntradaMercanciaMsg me, string idEM)
+        private static void SetComentarioAndUpdateResponsableEM(EntradaMercanciaMsg me, string idEM)
         {
+            var comentarioBdd = GetComentarioEM(idEM);
+            me.Comentario = String.Format("(Ingresado por: {0}) {1} {2}",
+                me.responsable, comentarioBdd, me.Comentario    
+            );
+            // se trunca el comentario a la longitud máxima en la bdd
+            if( me.Comentario.Length > 253){
+                me.Comentario = me.Comentario.Substring(0, 253);
+            }
             var sql = string.Format(@"
                 update OPDN
-                set ""Comments""='** {0} Responsable Ingreso: {1} **   ' ||  ""Comments""
-                where ""DocEntry"" = {2}
-            ", me.Comentario, me.responsable,idEM );
+                set ""Comments""='{0}'
+                where ""DocEntry"" = {1}
+            ", me.Comentario, idEM );
             new BaseCore().Execute(sql);
+        }
+
+        private static string GetComentarioEM(string idEM)
+        {
+            var sql = string.Format(@"
+                select ""Comments"" from OPDN where ""DocEntry"" = {0}
+            ", idEM);
+            return new BaseCore().GetScalarByQuery(sql);
         }
 
         public static int GetDocNumById(string idEntradaMercancia) {
@@ -142,25 +178,6 @@ namespace jbp.business.hana
             ", idEntradaMercancia);
             return new BaseCore().GetIntScalarByQuery(sql);
         }
-        private static void SetAdicionalesPedidoCompra(EntradaMercanciaMsg me)
-        {
-            var sql = string.Format(@"
-            select
-             ""Id"",
-             ""CodProveedor""
-            from
-             ""JbpVw_Pedidos""
-            where
-             ""DocNum"" = {0}
-            ", me.NumPedido);
-            var bc = new BaseCore();
-            var dt=bc.GetDataTableByQuery(sql);
-            if (dt != null) {
-                me.IdOrdenCompra = bc.GetInt(dt.Rows[0]["Id"]);
-                me.CodProveedor= dt.Rows[0]["CodProveedor"].ToString();
-            }
-        }
-
         private static void SetNewLotes(EntradaMercanciaMsg me)
         {
             //Ej.: JB-220530142909

@@ -160,6 +160,10 @@ namespace jbp.business.hana
                     {
                         ms.FarmacoVigilancia = true;
                     }
+                    if (grupo.ToLower() == "visitadoresmedicos")
+                    {
+                        ms.VisitadoresMedicosFarmacias = true;
+                    }
                 });
             }
             return ms;

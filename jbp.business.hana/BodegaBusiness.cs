@@ -50,6 +50,92 @@ namespace jbp.business.hana
             return ms;
         }
 
+        public static List<FactReservaMsg> GetFacturasReservaPorProveedor(string codProveedor)
+        {
+            /*
+                Todos los proveedores que tengan asociadas facturas de reserva con cantidades pendientes por recibir
+                */
+            var ms = new List<FactReservaMsg>();
+            var sql = string.Format(@"
+                select 
+	                t0.""Id"",
+                    t0.""DocNum"",
+                    t0.""CodProveedor"",
+                    to_char(t0.""Fecha"", 'yyyy-mm-dd') ""Fecha"",
+                    t3.""CodArticulo"",
+                    t3.""Articulo"",
+                    t1.""NumLinea"" ""LineNum"",
+                    t1.""Cantidad"" ""Pedido"",
+                    t1.""Cantidad"" - ifnull(t2.""Cantidad"", 0) ""Pendiente"",
+                    t3.""UnidadMedida""
+                from
+                    ""JbpVw_FacturasProveedores"" t0 inner join
+                    ""JbpVw_FacturaProveedorLinea"" t1 on t1.""IdFactProveedor"" = t0.""Id"" inner join
+                    ""JbpVw_Articulos"" t3 on t3.""CodArticulo"" = t1.""CodArticulo"" left outer join
+                    ""JbpVw_EntradaMercanciaLinea"" t2 on
+                        t2.""BaseEntry"" = t0.""Id""
+                        and t2.""IdTipoDocumento"" = 18--factura de reserva
+                    and t2.""CodArticulo"" = t1.""CodArticulo""
+                where
+                    t0.""CodProveedor"" = '{0}'
+                    and t0.""FacturaDeReserva"" = 'Si'
+                    and t0.""Cancelado"" = 'No'
+                    and t0.""Estado"" = 'Abierto'
+                    and t1.""Cantidad"" - ifnull(t2.""Cantidad"", 0) > 0 -- CantPendiente
+            ", codProveedor);
+            var bc= new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
+            var detalle=new List<DetalleMsg>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                detalle.Add(new DetalleMsg
+                {
+                    id = dr["Id"].ToString(),
+                    docNum = dr["DocNum"].ToString(),
+                    codProveedor = dr["CodProveedor"].ToString(),
+                    fecha = dr["Fecha"].ToString(),
+                    codArticulo = dr["CodArticulo"].ToString(),
+                    articulo = dr["Articulo"].ToString(),
+                    pedido = bc.GetDecimal(dr["Pedido"]),
+                    pendiente = bc.GetDecimal(dr["Pendiente"]),
+                    unidadMedida = dr["UnidadMedida"].ToString(),
+                    LineNum = bc.GetInt(dr["LineNum"])
+                });
+            }
+            detalle.ForEach(det => {
+                //si no lo encuentra en el detalle crea una nueva factura de reserva
+                if (ms.FindAll(p => p.DocNumOrigen == det.docNum).Count == 0)
+                {
+                    ms.Add(new FactReservaMsg
+                    {
+                        IdDocOrigen = det.id,
+                        DocNumOrigen = det.docNum,
+                        CodProveedor = det.codProveedor,
+                        Fecha = det.fecha,
+                        Lineas = new List<object>(),
+                    });
+                }
+            });
+            ms.ForEach(fr =>
+            {
+                var lineasDetalle = detalle.FindAll(d => d.docNum == fr.DocNumOrigen);
+                lineasDetalle.ForEach(l => {
+                    fr.Lineas.Add(new
+                    {
+                        CodArticulo = l.codArticulo,
+                        Articulo = l.articulo,
+                        CantidadPedido = l.pedido,
+                        CantidadPendiente = l.pendiente,
+                        UnidadMedida = l.unidadMedida,
+                        LineNum=l.LineNum
+                    });                
+                });
+            });
+            return ms;
+        }
+
+        
+
         public static object GetLotesConStockByCodArticulo(string codArticulo)
         {
             try { 
@@ -62,7 +148,7 @@ namespace jbp.business.hana
                      t1.""Fabricante"",
                      t1.""LoteProveedor"",
                      t1.""Lote"",
-                     t1.""Bultos"",
+                     ifnull(t1.""Bultos"",0) ""Bultos"",
                      to_char(t1.""FechaIngreso"", 'yyyy-mm-dd') ""FechaIngreso"",
                      to_char(t1.""FechaFabricacion"", 'yyyy-mm-dd') ""FechaFabricacion"",
                      to_char(t1.""FechaVencimiento"", 'yyyy-mm-dd') ""FechaVencimiento"",
@@ -74,7 +160,6 @@ namespace jbp.business.hana
                      ""JbpVw_Articulos"" t2 on t2.""CodArticulo"" = t0.""CodArticulo""
                     where
                      t0.""CodArticulo"" = '{0}'
-                     and t1.""Bultos"" > 0
                     group by
                      t0.""CodArticulo"",
                      t2.""Articulo"",
@@ -137,7 +222,6 @@ namespace jbp.business.hana
                    select
                     distinct
                     t0.""CodArticulo"",
-                    t0.""CodBodega"",
                     t1.""Articulo""
                    from 
                     ""JbpVw_CantidadesPorLote"" t0 inner join
@@ -572,6 +656,8 @@ namespace jbp.business.hana
             {
                 var sql = String.Format(@"
                     select 
+                     t1.""Id"",
+                     t1.""CodProveedor"",
                      t1.""DocNum"" ""NumPedido"",
                      to_char(t1.""Fecha"", 'yyyy-mm-dd')  ""FechaPedido"",
                      t0.""LineNum"",
@@ -593,6 +679,8 @@ namespace jbp.business.hana
                      and t0.""LineStatus"" = 'O'--lineas abiertas
                      and(t4.""Cancelado"" is null or t4.""Cancelado"" <> 'Y')
                     group by
+                     t1.""Id"",
+                     t1.""CodProveedor"",
                      t1.""DocNum"",
                      to_char(t1.""Fecha"", 'yyyy-mm-dd'),
                      t0.""LineNum"",
@@ -611,8 +699,10 @@ namespace jbp.business.hana
                     if (numPedidoAnterior != numPedido) { //Un nuevo Pedido
                         pedido = new PedidoMsg
                         {
-                            NumPedido = dr["NumPedido"].ToString(),
-                            FechaPedido = dr["FechaPedido"].ToString()
+                            DocNumOrigen = dr["NumPedido"].ToString(),
+                            IdDocOrigen = dr["Id"].ToString(),
+                            CodProveedor = dr["CodProveedor"].ToString(),
+                            Fecha = dr["FechaPedido"].ToString()
                         };
                         ms.Pedidos.Add(pedido);
                     }
@@ -626,7 +716,7 @@ namespace jbp.business.hana
                     };
                     linea.CantidadPendiente = linea.CantidadPedido - linea.CantidadEntregada;
                     pedido.Lineas.Add(linea);
-                    numPedidoAnterior = pedido.NumPedido;
+                    numPedidoAnterior = pedido.DocNumOrigen;
                 }
             }
             catch (Exception e)
@@ -635,5 +725,29 @@ namespace jbp.business.hana
             }
             return ms;
         }
+    }
+
+    public class FactReservaMsg
+    {
+        public string DocNumOrigen { get; set; }
+        public string Fecha { get; set; }
+        public string CodProveedor { get; internal set; }
+        public string IdDocOrigen { get; internal set; }
+
+        public List<object> Lineas;
+    }
+
+    internal class DetalleMsg
+    {
+        public string docNum { get; set; }
+        public string fecha { get; set; }
+        public string codArticulo { get; set; }
+        public string articulo { get; set; }
+        public decimal pedido { get; set; }
+        public decimal pendiente { get; set; }
+        public string unidadMedida { get; set; }
+        public string codProveedor { get; internal set; }
+        public string id { get; internal set; }
+        public int LineNum { get; internal set; }
     }
 }

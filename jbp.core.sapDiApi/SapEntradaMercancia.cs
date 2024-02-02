@@ -48,7 +48,19 @@ namespace jbp.core.sapDiApi
                 me.IdEM=this.Company.GetNewObjectKey();
             return me;
         }
-
+        public void RegistrarGastosAdicionales(dynamic entradaMercancia, List<GastosAdicionalesMsg> me) {
+            if (me != null && me.Count > 0) {
+                var i = 0;
+                me.ForEach(ga => {
+                    entradaMercancia.Expenses.SetCurrentLine(i);
+                    entradaMercancia.Expenses.BaseDocEntry=ga.DocEntry;
+                    entradaMercancia.Expenses.BaseDocLine = ga.LineNum;
+                    entradaMercancia.Expenses.BaseDocType = ga.ObjType;
+                    entradaMercancia.Expenses.Add();
+                    i++;
+                });
+            }
+        }
         public EntradaMercanciaMsg AddPorCompra(EntradaMercanciaMsg me)
         {
             var entradaMercancia = this.Company.GetBusinessObject(BoObjectTypes.oPurchaseDeliveryNotes);
@@ -57,8 +69,11 @@ namespace jbp.core.sapDiApi
             me.Lineas.ForEach(line =>
             {
                 if (line.AsignacionesLote != null && line.AsignacionesLote.Count > 0) {
-                    entradaMercancia.Lines.BaseType = (int)BoObjectTypes.oPurchaseOrders;
-                    entradaMercancia.Lines.BaseEntry = me.IdOrdenCompra;
+                    var baseType= this.GetSAPBaseType(me.tipo);
+                    if (baseType == null)
+                        throw new Exception("No se ha podido definir el documento base para EM!!");
+                    entradaMercancia.Lines.BaseType = baseType;
+                    entradaMercancia.Lines.BaseEntry = me.IdDocOrigen;
                     entradaMercancia.Lines.BaseLine = line.LineNum;
                     if(!string.IsNullOrEmpty(line.CodBodega))
                         entradaMercancia.Lines.WarehouseCode = line.CodBodega;
@@ -96,13 +111,25 @@ namespace jbp.core.sapDiApi
                     entradaMercancia.Lines.Add();
                 }
             });
+            
+            RegistrarGastosAdicionales(entradaMercancia, me.GastosAdicionales);
+            
             var error = entradaMercancia.Add();
             if (error != 0)
             {
                 me.Error = "Error: " + this.Company.GetLastErrorDescription();
-            }
-            me.IdEM= this.Company.GetNewObjectKey();
+            }else
+                me.IdEM= this.Company.GetNewObjectKey();
             return me;
+        }
+
+        private dynamic GetSAPBaseType(string tipo)
+        {
+            if(tipo == "Pedido de Compra")
+                return (int)BoObjectTypes.oPurchaseOrders;
+            if (tipo == "Factura de Reserva")
+                return (int)BoObjectTypes.oPurchaseInvoices;
+            return null;
         }
 
         ~SapEntradaMercancia()
