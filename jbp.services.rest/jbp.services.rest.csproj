@@ -17,7 +17,8 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <Use64BitIISExpress />
+    <Use64BitIISExpress>
+    </Use64BitIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -135,13 +136,11 @@
     <Compile Include="Controllers\EmpleadoController.cs" />
     <Compile Include="Controllers\MarketingController.cs" />
     <Compile Include="Controllers\SolicitudTransferenciaController.cs" />
-    <Compile Include="Controllers\CuentaController.cs" />
     <Compile Include="Controllers\DirectorioController.cs" />
     <Compile Include="Controllers\BodegaController.cs" />
     <Compile Include="Controllers\EntradaMercanciaController.cs" />
     <Compile Include="Controllers\TransferenciaStockController.cs" />
     <Compile Include="Controllers\EntregaController.cs" />
-    <Compile Include="Controllers\FacturaHistoricoController.cs" />
     <Compile Include="Controllers\FacturaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\EmisionProduccionController.cs" />
@@ -150,7 +149,6 @@
     <Compile Include="Controllers\OrdenFabricacionController.cs" />
     <Compile Include="Controllers\ReaccionesController.cs" />
     <Compile Include="Controllers\PagoController.cs" />
-    <Compile Include="Controllers\periodoController.cs" />
     <Compile Include="Controllers\TransportistaController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\PromotickController.cs" />
@@ -201,10 +199,6 @@
     <ProjectReference Include="..\jbp.business.hana\jbp.business.hana.csproj">
       <Project>{9ed95a00-f6c4-4249-84e4-7f822dc813bf}</Project>
       <Name>jbp.business.hana</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\jbp.business.oracle9i\jbp.business.oracle9i.csproj">
-      <Project>{1e48c5df-d8da-471c-a922-f30024446284}</Project>
-      <Name>jbp.business.oracle9i</Name>
     </ProjectReference>
     <ProjectReference Include="..\jbp.core.sapDiApi\jbp.core.sapDiApi.csproj">
       <Project>{b860b304-07bf-4ce2-b125-695707941e0c}</Project>

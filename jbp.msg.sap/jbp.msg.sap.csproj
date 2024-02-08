@@ -44,13 +44,12 @@
   <ItemGroup>
     <Compile Include="ArticuloMsg.cs" />
     <Compile Include="BaseMsg.cs" />
-    <Compile Include="MarketingMsg.cs" />
-    <Compile Include="SolicitudTrasladoMsg.cs" />
     <Compile Include="BodegaMsg.cs" />
     <Compile Include="CarteraMsg.cs" />
     <Compile Include="EntradaMercanciaMsg.cs" />
     <Compile Include="FacturaMsg.cs" />
     <Compile Include="LoteMsg.cs" />
+    <Compile Include="MarketingMsg.cs" />
     <Compile Include="NotaCreditoMsg.cs" />
     <Compile Include="OrdenFabricacionMsg.cs" />
     <Compile Include="OrdenMsg.cs" />
@@ -59,6 +58,7 @@
     <Compile Include="ReaccionesMsg.cs" />
     <Compile Include="RentencionMsgcs.cs" />
     <Compile Include="SocioNegocioMsg.cs" />
+    <Compile Include="SolicitudTrasladoMsg.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\jbp.msg\jbp.msg.csproj">

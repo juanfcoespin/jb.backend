@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4BAEC0D4-6033-4BED-A096-5FB3486B5E5D}</ProjectGuid>
+    <ProjectGuid>{224A5C25-B81A-438B-B18B-B8A09E102D76}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>test1</RootNamespace>
-    <AssemblyName>test1</AssemblyName>
+    <RootNamespace>TestConnectionSap10</RootNamespace>
+    <AssemblyName>TestConnectionSap10</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -50,17 +51,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\jbp.business.hana\jbp.business.hana.csproj">
-      <Project>{9ed95a00-f6c4-4249-84e4-7f822dc813bf}</Project>
-      <Name>jbp.business.hana</Name>
+    <ProjectReference Include="..\Techtools.net\TechTools.Core\TechTools.Core.Base\TechTools.Core.Base.csproj">
+      <Project>{4890096f-5313-401f-9366-74b7622aae8b}</Project>
+      <Name>TechTools.Core.Base</Name>
     </ProjectReference>
-    <ProjectReference Include="..\jbp.business.oracle9i\jbp.business.oracle9i.csproj">
-      <Project>{1e48c5df-d8da-471c-a922-f30024446284}</Project>
-      <Name>jbp.business.oracle9i</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\jbp.msg\jbp.msg.csproj">
-      <Project>{415c9991-55ee-4454-ba41-8a7ae4dbeec0}</Project>
-      <Name>jbp.msg</Name>
+    <ProjectReference Include="..\Techtools.net\TechTools.Core\TechTools.Core.Hana\TechTools.Core.Hana.csproj">
+      <Project>{46a41246-2d2f-4504-94f1-76db57fd8b55}</Project>
+      <Name>TechTools.Core.Hana</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

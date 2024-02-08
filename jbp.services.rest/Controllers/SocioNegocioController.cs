@@ -3,7 +3,6 @@ using System.Web.Http;
 
 using jbp.msg;
 using jbp.msg.sap;
-using jbp.business.oracle9i;
 using jbp.business.hana;
 
 namespace jbp.services.rest.Controllers
@@ -26,7 +25,8 @@ namespace jbp.services.rest.Controllers
         [Route("api/socioNegocio/getHistoricoClientesByNombre/{nombre}")]
         public SocioNegocioItemMS GetHistoricoClientesByNombre(string nombre)
         {
-            return jbp.business.oracle9i.SocioNegocioBusiness.GetHistoricoClientesByNombre(nombre);
+            return null;
+            //return jbp.business.oracle9i.SocioNegocioBusiness.GetHistoricoClientesByNombre(nombre);
         }
 
         [HttpGet]
@@ -69,7 +69,8 @@ namespace jbp.services.rest.Controllers
         [HttpPost]
         [Route("api/socioNegocio/SaveParticipante")]
         public SavedMs SaveParticipante([FromBody]ParticipantesPuntosMsg me) {
-            return new jbp.business.oracle9i.SocioNegocioBusiness().SaveParticipante(me);
+            //eturn new jbp.business.oracle9i.SocioNegocioBusiness().SaveParticipante(me);
+            return null;
         }
         
         [HttpGet]
