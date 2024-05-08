@@ -35,9 +35,11 @@ namespace jbp.core.sapDiApi
             {
                 if (this.Company.Connected)
                     return true;
+                //this.Company.LicenseServer = 172.31.250.10 "192.168.57.13:4000";
                 this.Company.CompanyDB = conf.Default.dbName;
                 this.Company.UserName = conf.Default.sapUser;
                 this.Company.Password = conf.Default.sapPwd;
+
                 this.Company.Connect();
                 return this.Company.Connected;
             }

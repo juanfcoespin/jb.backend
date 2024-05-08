@@ -83,15 +83,14 @@ namespace jbp.business.hana
             try
             {
                 var sql = string.Format(@"
-                      select 
-	                    sum(t1.""montoFactura"") ""Ventas"",
-                        sum(t1.""Puntos"") ""Puntos""
-                     from
-                      ""JbpVw_SocioNegocio"" t0 inner join
-                      ""JbpVw_FacturasMasNCParticipantes"" t1 on t1.""RucPrincipal"" = t0.""RucPrincipal""
-                     where
-                      t0.""RucPrincipal"" = '{0}'
-                      and t1.""fechaFactura"" like '%' || to_char(current_date, 'mm/yyyy') || '%'
+                    select 
+                     sum(""montoFactura"") ""Ventas"",
+                     sum(""puntos"") ""Puntos""
+                    from
+                     ""JbpVw_FacturasMasNCParticipantes""
+                    where
+                     ""RucPrincipal"" = '{0}'
+                     and ""fechaFactura"" like '%' || to_char(current_date, 'mm/yyyy') || '%'
                 ",rucPrincipal);
                 var bc = new BaseCore();
                 var dt = bc.GetDataTableByQuery(sql);    

@@ -17,10 +17,8 @@ namespace jbp.business.hana
             {
                 var ppb = new ParticipantePtkBusiness();
 
-                if (conf.Default.ptkEnviarFacturas)
-                    EnviarFacturas();
-                if (conf.Default.ptkEnviarNC)
-                    EnviarNotasCredito();
+                if (conf.Default.ptkEnviarFacturasYNc)
+                    EnviarFacturasYNC();
             }
             catch (Exception e)
             {
@@ -70,15 +68,10 @@ namespace jbp.business.hana
             new SendDocWsPtk().SendAceleradoresToPromotickWS(aceleradores, periodo);
         }
        
-        private void EnviarFacturas()
+        private void EnviarFacturasYNC()
         {
-            var facturas = new FacturaBusiness().GetFacturasParticipantesToSendPromotick();
+            var facturas = new FacturaBusiness().GetFacturasYNcParticipantesToSendPromotick();
             new SendDocWsPtk().SendDocumentosToPromotickWS(facturas);
-        }
-        private void EnviarNotasCredito()
-        {
-            var notasCredito = new NotaCreditoBusiness().GetNotasCreditoParticipantesToSendPromotick();
-            new SendDocWsPtk().SendDocumentosToPromotickWS(notasCredito);
         }
 
         public void EnviarNotasCreditoManuales()

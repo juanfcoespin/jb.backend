@@ -11,7 +11,7 @@ namespace jbp.unitTest.business.hana
         [TestMethod]
         public void GetFacturasToSendPromotick()
         {
-            var ms = new FacturaBusiness().GetFacturasParticipantesToSendPromotick();
+            var ms = new FacturaBusiness().GetFacturasYNcParticipantesToSendPromotick();
             Assert.AreEqual(true, ms.Count > 0);
         }
     }

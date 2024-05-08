@@ -551,7 +551,7 @@ namespace jbp.business.hana
 
         private void GestionarRespuestaRegistrarParticipante(RespWsMsg respWS, object me, string ruc)
         {
-            if (respWS.codigo != 1) //proceso exitoso
+            if (respWS!=null && respWS.codigo != 1) //proceso exitoso
             {
                 var titulo = "Error en el registro del Participante " + this.RucParticipante;
                 var strJsonParticipante = new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(me);
@@ -688,7 +688,7 @@ namespace jbp.business.hana
                  ""Ruc"",
                  ""RucPrincipal"",
                  ""montoFactura"",
-                 ""Puntos""
+                 ""puntos""
                 from ""JbpVw_FacturasMasNCParticipantes""
                 where ""RucPrincipal"" = '{0}'
                     

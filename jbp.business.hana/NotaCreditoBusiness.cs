@@ -16,37 +16,6 @@ namespace jbp.business.hana
 {
     public class NotaCreditoBusiness
     {
-        internal List<DocumentoPromotickMsg> GetNotasCreditoParticipantesToSendPromotick()
-        {
-            try
-            {
-                // son las facturas del principal y las sucursales
-                var sql = @"
-                select 
-                 top 50
-                 ""Id"",
-                 ""TipoDocumento"",
-                 ""fechaFactura"",
-                 ""NumFolio"",
-                 ""RucPrincipal"",
-                 ""montoFactura"",
-                 ""Puntos"",
-                 ""NumIntentos"",
-                 ""RespWS""
-                from
-                 ""JbpVw_NcToSendPtk""
-                ";
-       
-                var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql);
-                return new DocumentosPtkBusiness().GetListDocumentosPtkFromDt(dt);
-            }
-            catch (Exception e)
-            {
-                e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
-                throw e;
-            }
-        }
         internal List<DocumentoPromotickMsg> GetNCManualesParticipantesToSendPromotick()
         {
             try

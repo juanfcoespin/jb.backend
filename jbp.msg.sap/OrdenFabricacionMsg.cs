@@ -17,6 +17,8 @@ namespace jbp.msg.sap
     public class CantidadLoteOFMsg {
         public string Lote { get; set; }
         public decimal Cantidad { get; set; }
+        public string FechaVence { get; set; }
+        public string AnalisisMP { get; set; }
     }
     public class OFBaseMsg
     {
@@ -35,7 +37,10 @@ namespace jbp.msg.sap
         public string Descripcion { get; set; }
         public string BodegaDesde { get; set; }
         public string BodegaHasta { get; set; }
+        public string LotePT { get; set; }
         public List<ComponentesMsg> Componentes { get; set; }
+        
+
         public OFMasComponentesMsg() {
             this.Componentes = new List<ComponentesMsg>();
         }

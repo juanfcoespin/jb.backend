@@ -86,7 +86,8 @@ namespace jbp.business.hana
                  t2.""Insumo"",
                  t0.""CantidadPlanificada"",
                  t0.""CantidadPesada"",
-                 t1.""Articulo""
+                 t1.""Articulo"",
+                 t1.""Lote""
                 from 
                  ""JbpVw_OrdenFabricacionLinea"" t0 inner join
                  ""JbpVw_OrdenFabricacion"" t1 on t1.""Id""=t0.""IdOrdenFabricacion"" inner join
@@ -116,6 +117,7 @@ namespace jbp.business.hana
                     var bodegasComponentes = GetBodegasComponentes(docNumOf);
                     ms.BodegaDesde = bodegasComponentes.BodegaDesde;
                     ms.BodegaHasta = bodegasComponentes.BodegaHasta;
+                    ms.LotePT = dr["Lote"].ToString();
                 }
                 var componente = new ComponentesMsg{
                     CodigoArticulo = dr["CodInsumo"].ToString(),
@@ -125,7 +127,8 @@ namespace jbp.business.hana
                     CantidadPesada = bc.GetDecimal(dr["CantidadPesada"],6)
                 };
                 componente.CantidadesPorLote = GetCantidadesPorLote(docNum, componente.CodigoArticulo);
-                ms.Componentes.Add(componente);
+                if(componente.CantidadesPorLote!=null && componente.CantidadesPorLote.Count>0)
+                    ms.Componentes.Add(componente);
             }
             return ms;
         }
@@ -173,7 +176,9 @@ namespace jbp.business.hana
                     ms.Add(new CantidadLoteOFMsg
                     {
                         Lote = dr["Lote"].ToString(),
-                        Cantidad = bc.GetDecimal(dr["Cantidad"],6)
+                        Cantidad = bc.GetDecimal(dr["Cantidad"],6),
+                        FechaVence = dr["FechaVencimiento"].ToString(),
+                        AnalisisMP = dr["Observaciones"].ToString(),
                     }); ;
                 }
             }

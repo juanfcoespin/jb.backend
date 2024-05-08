@@ -49,6 +49,54 @@ namespace jbp.business.hana
             return ms;
         }
 
+        public static object GetStockPt(string codArticulo)
+        {
+            try
+            {
+                var lotes = new List<object>();
+                var sql = string.Format(@"
+                    select 
+                     t1.""Lote"",
+                     to_char(t1.""FechaFabricacion"", 'yyyy-mm') ""FecFab"",
+                     to_char(t1.""FechaVence"", 'yyyy-mm') ""FecVen"",
+                     round(""Cantidad"", 0) ""stock"",
+                     current_timestamp ""fechaConsulta""
+                    from
+                     ""JbpVw_UbicacionPorLote"" t0 inner join
+                     ""JbpVw_Lotes"" t1 on t1.""Id"" = t0.""IdLote""
+                    where
+                     t0.""CodArticulo"" = '{0}'
+                     and t0.""CodBodega"" = 'PT1'
+
+                ", codArticulo);
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql);
+                var fechaConsulta = string.Empty;
+                foreach (DataRow dr in dt.Rows)
+                {
+                    if (string.IsNullOrEmpty(fechaConsulta))
+                        fechaConsulta = dr["fechaConsulta"].ToString();
+                    lotes.Add(new{
+                        lote = dr["Lote"].ToString(),
+                        fecFab = dr["FecFab"].ToString(),
+                        fecVen = dr["FecVen"].ToString(),
+                        stock = bc.GetInt(dr["stock"]),
+                        
+                    });
+                }
+                return new { 
+                    error = string.Empty,
+                    fechaConsulta = fechaConsulta,
+                    lotes = lotes
+                };
+            }
+            catch (Exception e)
+            {
+                return new { error=e.Message };
+            }
+            
+        }
+
         private static decimal GetStockByLotes(List<LoteMsg> lotes)
         {
             var ms = 0;

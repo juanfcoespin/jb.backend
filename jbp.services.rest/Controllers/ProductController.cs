@@ -20,6 +20,12 @@ namespace jbp.services.rest.Controllers
         {
             return ProductBusiness.GetSellProducts();
         }
+        [HttpGet]
+        [Route("api/product/getStockPt/{codArticulo}")]
+        public object GetStockPt(string codArticulo)
+        {
+            return ProductBusiness.GetStockPt(codArticulo);
+        }
 
     }
 }

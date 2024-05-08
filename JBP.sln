@@ -91,6 +91,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestSqlCore", "TestSqlCore\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnvioCorreosClientes", "jbp.presentation\EnvioCorreosClientes\EnvioCorreosClientes.csproj", "{F49F113D-52F8-40C8-A825-FBDADB70C74E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jb.sendDataSitrat", "jb.sendDataSitrat\jb.sendDataSitrat.csproj", "{E784FF8A-580A-470C-9CBC-506AAB9873B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -249,6 +251,10 @@ Global
 		{F49F113D-52F8-40C8-A825-FBDADB70C74E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F49F113D-52F8-40C8-A825-FBDADB70C74E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F49F113D-52F8-40C8-A825-FBDADB70C74E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E784FF8A-580A-470C-9CBC-506AAB9873B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E784FF8A-580A-470C-9CBC-506AAB9873B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E784FF8A-580A-470C-9CBC-506AAB9873B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E784FF8A-580A-470C-9CBC-506AAB9873B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -287,6 +293,7 @@ Global
 		{5FF955A3-3B19-455F-9F53-187A94C64965} = {4EA271A8-76F7-420D-9DA7-50357075D51E}
 		{DF8894BE-317B-4624-99B5-210B8FCCF0C2} = {9ABAEF0C-1574-4AA5-BE5D-EF2254EDE32B}
 		{F49F113D-52F8-40C8-A825-FBDADB70C74E} = {067FE24F-DC90-416B-9715-C233B35701A7}
+		{E784FF8A-580A-470C-9CBC-506AAB9873B7} = {067FE24F-DC90-416B-9715-C233B35701A7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25D77B39-D161-4FDF-8DB9-4351EEEAF982}

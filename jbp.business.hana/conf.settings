@@ -11,10 +11,7 @@
     <Setting Name="ptkWsPwd" Type="System.String" Scope="Application">
       <Value Profile="(Default)">hkIUtJmnq5sda</Value>
     </Setting>
-    <Setting Name="ptkEnviarFacturas" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ptkEnviarNC" Type="System.Boolean" Scope="Application">
+    <Setting Name="ptkEnviarFacturasYNc" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="CorreosNotificacionesPromotick" Type="System.String" Scope="Application">

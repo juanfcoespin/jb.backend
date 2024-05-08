@@ -53,18 +53,9 @@ namespace jbp.business.hana {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ptkEnviarFacturas {
+        public bool ptkEnviarFacturasYNc {
             get {
-                return ((bool)(this["ptkEnviarFacturas"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ptkEnviarNC {
-            get {
-                return ((bool)(this["ptkEnviarNC"]));
+                return ((bool)(this["ptkEnviarFacturasYNc"]));
             }
         }
         

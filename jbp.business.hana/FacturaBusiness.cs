@@ -22,7 +22,7 @@ namespace jbp.business.hana
         /// Se envian paquetes de 50 facturas en cada iteración (para evitar posibles problemas en el WS)
         /// </summary>
         /// <returns></returns>
-        public List<DocumentoPromotickMsg> GetFacturasParticipantesToSendPromotick()
+        public List<DocumentoPromotickMsg> GetFacturasYNcParticipantesToSendPromotick()
         {
             try
             {
@@ -36,14 +36,14 @@ namespace jbp.business.hana
                  ""NumFolio"",
                  ""RucPrincipal"",
                  ""montoFactura"",
-                 ""Puntos"",
+                 ""puntos"",
                  ""NumIntentos"",
                  ""RespWS""
                 from
-                 ""JbpVw_FacturasToSendPtk""
-                where
+                 ""JbpVw_FacturasYNCToSendPtk""
+                --where
                  --""NumFolio""='001-010-000103191'
-                 ""RucPrincipal""='1900612134001'   
+                 --""RucPrincipal""='1900612134001'   
                 ";
                 var bc = new BaseCore();
                 var dt = bc.GetDataTableByQuery(sql);
