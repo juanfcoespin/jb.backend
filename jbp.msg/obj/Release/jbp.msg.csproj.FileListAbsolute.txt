@@ -9,8 +9,8 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Release\jbp.msg.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Release\jbp.msg.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Release\TechTools.Utils.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Release\TechTools.Utils.pdb
-D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.csproj.CopyComplete
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.csproj.CoreCompileInputs.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.csproj.AssemblyReference.cache
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.csproj.Up2Date

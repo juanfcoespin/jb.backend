@@ -39,6 +39,6 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Debug\TechTools.Utils.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\bin\Debug\TechTools.Utils.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.csproj.AssemblyReference.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.csproj.CoreCompileInputs.cache
+D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.csproj.Up2Date
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.pdb
-D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Debug\jbp.msg.csproj.Up2Date

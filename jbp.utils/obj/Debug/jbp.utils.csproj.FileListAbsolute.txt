@@ -65,6 +65,6 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\bin\Debug\TechTools.DelegatesAndEnums.
 D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\bin\Debug\TechTools.Utils.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.csproj.AssemblyReference.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.csproj.CoreCompileInputs.cache
-D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.csproj.CopyComplete
+D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.csproj.Up2Date
 D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.utils\obj\Debug\jbp.utils.pdb

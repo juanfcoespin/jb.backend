@@ -144,15 +144,15 @@ namespace jbp.business.hana
             var sql = string.Format(@"
                 select 
                  top 1
-                 t0.""BodegaDestino"" ""BodegaDesde"",
-                 t2.""Bodega"" ""BodegaHasta""
+                 t0.""BodegaOrigen"" ""BodegaDesde"",
+                 t0.""BodegaDestino"" ""BodegaHasta""
                 from
                   ""JbpVw_OrdenFabricacion"" t1 inner join
                   ""JbpVw_OrdenFabricacionLinea"" t2 on t2.""IdOrdenFabricacion"" = t1.""Id"" left outer join
                   ""JbpVw_SolicitudTraslado"" t0 on t0.""DocNumOrdenFabricacion"" = cast(t1.""DocNum"" as nvarchar(50))
                  where
                   t1.""DocNum"" = {0}
-            ",docNumOf);
+            ", docNumOf);
             var dt = new BaseCore().GetDataTableByQuery(sql);
             foreach(DataRow dr in dt.Rows)
             {

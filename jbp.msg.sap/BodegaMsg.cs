@@ -32,6 +32,46 @@ namespace jbp.msg.sap
             this.UbicacionesCantidad = new List<UbicacionCantidad>();
         }
     }*/
+    public class msDetArticuloPorLote
+    {
+        public List<DetArticuloPorLote> Lotes { get; set; }
+        public string Error { get; set; }
+
+        public msDetArticuloPorLote() {
+            this.Lotes = new List<DetArticuloPorLote>();
+        }  
+    }
+    public class DetArticuloPorLote
+    {
+        public string Error { get; set; }
+        public string Id { get; set; }
+        public string CodArticulo { get; set; }
+        public string Articulo { get; set; }
+        public string Lote { get; set; }
+        public string CodPoe { get; set; }
+        public string Estado { get; set; }
+        public string UnidadMedida { get; set; }
+        public string LoteProveedor { get; set; }
+        public string Fabricante { get; set; }
+        public string FechaIngreso { get; set; }
+        public string FechaFabricacion { get; set; }
+        public string FechaVencimiento { get; set; }
+        public string FechaRetest { get; set; }
+        public string Proveedor { get; set; }
+        public string CondicionAlmacenamiento { get; set; }
+        public string Bultos { get; set; }
+        public string Observaciones { get; set; }
+        public string CondicionAlmacenamientoPT { get; set; }
+        public string ResponsableEmpaque { get; set; }
+        public string Cliente { get; set; }
+        public decimal Cantidad { get; set; }
+        public string CodPoePT { get; set; }
+        public List<object> UbicacionesCantidad { get; set; }
+        public string LoteFabricante { get; set; }
+        public int CantidadPT { get; set; }
+        public bool EsPT { get; set; }
+        public string BodegaDestino { get; set; }
+    }
     public class ContenidoUbicacionMS
     {
         public List<ContenidoUbicacionItemMS> Items { get; set; }

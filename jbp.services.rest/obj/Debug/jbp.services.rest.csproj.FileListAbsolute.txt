@@ -133,6 +133,6 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Threading.Tasks.Ext
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\bin\System.Runtime.CompilerServices.Unsafe.xml
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.AssemblyReference.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CoreCompileInputs.cache
-D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CopyComplete
+D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.serv.BACDC056.Up2Date
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.pdb

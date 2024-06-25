@@ -8,12 +8,18 @@ using jbp.msg;
 using TechTools.Core.Hana;
 using System.Data;
 using jbp.msg.sap;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 
 namespace jbp.business.hana
 {
     public class BodegaBusiness
     {
+        public static string CondicionAlmacenamiento { get; private set; }
+        public static string ResponsableEmpaque { get; private set; }
+        public static string Error { get; private set; }
+
         public static List<SubNivelBodegaMsg> GetSubnivelesAlmacen()
         {
             var ms = new List<SubNivelBodegaMsg>();
@@ -134,9 +140,49 @@ namespace jbp.business.hana
             return ms;
         }
 
-        
 
-        public static object GetLotesConStockByCodArticulo(string codArticulo)
+        public static msDetArticuloPorLote GetLotesConStockByCodArticulo(string codArticulo) {
+            try
+            {
+                var ms = GetDetArticuloQR(null, codArticulo);
+                ms.Lotes.ForEach(item =>
+                {
+                    item.Cantidad = GetCantidadArticuloPorLote(item.Lote, codArticulo);
+                });
+                ms.Lotes = ms.Lotes.FindAll(l => l.Cantidad > 0);
+                return ms;
+            }
+            catch (Exception e)
+            {
+                return new msDetArticuloPorLote
+                {
+                    Error = e.Message
+                };
+            }
+        }
+
+        private static decimal GetCantidadArticuloPorLote(string lote, string codArticulo)
+        {
+            try
+            {
+                var sql = string.Format(@"
+                select 
+                 sum(t0.""Cantidad"")
+                from 
+                 ""JbpVw_CantidadesPorLote"" t0 inner join
+                 ""JbpVw_Lotes"" t1 on t1.""Id""=t0.""IdLote""
+                where
+                 t1.""Lote""='{0}'
+                 and t0.""CodArticulo""='{1}'
+                ", lote, codArticulo);
+                return new BaseCore().GetDecimalScalarByQuery(sql);
+            }
+            catch {
+                return 0;
+            }
+        }
+
+        /*public static object GetLotesConStockByCodArticulo(string codArticulo)
         {
             try { 
                 var lotes=new List<object>();
@@ -211,7 +257,7 @@ namespace jbp.business.hana
                 };
             }
             
-        }
+        }*/
 
         public static object GetArticulosConStock()
         {
@@ -438,53 +484,83 @@ namespace jbp.business.hana
             return ms;
         }
 
-        public static object GetUbicacionesYDetArticuloPorLote(string lote)
+        public static msDetArticuloPorLote GetDetArticuloQR(string lote = null, string codArticulo=null)
         {
-            var ms=new object();
             try
             {
-                var sql = string.Format(@"
-                    select 
-                     top 1
-                     t1.""Id"",
-                     t1.""CodArticulo"",
-                     t1.""Articulo"",
-                     t1.""Lote"",
-                      case
-                        when t1.""Estado"" = 'Acceso Denegado' then 'FOR-BPH-009 Rev.01 / I-POE-BPH-001'-- cuarentena
-                        when t1.""Estado"" = 'Liberado' then 'FOR-CCQ-079 Rev.01 / I-POE-CCQ-033'-- liberado
-                        when t1.""Estado"" = 'Bloqueado' then 'FOR-ASC-060 Rev.02 / I-POE-ASC-023'-- Rechazado
-
-                     end ""CodPoe"",
-                     t1.""Estado"",
-                     t2.""UnidadMedida"",
-                     t1.""LoteProveedor"",
-                     t1.""Fabricante"",
-                     to_char(t1.""FechaIngreso"", 'yyyy-mm-dd') ""FechaIngreso"",
-                     to_char(t1.""FechaFabricacion"", 'yyyy-mm-dd') ""FechaFabricacion"",
-                     to_char(t1.""FechaVencimiento"", 'yyyy-mm-dd') ""FechaVencimiento"",
-                     to_char(t1.""FechaRetesteo"", 'yyyy-mm-dd') ""FechaRetest"",
-                     t3.""Proveedor"",
-                     t3.""CondicionAlmacenamiento"",
-                     t1.""Bultos"",
-                     t1.""Observaciones""
-                    from
-                    ""JbpVw_Lotes"" t1 inner join
-                    ""JbpVw_Articulos"" t2 on t2.""CodArticulo"" = t1.""CodArticulo"" left outer join
-                    ""JbpVw_EtiqAproME_MP"" t3 on t3.""Lote"" = t1.""Lote"" and t3.""CodArticulo"" = t1.""CodArticulo""
-                    where
-                     t1.""Lote"" = '{0}'
-                ", lote);
-                var bc = new BaseCore();
-                var dt=bc.GetDataTableByQuery(sql);
-                if (dt == null || dt.Rows.Count == 0) {
-                    return new {
-                        Error = "No se ha encontrado información de este lote en el inventario"
-                    };
-                    
+                var esPT=false;
+                if (!string.IsNullOrEmpty(codArticulo)) {
+                    var token = codArticulo.Substring(0, 1);
+                    esPT = (token == "8");
                 }
+                
+                var ms=new msDetArticuloPorLote();
+                var sql = @"
+                     select 
+                      distinct
+                      t1.""Id"",
+                      t1.""CodArticulo"",
+                      t1.""Articulo"",
+                      t1.""Lote"",
+                       case
+                         when t1.""Estado"" = 'Acceso Denegado' then 'FOR-BPH-009 Rev.01 / I-POE-BPH-001'-- cuarentena
+                         when t1.""Estado"" = 'Liberado' then 'FOR-CCQ-079 Rev.01 / I-POE-CCQ-033'-- liberado
+                         when t1.""Estado"" = 'Bloqueado' then 'FOR-ASC-060 Rev.02 / I-POE-ASC-023'-- Rechazado
+                      end ""CodPoe"",
+                      t1.""Estado"",
+                      t2.""UnidadMedida"",
+                      t1.""LoteProveedor"",
+                      t1.""Fabricante"",
+                      to_char(t1.""FechaIngreso"", 'yyyy-mm-dd') ""FechaIngreso"",
+                      to_char(t1.""FechaFabricacion"", 'yyyy-mm-dd') ""FechaFabricacion"",
+                      to_char(t1.""FechaVencimiento"", 'yyyy-mm-dd') ""FechaVencimiento"",
+                      to_char(t1.""FechaRetesteo"", 'yyyy-mm-dd') ""FechaRetest"",
+                      t1.""Bultos"",
+                      cast(t1.""Observaciones"" as nvarchar(2000)) ""Observaciones""
+                ";
+                if (!esPT)
+                {
+                    sql += @" 
+                        ,t3.""Proveedor"",
+                        t3.""CondicionAlmacenamiento""
+                    ";
+                }
+                else {
+                    sql += @"
+                      ,t4.""CondicionAlmacenamiento"" ""CondicionAlmacenamientoPT"", -- desde aqui info de PT
+                      t4.""ResponsableEmpaque"",
+                      t4.""Cliente"",
+                      t4.""Bultos"" ""BultosPT"",
+                      t4.""CantProductosPorCaja"" ""CantidadPT"",
+                      t4.""CodAsegCalidad"" ""CodPoePT"",
+                      t4.""BodegaDestino""
+                    ";
+                }
+                     sql+=@"
+                        from
+                     ""JbpVw_Lotes"" t1 inner join
+                     ""JbpVw_Articulos"" t2 on t2.""CodArticulo"" = t1.""CodArticulo""
+                     ";
+                if (!esPT)
+                    sql += @" left outer join ""JbpVw_EtiqAproME_MP"" t3 on t3.""Lote"" = t1.""Lote"" and t3.""CodArticulo"" = t1.""CodArticulo"" ";
+                else
+                    sql += @" left outer join ""JbpVw_ProductoTerminado"" t4 on t4.""CodArticulo""=t1.""CodArticulo"" and t4.""Lote""=t1.""Lote"" ";
+                if (!string.IsNullOrEmpty(lote) && !string.IsNullOrEmpty(codArticulo))
+                    sql += string.Format(@" where t1.""Lote"" = '{0}' and t1.""CodArticulo"" = '{1}'", lote, codArticulo);
+                    
+                if (!string.IsNullOrEmpty(lote) && string.IsNullOrEmpty(codArticulo))
+                    sql += string.Format(@" where t1.""Lote"" = '{0}'", lote);
+                if (string.IsNullOrEmpty(lote) && !string.IsNullOrEmpty(codArticulo))
+                    sql += string.Format(@" where t1.""CodArticulo"" = '{0}'",codArticulo);
+                if (esPT)
+                    sql += @" and t4.""BodegaDestino"" not in ('CONTM1')"; //para que traiga primero la TS a PT no a contramuestra
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql);
+
                 foreach (DataRow dr in dt.Rows) {
-                    return new {
+                    var item = new DetArticuloPorLote
+                    {
+                        Id = dr["Id"].ToString(),
                         CodArticulo = dr["CodArticulo"].ToString(),
                         Articulo = dr["Articulo"].ToString(),
                         Lote = dr["Lote"].ToString(),
@@ -492,25 +568,66 @@ namespace jbp.business.hana
                         Estado = dr["Estado"].ToString(),
                         UnidadMedida = dr["UnidadMedida"].ToString(),
                         LoteProveedor = dr["LoteProveedor"].ToString(),
+                        LoteFabricante = dr["LoteProveedor"].ToString(), //quitar una vez actualizado el front end
                         Fabricante = dr["Fabricante"].ToString(),
                         FechaIngreso = dr["FechaIngreso"].ToString(),
                         FechaFabricacion = dr["FechaFabricacion"].ToString(),
                         FechaVencimiento = dr["FechaVencimiento"].ToString(),
                         FechaRetest = dr["FechaRetest"].ToString(),
-                        Proveedor = dr["Proveedor"].ToString(),
-                        CondicionAlmacenamiento = dr["CondicionAlmacenamiento"].ToString(),
-                        Bultos = dr["Bultos"].ToString(),
                         Observaciones = dr["Observaciones"].ToString(),
-                        UbicacionesCantidad = GetUbicacionesCantidadLote(dr["Id"].ToString())
+                        EsPT=esPT
                     };
-                    
+                    if (!esPT)
+                    {
+                        item.Proveedor = dr["Proveedor"].ToString();
+                        item.CondicionAlmacenamiento = dr["CondicionAlmacenamiento"].ToString();
+                        item.Bultos = dr["Bultos"].ToString();
+                    }
+                    else {
+                        item.CondicionAlmacenamientoPT = dr["CondicionAlmacenamientoPT"].ToString();
+                        item.ResponsableEmpaque = dr["ResponsableEmpaque"].ToString();
+                        item.Cliente = dr["Cliente"].ToString();
+                        item.Bultos = dr["BultosPT"].ToString();
+                        item.CantidadPT = bc.GetInt(dr["CantidadPT"]);
+                        item.CodPoePT = dr["CodPoePT"].ToString();
+                        item.BodegaDestino = dr["BodegaDestino"].ToString();
+                        
+                    }
+                    ms.Lotes.Add(item);
                 }
                 return ms;
             }
             catch (Exception e)
             {
-                return new
+                return new msDetArticuloPorLote
                 {
+                    Error = e.Message
+                };
+            }
+        }
+
+        public static DetArticuloPorLote GetUbicacionesYDetArticuloPorLote(string lote, string codArticulo=null)
+        {
+            try
+            {
+                var me = GetDetArticuloQR(lote, codArticulo);
+                if (me != null && me.Lotes.Count > 0)
+                {
+                    var ms = me.Lotes[0]; //solo se coge el primer registro
+                    ms.UbicacionesCantidad = GetUbicacionesCantidadLote(ms.Id);
+                    return ms;
+                }
+                if (!string.IsNullOrEmpty(me.Error)) {
+                    return new DetArticuloPorLote
+                    {
+                        Error = me.Error
+                    };
+                }
+                return new DetArticuloPorLote();//no se encontro ningún registro
+            }
+            catch (Exception e)
+            {
+                return new DetArticuloPorLote{
                     Error = e.Message
                 };
             }

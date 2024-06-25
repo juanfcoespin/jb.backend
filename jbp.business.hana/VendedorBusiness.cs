@@ -31,7 +31,9 @@ namespace jbp.business.hana
                  t0.""SaldoVencido"",
                  t0.""RangoDiasVencido"",
                  t0.""OrdenRango"",
-                 t0.""OrdenTipoDocumento""
+                 t0.""OrdenTipoDocumento"",
+                 t0.""Comentarios"",
+                 t0.""TipoNC""
                 from ""JbpVw_Cartera"" t0  inner join
                 ""JbpVw_SocioNegocio"" t1 on t1.""CodSocioNegocio"" = t0.""CodCliente""
             ";
@@ -68,8 +70,9 @@ namespace jbp.business.hana
                         SaldoVencido = bc.GetDecimal(dr["SaldoVencido"]),
                         RangoDiasVencido = dr["RangoDiasVencido"].ToString(),
                         OrdenRango= bc.GetInt(dr["OrdenRango"]),
-                        OrdenTipoDocumento = bc.GetInt(dr["OrdenTipoDocumento"])
-                        
+                        OrdenTipoDocumento = bc.GetInt(dr["OrdenTipoDocumento"]),
+                        Comentarios = dr["Comentarios"].ToString(),
+                        TipoNC = dr["TipoNC"].ToString()
                     });
                 }
             }

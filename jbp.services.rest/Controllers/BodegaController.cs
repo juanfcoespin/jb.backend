@@ -18,6 +18,7 @@ namespace jbp.services.rest.Controllers
         [Route("api/bodega/getLotesConStockByCodArticulo/{codArticulo}")]
         public object GetLotesConStockByCodArticulo(string codArticulo)
         {
+            //se consume desde la app de bodega
             return BodegaBusiness.GetLotesConStockByCodArticulo(codArticulo);
         }
 
@@ -54,12 +55,18 @@ namespace jbp.services.rest.Controllers
         {
             return BodegaBusiness.GetEMPorProveedor(codProveedor);
         }
-
+        //para ver las etiquetas al escanear el QR
         [HttpGet]
         [Route("api/bodega/getUbicacionesYDetArticuloPorLote/{lote}")]
         public object GetUbicacionesYDetArticuloPorLote(string lote)
         {
             return BodegaBusiness.GetUbicacionesYDetArticuloPorLote(lote);
+        }
+        [HttpGet]
+        [Route("api/bodega/getUbicacionesYDetArticuloPorLote/{lote}/{codArticulo}")]
+        public object GetUbicacionesYDetArticuloPorLote(string lote, string codArticulo)
+        {
+            return BodegaBusiness.GetUbicacionesYDetArticuloPorLote(lote, codArticulo);
         }
 
         [HttpGet]

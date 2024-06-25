@@ -79,8 +79,3 @@ D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\P
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\PromotickClientService\obj\Debug\PromotickClientService.pdb
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\PromotickClientService\bin\Debug\TechTools.DelegatesAndEnums.dll
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\PromotickClientService\bin\Debug\TechTools.Utils.dll
-D:\DesarrolloSw\JBP\jbp.backend\PromotickClientService\obj\Debug\PromotickClientService.csprojAssemblyReference.cache
-D:\DesarrolloSw\JBP\jbp.backend\PromotickClientService\obj\Debug\PromotickClientService.exe.config
-D:\DesarrolloSw\JBP\jbp.backend\PromotickClientService\obj\Debug\PromotickClientService.csproj.AssemblyReference.cache
-D:\DesarrolloSw\JBP\jbp.backend\PromotickClientService\obj\Debug\PromotickClientService.csproj.SuggestedBindingRedirects.cache
-D:\DesarrolloSw\JBP\jbp.backend\PromotickClientService\obj\Debug\PromotickClientService.csproj.CoreCompileInputs.cache

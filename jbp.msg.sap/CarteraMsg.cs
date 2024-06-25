@@ -26,5 +26,7 @@ namespace jbp.msg.sap
         public int DocNum { get; set; }
         public List<RetencionMsg> Retenciones { get; set; }
         public List<ValorPagadoMsg> Pagos { get; set; }
+        public string Comentarios { get; set; }
+        public string TipoNC { get; set; }
     }
 }
