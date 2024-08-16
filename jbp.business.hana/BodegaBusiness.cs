@@ -172,7 +172,8 @@ namespace jbp.business.hana
                  ""JbpVw_CantidadesPorLote"" t0 inner join
                  ""JbpVw_Lotes"" t1 on t1.""Id""=t0.""IdLote""
                 where
-                 t1.""Lote""='{0}'
+                 t0.""CodBodega"" not in ('EMP1', 'CONTM1', 'BAJ1') --para el producto terminado
+                 and t1.""Lote""='{0}'
                  and t0.""CodArticulo""='{1}'
                 ", lote, codArticulo);
                 return new BaseCore().GetDecimalScalarByQuery(sql);
@@ -502,11 +503,7 @@ namespace jbp.business.hana
                       t1.""CodArticulo"",
                       t1.""Articulo"",
                       t1.""Lote"",
-                       case
-                         when t1.""Estado"" = 'Acceso Denegado' then 'FOR-BPH-009 Rev.01 / I-POE-BPH-001'-- cuarentena
-                         when t1.""Estado"" = 'Liberado' then 'FOR-CCQ-079 Rev.01 / I-POE-CCQ-033'-- liberado
-                         when t1.""Estado"" = 'Bloqueado' then 'FOR-ASC-060 Rev.02 / I-POE-ASC-023'-- Rechazado
-                      end ""CodPoe"",
+                      ""JbFn_GetCodPoePorEstadoLote""(t1.""Estado"") ""CodPoe"",
                       t1.""Estado"",
                       t2.""UnidadMedida"",
                       t1.""LoteProveedor"",
@@ -553,7 +550,7 @@ namespace jbp.business.hana
                 if (string.IsNullOrEmpty(lote) && !string.IsNullOrEmpty(codArticulo))
                     sql += string.Format(@" where t1.""CodArticulo"" = '{0}'",codArticulo);
                 if (esPT)
-                    sql += @" and t4.""BodegaDestino"" not in ('CONTM1')"; //para que traiga primero la TS a PT no a contramuestra
+                    sql += @" and t4.""BodegaDestino"" not in ('EMP1', 'CONTM1', 'BAJ1')"; //para que traiga primero la TS a PT no a contramuestra ni baja
                 var bc = new BaseCore();
                 var dt = bc.GetDataTableByQuery(sql);
 
@@ -708,6 +705,7 @@ namespace jbp.business.hana
                      t4.""UnidadMedida"",
                      t3.""Fabricante"",
                      t3.""LoteProveedor"",
+                     ""JbFn_GetCodPoePorEstadoLote""(t3.""Estado"") ""CodPoe"",
                      t3.""Lote"",
                      t3.""Bultos"",
                      to_char(t3.""FechaIngreso"", 'yyyy-mm-dd') ""FechaIngreso"",
@@ -748,6 +746,7 @@ namespace jbp.business.hana
                             UnidadMedida = dr["UnidadMedida"].ToString(),
                             Fabricante = dr["Fabricante"].ToString(),
                             Lote = dr["Lote"].ToString(),
+                            CodPoe = dr["CodPoe"].ToString(),
                             LoteFabricante = dr["LoteProveedor"].ToString(),
                             Bultos = bc.GetInt(dr["Bultos"]),
                             FechaIngreso = dr["FechaIngreso"].ToString(),

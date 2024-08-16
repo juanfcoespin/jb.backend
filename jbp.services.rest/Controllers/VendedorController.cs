@@ -18,5 +18,12 @@ namespace jbp.services.rest.Controllers
         {
             return VendedorBusiness.GetCarteraByCodVendedor(codVendedor);
         }
+
+        [HttpGet]
+        [Route("api/vendor/getPagosEfectivoByCodVendedor/{codVendedor}")]
+        public object GetPagosEfectivoByCodVendedor(string codVendedor)
+        {
+            return VendedorBusiness.GetPagosEfectivoByCodVendedor(codVendedor);
+        }
     }
 }

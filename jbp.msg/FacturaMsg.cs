@@ -24,6 +24,14 @@ namespace jbp.msg
             this.facturas = new List<FacturaHistorica>();
         }
     }
+    public class DatosRelacionadosFacturaPagoMsg
+    {
+        public int Id { get; set; }
+        public string NumAutorizacion { get; set; }
+        public string PtoEstablecimiento { get; set; }
+        public string PtoEmision { get; set; }
+        public string Fecha { get; set; }
+    }
     public class FacturaHistorica
     {
         public string fecha;

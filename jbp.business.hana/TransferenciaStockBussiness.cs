@@ -77,7 +77,6 @@ namespace jbp.business.hana
                     if (string.IsNullOrEmpty(ms.Error))
                     {
                         UpdateResponsableTS("Sistema Balanzas Espinoza Paez", ms.Id);
-                        setOfComoFraccionada(me.DocNumOF);
                     }
                 }
                 else
@@ -109,6 +108,7 @@ namespace jbp.business.hana
                 if (string.IsNullOrEmpty(ms.Error))
                 {
                     ms.DocNum = GetDocNumBYId(ms.Id);
+                    SetCantidadPesadaByTS(me);
                 }
             }
             catch (Exception e)
@@ -118,6 +118,26 @@ namespace jbp.business.hana
             }
             Monitor.Exit(control);
             return ms;
+        }
+
+        private static void SetCantidadPesadaByTS(TsBalanzasMsg me)
+        {
+            var idOf = OrdenFabricacionBusiness.GetIdByDocNum(me.DocNumOF);
+            me.Lineas.ForEach(line =>
+            {
+                double cantidadPesada = 0;
+                line.Lotes.ForEach(lote =>
+                {
+                    cantidadPesada += lote.Cantidad;
+                });
+                var cp = new CantPesadaComponenteOF
+                {
+                    CantPesada = cantidadPesada,
+                    IdOf = idOf,
+                    CodArticulo = line.CodArticulo
+                };
+                BodegaBusiness.SetCantPesadaComponenteOF(cp);
+            });
         }
 
         private static DocSapInsertadoMsg ProcessTSFromST(TsFromPickingME me)
@@ -142,13 +162,6 @@ namespace jbp.business.hana
             return ms;
         }
 
-        private static void setOfComoFraccionada(int docNumOf)
-        {
-            if (docNumOf > 0) {
-                var sql = string.Format(@"update OWOR set ""U_JbFraccionadoPesaje""='SI' where ""DocNum""={0}", docNumOf);
-                new BaseCore().Execute(sql);
-            }
-        }
 
         private static int GetIdSTFromDocNumOF(int docNum)
         {
@@ -173,6 +186,7 @@ namespace jbp.business.hana
             Monitor.Enter(control);
             try
             {
+                me.Lote = QuitarCodArticuloDelLote(me.Lote);
                 string error = null;
                 me.movimientos.ForEach(movimiento => {
                     if (error == null) {
@@ -229,6 +243,19 @@ namespace jbp.business.hana
                 Monitor.Exit(control);
             }
         }
+
+        private static string QuitarCodArticuloDelLote(string lote)
+        {
+            //JB-230317151244&codArticulo=10500001
+            if (!string.IsNullOrEmpty(lote) && lote.Contains("&")) { 
+                var matrix = lote.Split('&');
+                if (matrix.Count() == 2) { 
+                    return matrix[0];
+                }
+            }
+            return lote;
+        }
+
         private static string getEstadoLote(TsBodegaMsg me)
         {
             var sql = string.Format(@"

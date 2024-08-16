@@ -431,6 +431,8 @@ namespace jbp.business.hana
 
         public void RegistrarParticipanteEnLog(ParticipantesPuntosMsg me, RespWsMsg resp)
         {
+            if (resp == null)
+                return;
             var sql = string.Format(@"
                 insert into JBP_MODIFICACION_PARTICIPANTES(
                     FECHA, ESTADO, NOMBRES, APELLIDOS,

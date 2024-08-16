@@ -45,8 +45,15 @@ namespace jbp.core.sapDiApi
                 var sapNc = new SapNotaCredito();
                 sapNc.Company = this.Company;
                 this.Company.StartTransaction();
-                registrarNotasCreditoProntoPago(pagosMe, sapNc);
-
+                try
+                {
+                    registrarNotasCreditoProntoPago(pagosMe, sapNc);
+                }
+                catch (Exception e) {
+                    this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
+                    return e.Message;
+                }
+                
                 //2.Se asignan los pagos a las facturas
                 establecerTotalPagadoCheques(me);
                 setSaldos(me);
@@ -120,23 +127,31 @@ namespace jbp.core.sapDiApi
             pago.DocType = SAPbobsCOM.BoRcptTypes.rCustomer;
             //pago.DocType = SAPbobsCOM.BoRcptTypes.;
             pago.Remarks = me.comment;
+            pago.UserFields.Fields.Item("U_jbpNroReciboCobro").Value = me.numRecibo;
 
             switch (tipoPago.tipoPago)
             {
                 case "Efectivo":
                     pago.CashSum = tipoPago.monto;
+                    pago.CashAccount = "1101011100";
                     break;
                 case "Cheque":
-                    addCheques(tipoPago, pago);
+                    addCheques(tipoPago, pago, me.numRecibo);
                     break;
                 case "ChequePosfechado":
                     pago.Series = 21; //Serie CHEQ_POS
-                    addCheques(tipoPago, pago);
+                    addCheques(tipoPago, pago, me.numRecibo);
                     break;
                 case "Transferencia":
                     pago.TransferReference = tipoPago.NumTransferencia;
                     pago.TransferAccount = tipoPago.CodigoCuentaJB;
                     pago.TransferSum = tipoPago.monto;
+                    pago.CounterReference = tipoPago.NumTransferencia;
+                    if (tipoPago.fechaTransferencia != null) {
+                        pago.TransferDate = tipoPago.fechaTransferencia;
+                        pago.DocDate = tipoPago.fechaTransferencia;
+                    }
+                        
                     break;
             }
         }
@@ -170,7 +185,7 @@ namespace jbp.core.sapDiApi
             });
         }
 
-        private void addCheques(TipoPagoMsg tipoPago, dynamic pago)
+        private void addCheques(TipoPagoMsg tipoPago, dynamic pago, string numReciboCobro)
         {
             tipoPago.cheques.ForEach(cheque => {
                 if (cheque.monto > 0) {
@@ -180,6 +195,7 @@ namespace jbp.core.sapDiApi
                     pago.Checks.BankCode = cheque.CodigoBanco;
                     pago.Checks.DueDate = cheque.FechaVencimientoCheque;
                     pago.Checks.UserFields.Fields.Item("U_POSTFECHADO").Value = cheque.Posfechado;
+                    pago.Checks.FiscalID = numReciboCobro;
                     pago.Checks.Add();
                 }
             });
@@ -211,7 +227,8 @@ namespace jbp.core.sapDiApi
                 Comentario = comentario,
                 TipoDescPP = eNcPPType.Veterinario,
                 FolioNumFacturaRelacionada = factura.folioNum,
-                TotalNC = factura.descuentoPP
+                TotalNC = factura.descuentoPP,
+                DatosAdicionalesFactura = factura.DatosAdicionales
             };
             return ms;
         }

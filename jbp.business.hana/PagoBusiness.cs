@@ -51,13 +51,10 @@ namespace jbp.business.hana
             {
                 if (sapPagoRecibido == null)
                     sapPagoRecibido = new SapPagoRecibido();
-                var seConecto = sapPagoRecibido.IsConected();
-                if (!seConecto)
-                    seConecto = sapPagoRecibido.Connect();//se conecta a sap
-                else {
-                    var error = "Desde la api no se pudo conectar a SAP, revise las coneccines concurrentes del manager!!";
-                    ms.Add(error);
-                    return ms;
+                
+                if (!sapPagoRecibido.IsConected())
+                {
+                    sapPagoRecibido.Connect();//se conecta a sap
                 }
                 pagos.ForEach(pago =>{
                     try{
@@ -68,7 +65,8 @@ namespace jbp.business.hana
                             pago.facturasAPagar.ForEach(factura => {
                                 var folioNum = GetNumFolio(factura.numDoc);
                                 factura.folioNum = folioNum;
-                                factura.DocEntry = FacturaBusiness.GetDocEntryFromFolioNum(folioNum);
+                                factura.DatosAdicionales = FacturaBusiness.GetDatosFactura(folioNum);
+                                factura.DocEntry = factura.DatosAdicionales.Id;
                             });
                             resp = sapPagoRecibido.SafePagos(pago);
                             if (resp == "ok"){
@@ -87,7 +85,7 @@ namespace jbp.business.hana
 
         private void EnviarCorreoPago(PagosMsg pago)
         {
-            string titulo = "Pago Recibido - " + pago.client;
+            string titulo = string.Format("Pago Recibido - ({0}): {1}",pago.Vendedor, pago.client);
             string msg = string.Empty;
             var bddName = BaseCore.GetBddName();
             var fotosPath = new List<string>();
@@ -103,31 +101,40 @@ namespace jbp.business.hana
             var totalPagado = pago.GetTotalPagado();
             msg += string.Format(@"
                 <h2>{5}</h2><br>
-                <b>Cliente:</b> {0} <br>
-                <b>CodCliente:</b> {1} <br>
-                <b>Monto Pagado:</b> USD {2} <br>
-                <b>Base de datos:</b> {3} <br>
-                <b>Comentario:</b><br>{4} <br><br>
-            ", pago.client, pago.CodCliente, totalPagado, bddName , pago.comment, titulo);
+                <b>Vendedor:</b> {0} <br>                
+                <b>Cliente:</b> {1} <br>
+                <b>CodCliente:</b> {2} <br>
+                <b>Nro Recibo:</b> {3} <br>
+                <b>Monto Pagado:</b> USD {4} <br>
+                <b>Base de datos:</b> {5} <br>
+                <b>Comentario:</b><br>{6} <br><br>
+            ",pago.Vendedor, pago.client, pago.CodCliente, pago.numRecibo, totalPagado, bddName , pago.comment, titulo);
+            
             msg += "<b>Facturas Pagadas:</b> <br>";
             msg += "<table>";
             msg += " <tr>";
             msg += "    <td style='border: solid 1px #000000'><b>Num Factura</b></td>";
+            msg += "    <td style='border: solid 1px #000000'><b>Fec Factura</b></td>";
+            msg += "    <td style='border: solid 1px #000000'><b>FecVen Factura</b></td>";
             msg += "    <td style='border: solid 1px #000000'><b>Total Factura</b></td>";
             msg += "    <td style='border: solid 1px #000000'><b>Saldo Factura</b></td>";
             msg += "    <td style='border: solid 1px #000000'><b>% Desc. Pronto Pago</b></td>";
             msg += "    <td style='border: solid 1px #000000'><b>Descuento PP</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Valor a Pagar</b></td>";
+            msg += "    <td style='border: solid 1px #000000' colspan='2'><b>Valor a Pagar</b></td>";
             msg += " </tr>";
             //TODO: Incluir en el correo el valor de la retención aplicada
             pago.facturasAPagar.ForEach(factura => {
                 msg += "<tr>";
                 msg += "    <td style='border: solid 1px #000000'>" + factura.numDoc+"</td>";
+                msg += "    <td style='border: solid 1px #000000'>" + factura.date + "</td>";
+                msg += "    <td style='border: solid 1px #000000'>" + factura.dueDate + "</td>";
                 msg += "    <td style='border: solid 1px #000000'>USD " + factura.total + "</td>";
                 msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPay +"</td>";
                 msg += "    <td style='border: solid 1px #000000'>" + factura.porcentajePP + "%</td>";
                 msg += "    <td style='border: solid 1px #000000'>USD " + Math.Round(factura.descuentoPP,2) + "</td>";
                 msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPayMasProntoPago + "</td>";
+                if(!string.IsNullOrEmpty(factura.comentarioCobroPorExcepcion))
+                    msg += "    <td style='border: solid 1px #000000'><b>Comentario cobro por excepción: </b>" + factura.comentarioCobroPorExcepcion + "</td>";
                 msg += "</tr>";
             });
             msg += "</table><br>";
@@ -163,7 +170,8 @@ namespace jbp.business.hana
                         msg += "    <td style='border: solid 1px #000000'>" + cheque.bancoTxt + "</td>";
                         msg += "    <td style='border: solid 1px #000000'></td>";
                         msg += "    <td style='border: solid 1px #000000'>" + cheque.NumCheque + "</td>";
-                        msg += "    <td style='border: solid 1px #000000'>" + cheque.FechaVencimientoCheque + "</td>";
+                        if(cheque.FechaVencimientoCheque!=null)
+                            msg += "    <td style='border: solid 1px #000000'>" + cheque.FechaVencimientoCheque.ToString("yyyy-MM-dd") + "</td>";
                         msg += "</tr>";
                     });
                 }

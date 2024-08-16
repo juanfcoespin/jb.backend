@@ -11,7 +11,7 @@ namespace jbp.business.hana
 {
     public class OrdenFabricacionBusiness
     {
-        public static List<OrdenFabricacionLiberadaPesajeMsg> GetOfLiberadasPesaje()
+        public static List<OrdenFabricacionLiberadaPesajeMsg> GetOfLiberadasPesaje(string codInsumo=null)
         {
             var ms = new List<OrdenFabricacionLiberadaPesajeMsg>();
             var sql = @"
@@ -19,13 +19,20 @@ namespace jbp.business.hana
                  ""DocNum"",
                  ""CodArticulo"",
                  ""Articulo""
+            ";
+            if (!string.IsNullOrEmpty(codInsumo))
+                sql += @"t1.""CodInsumo""";
+            sql +=@"
                 from ""JbpVw_OrdenFabricacion""
                 where
-                 ""Estado"" = 'Liberado'
-                 and (""CodArticulo"" like '450%' or ""CodArticulo"" like '451%')
-                 and ""FraccionadoPesaje"" != 'SI'
-                order by ""Id"" desc            
+                 ""DocNum"" in (
+                    select distinct(""DocNumOrdenFabricacion"") from ""JbVw_OFsConTSaPesaje""
+                )
+                            
             ";
+            if (!string.IsNullOrEmpty(codInsumo))
+                sql += @" and t1.""CodInsumo"" = '{0}'";
+            sql += @" order by ""Id"" desc";
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
             foreach (DataRow dr in dt.Rows) {
@@ -33,39 +40,6 @@ namespace jbp.business.hana
                     NumOrdenFabricacion=bc.GetInt(dr["DocNum"]),
                     CodigoArticulo= dr["CodArticulo"].ToString(),
                     Descripcion= dr["Articulo"].ToString()
-                });
-            }
-            return ms;
-        }
-
-        public static List<OrdenFabricacionLiberadaPesajeMsg> GetOfLiberadasPesaje(string codInsumo)
-        {
-            var ms = new List<OrdenFabricacionLiberadaPesajeMsg>();
-            var sql = string.Format(@"
-                select
-                 t0.""DocNum"",
-                 t0.""CodArticulo"",
-                 t0.""Articulo"",
-                 t1.""CodInsumo""
-                from
-                 ""JbpVw_OrdenFabricacion"" t0 inner join
-                 ""JbpVw_OrdenFabricacionLinea"" t1 on t1.""IdOrdenFabricacion"" = t0.""Id""
-                where
-                 t0.""Estado"" = 'Liberado'
-                 and(t0.""CodArticulo"" like '450%' or t0.""CodArticulo"" like '451%')
-                 and t0.""FraccionadoPesaje"" != 'SI'
-                 and t1.""CodInsumo"" = '{0}'
-                order by t0.""Id"" desc
-            ", codInsumo);
-            var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
-            foreach (DataRow dr in dt.Rows)
-            {
-                ms.Add(new OrdenFabricacionLiberadaPesajeMsg()
-                {
-                    NumOrdenFabricacion = bc.GetInt(dr["DocNum"]),
-                    CodigoArticulo = dr["CodArticulo"].ToString(),
-                    Descripcion = dr["Articulo"].ToString()
                 });
             }
             return ms;

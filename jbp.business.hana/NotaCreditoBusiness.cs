@@ -21,10 +21,20 @@ namespace jbp.business.hana
             try
             {
 
-                // ojo: para una nueva carga hay que eliminar los datos de la tabla JBP_NC_MANUALES
-                //previo a cargar las nuevas NC manuales a enviar.
+                /* ojo: para una nueva carga hay que eliminar los datos de la tabla JBP_NC_MANUALES
+                 
+                previo a cargar las nuevas NC manuales a enviar.
+                
+                ver query: Catálogo de servicios\Promotick\3. Operacion del Servicio\queries\Documentos\notasCredito\envioNcManuales.sql
+                
+                son las facturas del principal y las sucursales
 
-                // son las facturas del principal y las sucursales
+                - para saber el factor de conversión (si es 4 o 3 en dependencia si el participante es tipo A o B) se cruza la data con el query:
+                  en el queryManager de sap: JbPromotick\JbParticipantesPuntos
+
+                - Verificar log: select * from JBP_LOG_ENVIO_DOCUMENTOS_PTK where  to_char(FECHA_TX, 'yyyy-mm-dd')='2024-06-26'
+
+                */
                 var sql = @"
                 select 
                  0 ""Id"",

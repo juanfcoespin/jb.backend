@@ -13,6 +13,7 @@ namespace jbp.msg.sap
         public eNcPPType TipoDescPP { get; set; }
         public int FolioNumFacturaRelacionada { get; set; }
         public double TotalNC { get; set; }
+        public DatosRelacionadosFacturaPagoMsg DatosAdicionalesFactura { get; set; }
     }
     public enum eNcPPType
     {

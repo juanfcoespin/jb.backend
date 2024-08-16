@@ -9,6 +9,7 @@ using TechTools.Exceptions;
 using TechTools.Core.Hana;
 using System.Data;
 using jbp.msg.sap;
+using System.Xml;
 
 namespace jbp.business.hana
 {
@@ -42,6 +43,7 @@ namespace jbp.business.hana
                 from
                  ""JbpVw_FacturasYNCToSendPtk""
                 --where
+                --""TipoDocumento""='Nota de Crédito'
                  --""NumFolio""='001-010-000103191'
                  --""RucPrincipal""='1900612134001'   
                 ";
@@ -56,13 +58,49 @@ namespace jbp.business.hana
             }
         }
 
-        internal static int GetDocEntryFromFolioNum(int folioNum)
+        internal static DatosRelacionadosFacturaPagoMsg GetDatosFactura(int folioNum)
+        {
+            var bc = new BaseCore();
+            var sql=string.Format(@"
+                 select
+                  ""DocEntry"" ""Id"",
+                  ""U_NUM_AUTOR"" ""NumAutorizacion"",
+                  ""U_SER_EST"" ""PtoEstablecimiento"",
+                  ""U_SER_PE"" ""PtoEmision"",
+                  ""DocDate"" ""Fecha""
+                 from
+                 ""OINV"" 
+                 where
+                  ""FolioNum""='{0}'
+
+            ", folioNum);
+            var dt = bc.GetDataTableByQuery(sql);
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                var dr = dt.Rows[0];
+                return new DatosRelacionadosFacturaPagoMsg
+                {
+                    Id = bc.GetInt(dr["Id"]),
+                    NumAutorizacion = dr["NumAutorizacion"].ToString(),
+                    PtoEstablecimiento = dr["PtoEstablecimiento"].ToString(),
+                    PtoEmision = dr["PtoEmision"].ToString(),
+                    Fecha = dr["Fecha"].ToString(),
+                };
+            }
+            else
+                return null;
+            
+            
+        }
+        /*
+         internal static int GetDocEntryFromFolioNum(int folioNum)
         {
             var bc = new BaseCore();
             var sql=string.Format(@"select ""DocEntry"" from OINV where ""FolioNum""='{0}'",folioNum);
             var ms= bc.GetIntScalarByQuery(sql);
             return ms;
         }
+         */
 
         public static string updateFolioNumFactExportacion(FactExportacionMe me)
         {

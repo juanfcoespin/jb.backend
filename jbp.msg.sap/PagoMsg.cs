@@ -29,6 +29,9 @@ namespace jbp.msg.sap
         public string client { get; set; }
         public string comment { get; set; }
         public string Vendedor { get; set; }
+        public string fechaImpresion { get; set; }
+        public string numRecibo { get; set; }
+
 
         public object Clone()
         {
@@ -46,6 +49,8 @@ namespace jbp.msg.sap
     }
     public class TipoPagoMsg: ICloneable
     {
+        public dynamic fechaTransferencia;
+
         public string tipoPago { get; set; }
         public double monto { get; set; }
         public List<ChequeMsg> cheques { get; set; }
@@ -97,6 +102,7 @@ namespace jbp.msg.sap
     public class DocCarteraMsg: ICloneable
     {
         public double saldo;
+        public string comentarioCobroPorExcepcion;
 
         public decimal total { get; set; }
         public double toPay { get; set; }
@@ -109,6 +115,7 @@ namespace jbp.msg.sap
         public int porcentajePP { get; set; }
         public int folioNum { get; set; }
         public double descuentoPP { get; set; }
+        public DatosRelacionadosFacturaPagoMsg DatosAdicionales { get; set; }
 
         public object Clone()
         {

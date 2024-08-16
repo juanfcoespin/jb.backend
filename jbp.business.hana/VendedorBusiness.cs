@@ -112,5 +112,27 @@ namespace jbp.business.hana
             }
             return ms;
         }
+
+        public static object GetPagosEfectivoByCodVendedor(string codVendedor)
+        {
+            try
+            {
+                var sql = string.Format(@"
+                    select 
+                        *
+                    from ""JbVw_PagosEfectivoPorVendedor""
+                    where
+                     ""CodVendedor""={1}
+                ", codVendedor);
+                return null;
+
+            }
+            catch (Exception e) {
+                return new
+                {
+                    error = e.Message
+                };
+            }
+        }
     }
 }

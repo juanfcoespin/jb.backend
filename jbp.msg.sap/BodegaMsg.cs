@@ -271,6 +271,7 @@ namespace jbp.msg.sap
         public int Bultos { get; set; }
         public string UnidadMedida { get; set; }
         public string LoteFabricante { get; set; }
+        public string CodPoe { get; set; }
     }
 
     public class PedidoMsg {
