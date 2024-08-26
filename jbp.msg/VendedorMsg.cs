@@ -19,4 +19,10 @@ namespace jbp.msg
         public string clave { get; set; }
         public string correo { get; set; }
     }
+    public class VendedorMsg
+    {
+        public string CodVendedor { get; set; }
+        public string Vendedor { get; set; }
+        public string Correo { get; set; }
+    }
 }

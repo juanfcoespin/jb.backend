@@ -116,6 +116,8 @@ namespace jbp.msg.sap
         public int folioNum { get; set; }
         public double descuentoPP { get; set; }
         public DatosRelacionadosFacturaPagoMsg DatosAdicionales { get; set; }
+        public string tipoDocumento { get; set; }
+        public string CodCliente { get; set; }
 
         public object Clone()
         {

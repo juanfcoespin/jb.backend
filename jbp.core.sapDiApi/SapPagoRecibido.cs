@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using jbp.msg.sap;
+using SAPbobsCOM;
 using TechTools.Utils;
 
 namespace jbp.core.sapDiApi
@@ -60,7 +61,7 @@ namespace jbp.core.sapDiApi
                 var numPago = 0; //el numero de documento del tipo pago recibido que se inyectan en SAP
                 var numFactura = 0;
                 var tipoPagoActual = me.tiposPagoToSave[0];
-                var facturaActual=me.facturasAPagar[0];
+                var documentoActual=me.facturasAPagar[0];
                 dynamic pago=null;
                 var registrarNuevoPago = true;
                 while (tipoPagoActual != null && tipoPagoActual.saldo > 0 && numPago<30) {// se controla que no se de un bucle infinito
@@ -69,18 +70,18 @@ namespace jbp.core.sapDiApi
                         setPago(ref pago, me, tipoPagoActual);
                         registrarNuevoPago=false;
                     }
-                    if (tipoPagoActual.saldo <= facturaActual.saldo)
+                    if (tipoPagoActual.saldo <= documentoActual.saldo)
                     {
-                        facturaActual.pagado = tipoPagoActual.saldo;
-                        facturaActual.saldo -= tipoPagoActual.saldo;
+                        documentoActual.pagado = tipoPagoActual.saldo;
+                        documentoActual.saldo -= tipoPagoActual.saldo;
                         tipoPagoActual.saldo = 0;
                     }
                     else { 
-                        tipoPagoActual.saldo-=facturaActual.saldo;
-                        facturaActual.pagado=facturaActual.saldo;
-                        facturaActual.saldo = 0;
+                        tipoPagoActual.saldo-=documentoActual.saldo;
+                        documentoActual.pagado=documentoActual.saldo;
+                        documentoActual.saldo = 0;
                     }
-                    addFacturaAlPago(ref pago, facturaActual);
+                    addDocumentoAlPago(ref pago, documentoActual, me.CodCliente);
                     if (tipoPagoActual.saldo == 0) {
                         var error=addPagoRecibido(ref pago);
                         if(error != null) 
@@ -92,10 +93,10 @@ namespace jbp.core.sapDiApi
                         else
                             tipoPagoActual = null; //para que salga del bucle
                     }
-                    if (facturaActual.saldo == 0) {
+                    if (documentoActual.saldo == 0) {
                         numFactura++;
                         if(numFactura < me.facturasAPagar.Count)
-                            facturaActual=me.facturasAPagar[numFactura];
+                            documentoActual=me.facturasAPagar[numFactura];
                     }
                 }
                 this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
@@ -133,7 +134,7 @@ namespace jbp.core.sapDiApi
             {
                 case "Efectivo":
                     pago.CashSum = tipoPago.monto;
-                    pago.CashAccount = "1101011100";
+                    pago.CashAccount = "_SYS00000000687"; //TRANSITORIA CAJA EFECTIVO
                     break;
                 case "Cheque":
                     addCheques(tipoPago, pago, me.numRecibo);
@@ -156,15 +157,33 @@ namespace jbp.core.sapDiApi
             }
         }
 
-        private void addFacturaAlPago(ref dynamic pago, DocCarteraMsg factura)
+        private void addDocumentoAlPago(ref dynamic pago, DocCarteraMsg documento, string codCliente)
         {
-            pago.Invoices.DocEntry = factura.DocEntry;
-            pago.Invoices.InvoiceType = SAPbobsCOM.BoRcptInvTypes.it_Invoice;
-            pago.Invoices.UserFields.Fields.Item("U_PORCENTAJE_PP").Value = factura.porcentajePP;
-            pago.Invoices.UserFields.Fields.Item("U_DESCUENTO_PP").Value = factura.descuentoPP;
-            pago.Invoices.SumApplied = factura.pagado;
+            pago.Invoices.DocEntry = documento.DocEntry;// el id de la factura o del cheque protestado
+            if (documento.tipoDocumento == "Cheque Protestado")
+            {
+                pago.Invoices.InvoiceType = SAPbobsCOM.BoRcptInvTypes.it_PaymentAdvice;
+                //se empareja con el asiento contable
+                JournalEntries oJE = this.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oJournalEntries);
+                oJE.GetByKey(documento.DocEntry);
+                
+                for (int i=0;i<oJE.Lines.Count; i++) {
+                    oJE.Lines.SetCurrentLine(i);
+                    if (oJE.Lines.ShortName == codCliente) //busco el asiento que corresponda con el cliente
+                        pago.Invoices.DocLine = oJE.Lines.Line_ID;
+                }
+                
+            }
+            else {//se asume que es factura
+                
+                pago.Invoices.InvoiceType = SAPbobsCOM.BoRcptInvTypes.it_Invoice;
+                pago.Invoices.UserFields.Fields.Item("U_PORCENTAJE_PP").Value = documento.porcentajePP;
+                pago.Invoices.UserFields.Fields.Item("U_DESCUENTO_PP").Value = documento.descuentoPP;
+            }
+            pago.Invoices.SumApplied = documento.pagado;
             pago.Invoices.Add();
         }
+       
 
         private void setSaldos(PagosMsg me)
         {

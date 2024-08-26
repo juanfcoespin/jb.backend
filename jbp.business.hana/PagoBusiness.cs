@@ -54,7 +54,13 @@ namespace jbp.business.hana
                 
                 if (!sapPagoRecibido.IsConected())
                 {
-                    sapPagoRecibido.Connect();//se conecta a sap
+                    bool connected=sapPagoRecibido.Connect();//se conecta a sap
+                    if (!connected)
+                    {
+                        sapPagoRecibido.Disconnect();
+                        sapPagoRecibido = null; // para que limpie el objeto y llame a la función disconect()
+                        throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
+                    }
                 }
                 pagos.ForEach(pago =>{
                     try{
@@ -66,7 +72,10 @@ namespace jbp.business.hana
                                 var folioNum = GetNumFolio(factura.numDoc);
                                 factura.folioNum = folioNum;
                                 factura.DatosAdicionales = FacturaBusiness.GetDatosFactura(folioNum);
-                                factura.DocEntry = factura.DatosAdicionales.Id;
+                                if(factura.DatosAdicionales!=null && factura.tipoDocumento != "Cheque Protestado")
+                                    factura.DocEntry = factura.DatosAdicionales.Id;
+                                if (factura.tipoDocumento == "Cheque Protestado")
+                                    factura.DocEntry = FacturaBusiness.GetIdChequeProtestadoByDocNum(factura.numDoc);
                             });
                             resp = sapPagoRecibido.SafePagos(pago);
                             if (resp == "ok"){
@@ -85,7 +94,11 @@ namespace jbp.business.hana
 
         private void EnviarCorreoPago(PagosMsg pago)
         {
-            string titulo = string.Format("Pago Recibido - ({0}): {1}",pago.Vendedor, pago.client);
+            var vendedorObj = SocioNegocioBusiness.GetVendedorByCodSocioNegocio(pago.CodCliente);
+            var vendedor = (vendedorObj != null) ? vendedorObj.Vendedor : null;
+            var correoVendedor = (vendedorObj != null) ? vendedorObj.Correo : null;
+
+            string titulo = string.Format("Pago Recibido - ({0}): {1}", vendedor, pago.client);
             string msg = string.Empty;
             var bddName = BaseCore.GetBddName();
             var fotosPath = new List<string>();
@@ -108,7 +121,7 @@ namespace jbp.business.hana
                 <b>Monto Pagado:</b> USD {4} <br>
                 <b>Base de datos:</b> {5} <br>
                 <b>Comentario:</b><br>{6} <br><br>
-            ",pago.Vendedor, pago.client, pago.CodCliente, pago.numRecibo, totalPagado, bddName , pago.comment, titulo);
+            ",vendedor, pago.client, pago.CodCliente, pago.numRecibo, totalPagado, bddName , pago.comment, titulo);
             
             msg += "<b>Facturas Pagadas:</b> <br>";
             msg += "<table>";
@@ -186,7 +199,8 @@ namespace jbp.business.hana
             }
             */
             msg += "<div><i><b>Nota: </b>Los pagos detallados en este correo están sujetos a revisión del departamento de cobranzas de James Brown Pharma</div></i>";
-            var destinatarios = conf.Default.correoPagos;
+            
+            var destinatarios = string.Format("{0}; {1}", conf.Default.correoPagos, correoVendedor) ;
             //para que no se envíe al cliente en ambiente de pruebas
             if (bddName.Equals("SBO_JBP_PROD")) //si es la base de datos de produccion
             {

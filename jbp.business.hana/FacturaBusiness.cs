@@ -206,5 +206,11 @@ namespace jbp.business.hana
             var lugar=new BaseCore().GetScalarByQuery(sql);
             return lugar == "FV_EXPP";
         }
+
+        internal static int GetIdChequeProtestadoByDocNum(string numDoc)
+        {
+            var sql = string.Format(@"select ""DocEntry"" from OVPM where ""DocNum""={0}", numDoc);
+            return new BaseCore().GetIntScalarByQuery(sql);
+        }
     }
 }

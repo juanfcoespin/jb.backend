@@ -75,7 +75,7 @@ namespace jbp.business.hana
                             resp = "Anteriormente ya se procesó esta orden!";
                         else
                         {
-                            order.Vendedor = SocioNegocioBusiness.GetVendedorByCodSocioNegocio(order.CodCliente);
+                            order.Vendedor = SocioNegocioBusiness.GetVendedorByCodSocioNegocio(order.CodCliente).Vendedor;
                             order.Lines.ForEach(line => {
                                 line.price = SocioNegocioBusiness.GetPrecioByCodSocioNegocioCodArticulo(order.CodCliente, line.CodArticulo);
                             });

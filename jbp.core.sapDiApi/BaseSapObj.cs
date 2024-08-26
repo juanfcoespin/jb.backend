@@ -39,7 +39,6 @@ namespace jbp.core.sapDiApi
                 this.Company.CompanyDB = conf.Default.dbName;
                 this.Company.UserName = conf.Default.sapUser;
                 this.Company.Password = conf.Default.sapPwd;
-
                 this.Company.Connect();
                 return this.Company.Connected;
             }
@@ -81,8 +80,6 @@ namespace jbp.core.sapDiApi
             };
             worker.RunWorkerCompleted += (s, e) => onDisconected?.Invoke(connected);
             worker.RunWorkerAsync();
-            
-            
         }
     }
 }

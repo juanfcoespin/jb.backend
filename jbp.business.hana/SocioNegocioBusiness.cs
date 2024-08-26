@@ -228,17 +228,32 @@ namespace jbp.business.hana
             new BaseCore().Execute(sql);
         }
 
-        internal static string GetVendedorByCodSocioNegocio(string codCliente)
+        internal static VendedorMsg GetVendedorByCodSocioNegocio(string codCliente)
         {
             var sql = string.Format(@"
                  select 
-                  t1.""Vendedor""
+                  t1.""CodVendedor"",
+                  t1.""Vendedor"",
+                  t1.""Email""
                  from
                   ""JbpVw_SocioNegocio"" t0 inner join
                   ""JbpVw_Vendedores"" t1 on t1.""CodVendedor"" = t0.""CodVendedor""
                  where t0.""CodSocioNegocio"" = '{0}'
-            ",codCliente);
-            return new BaseCore().GetScalarByQuery(sql);
+            ", codCliente);
+            var dt = new BaseCore().GetDataTableByQuery(sql);
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                var dr = dt.Rows[0];
+                return new VendedorMsg
+                {
+                    CodVendedor = dr["CodVendedor"].ToString(),
+                    Vendedor = dr["Vendedor"].ToString(),
+                    Correo = dr["Email"].ToString()
+                };
+            }
+            else
+                return null;
+            
         }
 
         public static List<SocioNegocioItemMsg> GetProveedoresEM()

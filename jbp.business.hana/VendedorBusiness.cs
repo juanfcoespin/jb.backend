@@ -113,26 +113,33 @@ namespace jbp.business.hana
             return ms;
         }
 
-        public static object GetPagosEfectivoByCodVendedor(string codVendedor)
+        public static List<object> GetPagosEfectivoByCodVendedor(string codVendedor)
         {
-            try
-            {
-                var sql = string.Format(@"
-                    select 
-                        *
-                    from ""JbVw_PagosEfectivoPorVendedor""
-                    where
-                     ""CodVendedor""={1}
-                ", codVendedor);
-                return null;
-
-            }
-            catch (Exception e) {
-                return new
+            var sql = string.Format(@"
+                select
+                    ""Fecha"",
+                    ""Cliente"",
+                    ""NumFactura"",
+                    ""Efectivo"",
+                    ""EstadoPago""
+                from ""JbVw_PagosEfectivoPorVendedor""
+                where
+                ""CodVendedor""={0}
+            ", codVendedor);
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
+            var ms = new List<object>();
+            foreach (DataRow dr in dt.Rows) {
+                ms.Add(new
                 {
-                    error = e.Message
-                };
+                    Fecha = dr["Fecha"].ToString(),
+                    Cliente = dr["Cliente"].ToString(),
+                    NumFactura = dr["NumFactura"].ToString(),
+                    Efectivo = bc.GetDecimal(dr["Efectivo"]),
+                    EstadoPago = dr["EstadoPago"].ToString()
+                });
             }
+            return ms;
         }
     }
 }
