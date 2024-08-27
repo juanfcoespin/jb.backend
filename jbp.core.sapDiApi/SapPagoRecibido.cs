@@ -162,17 +162,19 @@ namespace jbp.core.sapDiApi
             pago.Invoices.DocEntry = documento.DocEntry;// el id de la factura o del cheque protestado
             if (documento.tipoDocumento == "Cheque Protestado")
             {
-                pago.Invoices.InvoiceType = SAPbobsCOM.BoRcptInvTypes.it_PaymentAdvice;
+                //pago.Invoices.InvoiceType = SAPbobsCOM.BoRcptInvTypes.it_JournalEntry;//it_PaymentAdvice;
                 //se empareja con el asiento contable
                 JournalEntries oJE = this.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oJournalEntries);
-                oJE.GetByKey(documento.DocEntry);
-                
+                //oJE.GetByKey(documento.DocEntry);
+                oJE.GetByKey(716980); //id del asiento contable
                 for (int i=0;i<oJE.Lines.Count; i++) {
                     oJE.Lines.SetCurrentLine(i);
                     if (oJE.Lines.ShortName == codCliente) //busco el asiento que corresponda con el cliente
                         pago.Invoices.DocLine = oJE.Lines.Line_ID;
                 }
-                
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(oJE);
+
+
             }
             else {//se asume que es factura
                 

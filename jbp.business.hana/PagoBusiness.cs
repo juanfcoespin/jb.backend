@@ -54,11 +54,10 @@ namespace jbp.business.hana
                 
                 if (!sapPagoRecibido.IsConected())
                 {
-                    bool connected=sapPagoRecibido.Connect();//se conecta a sap
-                    if (!connected)
+                    if (!sapPagoRecibido.Connect()) // cuando no se puede conectar es por que el obj sap se inhibe
                     {
-                        sapPagoRecibido.Disconnect();
-                        sapPagoRecibido = null; // para que limpie el objeto y llame a la función disconect()
+                        // en el próximo intento obliga a crear otra vez el objeto para hacer una conexión limpia
+                        sapPagoRecibido = null; 
                         throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
                     }
                 }

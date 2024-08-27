@@ -46,6 +46,27 @@ namespace jbp.core.sapDiApi
             {
                 return false;
             }
+            /*
+            para SAP 10:
+            try
+            {
+                if (this.Company.Connected)
+                    return true;
+                this.Company.Server = conf.Default.server;
+                this.Company.CompanyDB = conf.Default.dbName;
+                this.Company.DbUserName = conf.Default.dbUser;
+                this.Company.DbPassword = conf.Default.dbPwd;
+                this.Company.UserName = conf.Default.sapUser;
+                this.Company.Password = conf.Default.sapPwd;
+                this.Company.Connect();
+                return this.Company.Connected;
+            }
+            catch
+            {
+                return false;
+            }
+        
+             */
         }
         public void Disconnect() {
             if (this.Company!=null && this.Company.Connected)
