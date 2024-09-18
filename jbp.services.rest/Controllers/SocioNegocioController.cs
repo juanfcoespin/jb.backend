@@ -10,6 +10,13 @@ namespace jbp.services.rest.Controllers
 {
     public class SocioNegocioController : ApiController
     {
+        [HttpPost]
+        [Route("api/socioNegocio/participanteCumplioMeta")]
+        public object ParticipanteCumplioMeta([FromBody] ConsultaCumplimientoMetaParticipantesMe me)
+        {
+            return jbp.business.hana.SocioNegocioBusiness.ParticipanteCumplioMeta(me);
+        }
+
         [HttpGet]
         [Route("api/socioNegocio/getCarteraByRucPrincipal/{rucPrincipal}")]
         public List<CarteraMsg> getCarteraByRucPrincipal(string rucPrincipal) { 

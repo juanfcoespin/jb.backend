@@ -3,22 +3,22 @@
   <Profiles />
   <Settings>
     <Setting Name="server" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">192.168.57.13:30015</Value>
+      <Value Profile="(Default)">NDB@192.168.57.13:30015</Value>
     </Setting>
     <Setting Name="dbName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">SBO_PRUEBA_20200529</Value>
+      <Value Profile="(Default)">NDB</Value>
     </Setting>
     <Setting Name="sapUser" Type="System.String" Scope="Application">
       <Value Profile="(Default)">manager</Value>
     </Setting>
     <Setting Name="sapPwd" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">S1st3m4sJB</Value>
+      <Value Profile="(Default)">Ph4rm4$4p</Value>
     </Setting>
     <Setting Name="dbUser" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">SYSTEM</Value>
+      <Value Profile="(Default)">SAPSYSTEM</Value>
     </Setting>
     <Setting Name="dbPwd" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">H4n4bdd*</Value>
+      <Value Profile="(Default)">Pa55w0rdsap*</Value>
     </Setting>
     <Setting Name="NroSerieTSPorDefecto" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">95</Value>

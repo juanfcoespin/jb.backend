@@ -62,29 +62,37 @@ namespace jbp.business.hana
                     }
                 }
                 pagos.ForEach(pago =>{
-                    try{
+                    try
+                    {
                         var resp = "";
                         if (DuplicatePago(pago))
                             resp = "Anteriormente ya se procesó este item!";
-                        else{
-                            pago.facturasAPagar.ForEach(factura => {
+                        else
+                        {
+                            pago.facturasAPagar.ForEach(factura =>
+                            {
                                 var folioNum = GetNumFolio(factura.numDoc);
                                 factura.folioNum = folioNum;
                                 factura.DatosAdicionales = FacturaBusiness.GetDatosFactura(folioNum);
-                                if(factura.DatosAdicionales!=null && factura.tipoDocumento != "Cheque Protestado")
+                                if (factura.DatosAdicionales != null && factura.tipoDocumento != "Cheque Protestado")
                                     factura.DocEntry = factura.DatosAdicionales.Id;
                                 if (factura.tipoDocumento == "Cheque Protestado")
                                     factura.DocEntry = FacturaBusiness.GetIdChequeProtestadoByDocNum(factura.numDoc);
                             });
                             resp = sapPagoRecibido.SafePagos(pago);
-                            if (resp == "ok"){
+                            if (resp == "ok")
+                            {
                                 EnviarCorreoPago(pago);
                             }
                         }
                         ms.Add(resp);
                     }
-                    catch (Exception e){
+                    catch (Exception e)
+                    {
                         ms.Add(e.Message);
+                    }
+                    finally { 
+                        sapPagoRecibido.Disconnect(); //explicitamente desconecto 
                     }
                 });
             }

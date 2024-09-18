@@ -8,11 +8,58 @@ using jbp.msg.sap;
 using TechTools.Core.Hana;
 using TechTools.Exceptions;
 using System.Data;
+using System.Net;
 
 namespace jbp.business.hana
 {
     public class SocioNegocioBusiness
     {
+        public static object ParticipanteCumplioMeta(ConsultaCumplimientoMetaParticipantesMe me) {
+            try
+            {
+                var meta = GetMetaMensualParticipante(me.ruc);
+                var montoComprado = GetMontoCompradoParticipante(me);
+                return new
+                {
+                    metaMensual = meta,
+                    montoCompradoMes=montoComprado,
+                    cumpleMeta = montoComprado >= meta
+                };
+            }
+            catch (Exception e) {
+                return new
+                {
+                    error = e.Message
+                };
+            }
+        }
+        public static int GetMontoCompradoParticipante(ConsultaCumplimientoMetaParticipantesMe me) {
+            var sql = string.Format(@"
+            select 
+             sum(""montoFactura"")
+            from
+             ""JbpVw_FacturasMasNCParticipantes""
+            where
+             ""RucPrincipal"" = '{0}'
+             and ""añoFactura"" = '{1}'
+             and ""mesFactura"" = '{2}'
+            ", me.ruc, me.year, me.mes );
+            return new BaseCore().GetIntScalarByQuery(sql);
+        }
+        public static int GetMetaMensualParticipante(string ruc) {
+            if (string.IsNullOrEmpty(ruc))
+                throw new Exception("El Ruc no puede ser vacío!!");
+            var sql = string.Format(@"
+                select
+                 top 1
+                 round(""MetaCompras""/12,0) ""MetaMensual"" 
+                from ""JbpVw_SocioNegocio""
+                where
+                 ""CodTipoSocioNegocio""='C'
+                 and ""Ruc"" = '{0}'
+            ", ruc);
+            return new BaseCore().GetIntScalarByQuery(sql);
+        }
         public static List<CarteraMsg> GetCarteraByRucPrincipalCliente(string rucPrincipal)
         {
             var ms = new List<CarteraMsg>();
@@ -641,5 +688,6 @@ namespace jbp.business.hana
              ",ruc);
             new BaseCore().Execute(sql);
         }
+
     }
 }

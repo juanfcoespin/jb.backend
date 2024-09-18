@@ -12,7 +12,7 @@ namespace jbp.core.sapDiApi {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.0.3.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.9.0.0")]
     internal sealed partial class conf : global::System.Configuration.ApplicationSettingsBase {
         
         private static conf defaultInstance = ((conf)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new conf())));
@@ -25,7 +25,7 @@ namespace jbp.core.sapDiApi {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("192.168.57.13:30015")]
+        [global::System.Configuration.DefaultSettingValueAttribute("NDB@192.168.57.13:30015")]
         public string server {
             get {
                 return ((string)(this["server"]));
@@ -34,7 +34,7 @@ namespace jbp.core.sapDiApi {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("SBO_PRUEBA_20200529")]
+        [global::System.Configuration.DefaultSettingValueAttribute("NDB")]
         public string dbName {
             get {
                 return ((string)(this["dbName"]));
@@ -52,7 +52,7 @@ namespace jbp.core.sapDiApi {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("S1st3m4sJB")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Ph4rm4$4p")]
         public string sapPwd {
             get {
                 return ((string)(this["sapPwd"]));
@@ -61,7 +61,7 @@ namespace jbp.core.sapDiApi {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("SYSTEM")]
+        [global::System.Configuration.DefaultSettingValueAttribute("SAPSYSTEM")]
         public string dbUser {
             get {
                 return ((string)(this["dbUser"]));
@@ -70,7 +70,7 @@ namespace jbp.core.sapDiApi {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("H4n4bdd*")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Pa55w0rdsap*")]
         public string dbPwd {
             get {
                 return ((string)(this["dbPwd"]));

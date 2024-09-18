@@ -82,6 +82,14 @@ namespace jbp.msg
         public string nombreCampo { get; set; }
         public string valor { get; set; }
     }
+
+    public class ConsultaCumplimientoMetaParticipantesMe
+    {
+        public string ruc { get; set; }
+        public string year { get; set; }
+        public string mes { get; set; }
+    }
+
     public class ParticipantesPuntosMsg
     {
         public bool Activo { get; set; }

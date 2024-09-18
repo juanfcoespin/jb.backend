@@ -14414,7 +14414,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\jespin.JB\\.nuget\\packages\\": {}
+    "C:\\Users\\Juan Espin\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -14422,11 +14422,11 @@
       "projectUniqueName": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj",
       "projectName": "jbp.services.signalR",
       "projectPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.services.signalR\\jbp.services.signalR.csproj",
-      "packagesPath": "C:\\Users\\jespin.JB\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\Juan Espin\\.nuget\\packages\\",
       "outputPath": "D:\\DesarrolloSw\\JBP\\jbp.backend\\jbp.services.signalR\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\jespin.JB\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Juan Espin\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

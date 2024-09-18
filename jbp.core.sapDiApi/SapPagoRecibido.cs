@@ -193,7 +193,7 @@ namespace jbp.core.sapDiApi
             me.tiposPagoToSave.ForEach(tp => tp.saldo = tp.monto);
 
             //en facturas
-            me.facturasAPagar.ForEach(factura => factura.saldo = factura.toPay);
+            me.facturasAPagar.ForEach(factura => factura.saldo = factura.toPayMasProntoPago);
         }
 
         private void establecerTotalPagadoCheques(PagosMsg me)

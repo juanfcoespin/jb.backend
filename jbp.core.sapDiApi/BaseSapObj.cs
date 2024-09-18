@@ -31,23 +31,7 @@ namespace jbp.core.sapDiApi
         }
         public bool Connect()
         {
-            try
-            {
-                if (this.Company.Connected)
-                    return true;
-                //this.Company.LicenseServer = 172.31.250.10 "192.168.57.13:4000";
-                this.Company.CompanyDB = conf.Default.dbName;
-                this.Company.UserName = conf.Default.sapUser;
-                this.Company.Password = conf.Default.sapPwd;
-                this.Company.Connect();
-                return this.Company.Connected;
-            }
-            catch
-            {
-                return false;
-            }
-            /*
-            para SAP 10:
+            
             try
             {
                 if (this.Company.Connected)
@@ -65,13 +49,11 @@ namespace jbp.core.sapDiApi
             {
                 return false;
             }
-        
-             */
         }
         public void Disconnect() {
             if (this.Company!=null && this.Company.Connected)
                 this.Company.Disconnect();
-            CheckIfIsDisconectedAsync();
+            //CheckIfIsDisconectedAsync();
         }
 
         private void CheckIfIsDisconectedAsync()
