@@ -31,7 +31,6 @@ namespace jbp.core.sapDiApi
         }
         public bool Connect()
         {
-            
             try
             {
                 if (this.Company.Connected)

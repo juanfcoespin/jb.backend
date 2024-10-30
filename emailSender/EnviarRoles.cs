@@ -76,6 +76,7 @@ namespace emailSender
                 {
                     var cedula = matrix[0];
                     var mail = EmpleadoBusiness.GetMailByCedula(cedula);
+                    //var mail = "juan.espin@yahoo.com";
                     var msg = conf.Default.cuerpoMensaje;
                     //para que lea html ya que en el archivo app.config no se puede registrar html 
                     msg = msg.Replace("{", "<");
@@ -121,7 +122,7 @@ namespace emailSender
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             btnEnviarRoles.Enabled = true;
-            //mostrarResultadoEnvio();
+            MessageBox.Show("Se finalizó el procesamiento", "Mensaje del Sistema", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void mostrarResultadoEnvio()

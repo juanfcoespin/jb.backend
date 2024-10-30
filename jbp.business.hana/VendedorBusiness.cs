@@ -18,6 +18,7 @@ namespace jbp.business.hana
             var ms = new List<CarteraMsg>();
             var sql = @"
               select
+                 t0.""IdFactura"",
                  t0.""DocNum"",
                  t1.""CodSocioNegocio"", 
                  t0.""TipoDocumento"",
@@ -57,6 +58,7 @@ namespace jbp.business.hana
                 {
                     ms.Add(new CarteraMsg
                     {
+                        IdFactura = bc.GetInt(dr["IdFactura"]),
                         DocNum = bc.GetInt(dr["DocNum"]),
                         CodSocioNegocio = dr["CodSocioNegocio"].ToString(),
                         TipoDocumento = dr["TipoDocumento"].ToString(),
@@ -82,6 +84,7 @@ namespace jbp.business.hana
                 if (fact.TipoDocumento == "Factura") {
                     fact.Retenciones = FacturaBusiness.GetRetencionesByDocNum(fact.DocNum);
                     fact.Pagos = FacturaBusiness.GetPagosByDocNum(fact.DocNum);
+                    fact.PagosBorrador = FacturaBusiness.GetPagosBorradorByIdFactura(fact.IdFactura);
                 }
             });
             return ms;

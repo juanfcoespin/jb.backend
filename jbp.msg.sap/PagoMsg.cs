@@ -133,5 +133,6 @@ namespace jbp.msg.sap
     {
         public decimal Valor { get; set; }
         public string Fecha { get; set; }
+        public string DocNum { get; set; }
     }
 }

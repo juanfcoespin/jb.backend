@@ -14,25 +14,39 @@ namespace jbp.business.hana
         public static List<OrdenFabricacionLiberadaPesajeMsg> GetOfLiberadasPesaje(string codInsumo=null)
         {
             var ms = new List<OrdenFabricacionLiberadaPesajeMsg>();
-            var sql = @"
+            var sql = "";
+            if (string.IsNullOrEmpty(codInsumo)) {
+                sql = @"
                 select
                  ""DocNum"",
                  ""CodArticulo"",
                  ""Articulo""
-            ";
-            if (!string.IsNullOrEmpty(codInsumo))
-                sql += @"t1.""CodInsumo""";
-            sql +=@"
+            
                 from ""JbpVw_OrdenFabricacion""
                 where
                  ""DocNum"" in (
                     select distinct(""DocNumOrdenFabricacion"") from ""JbVw_OFsConTSaPesaje""
                 )
-                            
+                order by ""Id"" desc
             ";
-            if (!string.IsNullOrEmpty(codInsumo))
-                sql += @" and t1.""CodInsumo"" = '{0}'";
-            sql += @" order by ""Id"" desc";
+            }
+            else {
+                sql = string.Format(@"
+                select
+                     distinct
+                     t0.""DocNum"",
+                     t0.""CodArticulo"",
+                     t0.""Articulo""
+                    from ""JbpVw_OrdenFabricacion"" t0 inner join
+                    ""JbpVw_OrdenFabricacionLinea"" t1 on t1.""IdOrdenFabricacion""=t0.""Id""
+                    where
+                     t0.""DocNum"" in (
+                        select distinct(""DocNumOrdenFabricacion"") from ""JbVw_OFsConTSaPesaje""
+                    )
+                    and t1.""CodInsumo""='{0}'
+                ",codInsumo);
+            }
+            
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
             foreach (DataRow dr in dt.Rows) {

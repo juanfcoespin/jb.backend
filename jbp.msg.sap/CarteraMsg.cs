@@ -28,5 +28,7 @@ namespace jbp.msg.sap
         public List<ValorPagadoMsg> Pagos { get; set; }
         public string Comentarios { get; set; }
         public string TipoNC { get; set; }
+        public int IdFactura { get; set; }
+        public List<ValorPagadoMsg> PagosBorrador { get; set; }
     }
 }

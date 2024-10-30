@@ -17,10 +17,10 @@ namespace jbp.presentacion.EnvioDocumentosPromotick
             //new DocumentosPtkBusiness().EnviarDocumentosAPromotick();
             //new DocumentosPtkBusiness().EnviarNotasCreditoManuales();
             //new DocumentosPtkBusiness().EnviarAjustes();
-            //new DocumentosPtkBusiness().EnviarAceleradores("Abr-Jun 2024");
+            //new DocumentosPtkBusiness().EnviarAceleradores("Jul-Sep 2024");
             //new ParticipantePtkBusiness().InactivarParticipantes();
-            //new ParticipantePtkBusiness().ActualizacionMasivaParticipantes();
-            new ParticipantePtkBusiness().RegistroMasivoParticipantes();
+            new ParticipantePtkBusiness().ActualizacionMasivaParticipantes();
+            //new ParticipantePtkBusiness().RegistroMasivoParticipantes();
             //new BaseBusiness().testCorreo("<b>Cabecera</b><br> Esto es una prueba");
             //new ParticipantePtkBusiness().AsignacionMasivaVendedor();
             //new VendedorPtkBusiness().ActualizacionMasivaVendedores(eTipoOperacionVendedor.insert);

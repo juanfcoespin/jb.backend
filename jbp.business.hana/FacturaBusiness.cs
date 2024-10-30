@@ -149,6 +149,7 @@ namespace jbp.business.hana
             var ms = new List<ValorPagadoMsg>();
             var sql = string.Format(@"
                 select 
+                 t1.""DocNum"",
                  t0.""Pago"",
                  to_char(t1.""Fecha"", 'yyyy-mm-dd') ""Fecha""
                 from
@@ -163,6 +164,7 @@ namespace jbp.business.hana
             var dt = bc.GetDataTableByQuery(sql);
             foreach (DataRow dr in dt.Rows) {
                 ms.Add(new ValorPagadoMsg {
+                    DocNum = dr["DocNum"].ToString(),
                     Valor = bc.GetDecimal(dr["Pago"]),
                     Fecha = dr["Fecha"].ToString()
                 });
@@ -211,6 +213,34 @@ namespace jbp.business.hana
         {
             var sql = string.Format(@"select ""DocEntry"" from OVPM where ""DocNum""={0}", numDoc);
             return new BaseCore().GetIntScalarByQuery(sql);
+        }
+
+        internal static List<ValorPagadoMsg> GetPagosBorradorByIdFactura(int idFactura)
+        {
+            var ms = new List<ValorPagadoMsg>();
+            var sql = string.Format(@"
+                select 
+                 ""DocNum"",
+                 to_char(""Fecha"",'yyyy-mm-dd') ""Fecha"",
+                 ""Total""
+                from
+                 ""JbpVw_PagosBorrador"" t0 inner join
+                 ""JbpVw_PagosBorradorLinea"" t1 on t1.""IdPago""=t0.""Id""
+                where 
+                 t1.""IdFactura"" = {0}
+            ", idFactura);
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
+            foreach (DataRow dr in dt.Rows)
+            {
+                ms.Add(new ValorPagadoMsg
+                {
+                    DocNum = dr["DocNum"].ToString(),
+                    Valor = bc.GetDecimal(dr["Total"]),
+                    Fecha = dr["Fecha"].ToString()
+                });
+            }
+            return ms;
         }
     }
 }

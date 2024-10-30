@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 using jbp.core.sapDiApi;
 using TechTools.Core.Hana;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Data;
 using System.IO;
-
+using System.ComponentModel;
+using TechTools.Net;
 
 
 namespace jbp.business.hana
@@ -22,16 +24,6 @@ namespace jbp.business.hana
 
         public List<string> SavePagos(List<PagosMsg> pagos)
         {
-            /*
-            var ms = new List<string>();
-            pagos.ForEach(pago =>
-            {
-                ms.Add("Temporalmente supendido el registro de pagos, por correcciones en cartera");
-            });
-            return ms;
-            */
-            
-            
             Monitor.Enter(control);
             try
             {
@@ -47,193 +39,70 @@ namespace jbp.business.hana
         private List<string> ProcessPagos(List<PagosMsg> pagos)
         {
             var ms = new List<string>();
-            if (pagos != null && pagos.Count > 0)
+            var correosPendientes=new List<PagosMsg>();
+            try
             {
-                if (sapPagoRecibido == null)
-                    sapPagoRecibido = new SapPagoRecibido();
-                
-                if (!sapPagoRecibido.IsConected())
+                if (pagos != null && pagos.Count > 0)
                 {
-                    if (!sapPagoRecibido.Connect()) // cuando no se puede conectar es por que el obj sap se inhibe
+                    if (sapPagoRecibido == null)
+                        sapPagoRecibido = new SapPagoRecibido();
+
+                    if (!sapPagoRecibido.IsConected())
                     {
-                        // en el próximo intento obliga a crear otra vez el objeto para hacer una conexión limpia
-                        sapPagoRecibido = null; 
-                        throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
-                    }
-                }
-                pagos.ForEach(pago =>{
-                    try
-                    {
-                        var resp = "";
-                        if (DuplicatePago(pago))
-                            resp = "Anteriormente ya se procesó este item!";
-                        else
+                        if (!sapPagoRecibido.Connect()) // cuando no se puede conectar es por que el obj sap se inhibe
                         {
-                            pago.facturasAPagar.ForEach(factura =>
-                            {
-                                var folioNum = GetNumFolio(factura.numDoc);
-                                factura.folioNum = folioNum;
-                                factura.DatosAdicionales = FacturaBusiness.GetDatosFactura(folioNum);
-                                if (factura.DatosAdicionales != null && factura.tipoDocumento != "Cheque Protestado")
-                                    factura.DocEntry = factura.DatosAdicionales.Id;
-                                if (factura.tipoDocumento == "Cheque Protestado")
-                                    factura.DocEntry = FacturaBusiness.GetIdChequeProtestadoByDocNum(factura.numDoc);
-                            });
-                            resp = sapPagoRecibido.SafePagos(pago);
-                            if (resp == "ok")
-                            {
-                                EnviarCorreoPago(pago);
-                            }
+                            // en el próximo intento obliga a crear otra vez el objeto para hacer una conexión limpia
+                            sapPagoRecibido = null;
+                            throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
                         }
-                        ms.Add(resp);
                     }
-                    catch (Exception e)
-                    {
-                        ms.Add(e.Message);
-                    }
-                    finally { 
-                        sapPagoRecibido.Disconnect(); //explicitamente desconecto 
-                    }
-                });
-            }
-            return ms;
-        }
-
-        private void EnviarCorreoPago(PagosMsg pago)
-        {
-            var vendedorObj = SocioNegocioBusiness.GetVendedorByCodSocioNegocio(pago.CodCliente);
-            var vendedor = (vendedorObj != null) ? vendedorObj.Vendedor : null;
-            var correoVendedor = (vendedorObj != null) ? vendedorObj.Correo : null;
-
-            string titulo = string.Format("Pago Recibido - ({0}): {1}", vendedor, pago.client);
-            string msg = string.Empty;
-            var bddName = BaseCore.GetBddName();
-            var fotosPath = new List<string>();
-            var i = 0;
-            if (pago.fotosComprobantes != null)
-            {
-                pago.fotosComprobantes.ForEach(foto => {
-                    i++;
-                    var nombreCoprobantePago = getNombreComprobantePago(pago.CodCliente,i);
-                    fotosPath.Add(downloadComprobatePago(foto, nombreCoprobantePago));
-                });
-            }
-            var totalPagado = pago.GetTotalPagado();
-            msg += string.Format(@"
-                <h2>{5}</h2><br>
-                <b>Vendedor:</b> {0} <br>                
-                <b>Cliente:</b> {1} <br>
-                <b>CodCliente:</b> {2} <br>
-                <b>Nro Recibo:</b> {3} <br>
-                <b>Monto Pagado:</b> USD {4} <br>
-                <b>Base de datos:</b> {5} <br>
-                <b>Comentario:</b><br>{6} <br><br>
-            ",vendedor, pago.client, pago.CodCliente, pago.numRecibo, totalPagado, bddName , pago.comment, titulo);
-            
-            msg += "<b>Facturas Pagadas:</b> <br>";
-            msg += "<table>";
-            msg += " <tr>";
-            msg += "    <td style='border: solid 1px #000000'><b>Num Factura</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Fec Factura</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>FecVen Factura</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Total Factura</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Saldo Factura</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>% Desc. Pronto Pago</b></td>";
-            msg += "    <td style='border: solid 1px #000000'><b>Descuento PP</b></td>";
-            msg += "    <td style='border: solid 1px #000000' colspan='2'><b>Valor a Pagar</b></td>";
-            msg += " </tr>";
-            //TODO: Incluir en el correo el valor de la retención aplicada
-            pago.facturasAPagar.ForEach(factura => {
-                msg += "<tr>";
-                msg += "    <td style='border: solid 1px #000000'>" + factura.numDoc+"</td>";
-                msg += "    <td style='border: solid 1px #000000'>" + factura.date + "</td>";
-                msg += "    <td style='border: solid 1px #000000'>" + factura.dueDate + "</td>";
-                msg += "    <td style='border: solid 1px #000000'>USD " + factura.total + "</td>";
-                msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPay +"</td>";
-                msg += "    <td style='border: solid 1px #000000'>" + factura.porcentajePP + "%</td>";
-                msg += "    <td style='border: solid 1px #000000'>USD " + Math.Round(factura.descuentoPP,2) + "</td>";
-                msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPayMasProntoPago + "</td>";
-                if(!string.IsNullOrEmpty(factura.comentarioCobroPorExcepcion))
-                    msg += "    <td style='border: solid 1px #000000'><b>Comentario cobro por excepción: </b>" + factura.comentarioCobroPorExcepcion + "</td>";
-                msg += "</tr>";
-            });
-            msg += "</table><br>";
-            msg += "<b>Detalles del Pago:</b> <br>";
-            msg += "<b>Total Pagado: USD " + totalPagado + "</b><br>";
-            msg += @"<table>
-                        <thead>
-                            <th style='border: solid 1px #000000'><b>Tipo Pago</b></th>
-                            <th style='border: solid 1px #000000'><b>Monto</b></th>
-                            <th style='border: solid 1px #000000'><b>Banco</b></th>
-                            <th style='border: solid 1px #000000'>Num Transfer</th>
-                            <th style='border: solid 1px #000000'> Num Cheque </th>
-                            <th style='border: solid 1px #000000'> Fecha Venc. </th>
-                        </thead>
-            ";
-            pago.tiposPagoToSave.ForEach(tp => {
-                if (tp.tipoPago == "Efectivo" || tp.tipoPago == "Transferencia") 
-                {
-                    msg += @"<tr>";
-                    msg += "    <td style='border: solid 1px #000000'>" + tp.tipoPago + "</td>";
-                    msg += "    <td style='border: solid 1px #000000'>USD " + tp.monto + "</td>";
-                    msg += "    <td style='border: solid 1px #000000'>" + tp.bancoTxt + "</td>";
-                    msg += "    <td style='border: solid 1px #000000'>" + tp.NumTransferencia + "</td>";
-                    msg += "    <td style='border: solid 1px #000000'></td>";
-                    msg += "    <td style='border: solid 1px #000000'></td>";
-                    msg += "</tr>";
-                }
-                else {
-                    tp.cheques.ForEach(cheque => {
-                        msg += @"<tr>";
-                        msg += "    <td style='border: solid 1px #000000'>" + tp.tipoPago + "</td>";
-                        msg += "    <td style='border: solid 1px #000000'>USD " + cheque.monto + "</td>";
-                        msg += "    <td style='border: solid 1px #000000'>" + cheque.bancoTxt + "</td>";
-                        msg += "    <td style='border: solid 1px #000000'></td>";
-                        msg += "    <td style='border: solid 1px #000000'>" + cheque.NumCheque + "</td>";
-                        if(cheque.FechaVencimientoCheque!=null)
-                            msg += "    <td style='border: solid 1px #000000'>" + cheque.FechaVencimientoCheque.ToString("yyyy-MM-dd") + "</td>";
-                        msg += "</tr>";
+                    pagos.ForEach(pago => {
+                        try
+                        {
+                            var resp = "";
+                            if (DuplicatePago(pago))
+                                resp = "Anteriormente ya se procesó este item!";
+                            else
+                            {
+                                pago.facturasAPagar.ForEach(factura =>
+                                {
+                                    var folioNum = GetNumFolio(factura.numDoc);
+                                    factura.folioNum = folioNum;
+                                    factura.DatosAdicionales = FacturaBusiness.GetDatosFactura(folioNum);
+                                    if (factura.DatosAdicionales != null && factura.tipoDocumento != "Cheque Protestado")
+                                        factura.DocEntry = factura.DatosAdicionales.Id;
+                                    if (factura.tipoDocumento == "Cheque Protestado")
+                                        factura.DocEntry = FacturaBusiness.GetIdChequeProtestadoByDocNum(factura.numDoc);
+                                });
+                                resp = sapPagoRecibido.SafePagos(pago);
+                                if (resp == "ok")
+                                {
+                                    correosPendientes.Add(pago);
+                                    
+                                }
+                            }
+                            ms.Add(resp);
+                        }
+                        catch (Exception e)
+                        {
+                            ms.Add(e.Message);
+                        }
                     });
+                    if(sapPagoRecibido.IsConected())
+                        sapPagoRecibido.Disconnect(); // se forza la desconexión
+                    // se envían los correos en otro hilo
+                    EnviarCorreosAsync(correosPendientes);
                 }
-            });
-            msg += "</table><br>";
-            /*
-             * En outlook no se carga, por eso mejor va como atachment la imgen del comprobante
-            if (!string.IsNullOrEmpty(pago.photoComprobanteData))
-            {
-                msg += "<b>Comprobante Pago:</b> <br>";
-                msg += string.Format(@"<img src=""data: image / png; base64, {0}""/>", pago.photoComprobanteData);
             }
-            */
-            msg += "<div><i><b>Nota: </b>Los pagos detallados en este correo están sujetos a revisión del departamento de cobranzas de James Brown Pharma</div></i>";
-            
-            var destinatarios = string.Format("{0}; {1}", conf.Default.correoPagos, correoVendedor) ;
-            //para que no se envíe al cliente en ambiente de pruebas
-            if (bddName.Equals("SBO_JBP_PROD")) //si es la base de datos de produccion
-            {
-                var correoCliente = SocioNegocioBusiness.GetCorreoByCodigo(pago.CodCliente);
-                if (correoCliente != null && TechTools.Utils.ValidacionUtils.EmailValid(correoCliente))
-                    destinatarios += "; " + correoCliente;
+            catch (Exception e) { 
+                ms.Add(e.Message);
             }
-            this.EnviarPorCorreo(destinatarios, titulo, msg, fotosPath);
-        }
-
-        private string downloadComprobatePago(string photoComprobanteData, string nombreCoprobantePago)
-        {
-            byte[] imageBytes = Convert.FromBase64String(photoComprobanteData);
-            var pathComprobantesPago = conf.Default.pathComprobantesPago;
-            if (!Directory.Exists(pathComprobantesPago))
-                Directory.CreateDirectory(pathComprobantesPago);
-            var compleateImgPath = string.Format(@"{0}\{1}", conf.Default.pathComprobantesPago,
-                nombreCoprobantePago);
-            TechTools.Utils.FileUtils.CreateFile_FromByteArray(compleateImgPath, imageBytes);
-            return compleateImgPath;
-        }
-
-        private string getNombreComprobantePago(string codCliente, int numFile)
-        {
-            var ms = string.Format("{0}_{1}_{2}.png",codCliente, DateTime.Now.ToString("yyyyMMddhhmm"),numFile.ToString());
             return ms;
+        }
+        private static void EnviarCorreosAsync(List<PagosMsg> pagos) {
+            var ec = new EnvioCorreoPago();
+            ec.pagos = pagos;
+            Task.Run(() => ec.Enviar());
         }
 
         private static bool DuplicatePago(PagosMsg pago)
@@ -259,6 +128,167 @@ namespace jbp.business.hana
             }
             else
                 throw ex;
+        }
+    }
+
+    public class EnvioCorreoPago : BaseBusiness
+    {
+        public List<PagosMsg> pagos { get; set; }
+        public EnvioCorreoPago()
+        {
+            this.pagos = new List<PagosMsg>();
+        }
+        public void Enviar()
+        {
+            this.pagos.ForEach(pago =>
+            {
+                this.EnviarCorreoPago(pago);
+            });
+        }
+        private string downloadComprobatePago(string photoComprobanteData, string nombreCoprobantePago)
+        {
+            byte[] imageBytes = Convert.FromBase64String(photoComprobanteData);
+            var pathComprobantesPago = conf.Default.pathComprobantesPago;
+            if (!Directory.Exists(pathComprobantesPago))
+                Directory.CreateDirectory(pathComprobantesPago);
+            var compleateImgPath = string.Format(@"{0}\{1}", conf.Default.pathComprobantesPago,
+                nombreCoprobantePago);
+            TechTools.Utils.FileUtils.CreateFile_FromByteArray(compleateImgPath, imageBytes);
+            return compleateImgPath;
+        }
+        private void EnviarCorreoPago(PagosMsg pago)
+        {
+            var vendedorObj = SocioNegocioBusiness.GetVendedorByCodSocioNegocio(pago.CodCliente);
+            var vendedor = (vendedorObj != null) ? vendedorObj.Vendedor : null;
+            var correoVendedor = (vendedorObj != null) ? vendedorObj.Correo : null;
+
+            string titulo = string.Format("Pago Recibido - ({0}): {1}", vendedor, pago.client);
+            string msg = string.Empty;
+            var bddName = BaseCore.GetBddName();
+            var fotosPath = new List<string>();
+            var i = 0;
+            if (pago.fotosComprobantes != null)
+            {
+                pago.fotosComprobantes.ForEach(foto => {
+                    i++;
+                    var nombreCoprobantePago = getNombreComprobantePago(pago.CodCliente, i);
+                    fotosPath.Add(downloadComprobatePago(foto, nombreCoprobantePago));
+                });
+            }
+            var totalPagado = pago.GetTotalPagado();
+            msg += string.Format(@"
+                <h2>Recibo de Cobro: {3}</h2>
+                <h2>Total Pagado: {4}</h2><br>
+                <b>Vendedor:</b> {0} <br>                
+                <b>Cliente:</b> {1} <br>
+                <b>CodCliente:</b> {2} <br>
+                <b>Base de datos:</b> {5} <br>
+                <b>Comentario:</b><br>{6} <br><br>
+            ", vendedor, pago.client, pago.CodCliente, pago.numRecibo, totalPagado, bddName, pago.comment, titulo);
+
+            var hayDescuentoPP = false;
+            foreach (var factura in pago.facturasAPagar) {
+                if (factura.descuentoPP > 0)
+                {
+                    hayDescuentoPP = true;
+                    break;
+                }
+            }
+            msg += "<h3><u>Facturas Pagadas</u>:</h3>";
+            msg += "<table>";
+            msg += " <tr>";
+            msg += "    <td style='border: solid 1px #000000'><b>Num Factura</b></td>";
+            msg += "    <td style='border: solid 1px #000000'><b>Fec Factura</b></td>";
+            msg += "    <td style='border: solid 1px #000000'><b>FecVen Factura</b></td>";
+            msg += "    <td style='border: solid 1px #000000'><b>Total Factura</b></td>";
+            msg += "    <td style='border: solid 1px #000000'><b>Saldo Factura</b></td>";
+            if (hayDescuentoPP) {
+                msg += "    <td style='border: solid 1px #000000'><b>% Desc. Pronto Pago</b></td>";
+                msg += "    <td style='border: solid 1px #000000'><b>Descuento PP</b></td>";
+                msg += "    <td style='border: solid 1px #000000' colspan='2'><b>Valor a Pagar</b></td>";
+            }
+            msg += " </tr>";
+            //TODO: Incluir en el correo el valor de la retención aplicada
+            pago.facturasAPagar.ForEach(factura => {
+                msg += "<tr>";
+                msg += "    <td style='border: solid 1px #000000'>" + factura.numDoc + "</td>";
+                msg += "    <td style='border: solid 1px #000000'>" + factura.date + "</td>";
+                msg += "    <td style='border: solid 1px #000000'>" + factura.dueDate + "</td>";
+                msg += "    <td style='border: solid 1px #000000'>USD " + factura.total + "</td>";
+                msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPay + "</td>";
+                if (hayDescuentoPP) {
+                    msg += "    <td style='border: solid 1px #000000'>" + factura.porcentajePP + "%</td>";
+                    msg += "    <td style='border: solid 1px #000000'>USD " + Math.Round(factura.descuentoPP, 2) + "</td>";
+                    msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPayMasProntoPago + "</td>";
+                }
+                if (!string.IsNullOrEmpty(factura.comentarioCobroPorExcepcion))
+                    msg += "    <td style='border: solid 1px #000000'><b>Comentario cobro por excepción: </b>" + factura.comentarioCobroPorExcepcion + "</td>";
+                msg += "</tr>";
+            });
+            msg += "</table><br>";
+
+            msg += "<br><h3><u>Detalle de Pagos</u>:</h3>";
+            int j = 0;
+            pago.tiposPagoToSave.ForEach(tp => {
+                if(j>0)
+                    msg += "<hr>";
+                msg += "<div>";
+                msg += "<p><b>Tipo Pago:&nbsp;</b>" + tp.tipoPago + "</p>";
+                if (tp.tipoPago=="Efectivo" || tp.tipoPago == "Transferencia")
+                    msg += "<p><b>Monto:&nbsp;</b>" + tp.monto + "USD</p>";
+                if (tp.tipoPago == "Transferencia") {
+                    msg += "<p><b>Fecha Transferencia:&nbsp;</b>" + tp.fechaTransferencia + "</p>";
+                    msg += "<p><b>Banco:&nbsp;</b>" + tp.bancoTxt + "</p>";
+                    msg += "<p><b>Num Transfer:&nbsp;</b>" + tp.NumTransferencia + "</p>";
+                }
+                if (tp.tipoPago.ToLower().Contains("cheque"))
+                {
+                    tp.cheques.ForEach(cheque => {
+                        msg += "<p><b>Monto Cheque:&nbsp;</b>" + cheque.monto + "USD</p>";
+                        msg += "<p><b>Banco:&nbsp;</b>" + cheque.bancoTxt + "</p>";
+                        msg += "<p><b>Num Cheque:&nbsp;</b>" + cheque.NumCheque + "</p>";
+                        if (cheque.FechaVencimientoCheque != null)
+                            msg += "<p><b>Fecha Vencimiento:&nbsp;</b>" + cheque.FechaVencimientoCheque.ToString("yyyy-MM-dd") + "</p>";
+                    });
+                }
+                msg += "</div>";
+                j++;
+            });
+
+            /*
+             * En outlook no se carga, por eso mejor va como atachment la imgen del comprobante
+            if (!string.IsNullOrEmpty(pago.photoComprobanteData))
+            {
+                msg += "<b>Comprobante Pago:</b> <br>";
+                msg += string.Format(@"<img src=""data: image / png; base64, {0}""/>", pago.photoComprobanteData);
+            }
+            */
+            msg += "<br>";
+            msg += "<hr>";
+            msg += "<div><i><b>Nota: </b>Los pagos detallados en este correo están sujetos a revisión del departamento de cobranzas de James Brown Pharma</div></i>";
+
+            var destinatarios = string.Format("{0}; {1}", conf.Default.correoPagos, correoVendedor);
+            //para que no se envíe al cliente en ambiente de pruebas
+            if (bddName.Equals("SBO_JBP_PROD")) //si es la base de datos de produccion
+            {
+                var correoCliente = SocioNegocioBusiness.GetCorreoByCodigo(pago.CodCliente);
+                if (correoCliente != null && TechTools.Utils.ValidacionUtils.EmailValid(correoCliente))
+                    destinatarios += "; " + correoCliente;
+            }
+
+            this.EnviarPorCorreo(destinatarios, titulo, msg, fotosPath);
+            /*var to = "jespin@jbp.com.ec; juanfco.espin@gmail.com";
+            var body = "<b>Hola</b><br>Test";
+            var files = new List<string>();
+            files.Add(@"C:\Users\Juan Espin\OneDrive - JAMES BROWN PHARMA\Imágenes\Capturas de pantalla\Captura de pantalla 2024-09-23 101917.png");
+            files.Add(@"C:\Users\Juan Espin\Downloads\1209202401179046285400120010500000000231234567818.pdf");
+            files.Add(@"c:\tmp\comprobantesPago\C1104503964001_202409231237_1.png");
+            var resp = MailUtils.Send(to, "Test Correo", body, files);*/
+        }
+        private string getNombreComprobantePago(string codCliente, int numFile)
+        {
+            var ms = string.Format("{0}_{1}_{2}.png", codCliente, DateTime.Now.ToString("yyyyMMddhhmm"), numFile.ToString());
+            return ms;
         }
     }
 }

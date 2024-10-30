@@ -62,14 +62,20 @@ namespace jbp.core.sapDiApi
                 var numFactura = 0;
                 var tipoPagoActual = me.tiposPagoToSave[0];
                 var documentoActual=me.facturasAPagar[0];
+                var numFacturas = me.facturasAPagar.Count;
                 dynamic pago=null;
                 var registrarNuevoPago = true;
-                while (tipoPagoActual != null && tipoPagoActual.saldo > 0 && numPago<30) {// se controla que no se de un bucle infinito
+                // máximo en 20 iteraciones debe salir del bucle
+                var numIteracion = 0;
+                while (tipoPagoActual != null && tipoPagoActual.saldo > 0 && numPago<30 && numFactura<=numFacturas && numIteracion<20) {// se controla que no se de un bucle infinito
+                    numIteracion++;
                     //TODO: Validar que no se registre 2 veces el mismo tipo de pago
                     if (registrarNuevoPago) {
                         setPago(ref pago, me, tipoPagoActual);
                         registrarNuevoPago=false;
                     }
+                    tipoPagoActual.saldo = Math.Round(tipoPagoActual.saldo, 2);
+                    documentoActual.saldo = Math.Round(documentoActual.saldo, 2);
                     if (tipoPagoActual.saldo <= documentoActual.saldo)
                     {
                         documentoActual.pagado = tipoPagoActual.saldo;
@@ -93,6 +99,7 @@ namespace jbp.core.sapDiApi
                         else
                             tipoPagoActual = null; //para que salga del bucle
                     }
+                    documentoActual.saldo=Math.Round(documentoActual.saldo,2); //para evitar valore < 1 centavo
                     if (documentoActual.saldo == 0) {
                         numFactura++;
                         if(numFactura < me.facturasAPagar.Count)
