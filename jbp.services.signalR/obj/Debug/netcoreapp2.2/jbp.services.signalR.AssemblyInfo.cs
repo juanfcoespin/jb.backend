@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("jbp.services.signalR")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d502e30ded44cd62d84b5ba62cc9291d87e6473d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d35c3ae60abd1b7aab9b4e607eeb4a09079e6adb")]
 [assembly: System.Reflection.AssemblyProductAttribute("jbp.services.signalR")]
 [assembly: System.Reflection.AssemblyTitleAttribute("jbp.services.signalR")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

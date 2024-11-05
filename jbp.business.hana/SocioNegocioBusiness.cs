@@ -23,7 +23,7 @@ namespace jbp.business.hana
                 {
                     metaMensual = meta,
                     montoCompradoMes=montoComprado,
-                    cumpleMeta = montoComprado >= meta
+                    cumpleMeta = (meta>0 && montoComprado >= meta)
                 };
             }
             catch (Exception e) {
