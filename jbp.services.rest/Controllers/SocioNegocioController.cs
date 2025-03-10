@@ -23,6 +23,12 @@ namespace jbp.services.rest.Controllers
             return jbp.business.hana.SocioNegocioBusiness.GetCarteraByRucPrincipalCliente(rucPrincipal);
         }
         [HttpGet]
+        [Route("api/socioNegocio/getClientes")]
+        public List<object> getClientes()
+        {
+            return jbp.business.hana.SocioNegocioBusiness.GetClientes();
+        }
+        [HttpGet]
         [Route("api/socioNegocio/getVentasYPuntosMes/{rucPrincipal}")]
         public object getVentasYPuntosMes(string rucPrincipal)
         {

@@ -6,6 +6,42 @@ using System.Threading.Tasks;
 
 namespace jbp.msg
 {
+    public class VendedorConCobrosMsg
+    {
+        public string Nombre { get; set; }
+        public List<CobroMsg> Cobros { get; set; }
+        public string Email{ get; set; }
+
+        public VendedorConCobrosMsg() { 
+            this.Cobros = new List<CobroMsg>(); 
+        }  
+    }
+    public class CobroMsg
+    {
+        public string Id { get; set; }
+        public string Fecha { get; set; }
+        public string Cliente { get; set; }
+        public decimal TotalCobrado { get; set; }
+        public List<PagoMsg>Pagos{ get; set; }
+        public string Estado { get; set; }
+
+        public CobroMsg()
+        {
+            this.Pagos=new List<PagoMsg>();
+        }
+    }
+    public class PagoMsg
+    {
+        // tranferencia, cheque o efectivo
+        public string CtaBancoJB { get; set; }
+        public string BancoCheque { get; set; }
+        public string TipoPago { get; set; }
+        public string NumTransferencia { get; set; }
+        public string FechaTransferencia { get; set; }
+        public decimal MontoCheque { get; set; }
+        public string FechaVencimientoCheque { get; set; }
+        public string NroCheque { get; set; }
+    }
     public enum eTipoOperacionVendedor
     {
         insert=1,

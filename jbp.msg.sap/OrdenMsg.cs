@@ -30,7 +30,6 @@ namespace jbp.msg.sap
                 }
             );
         }
-
     }
     public class OrdenLinesMsg
     {

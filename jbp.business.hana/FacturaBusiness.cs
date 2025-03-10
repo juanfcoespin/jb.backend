@@ -30,7 +30,7 @@ namespace jbp.business.hana
                 // son las facturas del principal y las sucursales
                 var sql = @"
                 select 
-                top 150
+                top 500
                  ""Id"",
                 ""TipoDocumento"",
                  ""fechaFactura"", --dd/mm/yyyy
@@ -58,7 +58,7 @@ namespace jbp.business.hana
             }
         }
 
-        internal static DatosRelacionadosFacturaPagoMsg GetDatosFactura(int folioNum)
+        internal static DatosRelacionadosFacturaPagoMsg GetDatosFactura(int idFactura)
         {
             var bc = new BaseCore();
             var sql=string.Format(@"
@@ -71,9 +71,9 @@ namespace jbp.business.hana
                  from
                  ""OINV"" 
                  where
-                  ""FolioNum""='{0}'
+                  ""DocEntry""='{0}'
 
-            ", folioNum);
+            ", idFactura);
             var dt = bc.GetDataTableByQuery(sql);
             if (dt != null && dt.Rows.Count > 0)
             {

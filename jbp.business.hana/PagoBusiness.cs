@@ -40,66 +40,97 @@ namespace jbp.business.hana
         {
             var ms = new List<string>();
             var correosPendientes=new List<PagosMsg>();
-            try
+            
+            if (pagos != null && pagos.Count > 0)
             {
-                if (pagos != null && pagos.Count > 0)
+                    
+                pagos.ForEach(pago =>
                 {
-                    if (sapPagoRecibido == null)
-                        sapPagoRecibido = new SapPagoRecibido();
-
-                    if (!sapPagoRecibido.IsConected())
+                    var numIntentos = 1;
+                    try
                     {
-                        if (!sapPagoRecibido.Connect()) // cuando no se puede conectar es por que el obj sap se inhibe
-                        {
-                            // en el próximo intento obliga a crear otra vez el objeto para hacer una conexión limpia
-                            sapPagoRecibido = null;
-                            throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
-                        }
+                        ProcessPago(pago, correosPendientes, numIntentos);
+                        ms.Add("ok");
                     }
-                    pagos.ForEach(pago => {
-                        try
-                        {
-                            var resp = "";
-                            if (DuplicatePago(pago))
-                                resp = "Anteriormente ya se procesó este item!";
-                            else
-                            {
-                                pago.facturasAPagar.ForEach(factura =>
-                                {
-                                    var folioNum = GetNumFolio(factura.numDoc);
-                                    factura.folioNum = folioNum;
-                                    factura.DatosAdicionales = FacturaBusiness.GetDatosFactura(folioNum);
-                                    if (factura.DatosAdicionales != null && factura.tipoDocumento != "Cheque Protestado")
-                                        factura.DocEntry = factura.DatosAdicionales.Id;
-                                    if (factura.tipoDocumento == "Cheque Protestado")
-                                        factura.DocEntry = FacturaBusiness.GetIdChequeProtestadoByDocNum(factura.numDoc);
-                                });
-                                resp = sapPagoRecibido.SafePagos(pago);
-                                if (resp == "ok")
-                                {
-                                    correosPendientes.Add(pago);
-                                    
-                                }
-                            }
-                            ms.Add(resp);
-                        }
-                        catch (Exception e)
-                        {
-                            ms.Add(e.Message);
-                        }
-                    });
-                    if(sapPagoRecibido.IsConected())
-                        sapPagoRecibido.Disconnect(); // se forza la desconexión
-                    // se envían los correos en otro hilo
-                    EnviarCorreosAsync(correosPendientes);
-                }
-            }
-            catch (Exception e) { 
-                ms.Add(e.Message);
+                    catch (Exception e)
+                    {   
+                        ms.Add(e.Message);
+                    }
+                });
+                // se envían los correos en otro hilo
+                EnviarCorreosAsync(correosPendientes);
             }
             return ms;
         }
+
+
+        private static void ProcessPago(PagosMsg pago, List<PagosMsg> correosPendientes, int numIntentos)
+        {
+            if (numIntentos > 3)
+                throw new Exception("Se ha tratado de procesar este pago por 3 veces y no se ha podido establecer conexión con SAP!!");
+            var pagoBk = (PagosMsg)pago.Clone();
+            ConectarASap();
+            try
+            {
+                if (DuplicatePago(pago))
+                    throw new Exception("Anteriormente ya se procesó este item!");
+                else
+                {
+                    pago.facturasAPagar.ForEach(factura =>
+                    {
+                        var folioNum = GetNumFolio(factura.numDoc);
+                        factura.folioNum = folioNum;
+                        if (factura.IdFactura == 0)
+                            throw new Exception("Debe actualizar el aplicativo a la versión 3.4.7.0 o superior");
+                        factura.DatosAdicionales = FacturaBusiness.GetDatosFactura(factura.IdFactura);
+                        if (factura.DatosAdicionales != null && factura.tipoDocumento != "Cheque Protestado")
+                            factura.DocEntry = factura.DatosAdicionales.Id;
+                        if (factura.tipoDocumento == "Cheque Protestado")
+                            factura.DocEntry = FacturaBusiness.GetIdChequeProtestadoByDocNum(factura.numDoc);
+                    });
+                    sapPagoRecibido.SafePago(pago);
+                    correosPendientes.Add(pago);
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message == "You are not connected to a company" || e.Message.Contains("RPC_E_SERVERFAULT"))
+                {
+                    //me vuelvo a conectar y reproceso
+                    sapPagoRecibido = null;
+                    numIntentos++;
+                    ProcessPago(pagoBk, correosPendientes, numIntentos);
+                }else
+                    throw e;
+            }
+            
+            /*if (sapPagoRecibido.IsConected())
+                sapPagoRecibido.Disconnect(); // se forza la desconexión*/
+        }
+
+        private static void ConectarASap()
+        {
+            if (sapPagoRecibido == null)
+                sapPagoRecibido = new SapPagoRecibido();
+
+            if (!sapPagoRecibido.IsConected())
+            {
+                if (!sapPagoRecibido.Connect()) // cuando no se puede conectar es por que el obj sap se inhibe
+                {
+                    sapPagoRecibido = null;
+                    sapPagoRecibido = new SapPagoRecibido(); //se reinicia el objeto para hacer otro intento de conexión
+                    if (!sapPagoRecibido.Connect())
+                    {
+                        sapPagoRecibido = null;
+                        throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
+                    }
+                }
+            }
+        }
+
         private static void EnviarCorreosAsync(List<PagosMsg> pagos) {
+            if (pagos == null || pagos.Count == 0)
+                return;
             var ec = new EnvioCorreoPago();
             ec.pagos = pagos;
             Task.Run(() => ec.Enviar());
@@ -202,10 +233,11 @@ namespace jbp.business.hana
             msg += "    <td style='border: solid 1px #000000'><b>FecVen Factura</b></td>";
             msg += "    <td style='border: solid 1px #000000'><b>Total Factura</b></td>";
             msg += "    <td style='border: solid 1px #000000'><b>Saldo Factura</b></td>";
+            msg += "    <td style='border: solid 1px #000000'><b>Valor Pagado</b></td>";
             if (hayDescuentoPP) {
                 msg += "    <td style='border: solid 1px #000000'><b>% Desc. Pronto Pago</b></td>";
                 msg += "    <td style='border: solid 1px #000000'><b>Descuento PP</b></td>";
-                msg += "    <td style='border: solid 1px #000000' colspan='2'><b>Valor a Pagar</b></td>";
+                
             }
             msg += " </tr>";
             //TODO: Incluir en el correo el valor de la retención aplicada
@@ -216,10 +248,11 @@ namespace jbp.business.hana
                 msg += "    <td style='border: solid 1px #000000'>" + factura.dueDate + "</td>";
                 msg += "    <td style='border: solid 1px #000000'>USD " + factura.total + "</td>";
                 msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPay + "</td>";
+                msg += "    <td style='border: solid 1px #000000'>USD " + factura.valorPagado + "</td>";
                 if (hayDescuentoPP) {
                     msg += "    <td style='border: solid 1px #000000'>" + factura.porcentajePP + "%</td>";
                     msg += "    <td style='border: solid 1px #000000'>USD " + Math.Round(factura.descuentoPP, 2) + "</td>";
-                    msg += "    <td style='border: solid 1px #000000'>USD " + factura.toPayMasProntoPago + "</td>";
+                    
                 }
                 if (!string.IsNullOrEmpty(factura.comentarioCobroPorExcepcion))
                     msg += "    <td style='border: solid 1px #000000'><b>Comentario cobro por excepción: </b>" + factura.comentarioCobroPorExcepcion + "</td>";
@@ -276,6 +309,7 @@ namespace jbp.business.hana
                     destinatarios += "; " + correoCliente;
             }
 
+            //this.EnviarPorCorreo("jespin@jbp.com.ec", titulo, msg, fotosPath);
             this.EnviarPorCorreo(destinatarios, titulo, msg, fotosPath);
             /*var to = "jespin@jbp.com.ec; juanfco.espin@gmail.com";
             var body = "<b>Hola</b><br>Test";

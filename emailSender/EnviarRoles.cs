@@ -11,6 +11,7 @@ using System.IO;
 using System.Threading;
 using jbp.business.hana;
 using TechTools.Net;
+using static System.Net.WebRequestMethods;
 
 namespace emailSender
 {
@@ -45,11 +46,20 @@ namespace emailSender
 
         private void btnEnviarRoles_Click(object sender, EventArgs e)
         {
+            //enviarCorreoPrueba();
             btnEnviarRoles.Enabled = false;
-            //this.ui.ListaCorreosNoEnviados.Clear();
+            this.ui.ListaCorreosNoEnviados.Clear();
             this.ui = new UiMsg();
             this.uiMsgBindingSource.DataSource = this.ui;
             backgroundWorker1.RunWorkerAsync();
+        }
+        public void enviarCorreoPrueba() {
+            var mail = "juanfco.espin@gmail.com";
+            //var mail = "jespin@jbp.com.ec";
+            string error = null;
+            var msg = "hola";
+            MailUtils.SendAndGetError(ref error, mail, conf.Default.asunto, msg);
+
         }
 
         private static List<string> getRoles(string[] filesName)
@@ -87,16 +97,19 @@ namespace emailSender
                     var error = "";
                     var files=new List<string>();
                     files.Add(rolFileWithPath);
-                    var enviado= MailUtils.SendAndGetError(ref error, mail,conf.Default.asunto, msg, files);
-                    if (enviado)
-                        this.ui.CorreosEnviados++;
-                    else
-                    {
-                        ms.Error = error;
-                        ms.FilePath = rolFileWithPath;
-                        this.ui.ListaCorreosNoEnviados.Add(ms);
-                        this.ui.CorreosNoEnviados++;
-                    }
+                    //var enviarCorreo = !(mail.ToLower().Contains("@jbp.com.ec") || mail.ToLower().Contains("@jamesbrownpharma.com"));
+                    //if (enviarCorreo) {
+                        var enviado = MailUtils.SendAndGetError(ref error, mail, conf.Default.asunto, msg, files);
+                        if (enviado)
+                            this.ui.CorreosEnviados++;
+                        else
+                        {
+                            ms.Error = error;
+                            ms.FilePath = rolFileWithPath;
+                            this.ui.ListaCorreosNoEnviados.Add(ms);
+                            this.ui.CorreosNoEnviados++;
+                        }
+                    //}
                     processed++;
                     backgroundWorker1.ReportProgress(processed);
                 }

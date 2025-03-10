@@ -6,6 +6,24 @@ using System.Threading.Tasks;
 
 namespace jbp.msg.sap
 {
+    public class DatosComponenteMsg
+    {
+        public int Id { get; set; }
+        public int LineNum { get; set; }
+    }
+    public class FiltroPickingProdME
+    {
+        public string articulo;
+
+        public string linea { get; set; }
+        public string docNumOF { get; set; }
+    }
+    public class CantidadesReservadasPorLoteMsg
+    {
+        public int DocNumST { get; set; }
+        public double Cantidad { get; set; }
+        public int DocnNumOF { get; set; }
+    }
     public class ST_OF_LiberadasMsg
     {
         public int NumST { get; set; }
@@ -40,6 +58,7 @@ namespace jbp.msg.sap
         public string BodegaDestino { get; set; }
         public int LineNum { get; set; }
         public string BodegaOrigen { get; set; }
+        public decimal CantidadReservada { get; set; }
     }
     public class ST_ComponentesDetalleMsg: ST_ComponentesMsg
     {
@@ -47,6 +66,37 @@ namespace jbp.msg.sap
         public decimal CantidadLote { get; set; }
         public string Bodega { get; set; }
         public string Ubicacion { get; set; }
+    }
+
+    public class StMsg
+    {
+        public string BodegaDestino;
+
+        public string BodegaOrigen { get; set; }
+        public List<LineStMsg> Lines { get; set; }
+        public string DocNumOF { get; set; }
+
+        public StMsg() { 
+            this.Lines = new List<LineStMsg>();
+        }
+    }
+    public class LineStMsg
+    {
+        public double Cantidad { get; set; }
+        public string CodArticulo { get; set; }
+        public string BodegaOrigen { get; set; }
+        public string BodegaDestino { get; set; }
+        public List<LoteStMsg> Lotes { get; set; }
+        public LineStMsg()
+        {
+            this.Lotes = new List<LoteStMsg>();
+        }
+
+    }
+    public class LoteStMsg
+    {
+        public string Lote { get; set; }
+        public double Cantidad { get; set; }
     }
 
 

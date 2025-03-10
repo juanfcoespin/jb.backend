@@ -15,6 +15,18 @@ namespace jbp.services.rest.Controllers
     public class ProductController : ApiController
     {
         [HttpGet]
+        [Route("api/product/getForMarketingVET")]
+        public List<Object> GetForMarketingVET()
+        {
+            return ProductBusiness.GetForMarketingVET();
+        }
+        [HttpGet]
+        [Route("api/product/getListaPrecioVET")]
+        public List<Object> getListaPrecioVET()
+        {
+            return ProductBusiness.getListaPrecioVET();
+        }
+        [HttpGet]
         [Route("api/product/getSellProducts")]
         public List<ProductMsg> GetSellProducts()
         {

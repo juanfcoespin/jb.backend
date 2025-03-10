@@ -174,6 +174,7 @@ namespace jbp.msg.sap
         public int Id { get; set; }
         public string BodegaDestino { get; set; }
         public string BodegaOrigen { get; set; }
+        public int NumST { get; set; }
 
         public TsFromPickingME() { 
             this.Componentes = new List<ComponenteMsg>();
@@ -181,6 +182,8 @@ namespace jbp.msg.sap
     }
     public class ComponenteMsg
     {
+        public string loteSeleccionado;
+
         public int LineNum { get; set; }
         public double Cantidad { get; set; }
         public double cantidadEnviada { get; set; }
@@ -189,6 +192,9 @@ namespace jbp.msg.sap
         public int IdUbicacion { get; set; }
         public string BodegaDestino { get; set; }
         public string BodegaOrigen { get; set; }
+        public  string CodArticulo { get; set; }
+        public double CantidadReservada { get; set; }
+        public List<CantidadesReservadasPorLoteMsg> cantidadesReservadasPorLote { get; set; }
     }
     public class UbicacionCantidadMsg
     {
@@ -216,6 +222,8 @@ namespace jbp.msg.sap
         public string CodBodegaHasta { get; set; }
         public int DocNumOF { get; set; }
         public List<TsBalanzasLineaMsg> Lineas { get; set; }
+        public int IdST { get; set; }
+
         public TsBalanzasMsg() {
             this.Lineas = new List<TsBalanzasLineaMsg>();
         }
@@ -225,6 +233,8 @@ namespace jbp.msg.sap
     {
         public string CodArticulo { get; set; }
         public List<TsBalanzasLoteMsg> Lotes { get; set; }
+        public int LineNumST { get; set; }
+
         public TsBalanzasLineaMsg() {
             this.Lotes = new List<TsBalanzasLoteMsg>();
         }

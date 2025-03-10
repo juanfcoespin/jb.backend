@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="jb.presentacion.reporteDiarioCobros.Properties" GeneratedClassName="conf">
+  <Profiles />
+  <Settings>
+    <Setting Name="correoErrores" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">jespin@jbp.com.ec</Value>
+    </Setting>
+    <Setting Name="destinatarios" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">cllerena@jbp.com.ec;jespin@jbp.com.ec;pagos@jbp.com.ec</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -134,14 +134,6 @@ namespace jbp.business.hana
             if (me.GruposDirectorioActivo!=null)
             {
                 me.GruposDirectorioActivo.ForEach(grupo => {
-                    if (grupo.ToLower() == "tics") //administrador
-                    {
-                        ms.Bodega = true;
-                        ms.Ventas = true;
-                        ms.FarmacoVigilancia = true;
-                        ms.Dashboards = true;
-                        ms.ControlCalidad = true;
-                    }
                     if (grupo.ToLower() == "ventas"){
                         ms.Ventas = true;
                     }

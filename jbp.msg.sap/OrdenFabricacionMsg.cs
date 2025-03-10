@@ -13,6 +13,7 @@ namespace jbp.msg.sap
         public bool RequiereRepesaje { get; set; }
         public List<CantidadLoteOFMsg> CantidadesPorLote { get; set; }
         public decimal CantidadPesada { get; set; }
+        public int LineNumST { get; set; }
     }
     public class CantidadLoteOFMsg {
         public string Lote { get; set; }
@@ -32,6 +33,7 @@ namespace jbp.msg.sap
     }
     public class OFMasComponentesMsg {
         public int IdOf { get; set; }
+        public int IdST { get; set; }
         public int NumOrdenFabricacion { get; set; }
         public string CodArticulo { get; set; }
         public string Descripcion { get; set; }

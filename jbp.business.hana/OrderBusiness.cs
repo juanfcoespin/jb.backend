@@ -24,7 +24,7 @@ namespace jbp.business.hana
             Monitor.Enter(control);
             try
             {
-                var ms = ProcessOrder(ordenes);
+                var ms = ProcessOrders(ordenes);
                 return ms;
             }
             finally
@@ -32,45 +32,75 @@ namespace jbp.business.hana
                 Monitor.Exit(control);
             }
         }
-        private static List<string> ProcessOrder(List<OrdenMsg> ordenes)
+        private static void ConectarASap()
         {
-            
+            if (sapOrder == null)
+                sapOrder = new SapOrder();
+
+            if (!sapOrder.IsConected())
+            {
+                if (!sapOrder.Connect()) // cuando no se puede conectar es por que el obj sap se inhibe
+                {
+                    sapOrder = null;
+                    sapOrder = new SapOrder(); //se reinicia el objeto para hacer otro intento de conexión
+                    if (!sapOrder.Connect())
+                    {
+                        sapOrder = null;
+                        throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
+                    }
+                }
+            }
+        }
+        private static List<string> ProcessOrders(List<OrdenMsg> ordenes)
+        {
             var ms = new List<string>();
             if (ordenes != null && ordenes.Count > 0)
             {
-                if (sapOrder == null)
-                    sapOrder = new SapOrder();
-                if (!sapOrder.IsConected())
-                {
-                    sapOrder.Connect();//se conecta a sap
-                }
                 ordenes.ForEach(order =>
                 {
-                    try
-                    {
-                        var resp = "";
-                        if (DuplicateOrder(order))
-                            resp = "Anteriormente ya se procesó esta orden!";
-                        else
-                        {
-                            order.Vendedor = SocioNegocioBusiness.GetVendedorByCodSocioNegocio(order.CodCliente).Vendedor;
-                            order.Lines.ForEach(line => {
-                                if (EsProductoVeterinaria(line.CodArticulo))
-                                    line.CodBodega = "PICK2"; //es la bodega de despachos de veterinaria
-                                line.price = SocioNegocioBusiness.GetPrecioByCodSocioNegocioCodArticulo(order.CodCliente, line.CodArticulo);
-                            });
-
-                            resp = sapOrder.Add(order);
-                        }
-                        ms.Add(resp);
-                    }
-                    catch (Exception e)
-                    {
-                        ms.Add(e.Message);
-                    }
+                    ms.Add(ProcessOrder(order));
                 });
             }
             return ms;
+        }
+
+        private static string ProcessOrder(OrdenMsg order, int numIntentos=0)
+        {
+            if (numIntentos > 3)
+                return "Se ha tratado de procesar este pago por 3 veces y no se ha podido establecer conexión con SAP!!";
+            ConectarASap();
+            try
+            {
+                var resp = "";
+                if (numIntentos == 0 && DuplicateOrder(order))
+                    resp = "Anteriormente ya se procesó esta orden!";
+                else
+                {
+                    if(string.IsNullOrEmpty(order.Vendedor))
+                        order.Vendedor = SocioNegocioBusiness.GetVendedorByCodSocioNegocio(order.CodCliente).Vendedor;
+                    order.Lines.ForEach(line =>
+                    {
+                        if (EsProductoVeterinaria(line.CodArticulo))
+                            line.CodBodega = "PICK2"; //es la bodega de despachos de veterinaria
+                        if(line.price== 0)
+                            line.price = SocioNegocioBusiness.GetPrecioByCodSocioNegocioCodArticulo(order.CodCliente, line.CodArticulo);
+                    });
+                    resp=sapOrder.Add(order);
+                }
+                return resp;
+            }
+            catch (Exception e)
+            {
+                if (e.Message == "You are not connected to a company" || e.Message.Contains("RPC_E_SERVERFAULT"))
+                {
+                    //me vuelvo a conectar y reproceso
+                    sapOrder = null;
+                    numIntentos++;
+                    return ProcessOrder(order, numIntentos);
+                }
+                else
+                    return e.Message;
+            }
         }
 
         private static bool EsProductoVeterinaria(string codArticulo)

@@ -9,6 +9,7 @@ using System.Threading;
 using TechTools.Core.Hana;
 using System.Data;
 using jbp.msg.sap;
+using jbp.msg;
 
 namespace jbp.business.hana
 {
@@ -77,6 +78,7 @@ namespace jbp.business.hana
                     if (string.IsNullOrEmpty(ms.Error))
                     {
                         UpdateResponsableTS("Sistema Balanzas Espinoza Paez", ms.Id);
+                        CheckAllInsumosPesados(me.DocNumOF); //verifica si todos los componentes fueron pesados
                     }
                 }
                 else
@@ -87,9 +89,45 @@ namespace jbp.business.hana
             {
                 ms.Error = e.Message;
                 
+                
             }
+            if (!string.IsNullOrEmpty(ms.Error) && ms.Error.Contains("(-5002)"))
+                ms.Error += " La materia prima a fraccionarse no ha sido movida en SAP a la bodega de Pesaje!!";
             return ms;
         }
+
+        private static void CheckAllInsumosPesados(int docNumOF)
+        {
+            var sql = string.Format(@"
+                select 
+                 count(*)
+                from 
+                 ""JbpVw_OrdenFabricacionLinea"" t0 inner join
+                 ""JbpVw_OrdenFabricacion"" t1 on t1.""Id""=t0.""IdOrdenFabricacion"" inner join
+                 ""JbpVw_Insumos"" t2 on t2.""CodInsumo""=t0.""CodInsumo"" 
+                where
+                 t2.""TipoInsumo""='Artículo'
+                 and t2.""CodInsumo"" not in(
+                  '11000238' --Agua purificada
+                 )
+                 and t0.""CantidadPesada"" < t0.""CantidadPlanificada""
+                 and t1.""DocNum""={0}
+            ", docNumOF);
+            var insumosPorPesar = new BaseCore().GetIntScalarByQuery(sql);
+            if (insumosPorPesar == 0) { // se fraccionaron todos los insumos
+                SetOFPesada(docNumOF);
+            }
+        }
+        private static void SetOFPesada(int docNumOF)
+        {
+            var sql = string.Format(@"
+                update OWOR
+                set ""U_JbFraccionadoPesaje""='SI'
+                where ""DocNum""={0}
+            ", docNumOF);
+            new BaseCore().Execute(sql);
+        }
+
         public static DocSapInsertadoMsg TS_ConLotes(TsBalanzasMsg me)
         {
 
@@ -103,13 +141,15 @@ namespace jbp.business.hana
                         sapTransferenciaStock = new SapTransferenciaStock();
                     if (!sapTransferenciaStock.IsConected())
                         sapTransferenciaStock.Connect();//se conecta a sap
+                    SetCantidadPesadaByTS(me);
                     ms = sapTransferenciaStock.TransferirSinUbicaciones(me);
                 }
                 if (string.IsNullOrEmpty(ms.Error))
                 {
                     ms.DocNum = GetDocNumBYId(ms.Id);
-                    SetCantidadPesadaByTS(me);
-                }
+                }else
+                    SetCantidadPesadaByTS(me, true);
+
             }
             catch (Exception e)
             {
@@ -120,7 +160,7 @@ namespace jbp.business.hana
             return ms;
         }
 
-        private static void SetCantidadPesadaByTS(TsBalanzasMsg me)
+        private static void SetCantidadPesadaByTS(TsBalanzasMsg me, bool rollback=false)
         {
             var idOf = OrdenFabricacionBusiness.GetIdByDocNum(me.DocNumOF);
             me.Lineas.ForEach(line =>
@@ -136,30 +176,177 @@ namespace jbp.business.hana
                     IdOf = idOf,
                     CodArticulo = line.CodArticulo
                 };
-                BodegaBusiness.SetCantPesadaComponenteOF(cp);
+                BodegaBusiness.SetCantPesadaComponenteOF(cp, rollback);
             });
         }
 
-        private static DocSapInsertadoMsg ProcessTSFromST(TsFromPickingME me)
-        {
+        private static DocSapInsertadoMsg ProcessTSFromST(TsFromPickingME me, int numIntentos=0) { 
+            if (numIntentos > 3)
+                throw new Exception("Se ha tratado de procesar esta transferencia por 3 veces y no se ha podido establecer conexión con SAP!!");
+        
+            /*
+             
+             */
             var ms= new DocSapInsertadoMsg();
             try
             {
-                if (sapTransferenciaStock == null)
-                    sapTransferenciaStock = new SapTransferenciaStock();
-                if (!sapTransferenciaStock.IsConected())
-                    sapTransferenciaStock.Connect();//se conecta a sap
-                me.Componentes.ForEach(c => { 
+                ConectarASap();
+                var esStDePesaje = false;
+                me.Componentes.ForEach(c => {
+                    /*
+                     Cuando se transfiere a pesaje se pasa el bulto completo no solo la cantidad reservada por la OF
+                        - Puede ser que del mismo bulto ya estén reservadas cantidades para otras OFs en otras STs
+                        - Se transtiere la totalidad requerida menos las reservas de las otras ST
+                        - Luego se llama a esta misma función para transferir el saldo de las otras STs
+                    
+                    Para que se mantengan las reservas de lotes se generan nuevas STs de PSJ->PROD
+                     */
+                    if (c.cantidadEnviada != c.CantidadReservada) {
+                        if (c.BodegaDestino.ToUpper().Contains("PSJ"))
+                        {
+                            esStDePesaje = true;
+                            c.cantidadesReservadasPorLote = GetCantidadesReservadasPorLote(c.CodArticulo, c.Lote);
+                            if (c.cantidadesReservadasPorLote.Count > 0)
+                            {
+                                c.cantidadesReservadasPorLote.ForEach(crl => {
+                                    if (crl.DocNumST != me.NumST)
+                                    {
+                                        c.cantidadEnviada -= crl.Cantidad; //xq solo se puede mover esta cantidad desde la ST original
+                                        var otraST = GetOtraST(crl, me, c);
+                                        ProcessTSFromST(otraST);
+                                    }
+                                });
+                            }
+                            
+                        }
+                    }
                     c.IdUbicacion = BodegaBusiness.GetIdUbicacionByName(c.ubicacionSeleccionada);
                 });
                 ms= sapTransferenciaStock.AddFromSt(me);
-                
+                /*
+                 Hasta que se haga el fraccionamiento necesitamos volver a reservar los lotes creando otras ST para reemplazar 
+                 las que eran de MAT->PROD por PSJ->PROD
+                 */
+                if (esStDePesaje)
+                    ReservarLotesComponentes(me);
             }
             catch (Exception e)
             {
-                ms.Error=e.Message;
+                if (e.Message == "You are not connected to a company" || e.Message.Contains("RPC_E_SERVERFAULT"))
+                {
+                    //me vuelvo a conectar y reproceso
+                    sapTransferenciaStock = null;
+                    numIntentos++;
+                    ProcessTSFromST(me, numIntentos);
+                }else
+                    ms.Error=e.Message;
             }
             return ms;
+        }
+
+        private static void ReservarLotesComponentes(TsFromPickingME me)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static TsFromPickingME GetOtraST(CantidadesReservadasPorLoteMsg crl, TsFromPickingME stOriginal, ComponenteMsg componenteOriginal)
+        {
+            var ms = new TsFromPickingME();
+            var datosComponente = GetDatosComponenteFromDocNumST(crl.DocNumST, componenteOriginal.CodArticulo);
+            ms.Id=datosComponente.Id;
+            ms.NumST = crl.DocNumST;
+            ms.Responsable = stOriginal.Responsable;
+            ms.BodegaOrigen=stOriginal.BodegaOrigen;
+            ms.BodegaDestino= componenteOriginal.BodegaDestino;
+            ms.Componentes.Add(new ComponenteMsg { 
+                CodArticulo = componenteOriginal.CodArticulo,
+                Cantidad = crl.Cantidad,
+                cantidadEnviada = crl.Cantidad,
+                CantidadReservada = crl.Cantidad,
+                BodegaOrigen = componenteOriginal.BodegaOrigen,
+                BodegaDestino = componenteOriginal.BodegaDestino,
+                ubicacionSeleccionada = componenteOriginal.ubicacionSeleccionada,
+                Lote = componenteOriginal.loteSeleccionado,
+                LineNum = datosComponente.LineNum,
+            });
+            return ms;
+            
+        }
+
+        private static DatosComponenteMsg GetDatosComponenteFromDocNumST(int docNum, string codArticulo)
+        {
+            var ms= new DatosComponenteMsg();
+            var sql = string.Format(@"
+                select
+                 t2.""IdSolicitudTraslado"",
+                 t2.""LineNum""
+                from
+                 ""JbpVw_SolicitudTraslado"" t1 inner join
+                 ""JbpVw_SolicitudTrasladoLinea"" t2 on t2.""IdSolicitudTraslado""=t1.""Id""
+                where
+                 t1.""DocNum""={0}
+                 and t2.""CodArticulo""='{1}'
+            ", docNum, codArticulo);
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
+            foreach (DataRow dr in dt.Rows) {
+                ms.Id = bc.GetInt(dr["IdSolicitudTraslado"]);
+                ms.LineNum = bc.GetInt(dr["LineNum"]);
+            }
+            return ms;
+        }
+
+        private static List<CantidadesReservadasPorLoteMsg> GetCantidadesReservadasPorLote(string codArticulo, string lote)
+        {
+            var ms= new List<CantidadesReservadasPorLoteMsg>();
+            var sql = string.Format(@"
+                select 
+                  t1.""DocNum"",
+                  t1.""DocNumOrdenFabricacion"",  
+                  t3.""Cantidad""
+                 from 
+                  ""JbpVw_SolicitudTraslado"" t1 inner join
+                  ""JbpVw_SolicitudTrasladoLinea"" t2 on t2.""IdSolicitudTraslado""=t1.""Id"" inner join
+                  ""JbpVw_OperacionesLote"" t3 on t3.""IdDocBase""=t1.""Id"" 
+   	                and t3.""IdTipoDocumento""=t1.""TipoObjeto""
+ 	                and t3.""CodArticulo""=t2.""CodArticulo""
+ 	                and t3.""DireccionTexto""='Asignada'
+                 where
+                  t3.""Lote""='{0}'
+                  and t3.""CodArticulo""='{1}'
+                  and t2.""LineStatus""='O'
+            ",lote, codArticulo);
+            var bc = new BaseCore();
+            var dt= bc.GetDataTableByQuery(sql);
+            foreach (DataRow dr in dt.Rows) {
+                ms.Add(new CantidadesReservadasPorLoteMsg
+                { 
+                    DocNumST= bc.GetInt(dr["DocNum"]),
+                    DocnNumOF= bc.GetInt(dr["DocNumOrdenFabricacion"]),
+                    Cantidad = bc.GetDouble(dr["Cantidad"])
+                });
+            }
+            return ms;
+        }
+
+        private static void ConectarASap()
+        {
+            if (sapTransferenciaStock == null)
+                sapTransferenciaStock = new SapTransferenciaStock();
+
+            if (!sapTransferenciaStock.IsConected())
+            {
+                if (!sapTransferenciaStock.Connect()) // cuando no se puede conectar es por que el obj sap se inhibe
+                {
+                    sapTransferenciaStock = null;
+                    sapTransferenciaStock = new SapTransferenciaStock(); //se reinicia el objeto para hacer otro intento de conexión
+                    if (!sapTransferenciaStock.Connect())
+                    {
+                        sapTransferenciaStock = null;
+                        throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
+                    }
+                }
+            }
         }
 
 

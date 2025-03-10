@@ -118,6 +118,9 @@ namespace jbp.msg.sap
         public DatosRelacionadosFacturaPagoMsg DatosAdicionales { get; set; }
         public string tipoDocumento { get; set; }
         public string CodCliente { get; set; }
+        public bool PasoProcesoDistribucion { get; set; }
+        public double valorPagado { get; set; }
+        public int IdFactura { get; set; }
 
         public object Clone()
         {

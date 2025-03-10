@@ -26,6 +26,7 @@ namespace jbp.core.sapDiApi
             this.obj.Comments = me.Comentario;
             this.obj.UserFields.Fields.Item("U_NUM_FAC_REL").Value = me.FolioNumFacturaRelacionada.ToString();
             if (me.DatosAdicionalesFactura != null) {
+                this.obj.UserFields.Fields.Item("U_SER_EST").Value = "001";
                 this.obj.UserFields.Fields.Item("U_NUM_AUT_FR").Value = me.DatosAdicionalesFactura.NumAutorizacion;
                 this.obj.UserFields.Fields.Item("U_SER_EST_FR").Value = me.DatosAdicionalesFactura.PtoEstablecimiento;
                 this.obj.UserFields.Fields.Item("U_SER_PEFR").Value = me.DatosAdicionalesFactura.PtoEmision;

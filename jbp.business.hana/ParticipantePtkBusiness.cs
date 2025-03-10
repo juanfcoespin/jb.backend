@@ -234,7 +234,7 @@ namespace jbp.business.hana
                  ""AplicaPuntos"" = 'SI'
                  and ""Ruc"" = ""RucPrincipal""
                  and ""SincronizadoConBddPromotick"" = 'NO'
-                 --and ""Ruc""='0911221224001'
+                 and ""CodTipoSocioNegocio"" = 'C'
             ";
             var dtRucs = new BaseCore().GetDataTableByQuery(sql);
             var ms = GetParticipantesByRucs(dtRucs, "Ruc",1); //estado 1 para actualizar o insertar

@@ -8,22 +8,81 @@ using jbp.msg;
 using TechTools.Core.Hana;
 using System.Data;
 using jbp.msg.sap;
+using jbp.core.sapDiApi;
+using System.Threading;
 
 
 namespace jbp.business.hana
 {
     public class SolicitudTransferenciaBusiness
     {
-        public static List<ST_OF_LiberadasMsg> GetST_OF_Liberadas()
+        public static readonly object control = new object();
+        public static SapSolicitudTransferencia sapST = new SapSolicitudTransferencia();
+
+        public static DocSapInsertadoMsg Save(StMsg me, int numIntentos = 0)
+        {
+            if (numIntentos > 3)
+                throw new Exception("Se ha tratado de procesar esta ST por 3 veces y no se ha podido establecer conexión con SAP!!");
+
+            Monitor.Enter(control);
+            var ms = new DocSapInsertadoMsg();
+            try
+            {
+                ConectarASap();
+                ms = sapST.AddST(me);
+            }
+            catch (Exception e)
+            {
+                if (e.Message == "You are not connected to a company" || e.Message.Contains("RPC_E_SERVERFAULT"))
+                {
+                    //me vuelvo a conectar y reproceso
+                    sapST = null;
+                    numIntentos++;
+                    Save(me, numIntentos);
+                }
+                else
+                    ms.Error=e.Message;
+            }
+            finally
+            {
+                Monitor.Exit(control);
+            }
+            return ms;
+        }
+        private static void ConectarASap()
+        {
+            if (sapST == null)
+                sapST = new SapSolicitudTransferencia();
+
+            if (!sapST.IsConected())
+            {
+                if (!sapST.Connect()) // cuando no se puede conectar es por que el obj sap se inhibe
+                {
+                    sapST = null;
+                    sapST = new SapSolicitudTransferencia(); //se reinicia el objeto para hacer otro intento de conexión
+                    if (!sapST.Connect())
+                    {
+                        sapST = null;
+                        throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
+                    }
+                }
+            }
+        }
+        public static List<ST_OF_LiberadasMsg> GetST_OF_Liberadas(FiltroPickingProdME filtro=null) 
         {
             /*
              Son las St correspondientes a las OF liberadas que usualmente se requiere para hacer el picking 
              de  producción desde el app de gestión de bodegas 
             */
+            if (filtro == null)
+            { //cuando se implemente en puembo podría llegar VET
+                filtro = new FiltroPickingProdME { linea = "HUM" };
+            }
+            if (string.IsNullOrEmpty(filtro.linea))
+                filtro.linea = "HUM";
             var ms = new List<ST_OF_LiberadasMsg>();
-            var sql = @"
+            var sql = string.Format(@"
                select 
-                 top 150
                  t0.""Id"",   
                  t0.""DocNum"" ""NumST"",
                  t1.""DocNum"" ""NumOF"",
@@ -38,11 +97,14 @@ namespace jbp.business.hana
                  ""JbpVw_OrdenFabricacion"" t1 on cast(t1.""DocNum"" as nvarchar(50)) = t0.""DocNumOrdenFabricacion""
                 where
                  t0.""DocStatus"" = 'O'--Abierto
-                  and t1.""Estado"" = 'Liberado'
-                  and t1.""FraccionadoPesaje"" != 'SI'  
-                order by
-                 t1.""Id"" desc
-            ";
+                 and upper(""Serie"") like '%{0}%' 
+                 and t1.""Estado"" = 'Liberado'
+                 and t1.""FraccionadoPesaje"" != 'SI'  
+            ", filtro.linea);
+            if (!string.IsNullOrEmpty(filtro.docNumOF))
+                sql += string.Format(@" and t1.""DocNum""={0}", filtro.docNumOF);
+            if (!string.IsNullOrEmpty(filtro.articulo))
+                sql += string.Format(@" and upper(t1.""Articulo"") like '%{0}%'", filtro.articulo.ToUpper());
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
             if (dt != null && dt.Rows.Count > 0)
@@ -111,6 +173,7 @@ namespace jbp.business.hana
                  t0.""Articulo"",
                  t2.""Lote"",
                  t0.""CantidadAbierta"" ""Cantidad"",
+                 t2.""Cantidad"" ""CantidadReservada"",
                  t1.""UnidadMedida"",
                  t3.""Id"" ""IdLote"",
                  t0.""BodegaOrigen"",
@@ -141,13 +204,15 @@ namespace jbp.business.hana
                         Articulo = dr["Articulo"].ToString(),
                         Lote = dr["Lote"].ToString(),
                         Cantidad = bc.GetDecimal(dr["Cantidad"],4),
+                        CantidadReservada = bc.GetDecimal(dr["CantidadReservada"], 4),
                         UnidadMedida = dr["UnidadMedida"].ToString(),
                         BodegaOrigen = dr["BodegaOrigen"].ToString(),
                         BodegaDestino = dr["BodegaDestino"].ToString(),
                         LineNum = bc.GetInt(dr["LineNum"]),
                     };
                     componente.Ubicaciones = GetUbicacionesPorLote(bc.GetInt(dr["IdLote"]));
-                    ms.Add(componente);
+                    if(componente.Ubicaciones!=null && componente.Ubicaciones.Count>0 && componente.Ubicaciones[0].Cantidad>0)
+                        ms.Add(componente);
                 }
             }
             return ms;

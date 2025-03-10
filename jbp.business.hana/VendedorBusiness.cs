@@ -8,13 +8,110 @@ using jbp.msg;
 using jbp.msg.sap;
 using TechTools.Core.Hana;
 using System.Data;
+using System.Runtime.Remoting.Messaging;
 
 namespace jbp.business.hana
 {
     public class VendedorBusiness
     {
+        public static List<VendedorConCobrosMsg> GetVendedoresConCobros()
+        {
+
+            var ms = new List<VendedorConCobrosMsg>();
+            try
+            {
+                var sql = string.Format(@"
+                select 
+                 distinct --xq no se trae información de lineas de pago
+                 t2.""Vendedor"",
+                 t0.""Estado"",
+                 t2.""Email"",
+                 t0.""Id"",
+                 t0.""Fecha"",
+                 t0.""Cliente"",
+                 t0.""Pago Total"" ""Total"",
+                 t0.""NumTransferencia"",
+                 t0.""FechaTransferencia"",
+                 t0.""CtaBancoJB"",
+                 t0.""ValorCheque"",
+                 t0.""FechaVencimientoCheque"",
+                 t0.""NumeroCheque"",
+                 t0.""BancoCheque""
+                from 
+                 ""JbVw_PagosRecibidosConBorradores"" t0 inner join
+                 ""JbpVw_Vendedores"" t2 on t2.""CodVendedor""=t0.""CodVendedor""
+                where to_char(""Fecha"",'yyyy-mm-dd')=to_char(current_date, 'yyyy-mm-dd')
+                order by
+                 t2.""Vendedor"",
+                 t0.""Cliente""
+                ");
+                var vendedorActual = new VendedorConCobrosMsg();
+                var cobroActual = new CobroMsg();
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql);
+                string vendedorAnterior = null;
+                string cobroAnterior = null;
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        if (dr["Vendedor"].ToString() != vendedorAnterior) //Si es otro Vendedor
+                        {
+                            vendedorActual = new VendedorConCobrosMsg();
+                            vendedorActual.Nombre = dr["Vendedor"].ToString();
+                            vendedorActual.Email = dr["Email"].ToString();
+                            ms.Add(vendedorActual);
+                            vendedorAnterior = vendedorActual.Nombre;
+                        }
+                        if (dr["Id"].ToString() != cobroAnterior) { //Si es otro Cobro
+                            cobroActual = new CobroMsg();
+                            cobroActual.Id = dr["Id"].ToString();
+                            cobroActual.Fecha = dr["Fecha"].ToString();
+                            cobroActual.Estado = dr["Estado"].ToString();
+                            cobroActual.Cliente = dr["Cliente"].ToString();
+                            cobroActual.TotalCobrado = bc.GetDecimal(dr["Total"]);
+                            vendedorActual.Cobros.Add(cobroActual);
+                            cobroAnterior=cobroActual.Id;
+                            
+                        }
+                        var pago = new PagoMsg();
+                        pago.NumTransferencia = dr["NumTransferencia"].ToString();
+                        
+                        pago.FechaTransferencia = dr["FechaTransferencia"].ToString();
+                        pago.CtaBancoJB = dr["CtaBancoJB"].ToString();
+                        pago.MontoCheque = bc.GetDecimal(dr["ValorCheque"]);
+                        pago.FechaVencimientoCheque = dr["FechaVencimientoCheque"].ToString();
+                        pago.NroCheque = dr["NumeroCheque"].ToString();
+                        pago.BancoCheque = dr["BancoCheque"].ToString();
+                        pago.TipoPago = GetTipoPago(pago);
+                        cobroActual.Pagos.Add(pago);
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception("VendedorBusiness.GetCobrosPorVendedor: "+e.Message);
+            }
+            return ms;
+        }
+
+        private static string GetTipoPago(PagoMsg pago)
+        {
+            if (pago == null)
+                return null;
+            if (!string.IsNullOrEmpty(pago.CtaBancoJB))
+                return "Transferencia";
+            if (!string.IsNullOrEmpty(pago.BancoCheque))
+                return "Cheque";
+            return "Efectivo";
+        }
+
         public static List<CarteraMsg> GetCarteraByCodVendedor(string codVendedor)
         {
+            if (string.IsNullOrEmpty(codVendedor) || codVendedor == "0")
+                throw new Exception("Código de vendedor incorrecto!!: " + codVendedor);
             var ms = new List<CarteraMsg>();
             var sql = @"
               select
@@ -89,8 +186,6 @@ namespace jbp.business.hana
             });
             return ms;
         }
-
-        
 
         public static List<ItemCombo> GetList()
         {

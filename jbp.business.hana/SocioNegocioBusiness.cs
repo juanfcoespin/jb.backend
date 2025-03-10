@@ -689,5 +689,46 @@ namespace jbp.business.hana
             new BaseCore().Execute(sql);
         }
 
+        public static List<object> GetClientes()
+        {
+            var ms = new List<object>();
+            var sql = string.Format(@"
+                SELECT * from ""JbpVw_rptBddClientes""
+            ");
+            var dt = new BaseCore().GetDataTableByQuery(sql);
+            foreach (DataRow dr in dt.Rows)
+            {
+                ms.Add(new {
+                    Fecha_Creacion=dr["Fecha_Creacion"].ToString(),
+                    CodSocioNegocio = dr["CodSocioNegocio"].ToString(),
+                    Ruc = dr["Ruc"].ToString(),
+                    Nombre = dr["Nombre"].ToString(),
+                    NombreComercial = dr["NombreComercial"].ToString(),
+                    Estado = dr["Estado"].ToString(),
+                    Trato = dr["Trato"].ToString(),
+                    Email = dr["Email"].ToString(),
+                    Telefonos = dr["Telefonos"].ToString(),
+                    Celular = dr["Celular"].ToString(),
+                    Direccion = dr["Direccion"].ToString(),
+                    Vendedor = dr["Vendedor"].ToString(),
+                    Ciudad = dr["Ciudad"].ToString(),
+                    Provincia = dr["Provincia"].ToString(),
+                    AplicaPuntos = dr["AplicaPuntos"].ToString(),
+                    Comentario = dr["Comentario"].ToString(),
+                    EsElite = dr["EsElite"].ToString(),
+                    MesCumpleaños = dr["MesCumpleaños"].ToString(),
+                    DiaCumpleaños = dr["DiaCumpleaños"].ToString(),
+                    Genero = dr["Genero"].ToString(),
+                    MetaCompras = dr["MetaCompras"].ToString(),
+                    PorcentajeDescuentoProntoPago = dr["PorcentajeDescuentoProntoPago"].ToString(),
+                    SaldoCuenta = dr["SaldoCuenta"].ToString(),
+                    SincronizadoConBddPromotick = dr["SincronizadoConBddPromotick"].ToString(),
+                    CondicionesPago = dr["CondicionesPago"].ToString(),
+                    Grupo = dr["Grupo"].ToString(),
+                    Transporte = dr["Transporte"].ToString()
+                });
+            }
+            return ms;
+        }
     }
 }

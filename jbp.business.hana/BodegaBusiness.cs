@@ -300,39 +300,34 @@ namespace jbp.business.hana
             }
         }
 
-        public static BoolMs SetCantPesadaComponenteOF(CantPesadaComponenteOF me)
+        public static void SetCantPesadaComponenteOF(CantPesadaComponenteOF me, bool rollBack)
         {
-            try
-            {
-                var camposOf = GetCamposOF(me);
-                if(camposOf.Estado != "Liberado")
-                    return new BoolMs { 
-                        Error = string.Format("La Orden de Fabricación {0} del componente a fraccionar no está en estado liberado!!", me.IdOf) 
-                    };
-                if (me.CantPesada < camposOf.CantidadPlanificada)
-                    return new BoolMs
-                    {
-                        Error = string.Format("La cantidad pesada ({0}{3}) del articulo {1} no puede ser menor a la planificada ({2}{3})!!",
-                        me.CantPesada,
-                        me.CodArticulo,
-                        camposOf.CantidadPlanificada,
-                        camposOf.UnidadMedida)
-                    };
-                var sql = string.Format(@"
-                    update WOR1
-                    set U_JB_CANT_PESADA={0}
-                    where 
-                     ""DocEntry""={1}
-                     and ""ItemCode""='{2}'
+            var camposOf = GetCamposOF(me);
+            string error = String.Empty;
+            if (camposOf.Estado != "Liberado")
+                error = string.Format("La Orden de Fabricación {0} del componente a fraccionar no está en estado liberado!!",
+                    me.IdOf);
+
+            if (me.CantPesada < camposOf.CantidadPlanificada) {
+                error = string.Format("La cantidad pesada ({0}{3}) del articulo {1} no puede ser menor a la planificada ({2}{3})!!",
+                    me.CantPesada,
+                    me.CodArticulo,
+                    camposOf.CantidadPlanificada,
+                    camposOf.UnidadMedida);
+            }
                 
-                ", me.CantPesada.ToString().Replace(",","."), me.IdOf, me.CodArticulo);
-                new BaseCore().Execute(sql);
-                return new BoolMs { ms = true };
-            }
-            catch (Exception e)
-            {
-                return new BoolMs { Error = e.Message };
-            }
+            if(!string.IsNullOrEmpty(error))
+                throw new Exception(error);
+            var cantidadPesasa = !rollBack ? me.CantPesada : 0;
+            var sql = string.Format(@"
+                update WOR1
+                set U_JB_CANT_PESADA={0}
+                where 
+                    ""DocEntry""={1}
+                    and ""ItemCode""='{2}'
+                
+            ", cantidadPesasa.ToString().Replace(",","."), me.IdOf, me.CodArticulo);
+            new BaseCore().Execute(sql);
         }
 
         private static CamposOF GetCamposOF(CantPesadaComponenteOF me)

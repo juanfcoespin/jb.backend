@@ -135,6 +135,11 @@ namespace jbp.core.sapDiApi
             me.Lineas.ForEach(line =>
             {
                 var cantLinea = 0.0;
+
+               
+                stockTransfer.Lines.BaseType = SAPbobsCOM.InvBaseDocTypeEnum.InventoryTransferRequest; // Solicitud de transferencia
+                stockTransfer.Lines.BaseEntry = me.IdST;
+                stockTransfer.Lines.BaseLine = line.LineNumST;
                 stockTransfer.Lines.ItemCode = line.CodArticulo;
                 stockTransfer.Lines.FromWarehouseCode = me.CodBodegaDesde;
                 stockTransfer.Lines.WarehouseCode = me.CodBodegaHasta;
@@ -170,29 +175,31 @@ namespace jbp.core.sapDiApi
             }
             me.Componentes.ForEach(line =>
             {
-                stockTransfer.Lines.BaseType = SAPbobsCOM.InvBaseDocTypeEnum.InventoryTransferRequest; // Solicitud de transferencia
-                stockTransfer.Lines.BaseEntry = me.Id;
-                stockTransfer.Lines.BaseLine = line.LineNum;
-                stockTransfer.Lines.FromWarehouseCode = line.BodegaOrigen;
-                stockTransfer.Lines.WarehouseCode = line.BodegaDestino;
-                stockTransfer.Lines.Quantity = line.cantidadEnviada;
-                
-                //lotes
-                stockTransfer.Lines.BatchNumbers.BatchNumber = line.Lote;
-                stockTransfer.Lines.BatchNumbers.Quantity = line.cantidadEnviada;
-                stockTransfer.Lines.BatchNumbers.Add();
-                
+                if (line.cantidadEnviada > 0) {
+                    stockTransfer.Lines.BaseType = SAPbobsCOM.InvBaseDocTypeEnum.InventoryTransferRequest; // Solicitud de transferencia
+                    stockTransfer.Lines.BaseEntry = me.Id;
+                    stockTransfer.Lines.BaseLine = line.LineNum;
+                    stockTransfer.Lines.FromWarehouseCode = line.BodegaOrigen;
+                    stockTransfer.Lines.WarehouseCode = line.BodegaDestino;
+                    stockTransfer.Lines.Quantity = line.cantidadEnviada;
 
-                //ubicacion desde
-                if (line.IdUbicacion > 0)
-                {
-                    stockTransfer.Lines.BinAllocations.BinActionType = SAPbobsCOM.BinActionTypeEnum.batFromWarehouse;
-                    stockTransfer.Lines.BinAllocations.SerialAndBatchNumbersBaseLine = 0;
-                    stockTransfer.Lines.BinAllocations.BinAbsEntry = line.IdUbicacion;
-                    stockTransfer.Lines.BinAllocations.Quantity = line.cantidadEnviada;
-                    stockTransfer.Lines.BinAllocations.Add();
+                    //lotes
+                    stockTransfer.Lines.BatchNumbers.BatchNumber = line.Lote;
+                    stockTransfer.Lines.BatchNumbers.Quantity = line.cantidadEnviada;
+                    stockTransfer.Lines.BatchNumbers.Add();
+
+
+                    //ubicacion desde
+                    if (line.IdUbicacion > 0)
+                    {
+                        stockTransfer.Lines.BinAllocations.BinActionType = SAPbobsCOM.BinActionTypeEnum.batFromWarehouse;
+                        stockTransfer.Lines.BinAllocations.SerialAndBatchNumbersBaseLine = 0;
+                        stockTransfer.Lines.BinAllocations.BinAbsEntry = line.IdUbicacion;
+                        stockTransfer.Lines.BinAllocations.Quantity = line.cantidadEnviada;
+                        stockTransfer.Lines.BinAllocations.Add();
+                    }
+                    stockTransfer.Lines.Add();
                 }
-                stockTransfer.Lines.Add();
             });
            
             var error = stockTransfer.Add();

@@ -26,10 +26,10 @@ namespace jbp.services.rest.Controllers
             return OrdenFabricacionBusiness.GetOfLiberadasPesaje();
         }
         [HttpGet]
-        [Route("api/of/getOfLiberadasPesaje/{codInsumo}")]
-        public List<OrdenFabricacionLiberadaPesajeMsg> GetOfLiberadasPesaje(string codInsumo)
+        [Route("api/of/getOfLiberadasPesaje/{codPT}/{codInsumo}")]
+        public List<OrdenFabricacionLiberadaPesajeMsg> GetOfLiberadasPesaje(string codPT,  string codInsumo)
         {
-            return OrdenFabricacionBusiness.GetOfLiberadasPesaje(codInsumo);
+            return OrdenFabricacionBusiness.GetOfLiberadasPesaje(codPT, codInsumo);
         }
 
         [HttpGet]
@@ -37,6 +37,13 @@ namespace jbp.services.rest.Controllers
         public OFMasComponentesMsg GetComponentesOfByDocNum(int docNum)
         {
             return OrdenFabricacionBusiness.GetComponentesAPesarOfByDocNum(docNum);
+        }
+        
+        [HttpGet]
+        [Route("api/of/getComponentesOf/{docNum}/{codInsumo}")]
+        public OFMasComponentesMsg GetComponentesOfByDocNum(int docNum, string codInsumo)
+        {
+            return OrdenFabricacionBusiness.GetComponentesAPesarOfByDocNum(docNum, codInsumo);
         }
     }
 }

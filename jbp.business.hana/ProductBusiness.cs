@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using jbp.msg;
 using TechTools.Core.Hana;
 using System.Data;
+using System.Text.RegularExpressions;
 
 
 namespace jbp.business.hana
@@ -15,14 +16,18 @@ namespace jbp.business.hana
     {
         public static List<ProductMsg> GetSellProducts()
         {
+            //solo se ocupa en el app de veterinarios
             var ms = new List<ProductMsg>();
             var sql = @"
-               select 
-                ""CodArticulo"", 
-                ""Articulo""
-               from ""JbpVw_Articulos""
-               where ""Vendible"" = 'SI'
-                and ""VerEnMovil"" = 'SI'
+               select
+                 t0.""CodArticulo"",
+                 t0.""Articulo"" 
+                from ""JbpVw_Articulos"" t0 inner join
+                 ""JbpVw_GrupoArticulos"" t1 on t1.""CodGrupo""=t0.""CodGrupo""
+                where 
+                 t0.""Vendible"" = 'SI'
+                 and ""VerEnMovil"" = 'SI'
+                 and upper(t1.""Grupo"") like '%VET%'
             ";
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
@@ -208,6 +213,94 @@ namespace jbp.business.hana
                         priceList = dr["ListaPrecio"].ToString().Replace("LISTA DE PRECIOS ", null),
                         price = bc.GetDecimal(dr["Precio"])
 
+                    });
+                }
+            }
+            return ms;
+        }
+
+        public static List<object> GetForMarketingVET()
+        {
+            var ms = new List<object>();
+            var sql = string.Format(@"
+                select 
+                 ""CodArticulo"",
+                 ""Grupo"",
+                 ""Articulo"",
+                 ""Estado"",
+                 ""CantidadPedidoMinima"",
+                 ""LeadTimeDias"",
+                 ""vidaUtilMeses"",
+                 ""LeadTimeManufactura"",
+                 ""TamañoLote"",
+                 ""VerEnApp"",
+                 ""Categoria"",
+                 ""FormaFarmaceutica"",
+                 ""CondicionAlmacenamiento"",
+                 ""EAN13"",
+                 ""EAN14"",
+                 ""StockNecesario"",
+                 ""StockMinimo""
+                from
+                 ""JbVw_DetalleArticulosMarketing""
+            ");
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dt.Rows)
+                {
+
+                    ms.Add(new 
+                    {
+                        CodArticulo= dr["CodArticulo"].ToString(),
+                        Grupo = dr["Grupo"].ToString(),
+                        Articulo = dr["Articulo"].ToString(),
+                        Estado = dr["Estado"].ToString(),
+                        CantidadPedidoMinima = bc.GetInt(dr["CantidadPedidoMinima"]),
+                        LeadTimeDias = bc.GetInt(dr["LeadTimeDias"]),
+                        vidaUtilMeses = bc.GetInt(dr["vidaUtilMeses"]),
+                        LeadTimeManufactura = bc.GetInt(dr["LeadTimeManufactura"]),
+                        TamañoLote = bc.GetInt(dr["TamañoLote"]),
+                        VerEnApp = dr["VerEnApp"].ToString(),
+                        Categoria = dr["Categoria"].ToString(),
+                        FormaFarmaceutica = dr["FormaFarmaceutica"].ToString(),
+                        CondicionAlmacenamiento = dr["CondicionAlmacenamiento"].ToString(),
+                        EAN13 = dr["EAN13"].ToString(),
+                        EAN14 = dr["EAN14"].ToString(),
+                        StockNecesario = bc.GetInt(dr["StockNecesario"]),
+                        StockMinimo = bc.GetInt(dr["StockMinimo"]),
+                    });
+                }
+            }
+            return ms;
+        }
+
+        public static List<object> getListaPrecioVET()
+        {
+            var ms = new List<object>();
+            var sql = string.Format(@"
+                select 
+                 ""CodArticulo"",
+                 ""Articulo"",
+                 ""ListaPrecio"",
+                 ""Precio""
+                from
+                 ""JbVw_GetListaPreciosVET""
+            ");
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dt.Rows)
+                {
+
+                    ms.Add(new
+                    {
+                        CodArticulo = dr["CodArticulo"].ToString(),
+                        Articulo = dr["Articulo"].ToString(),
+                        ListaPrecio = dr["ListaPrecio"].ToString(),
+                        Precio = bc.GetDouble(dr["Precio"]),
                     });
                 }
             }
