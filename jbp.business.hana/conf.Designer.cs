@@ -12,7 +12,7 @@ namespace jbp.business.hana {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.0.3.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.13.0.0")]
     internal sealed partial class conf : global::System.Configuration.ApplicationSettingsBase {
         
         private static conf defaultInstance = ((conf)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new conf())));
@@ -92,6 +92,15 @@ namespace jbp.business.hana {
         public string pathComprobantesPago {
             get {
                 return ((string)(this["pathComprobantesPago"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://signalr.jbp.com.ec/api/notification/send")]
+        public string urlSignalR {
+            get {
+                return ((string)(this["urlSignalR"]));
             }
         }
     }

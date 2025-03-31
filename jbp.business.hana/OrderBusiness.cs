@@ -9,6 +9,7 @@ using TechTools.Core.Hana;
 using System.Threading;
 using System.Data;
 using System.ComponentModel;
+using System.Net.NetworkInformation;
 
 
 namespace jbp.business.hana
@@ -71,6 +72,9 @@ namespace jbp.business.hana
             ConectarASap();
             try
             {
+                var longitudComentario = 250;
+                if(!string.IsNullOrEmpty(order.Comentario) && order.Comentario.Length>longitudComentario)
+                    order.Comentario=order.Comentario.Substring(0,longitudComentario);
                 var resp = "";
                 if (numIntentos == 0 && DuplicateOrder(order))
                     resp = "Anteriormente ya se procesó esta orden!";
@@ -80,6 +84,9 @@ namespace jbp.business.hana
                         order.Vendedor = SocioNegocioBusiness.GetVendedorByCodSocioNegocio(order.CodCliente).Vendedor;
                     order.Lines.ForEach(line =>
                     {
+                        var listaPrecioPVP = ProductBusiness.GetPriceListByCodArticulo(line.CodArticulo, "PVP");
+                        if (listaPrecioPVP != null && listaPrecioPVP.Count > 0)
+                            line.price = Convert.ToDouble(listaPrecioPVP[0].price);
                         if (EsProductoVeterinaria(line.CodArticulo))
                             line.CodBodega = "PICK2"; //es la bodega de despachos de veterinaria
                         if(line.price== 0)
@@ -159,8 +166,10 @@ namespace jbp.business.hana
                 from
                  ""JbpVw_OrdenVenta"" 
                 where
-                 ""CodCliente"" = '{0}'
+                 ""Anulado""='No'
+                 and ""CodCliente"" = '{0}'
                  and to_char(""Fecha"", 'yyyy-mm-dd') = '{1}'
+
             ",CodClient,orderDate.ToString("yyyy-MM-dd"));
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);

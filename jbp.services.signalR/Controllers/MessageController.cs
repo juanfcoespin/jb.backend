@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using jbp.services.signalR.Hubs;
 using jbp.services.signalR.Hubs.Contracts;
+using Microsoft.AspNet.SignalR;
 
 namespace jbp.services.signalR.Controllers
 {
@@ -25,6 +26,7 @@ namespace jbp.services.signalR.Controllers
         {
             _hubContext = hubContext;
         }
+        
         [HttpPost]
         public string Post([FromBody]Message msg)
         {

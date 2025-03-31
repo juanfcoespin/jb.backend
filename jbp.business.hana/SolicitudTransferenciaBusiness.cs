@@ -12,6 +12,7 @@ using jbp.core.sapDiApi;
 using System.Threading;
 
 
+
 namespace jbp.business.hana
 {
     public class SolicitudTransferenciaBusiness
@@ -19,7 +20,7 @@ namespace jbp.business.hana
         public static readonly object control = new object();
         public static SapSolicitudTransferencia sapST = new SapSolicitudTransferencia();
 
-        public static DocSapInsertadoMsg Save(StMsg me, int numIntentos = 0)
+        public static DocSapInsertadoMsg Save(StMsg me, int numIntentos = 0, SapTransferenciaStock sapTransferenciaStock=null)
         {
             if (numIntentos > 3)
                 throw new Exception("Se ha tratado de procesar esta ST por 3 veces y no se ha podido establecer conexión con SAP!!");
@@ -28,7 +29,7 @@ namespace jbp.business.hana
             var ms = new DocSapInsertadoMsg();
             try
             {
-                ConectarASap();
+                ConectarASap(sapTransferenciaStock);//se pasa como parametro xq sapTransferenciaStock puede iniciar una tx
                 ms = sapST.AddST(me);
             }
             catch (Exception e)
@@ -49,18 +50,18 @@ namespace jbp.business.hana
             }
             return ms;
         }
-        private static void ConectarASap()
+        private static void ConectarASap(BaseSapObj baseSapObj)
         {
             if (sapST == null)
                 sapST = new SapSolicitudTransferencia();
 
             if (!sapST.IsConected())
             {
-                if (!sapST.Connect()) // cuando no se puede conectar es por que el obj sap se inhibe
+                if (!sapST.Connect(baseSapObj)) // cuando no se puede conectar es por que el obj sap se inhibe
                 {
                     sapST = null;
                     sapST = new SapSolicitudTransferencia(); //se reinicia el objeto para hacer otro intento de conexión
-                    if (!sapST.Connect())
+                    if (!sapST.Connect(baseSapObj))
                     {
                         sapST = null;
                         throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
@@ -99,6 +100,7 @@ namespace jbp.business.hana
                  t0.""DocStatus"" = 'O'--Abierto
                  and upper(""Serie"") like '%{0}%' 
                  and t1.""Estado"" = 'Liberado'
+                 and upper(t0.""BodegaOrigen"") like '%MAT%' -- porque se enviará de MAT->PSJ (picking) luego de PSJ->PROD (área pesaje)
                  and t1.""FraccionadoPesaje"" != 'SI'  
             ", filtro.linea);
             if (!string.IsNullOrEmpty(filtro.docNumOF))
@@ -134,7 +136,7 @@ namespace jbp.business.hana
                select 
                  t0.""CodArticulo"",
                  t0.""Articulo"",
-                 t0.""CantidadAbierta"" ""Cantidad"",
+                 t0.""CantidadAbierta"" ""Cantidad"", --puede ser que ya se hicieron transferencias parciales de esta ST
                  t1.""UnidadMedida"",
                  t0.""BodegaDestino"",
                  t0.""LineNum""
@@ -168,29 +170,36 @@ namespace jbp.business.hana
         {
             var ms = new List<ST_ComponentesMsg>();
             var sql = string.Format(@"
-               select 
-                 t0.""CodArticulo"",
-                 t0.""Articulo"",
-                 t2.""Lote"",
-                 t0.""CantidadAbierta"" ""Cantidad"",
-                 t2.""Cantidad"" ""CantidadReservada"",
-                 t1.""UnidadMedida"",
-                 t3.""Id"" ""IdLote"",
-                 t0.""BodegaOrigen"",
-                 t0.""BodegaDestino"",
-                 t0.""LineNum""
-                from
-                 ""JbpVw_SolicitudTrasladoLinea"" t0 inner join
-                 ""JbpVw_Articulos"" t1 on t1.""CodArticulo"" = t0.""CodArticulo"" inner join
-                 ""JbpVw_OperacionesLote"" t2 on
-                     t2.""CodArticulo"" = t1.""CodArticulo"" and
-                     t2.""IdDocBase"" = t0.""IdSolicitudTraslado"" left outer join
-                 ""JbpVw_Lotes"" t3 on t3.""Lote""=t2.""Lote"" and t3.""CodArticulo""=t2.""CodArticulo""
-                where
-                 t0.""IdSolicitudTraslado"" = {0}
-                 and t0.""LineStatus""='O' --abierto
-                 and t2.""DireccionTexto"" = 'Asignada'
-                 and t2.""Cantidad"">0
+                 select 
+                  t0.""CodArticulo"",
+                  t0.""Articulo"",
+                  t2.""Lote"",
+                  t0.""CantidadAbierta"" ""Cantidad"",
+                  t2.""Cantidad"" ""CantidadReservada"",
+                  t1.""UnidadMedida"",
+                  t3.""Id"" ""IdLote"",
+                  t0.""BodegaOrigen"",
+                  t0.""BodegaDestino"",
+                  t0.""LineNum""
+                 from
+                  ""JbpVw_SolicitudTrasladoLinea"" t0 inner join
+                  ""JbpVw_Articulos"" t1 on t1.""CodArticulo"" = t0.""CodArticulo"" inner join
+                  ""JbpVw_OperacionesLote"" t2 on
+                      t2.""CodArticulo"" = t1.""CodArticulo"" and
+                      t2.""IdDocBase"" = t0.""IdSolicitudTraslado"" left outer join
+                  ""JbpVw_Lotes"" t3 on t3.""Lote""=t2.""Lote"" and t3.""CodArticulo""=t2.""CodArticulo"" left outer join
+                  ""JbpVw_TransferenciaStockLinea"" t4 on t4.""BaseEntry""=t0.""IdSolicitudTraslado"" and t4.""CodArticulo""=t0.""CodArticulo"" left outer join
+                  ""JbpVw_OperacionesLote"" t5 on
+                      t5.""CodArticulo"" = t4.""CodArticulo"" and
+                      t5.""IdDocBase"" = t4.""IdTransferenciaStock"" and
+                      t5.""Lote""=t2.""Lote"" and
+                      t5.""DireccionTexto""='Entrada'
+                 where
+                  t0.""IdSolicitudTraslado"" = {0}
+                  and t0.""LineStatus""='O' --abierto
+                  and t2.""DireccionTexto"" = 'Asignada'
+                  and t2.""Cantidad"">0
+                  and t5.""Lote"" is null --solo los lotes que están pendientes de transferir
             ", id);
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
@@ -210,7 +219,7 @@ namespace jbp.business.hana
                         BodegaDestino = dr["BodegaDestino"].ToString(),
                         LineNum = bc.GetInt(dr["LineNum"]),
                     };
-                    componente.Ubicaciones = GetUbicacionesPorLote(bc.GetInt(dr["IdLote"]));
+                    componente.Ubicaciones = GetUbicacionesPorLote(bc.GetInt(dr["IdLote"]), componente.BodegaOrigen);
                     if(componente.Ubicaciones!=null && componente.Ubicaciones.Count>0 && componente.Ubicaciones[0].Cantidad>0)
                         ms.Add(componente);
                 }
@@ -218,7 +227,7 @@ namespace jbp.business.hana
             return ms;
         }
 
-        private static List<UbicacionLoteMsg> GetUbicacionesPorLote(int idLote)
+        private static List<UbicacionLoteMsg> GetUbicacionesPorLote(int idLote, string bodegaOrigen)
         {
             var ms = new List<UbicacionLoteMsg>();
             var sql = string.Format(@"
@@ -231,7 +240,8 @@ namespace jbp.business.hana
                  ""JbpVw_Ubicaciones"" t5 on t5.""Id""=t4.""IdUbicacion""
                 where
                  t3.""Id"" = {0}
-            ", idLote);
+                 and t5.""Ubicacion"" like '{1}%'
+            ", idLote, bodegaOrigen);
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
             if (dt != null && dt.Rows.Count > 0)

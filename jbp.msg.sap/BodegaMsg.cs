@@ -169,12 +169,17 @@ namespace jbp.msg.sap
     }    
     public class TsFromPickingME
     {
+        public string ClientId;
+
         public string Responsable { get; set; }
         public List<ComponenteMsg> Componentes { get; set; }
         public int Id { get; set; }
         public string BodegaDestino { get; set; }
         public string BodegaOrigen { get; set; }
         public int NumST { get; set; }
+        public string NumOF { get; set; }
+        public string BodegaProd { get; set; }
+        public string Comentario { get; set; }
 
         public TsFromPickingME() { 
             this.Componentes = new List<ComponenteMsg>();
@@ -182,27 +187,32 @@ namespace jbp.msg.sap
     }
     public class ComponenteMsg
     {
-        public string loteSeleccionado;
-
-        public int LineNum { get; set; }
-        public double Cantidad { get; set; }
-        public double cantidadEnviada { get; set; }
-        public string Lote { get; set; }
-        public string ubicacionSeleccionada { get; set; }
-        public int IdUbicacion { get; set; }
-        public string BodegaDestino { get; set; }
         public string BodegaOrigen { get; set; }
-        public  string CodArticulo { get; set; }
+        public string BodegaDestino { get; set; }
+        public double CantidadEnviada { get; set; }
+        public string CodArticulo { get; set; }
+        public int LineNum { get; set; }
+        public List<LoteComponenteMsg> Lotes { get; set; }
+        public double CantidadRequerida { get; set; }
+        public ComponenteMsg(){
+            this.Lotes=new List<LoteComponenteMsg>();
+        }
+    }
+    public class LoteComponenteMsg {
+        public double CantidadEnviada { get; set; }
         public double CantidadReservada { get; set; }
-        public List<CantidadesReservadasPorLoteMsg> cantidadesReservadasPorLote { get; set; }
+        public string Lote { get; set; }
+        public List<UbicacionCantidadMsg> Ubicaciones { get; set; }
+        public LoteComponenteMsg() {
+            this.Ubicaciones = new List<UbicacionCantidadMsg>();
+        }
+
     }
     public class UbicacionCantidadMsg
     {
         public string Ubicacion { get; set; }
         public double Cantidad { get; set; }
         public int IdUbicacion { get; set; }
-        public string CodBodegaHasta { get; set; }
-        
     }
     public class CamposOF
     {

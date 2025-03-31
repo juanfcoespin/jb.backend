@@ -26,5 +26,8 @@
     <Setting Name="pathComprobantesPago" Type="System.String" Scope="Application">
       <Value Profile="(Default)">c:\tmp\comprobantesPago</Value>
     </Setting>
+    <Setting Name="urlSignalR" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://signalr.jbp.com.ec/api/notification/send</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

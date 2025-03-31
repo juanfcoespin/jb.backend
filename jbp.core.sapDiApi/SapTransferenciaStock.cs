@@ -163,40 +163,54 @@ namespace jbp.core.sapDiApi
 
         
         public DocSapInsertadoMsg AddFromSt(TsFromPickingME me)
-        {
+         {
             var ms = new DocSapInsertadoMsg();
             StockTransfer stockTransfer = this.Company.GetBusinessObject(BoObjectTypes.oStockTransfer);
             stockTransfer.FromWarehouse = me.BodegaOrigen;
             stockTransfer.ToWarehouse = me.BodegaDestino;
             stockTransfer.DocDate = DateTime.Now;
+            stockTransfer.Comments = me.Comentario;
             if (conf.Default.NroSerieTSPorDefecto > 0)
             {
                 stockTransfer.Series = conf.Default.NroSerieTSPorDefecto; //TR_HUM
             }
             me.Componentes.ForEach(line =>
             {
-                if (line.cantidadEnviada > 0) {
+                if (line.CantidadEnviada > 0) {
                     stockTransfer.Lines.BaseType = SAPbobsCOM.InvBaseDocTypeEnum.InventoryTransferRequest; // Solicitud de transferencia
                     stockTransfer.Lines.BaseEntry = me.Id;
                     stockTransfer.Lines.BaseLine = line.LineNum;
                     stockTransfer.Lines.FromWarehouseCode = line.BodegaOrigen;
                     stockTransfer.Lines.WarehouseCode = line.BodegaDestino;
-                    stockTransfer.Lines.Quantity = line.cantidadEnviada;
-
-                    //lotes
-                    stockTransfer.Lines.BatchNumbers.BatchNumber = line.Lote;
-                    stockTransfer.Lines.BatchNumbers.Quantity = line.cantidadEnviada;
-                    stockTransfer.Lines.BatchNumbers.Add();
-
-
-                    //ubicacion desde
-                    if (line.IdUbicacion > 0)
-                    {
-                        stockTransfer.Lines.BinAllocations.BinActionType = SAPbobsCOM.BinActionTypeEnum.batFromWarehouse;
-                        stockTransfer.Lines.BinAllocations.SerialAndBatchNumbersBaseLine = 0;
-                        stockTransfer.Lines.BinAllocations.BinAbsEntry = line.IdUbicacion;
-                        stockTransfer.Lines.BinAllocations.Quantity = line.cantidadEnviada;
-                        stockTransfer.Lines.BinAllocations.Add();
+                    stockTransfer.Lines.Quantity = Math.Round(line.CantidadEnviada,4);
+                    var i=0;
+                    double cantidadEnLotes = 0;
+                    line.Lotes.ForEach(lote =>
+                    {//lotes
+                        stockTransfer.Lines.BatchNumbers.BatchNumber = lote.Lote;
+                        stockTransfer.Lines.BatchNumbers.Quantity = Math.Round(lote.CantidadEnviada,4);
+                        double cantidadEnUbicaciones = 0;
+                        lote.Ubicaciones.ForEach(ubicacion => {//ubicacion desde
+                            if (ubicacion.IdUbicacion > 0)
+                            {
+                                stockTransfer.Lines.BinAllocations.BinActionType = SAPbobsCOM.BinActionTypeEnum.batFromWarehouse;
+                                stockTransfer.Lines.BinAllocations.SerialAndBatchNumbersBaseLine = i;
+                                stockTransfer.Lines.BinAllocations.BinAbsEntry = ubicacion.IdUbicacion;
+                                stockTransfer.Lines.BinAllocations.Quantity = Math.Round(ubicacion.Cantidad,4);
+                                stockTransfer.Lines.BinAllocations.Add();
+                                cantidadEnUbicaciones += ubicacion.Cantidad;
+                            }
+                        });
+                        if (cantidadEnUbicaciones > 0) {
+                            cantidadEnUbicaciones=Math.Round(cantidadEnUbicaciones, 4);
+                            stockTransfer.Lines.BatchNumbers.Quantity = cantidadEnUbicaciones;
+                        }
+                        stockTransfer.Lines.BatchNumbers.Add();
+                        i++;
+                        cantidadEnLotes += cantidadEnUbicaciones;
+                    });
+                    if (cantidadEnLotes > 0) {
+                        stockTransfer.Lines.Quantity = Math.Round(cantidadEnLotes, 4);
                     }
                     stockTransfer.Lines.Add();
                 }

@@ -10,10 +10,12 @@ using TechTools.Core.Hana;
 using System.Data;
 using jbp.msg.sap;
 using jbp.msg;
+using System.Security.Policy;
+using System.Runtime.CompilerServices;
 
 namespace jbp.business.hana
 {
-    public class TransferenciaStockBussiness
+    public class TransferenciaStockBussiness:BaseBusiness
     {
         public static readonly object control = new object();
         public static SapTransferenciaStock sapTransferenciaStock = new SapTransferenciaStock();
@@ -111,6 +113,7 @@ namespace jbp.business.hana
                   '11000238' --Agua purificada
                  )
                  and t0.""CantidadPesada"" < t0.""CantidadPlanificada""
+                 and lower(t2.""UnidadMedida"") in ('kg', 'g', 'l')
                  and t1.""DocNum""={0}
             ", docNumOF);
             var insumosPorPesar = new BaseCore().GetIntScalarByQuery(sql);
@@ -180,130 +183,285 @@ namespace jbp.business.hana
             });
         }
 
-        private static DocSapInsertadoMsg ProcessTSFromST(TsFromPickingME me, int numIntentos=0) { 
-            if (numIntentos > 3)
-                throw new Exception("Se ha tratado de procesar esta transferencia por 3 veces y no se ha podido establecer conexión con SAP!!");
+        private static DocSapInsertadoMsg ProcessTSFromST(TsFromPickingME me, int numIntentos=0, bool esHijo=false) { 
+            var msg = "";
+            if (numIntentos > 3) {
+                msg = "Se ha superado el número de intentos para conectar a SAP";
+                SendMessageToClient(me.ClientId, msg, eMessageType.Error);
+                throw new Exception(msg);
+            }
+            
         
-            /*
-             
-             */
             var ms= new DocSapInsertadoMsg();
             try
             {
-                ConectarASap();
+                
+                ConectarASap(me.ClientId);
+                if (!esHijo)
+                {
+                    SendMessageToClient(me.ClientId, "Iniciando Transacción",eMessageType.Success);
+                    sapTransferenciaStock.StartTransaction();
+                }
+                    
                 var esStDePesaje = false;
+                //por cada lote se envía un registro de componente
                 me.Componentes.ForEach(c => {
+                    msg=string.Format("Procesando componente {0} de la OF {1}", c.CodArticulo, me.NumOF);
+                    SendMessageToClient(me.ClientId, msg, eMessageType.Warning);
                     /*
                      Cuando se transfiere a pesaje se pasa el bulto completo no solo la cantidad reservada por la OF
                         - Puede ser que del mismo bulto ya estén reservadas cantidades para otras OFs en otras STs
-                        - Se transtiere la totalidad requerida menos las reservas de las otras ST
+                        - Se transfiere la totalidad requerida menos las reservas de las otras ST
                         - Luego se llama a esta misma función para transferir el saldo de las otras STs
-                    
+
                     Para que se mantengan las reservas de lotes se generan nuevas STs de PSJ->PROD
                      */
-                    if (c.cantidadEnviada != c.CantidadReservada) {
-                        if (c.BodegaDestino.ToUpper().Contains("PSJ"))
+                    if (c.BodegaDestino.ToUpper().Contains("PSJ"))
+                        esStDePesaje = true;
+                     c.Lotes.ForEach(lote => {
+                         var msg2 = string.Format("Procesando lote {0}, cant enviada: {1}, cant. Reservada: {2}", lote.Lote, lote.CantidadEnviada, lote.CantidadReservada);
+                         SendMessageToClient(me.ClientId, msg2,eMessageType.Warning);
+                        lote.Ubicaciones.ForEach(u =>
                         {
-                            esStDePesaje = true;
-                            c.cantidadesReservadasPorLote = GetCantidadesReservadasPorLote(c.CodArticulo, c.Lote);
-                            if (c.cantidadesReservadasPorLote.Count > 0)
-                            {
-                                c.cantidadesReservadasPorLote.ForEach(crl => {
-                                    if (crl.DocNumST != me.NumST)
-                                    {
-                                        c.cantidadEnviada -= crl.Cantidad; //xq solo se puede mover esta cantidad desde la ST original
-                                        var otraST = GetOtraST(crl, me, c);
-                                        ProcessTSFromST(otraST);
-                                    }
-                                });
-                            }
+                            u.IdUbicacion = BodegaBusiness.GetIdUbicacionByName(u.Ubicacion);
+                        });
+                        if (c.CantidadEnviada > c.CantidadRequerida)
+                        {
+                            SendMessageToClient(me.ClientId, "Identificando reservas de otras órdenes de Fabricación para el lote: "+lote.Lote);
+                            var cantidadesReservadasPorLote = GetCantidadesReservadasPorLote(me.ClientId, c.CodArticulo, lote.Lote);
                             
+                            if (cantidadesReservadasPorLote.Count > 0)
+                            {
+                                cantidadesReservadasPorLote.ForEach(crl => {
+                                //si se trata de otra st y la cantidad en suma de todas las ubicaciones alcanza para la otra reserva
+                                // se controla que se transfieran las cantidades reservadas que alcancen el en bulto enviado
+                                if (crl.DocNumOF!=me.NumOF && crl.Cantidad <= c.CantidadEnviada){
+                                    var msg3 = string.Format("Reserva Identificada: OF:{0}, ST:{1}, Cant:{2}",crl.DocNumOF, crl.DocNumST, crl.Cantidad);    
+                                    SendMessageToClient(me.ClientId, msg3,eMessageType.Warning);
+                                    //xq solo se puede mover esta cantidad desde la ST original
+                                    var ubicacionesOtraST = QuitarCantidadOtraReserva(lote, crl.Cantidad);
+                                    //se transfiere las otras solicitudes de traslado
+                                    
+                                    var otraST = GetOtraST(crl, c, lote, me, ubicacionesOtraST);
+                                    msg2 = string.Format("Creando TS para OF:{0} de {1}->{2}",otraST.NumOF, otraST.BodegaOrigen, otraST.BodegaDestino);
+                                    SendMessageToClient(me.ClientId, msg2);
+                                    ms = ProcessTSFromST(otraST, 0, true);
+                                    if (string.IsNullOrEmpty(ms.Error))
+                                    {
+                                        msg2 = string.Format("Se creo la TS con ID: {0}",ms.Id);
+                                        SendMessageToClient(me.ClientId, msg2);
+                                        //se disminuye de la cantidad enviada la reserva
+                                        c.CantidadEnviada -= crl.Cantidad;
+                                        c.CantidadEnviada = Math.Round(c.CantidadEnviada, 4);
+                                        lote.CantidadEnviada -= crl.Cantidad;
+                                        lote.CantidadEnviada = Math.Round(c.CantidadEnviada, 4);
+                                    }else {
+                                        SendMessageToClient(me.ClientId, "Error al crear la TS:"+ms.Error, eMessageType.Error);
+                                        throw new Exception(ms.Error);
+                                    }
+                                }
+                            });
+                            }
                         }
-                    }
-                    c.IdUbicacion = BodegaBusiness.GetIdUbicacionByName(c.ubicacionSeleccionada);
+                    });
                 });
-                ms= sapTransferenciaStock.AddFromSt(me);
+                me.Comentario = "ApiPesaje (Responsable: " + me.Responsable+" )";
+                msg = string.Format("Creando TS para OF:{0} de {1}->{2}", me.NumOF, me.BodegaOrigen, me.BodegaDestino);
+                SendMessageToClient(me.ClientId, msg);
+                ms = sapTransferenciaStock.AddFromSt(me);
+                if (ms != null && !string.IsNullOrEmpty(ms.Error))
+                {
+                    SendMessageToClient(me.ClientId, "Error al crear la TS", eMessageType.Error);
+                    throw new Exception(ms.Error);
+                }else {
+                    msg = string.Format("Se creo la TS con ID: {0}", ms.Id);
+                    SendMessageToClient(me.ClientId, msg);
+                }
                 /*
                  Hasta que se haga el fraccionamiento necesitamos volver a reservar los lotes creando otras ST para reemplazar 
                  las que eran de MAT->PROD por PSJ->PROD
                  */
-                if (esStDePesaje)
-                    ReservarLotesComponentes(me);
+                if (esStDePesaje || esHijo)
+                {
+                    //sapTransferenciaStock se pasa como transferencia para la transaccion y para no hacer dos conexiones a la bdd
+                    ReservarLotesComponentes(me, sapTransferenciaStock);
+                }
+                if (!esHijo)
+                { //solo la transaccion inicial hace el commit
+                    SendMessageToClient(me.ClientId, "Haciendo Commit (Finalizando transacción)...", eMessageType.Warning);
+                    sapTransferenciaStock.CommitTransaction();
+                    SendMessageToClient(me.ClientId, "(Commit) Transacción Finalizada!",eMessageType.Success);
+                }
             }
             catch (Exception e)
             {
-                if (e.Message == "You are not connected to a company" || e.Message.Contains("RPC_E_SERVERFAULT"))
+                if (e.Message == "You are not connected to a company" || e.Message.Contains("RPC_E_SERVERFAULT") || e.Message.Contains("ODBC"))
                 {
                     //me vuelvo a conectar y reproceso
                     sapTransferenciaStock = null;
                     numIntentos++;
+                    SendMessageToClient(me.ClientId, "Reintentando conexión a SAP ("+numIntentos+" intento)",eMessageType.Warning);
                     ProcessTSFromST(me, numIntentos);
-                }else
-                    ms.Error=e.Message;
+                }
+                else
+                {
+                    ms.Error = e.Message;
+                    SendMessageToClient(me.ClientId, "Se hizo un reverso de la trasacción por Error: "+ms.Error,eMessageType.Error);
+                    if (!esHijo)
+                    {
+                        try
+                        {
+                            sapTransferenciaStock.RollBackTransaction();
+                        }
+                        catch { }// da error al hacer un rollback
+                    }
+                }
+                    
             }
             return ms;
         }
 
-        private static void ReservarLotesComponentes(TsFromPickingME me)
+        private static List<UbicacionCantidadMsg> QuitarCantidadOtraReserva(LoteComponenteMsg lote, double cantOtraReserva)
         {
-            throw new NotImplementedException();
+            /*
+             Este algoritmo hace una distribución de las cantidades en las ubicaciones del la OF original
+             y las asigna a la OF de la otra Reserva
+             */
+            var ubicacionesOtraReserva = new List<UbicacionCantidadMsg>();
+            var ubicacionesPorQuitarOfOriginal = new List<UbicacionCantidadMsg>();
+            double cantPorAsignar = cantOtraReserva;
+            //ordeno las ubicaciones de mayor a menor cantidad
+            lote.Ubicaciones = lote.Ubicaciones.OrderByDescending(u => u.Cantidad).ToList();
+            
+            lote.Ubicaciones.ForEach(u =>{
+                if (cantPorAsignar > 0) { //si la 1era ubicacion tiene mas de la cant
+                    if (u.Cantidad >= cantPorAsignar)
+                    {
+                        //con esta ubicación se manda a psj la otra reserva
+                        u.Cantidad -= cantPorAsignar;
+                        ubicacionesOtraReserva.Add(new UbicacionCantidadMsg
+                        {
+                            IdUbicacion=u.IdUbicacion,
+                            Ubicacion = u.Ubicacion,
+                            Cantidad = cantPorAsignar
+                        });
+                        if(Math.Round(u.Cantidad,4)==0) //si se asigno toda la cantidad de la ubicación
+                            ubicacionesPorQuitarOfOriginal.Add(u);
+                        cantPorAsignar = 0;
+                    }
+                    else{
+                        cantPorAsignar-=u.Cantidad; 
+                        ubicacionesPorQuitarOfOriginal.Add(u);
+                        ubicacionesOtraReserva.Add(u);
+                    }
+                }
+            });
+            if (ubicacionesPorQuitarOfOriginal.Count > 0) {
+                ubicacionesPorQuitarOfOriginal.ForEach(uxq =>
+                {
+                    lote.Ubicaciones.RemoveAll(u=>u.Ubicacion==uxq.Ubicacion);
+                });
+            }
+            return ubicacionesOtraReserva;
         }
 
-        private static TsFromPickingME GetOtraST(CantidadesReservadasPorLoteMsg crl, TsFromPickingME stOriginal, ComponenteMsg componenteOriginal)
+        private static void ReservarLotesComponentes(TsFromPickingME me, SapTransferenciaStock sapTransferenciaStock)
+        {
+            StMsg stOFOriginal = GetCabeceraST(me);
+            //Hago un barrido para las reservas de la OF original
+            me.Componentes.ForEach(c =>
+            {
+                var linea = GetLineaST(c, stOFOriginal);
+                c.Lotes.ForEach(lote =>
+                {
+                    linea.Lotes.Add(new LoteStMsg
+                    {
+                        Lote = lote.Lote,
+                        Cantidad = lote.CantidadReservada
+                    });
+            
+                    linea.Cantidad += lote.CantidadReservada;
+                    var msg = string.Format("Reservando {4} lote {0} de la OF {1} de la bodega {2} a {3}",
+                        lote.Lote, stOFOriginal.DocNumOF, stOFOriginal.BodegaOrigen, stOFOriginal.BodegaDestino, lote.CantidadReservada);
+                    SendMessageToClient(me.ClientId, msg);
+                });
+                stOFOriginal.Lines.Add(linea);
+            });
+            
+            var ms=SolicitudTransferenciaBusiness.Save(stOFOriginal,0, sapTransferenciaStock);
+            if (!string.IsNullOrEmpty(ms.Error))
+            {
+                SendMessageToClient(me.ClientId, ms.Error, eMessageType.Error);
+                throw new Exception(ms.Error);
+            }else
+                SendMessageToClient(me.ClientId, "Reserva completada Correctamente con Id:"+ ms.Id);
+
+        }
+        private static StMsg GetCabeceraST(TsFromPickingME me)
+        {
+            var stOFOriginal = new StMsg();
+            stOFOriginal.BodegaOrigen = me.BodegaDestino; //PSJ
+            stOFOriginal.BodegaDestino = me.BodegaProd; //PROD
+            stOFOriginal.DocNumOF = me.NumOF;
+            stOFOriginal.Comentarios = "Realizado desde la API - Picking Bodega (Responsable: "+me.Responsable+")";
+            return stOFOriginal;
+        }
+        private static LineStMsg GetLineaST(ComponenteMsg c, StMsg stOFOriginal)
+        {
+            return new LineStMsg()
+            {
+                CodArticulo = c.CodArticulo,
+                BodegaOrigen = stOFOriginal.BodegaOrigen,
+                BodegaDestino = stOFOriginal.BodegaDestino,
+                Cantidad = 0
+            };
+        }
+
+        private static TsFromPickingME GetOtraST(CantidadesReservadasPorLoteMsg crl, ComponenteMsg componenteOriginal, LoteComponenteMsg loteMe, TsFromPickingME me, List<UbicacionCantidadMsg> ubicacionesOtraST)
         {
             var ms = new TsFromPickingME();
-            var datosComponente = GetDatosComponenteFromDocNumST(crl.DocNumST, componenteOriginal.CodArticulo);
-            ms.Id=datosComponente.Id;
+            ms.ClientId = me.ClientId;
+            ms.Id=crl.IdSolicitudTraslado;
+            ms.NumOF = crl.DocNumOF;
             ms.NumST = crl.DocNumST;
-            ms.Responsable = stOriginal.Responsable;
-            ms.BodegaOrigen=stOriginal.BodegaOrigen;
-            ms.BodegaDestino= componenteOriginal.BodegaDestino;
-            ms.Componentes.Add(new ComponenteMsg { 
+            ms.Responsable = me.Responsable;
+            ms.BodegaOrigen= me.BodegaOrigen;
+            ms.BodegaDestino= me.BodegaDestino;
+            ms.BodegaProd = crl.BodegaDestino;
+            var componente = new ComponenteMsg
+            {
                 CodArticulo = componenteOriginal.CodArticulo,
-                Cantidad = crl.Cantidad,
-                cantidadEnviada = crl.Cantidad,
+                CantidadEnviada = crl.Cantidad,
+                CantidadRequerida = crl.Cantidad,
+                BodegaOrigen = ms.BodegaOrigen,
+                BodegaDestino = ms.BodegaDestino,
+                LineNum = crl.LineNum,
+            };
+            var lote = new LoteComponenteMsg { 
+                Lote=loteMe.Lote,
+                CantidadEnviada=crl.Cantidad,
                 CantidadReservada = crl.Cantidad,
-                BodegaOrigen = componenteOriginal.BodegaOrigen,
-                BodegaDestino = componenteOriginal.BodegaDestino,
-                ubicacionSeleccionada = componenteOriginal.ubicacionSeleccionada,
-                Lote = componenteOriginal.loteSeleccionado,
-                LineNum = datosComponente.LineNum,
-            });
-            return ms;
+                Ubicaciones=ubicacionesOtraST
+            };
             
-        }
-
-        private static DatosComponenteMsg GetDatosComponenteFromDocNumST(int docNum, string codArticulo)
-        {
-            var ms= new DatosComponenteMsg();
-            var sql = string.Format(@"
-                select
-                 t2.""IdSolicitudTraslado"",
-                 t2.""LineNum""
-                from
-                 ""JbpVw_SolicitudTraslado"" t1 inner join
-                 ""JbpVw_SolicitudTrasladoLinea"" t2 on t2.""IdSolicitudTraslado""=t1.""Id""
-                where
-                 t1.""DocNum""={0}
-                 and t2.""CodArticulo""='{1}'
-            ", docNum, codArticulo);
-            var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
-            foreach (DataRow dr in dt.Rows) {
-                ms.Id = bc.GetInt(dr["IdSolicitudTraslado"]);
-                ms.LineNum = bc.GetInt(dr["LineNum"]);
-            }
+            componente.Lotes.Add(lote);
+            ms.Componentes.Add(componente);
             return ms;
         }
 
-        private static List<CantidadesReservadasPorLoteMsg> GetCantidadesReservadasPorLote(string codArticulo, string lote)
+
+        private static List<CantidadesReservadasPorLoteMsg> GetCantidadesReservadasPorLote(string clientId, string codArticulo, string lote)
         {
             var ms= new List<CantidadesReservadasPorLoteMsg>();
             var sql = string.Format(@"
                 select 
+                  distinct
                   t1.""DocNum"",
                   t1.""DocNumOrdenFabricacion"",  
-                  t3.""Cantidad""
+                  t3.""Cantidad"",
+                  t2.""BodegaDestino"",
+                  t2.""IdSolicitudTraslado"",
+                  t2.""LineNum""
                  from 
                   ""JbpVw_SolicitudTraslado"" t1 inner join
                   ""JbpVw_SolicitudTrasladoLinea"" t2 on t2.""IdSolicitudTraslado""=t1.""Id"" inner join
@@ -315,38 +473,51 @@ namespace jbp.business.hana
                   t3.""Lote""='{0}'
                   and t3.""CodArticulo""='{1}'
                   and t2.""LineStatus""='O'
-            ",lote, codArticulo);
+                  and upper(t2.""BodegaOrigen"") like '%MAT%' --otras reservas hechas por planificacion
+            ", lote, codArticulo);
             var bc = new BaseCore();
             var dt= bc.GetDataTableByQuery(sql);
             foreach (DataRow dr in dt.Rows) {
                 ms.Add(new CantidadesReservadasPorLoteMsg
                 { 
                     DocNumST= bc.GetInt(dr["DocNum"]),
-                    DocnNumOF= bc.GetInt(dr["DocNumOrdenFabricacion"]),
-                    Cantidad = bc.GetDouble(dr["Cantidad"])
+                    DocNumOF= dr["DocNumOrdenFabricacion"].ToString(),
+                    Cantidad = bc.GetDouble(dr["Cantidad"]),
+                    Lote = lote,
+                    BodegaDestino = dr["BodegaDestino"].ToString(),
+                    IdSolicitudTraslado = bc.GetInt(dr["IdSolicitudTraslado"]),
+                    LineNum = bc.GetInt(dr["LineNum"]),
                 });
             }
             return ms;
         }
 
-        private static void ConectarASap()
+        private static void ConectarASap(string ClientId)
         {
+            SendMessageToClient(ClientId, "Verificando conexión a Sap");
             if (sapTransferenciaStock == null)
                 sapTransferenciaStock = new SapTransferenciaStock();
 
             if (!sapTransferenciaStock.IsConected())
             {
+                SendMessageToClient(ClientId, "Conectando a Sap...");
                 if (!sapTransferenciaStock.Connect()) // cuando no se puede conectar es por que el obj sap se inhibe
                 {
+                    SendMessageToClient(ClientId, "No se pudo conectar, reintentando conexión");
                     sapTransferenciaStock = null;
                     sapTransferenciaStock = new SapTransferenciaStock(); //se reinicia el objeto para hacer otro intento de conexión
                     if (!sapTransferenciaStock.Connect())
                     {
                         sapTransferenciaStock = null;
-                        throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
+                        var error = "Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto";
+                        SendMessageToClient(ClientId, error, eMessageType.Warning);
+                        throw new Exception(error);
                     }
                 }
+                SendMessageToClient(ClientId, "Conectando a Sap correctamente");
             }
+            else
+                SendMessageToClient(ClientId, "Ya se encuentra conectado a sap");
         }
 
 
@@ -492,43 +663,6 @@ namespace jbp.business.hana
             return new BaseCore().GetIntScalarByQuery(sql);
         }
 
-        /*private static void SetLotesFEFO(TsBodegaLineaMsg line, string CodBodegaDesde)
-        {
-            
-            var cantlotes = GetLotesByCodArt_CodBodega(line.CodArticulo, CodBodegaDesde);
-            double asignado = 0;
-            double porAsignar = line.Cantidad;
-            cantlotes.ForEach(cl =>
-            {
-                if (porAsignar > 0) {
-                    if (cl.Disponible <= porAsignar){
-                        asignado = cl.Disponible;
-                        porAsignar -= cl.Disponible;
-                    }
-                    else{
-                        asignado = porAsignar;
-                        porAsignar = 0;
-                    }
-                    line.Lotes.Add(new AsignacionLoteMsg{
-                        Lote = cl.Lote,
-                        Cantidad = asignado
-                    });
-                }
-                    
-            });
-            //si no hay suficiente cantidad en lotes para transferir se lanza una excepcion
-            if (porAsignar > 0) {
-                var err = string.Format("No existe cantidad en lotes suficiente para transferir {0} unidades del artículo {1}", line.Cantidad, line.CodArticulo);
-                if (cantlotes.Count > 0) {
-                    err += "Información de lotes encontrados: ";
-                    cantlotes.ForEach(cl => {
-                        err += string.Format("Lote: {0}, Cantidad: {1}, Bodega: {2} ",cl.Lote, cl.Disponible, cl.CodBodega);
-                    });
-                }
-                throw new Exception(err);
-            }
-            
-        }*/
 
         private static List<CantidadLoteMsg> GetLotesByCodArt_CodBodega(string codArticulo, string codBodegaDesde)
         {

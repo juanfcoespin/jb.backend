@@ -25,14 +25,26 @@ namespace jbp.core.sapDiApi
             this.Company.DbUserName = conf.Default.dbUser;
             this.Company.DbPassword = conf.Default.dbPwd;
         }
+        public void StartTransaction() { 
+            this.Company.StartTransaction();
+        }
+        public void RollBackTransaction() {
+            this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
+        }
+        public void CommitTransaction()
+        {
+            this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
+        }
         public bool IsConected()
         {
             return this.Company.Connected;
         }
-        public bool Connect()
+        public bool Connect(BaseSapObj me=null)
         {
             try
             {
+                if(me!=null && me.Company!=null)
+                    this.Company=me.Company;
                 if (this.Company.Connected)
                     return true;
                 this.Company.Server = conf.Default.server;

@@ -189,7 +189,7 @@ namespace jbp.business.hana
             return ms;
         }
 
-        public static List<PriceListMsg> GetPriceListByCodArticulo(string codArticulo)
+        public static List<PriceListMsg> GetPriceListByCodArticulo(string codArticulo, string listaPrecio=null)
         {
             var ms = new List<PriceListMsg>();
             var sql = string.Format(@"
@@ -200,6 +200,9 @@ namespace jbp.business.hana
                from ""JbpVw_ListaPrecio""
                where ""Precio""!=0 and ""CodArticulo"" = '{0}'
             ", codArticulo);
+            if (!string.IsNullOrEmpty(listaPrecio)){
+                sql += string.Format(@" and upper(""ListaPrecio"") like '%{0}%'", listaPrecio);
+            }
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
             if (dt != null && dt.Rows.Count > 0)

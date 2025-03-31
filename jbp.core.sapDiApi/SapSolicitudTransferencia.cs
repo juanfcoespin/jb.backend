@@ -24,7 +24,7 @@ namespace jbp.core.sapDiApi
             stockTransfer.ToWarehouse = me.BodegaDestino;
             stockTransfer.DocDate = DateTime.Now;
             stockTransfer.JournalMemo = me.DocNumOF;
-            stockTransfer.Comments = "Realizado desde la API - Pickin Bodega";
+            stockTransfer.Comments = me.Comentarios;
 
             if (conf.Default.NroSerieTSPorDefecto > 0)
             {

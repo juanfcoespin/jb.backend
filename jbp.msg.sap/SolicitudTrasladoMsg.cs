@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace jbp.msg.sap
 {
-    public class DatosComponenteMsg
-    {
-        public int Id { get; set; }
-        public int LineNum { get; set; }
-    }
     public class FiltroPickingProdME
     {
         public string articulo;
@@ -22,7 +17,11 @@ namespace jbp.msg.sap
     {
         public int DocNumST { get; set; }
         public double Cantidad { get; set; }
-        public int DocnNumOF { get; set; }
+        public string DocNumOF { get; set; }
+        public string Lote { get; set; }
+        public string BodegaDestino { get; set; }
+        public int IdSolicitudTraslado { get; set; }
+        public int LineNum { get; set; }
     }
     public class ST_OF_LiberadasMsg
     {
@@ -75,6 +74,7 @@ namespace jbp.msg.sap
         public string BodegaOrigen { get; set; }
         public List<LineStMsg> Lines { get; set; }
         public string DocNumOF { get; set; }
+        public string Comentarios { get; set; }
 
         public StMsg() { 
             this.Lines = new List<LineStMsg>();

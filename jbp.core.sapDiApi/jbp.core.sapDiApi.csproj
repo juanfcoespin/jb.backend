@@ -52,7 +52,6 @@
     <Compile Include="SapPagoRecibido - 14Sep2023.cs" />
     <Compile Include="SapPagoRecibido07Feb2025.cs" />
     <Compile Include="SapSolicitudTransferencia.cs" />
-    <Compile Include="SapTransferenciaStock 08SEP2023.cs" />
     <Compile Include="SapTransferenciaStock.cs" />
     <Compile Include="SapEmisionProduccion.cs" />
     <Compile Include="SapNotaCredito.cs" />
