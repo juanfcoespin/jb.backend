@@ -57,7 +57,6 @@ namespace jbp.business.hana
                  ""UnidadMedida"",
                  ""Insumo"",
                  ""CantidadPlanificada"",
-                 ""Articulo"",
                  ""Lote"",
                  ""BodegaHasta"",
                  ""LoteInsumo"",

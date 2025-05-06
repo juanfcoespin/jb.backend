@@ -53,8 +53,11 @@ namespace jbp.business.hana
                         ms.Add("ok");
                     }
                     catch (Exception e)
-                    {   
-                        ms.Add(e.Message);
+                    {
+                        var error = "Error al procesar el pago";
+                        error+=e.Message;
+                        error += e.StackTrace;
+                        ms.Add(error);
                     }
                 });
                 // se envían los correos en otro hilo

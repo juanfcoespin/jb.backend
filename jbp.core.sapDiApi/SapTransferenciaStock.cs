@@ -138,7 +138,7 @@ namespace jbp.core.sapDiApi
 
                
                 stockTransfer.Lines.BaseType = SAPbobsCOM.InvBaseDocTypeEnum.InventoryTransferRequest; // Solicitud de transferencia
-                stockTransfer.Lines.BaseEntry = me.IdST;
+                stockTransfer.Lines.BaseEntry = line.IdSt;
                 stockTransfer.Lines.BaseLine = line.LineNumST;
                 stockTransfer.Lines.ItemCode = line.CodArticulo;
                 stockTransfer.Lines.FromWarehouseCode = me.CodBodegaDesde;

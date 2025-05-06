@@ -244,6 +244,7 @@ namespace jbp.msg.sap
         public string CodArticulo { get; set; }
         public List<TsBalanzasLoteMsg> Lotes { get; set; }
         public int LineNumST { get; set; }
+        public int IdSt { get; set; }
 
         public TsBalanzasLineaMsg() {
             this.Lotes = new List<TsBalanzasLoteMsg>();
