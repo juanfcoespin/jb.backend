@@ -43,13 +43,15 @@ namespace jbp.business.hana
             
             if (pagos != null && pagos.Count > 0)
             {
-                    
+                var clientId = pagos[0].ClientId;
                 pagos.ForEach(pago =>
                 {
                     var numIntentos = 1;
                     try
                     {
-                        ProcessPago(pago, correosPendientes, numIntentos);
+                        SendMessageToClient(clientId, "Procesando pago(s) del cliente " + pago.client, eMessageType.Success);
+                        ProcessPago(pago, correosPendientes, numIntentos, clientId);
+                        SendMessageToClient(clientId, "Pago Registrado Correctamente!!", eMessageType.Success);
                         ms.Add("ok");
                     }
                     catch (Exception e)
@@ -58,8 +60,10 @@ namespace jbp.business.hana
                         error+=e.Message;
                         error += e.StackTrace;
                         ms.Add(error);
+                        SendMessageToClient(clientId, "Error al procesar el pago: " + error, eMessageType.Error);
                     }
                 });
+                SendMessageToClient(clientId, "Enviando correos electrónicos");
                 // se envían los correos en otro hilo
                 EnviarCorreosAsync(correosPendientes);
             }
@@ -67,20 +71,28 @@ namespace jbp.business.hana
         }
 
 
-        private static void ProcessPago(PagosMsg pago, List<PagosMsg> correosPendientes, int numIntentos)
+        private static void ProcessPago(PagosMsg pago, List<PagosMsg> correosPendientes, int numIntentos, string clientId=null)
         {
             if (numIntentos > 3)
                 throw new Exception("Se ha tratado de procesar este pago por 3 veces y no se ha podido establecer conexión con SAP!!");
             var pagoBk = (PagosMsg)pago.Clone();
+            
+            SendMessageToClient(clientId, "Conectando a SAP ...");
             ConectarASap();
+            SendMessageToClient(clientId, "Conectado a SAP correctamente");
             try
             {
+                SendMessageToClient(clientId, "Validando si no hay pagos duplicados ...");
                 if (DuplicatePago(pago))
+                {
+                    SendMessageToClient(clientId, "Pago duplicado identificado");
                     throw new Exception("Anteriormente ya se procesó este item!");
+                }
                 else
                 {
                     pago.facturasAPagar.ForEach(factura =>
                     {
+                        SendMessageToClient(clientId, "Registrando pago factura "+factura.numDoc,eMessageType.Warning);
                         var folioNum = GetNumFolio(factura.numDoc);
                         factura.folioNum = folioNum;
                         if (factura.IdFactura == 0)
@@ -91,8 +103,13 @@ namespace jbp.business.hana
                         if (factura.tipoDocumento == "Cheque Protestado")
                             factura.DocEntry = FacturaBusiness.GetIdChequeProtestadoByDocNum(factura.numDoc);
                     });
+                    sapPagoRecibido.OnMessageArrived += (string msg) =>
+                    {
+                        SendMessageToClient(clientId, msg);
+                    };
                     sapPagoRecibido.SafePago(pago);
                     correosPendientes.Add(pago);
+                    
                 }
             }
             catch (Exception e)
@@ -106,9 +123,6 @@ namespace jbp.business.hana
                 }else
                     throw e;
             }
-            
-            /*if (sapPagoRecibido.IsConected())
-                sapPagoRecibido.Disconnect(); // se forza la desconexión*/
         }
 
         private static void ConectarASap()
@@ -291,14 +305,7 @@ namespace jbp.business.hana
                 j++;
             });
 
-            /*
-             * En outlook no se carga, por eso mejor va como atachment la imgen del comprobante
-            if (!string.IsNullOrEmpty(pago.photoComprobanteData))
-            {
-                msg += "<b>Comprobante Pago:</b> <br>";
-                msg += string.Format(@"<img src=""data: image / png; base64, {0}""/>", pago.photoComprobanteData);
-            }
-            */
+            
             msg += "<br>";
             msg += "<hr>";
             msg += "<div><i><b>Nota: </b>Los pagos detallados en este correo están sujetos a revisión del departamento de cobranzas de James Brown Pharma</div></i>";
@@ -311,16 +318,7 @@ namespace jbp.business.hana
                 if (correoCliente != null && TechTools.Utils.ValidacionUtils.EmailValid(correoCliente))
                     destinatarios += "; " + correoCliente;
             }
-
-            //this.EnviarPorCorreo("jespin@jbp.com.ec", titulo, msg, fotosPath);
             this.EnviarPorCorreo(destinatarios, titulo, msg, fotosPath);
-            /*var to = "jespin@jbp.com.ec; juanfco.espin@gmail.com";
-            var body = "<b>Hola</b><br>Test";
-            var files = new List<string>();
-            files.Add(@"C:\Users\Juan Espin\OneDrive - JAMES BROWN PHARMA\Imágenes\Capturas de pantalla\Captura de pantalla 2024-09-23 101917.png");
-            files.Add(@"C:\Users\Juan Espin\Downloads\1209202401179046285400120010500000000231234567818.pdf");
-            files.Add(@"c:\tmp\comprobantesPago\C1104503964001_202409231237_1.png");
-            var resp = MailUtils.Send(to, "Test Correo", body, files);*/
         }
         private string getNombreComprobantePago(string codCliente, int numFile)
         {

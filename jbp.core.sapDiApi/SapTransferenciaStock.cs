@@ -177,9 +177,15 @@ namespace jbp.core.sapDiApi
             me.Componentes.ForEach(line =>
             {
                 if (line.CantidadEnviada > 0) {
-                    stockTransfer.Lines.BaseType = SAPbobsCOM.InvBaseDocTypeEnum.InventoryTransferRequest; // Solicitud de transferencia
-                    stockTransfer.Lines.BaseEntry = me.Id;
-                    stockTransfer.Lines.BaseLine = line.LineNum;
+                    if (me.Id > 0) //si la Ts tiene como documento base una solicitud de transferencia
+                    {
+                        stockTransfer.Lines.BaseType = SAPbobsCOM.InvBaseDocTypeEnum.InventoryTransferRequest; // Solicitud de transferencia
+                        stockTransfer.Lines.BaseEntry = me.Id;
+                        stockTransfer.Lines.BaseLine = line.LineNum;
+                    }
+                    else {
+                        stockTransfer.Lines.ItemCode = line.CodArticulo;
+                    }
                     stockTransfer.Lines.FromWarehouseCode = line.BodegaOrigen;
                     stockTransfer.Lines.WarehouseCode = line.BodegaDestino;
                     stockTransfer.Lines.Quantity = Math.Round(line.CantidadEnviada,4);

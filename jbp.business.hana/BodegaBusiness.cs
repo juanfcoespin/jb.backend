@@ -836,6 +836,40 @@ namespace jbp.business.hana
             }
             return ms;
         }
+
+        public static object GetDetalleLoteEnPesaje(string lote)
+        {
+            var sql = string.Format(@"
+                select 
+                    top 1
+                    t0.""CodBodega"",
+                    t0.""Cantidad"",
+                    t1.""Lote"",
+                    t2.""CodArticulo"",
+                    t2.""Articulo""
+                from
+                    ""JbpVw_CantidadesPorLote"" t0 inner join
+                    ""JbpVw_Lotes"" t1 on t1.""Id""=t0.""IdLote"" inner join
+                    ""JbpVw_Articulos"" t2 on t2.""CodArticulo""=t0.""CodArticulo""
+                where
+                    t0.""CodBodega"" like '%PSJ%'
+                    and t1.""Lote""='{0}'
+                    and t0.""Cantidad"">0
+            ", lote);
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
+            if (dt != null && dt.Rows.Count > 0) {
+                return new
+                {
+                    CodBodega = dt.Rows[0]["CodBodega"].ToString(),
+                    Cantidad = bc.GetDecimal(dt.Rows[0]["Cantidad"],4),
+                    Lote = dt.Rows[0]["Lote"].ToString(),
+                    CodArticulo = dt.Rows[0]["CodArticulo"].ToString(),
+                    Articulo = dt.Rows[0]["Articulo"].ToString()
+                };
+            }
+            return null;
+        }
     }
 
     public class FactReservaMsg

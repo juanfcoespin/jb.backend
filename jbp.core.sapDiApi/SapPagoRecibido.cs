@@ -13,6 +13,14 @@ namespace jbp.core.sapDiApi
 {
     public class SapPagoRecibido:BaseSapObj
     {
+        public event Action<string> OnMessageArrived;
+        public void Notify(string message)
+        {
+            if (string.IsNullOrEmpty(message))
+                return;
+            OnMessageArrived?.Invoke(message);
+        }
+
         public SapPagoRecibido()
         {
             //this.Connect();
@@ -33,6 +41,7 @@ namespace jbp.core.sapDiApi
                  - Un Documento de Pago SAP puede contener una o mas facturas, pero un solo tipo de pago (por reglas de JB)
                  - Se registran todos los pagos o ninguno incluidas NC si aplica (se lo maneja como una transacción atómica)
                 */
+                Notify("Iniciando Transacción");
                 this.Company.StartTransaction();
                 var requiereNC = this.RequiereCreacionNotaCredito(me);
                 if (requiereNC)
@@ -41,6 +50,7 @@ namespace jbp.core.sapDiApi
                 setSaldosPorTipoPago(me);
 
                 me.tiposPagoToSave.ForEach(tipoPago => {
+                    Notify("Distribuyendo Pagos en Facturas");
                     DistribuirTipoPagoEnFacturas(tipoPago, me.facturasAPagar);
                     // Una vez distribuidos los pagos del tipo de pago a las facturas:
                     RegistrarTipoPagoEnSap(me,tipoPago);
@@ -56,6 +66,7 @@ namespace jbp.core.sapDiApi
                 throw new Exception(ex.Message);
             }
             this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
+            Notify("Transacción Completada");
         }
 
         private void DistribuirTipoPagoEnFacturas(TipoPagoMsg tipoPagoActual, List<DocCarteraMsg> facturasAPagar)
@@ -214,6 +225,7 @@ namespace jbp.core.sapDiApi
 
         private void registrarNotasCreditoProntoPago(PagosMsg me)
         {
+            Notify("Registrando Notas de Crédito por pronto pago");
             var sapNc = new SapNotaCredito();
             sapNc.Company = this.Company;
             me.facturasAPagar.ForEach(factura => {
@@ -222,9 +234,11 @@ namespace jbp.core.sapDiApi
                     factura.descuentoPP = factura.toPay - factura.toPayMasProntoPago;
                     //se registra la nota de credito por pronto pago
                     var ncPP = getNcProntoPagoFromFactura(factura, me);
+                    Notify("Aplicando "+ ncPP.TotalNC.ToString("C2") + " a la factura " + factura.numDoc);
                     var respNc = sapNc.AddNcProntoPago(ncPP);
                     if (respNc != "ok")
                         throw new Exception(respNc);
+                    Notify("Nota de crédito por pronto pago registrada correctamente: ");
                 }
             });
         }

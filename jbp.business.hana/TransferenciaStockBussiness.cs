@@ -20,6 +20,7 @@ namespace jbp.business.hana
         public static readonly object control = new object();
         public static SapTransferenciaStock sapTransferenciaStock = new SapTransferenciaStock();
 
+        
         #region Desde solicitud de transferencia
         public static DocSapInsertadoMsg SaveFromST(TsFromPickingME me)
         {
@@ -249,11 +250,49 @@ namespace jbp.business.hana
             });
         }
 
-        
+        public static DocSapInsertadoMsg TransferFromPesajeToMat(TsFromPesajeToMatMsg me)
+        {
+            Monitor.Enter(control);
+            try
+            {
+                var newMe = MapFromPesajeToMat(me);
+                return ProcessTSFromST(newMe);
+            }
+            finally
+            {
+                Monitor.Exit(control);
+            }
+        }
+        private static TsFromPickingME MapFromPesajeToMat(TsFromPesajeToMatMsg me)
+        {
+            var ms = new TsFromPickingME();
+            ms.ClientId = me.ClientId;
+            ms.Responsable = me.Responsable;
+            ms.Componentes = new List<ComponenteMsg>();
+            var componente = new ComponenteMsg
+            {
+                BodegaOrigen = me.detalleLote.CodBodega,
+                BodegaDestino = me.codBodegaDestino,
+                CantidadEnviada = me.detalleLote.Cantidad,
+                CodArticulo = me.detalleLote.CodArticulo
+
+            };
+            componente.Lotes = new List<LoteComponenteMsg>();
+            componente.Lotes.Add(new LoteComponenteMsg { 
+                CantidadEnviada=componente.CantidadEnviada,
+                CantidadReservada = componente.CantidadEnviada,
+                Lote = me.detalleLote.Lote,
+            });
+            ms.Componentes.Add(componente);
+            ms.BodegaOrigen = componente.BodegaOrigen;
+            ms.BodegaDestino = componente.BodegaDestino;
+
+            return ms;
+        }
         private static DocSapInsertadoMsg ProcessTSFromST(TsFromPickingME me, int numIntentos = 0, bool esHijo = false)
         {
             /*
-             esHijo = true -> se llama a esta función desde otra función de manera recursiva cuando se encuentran otras reservas
+             esHijo = true -> se llama a esta función de manera recursiva cuando se encuentran otras reservas
                               del mismo componente
              */
             var msg = "";
@@ -292,7 +331,7 @@ namespace jbp.business.hana
                     c.Lotes.ForEach(lote => {
                         if (!esHijo)
                         {
-                            var msg2 = string.Format("Procesando lote {0}, cant enviada: {1}, cant. Reservada: {2}", lote.Lote, lote.CantidadEnviada, lote.CantidadReservada);
+                            var msg2 = string.Format("Procesando lote {0}, cant enviada: {1}; cant. Reservada: {2}", lote.Lote, lote.CantidadEnviada, lote.CantidadReservada);
                             SendMessageToClient(me.ClientId, msg2, eMessageType.Warning);
                         }
                         lote.Ubicaciones.ForEach(u => {
@@ -305,7 +344,10 @@ namespace jbp.business.hana
                     });
                 });
                 me.Comentario = "ApiPesaje (Responsable: " + me.Responsable + " )";
-                msg = string.Format("Creando TS para OF:{0} de {1}->{2}", me.NumOF, me.BodegaOrigen, me.BodegaDestino);
+                if(!string.IsNullOrEmpty(me.NumOF))
+                    msg = string.Format("Creando TS para OF:{0} de {1}->{2}", me.NumOF, me.BodegaOrigen, me.BodegaDestino);
+                else
+                    msg = string.Format("Creando TS de {0}->{1}", me.BodegaOrigen, me.BodegaDestino);
                 SendMessageToClient(me.ClientId, msg);
                 ms = sapTransferenciaStock.AddFromSt(me);
                 if (ms != null && !string.IsNullOrEmpty(ms.Error))
@@ -328,7 +370,7 @@ namespace jbp.business.hana
                 }
                 if (!esHijo)
                 { //solo la transaccion inicial hace el commit
-                    SendMessageToClient(me.ClientId, "Haciendo Commit (Finalizando transacción toma aprox 40seg por componente x favor espere)...", eMessageType.Warning);
+                    SendMessageToClient(me.ClientId, "Haciendo Commit (Finalizando transacción toma aprox 60seg por componente x favor espere)...", eMessageType.Warning);
                     sapTransferenciaStock.CommitTransaction();
                     SendMessageToClient(me.ClientId, "(Commit) Transacción Finalizada!", eMessageType.Success);
                 }
@@ -462,7 +504,7 @@ namespace jbp.business.hana
         private static void procesarReservasOtrasOF(TsFromPickingME me, ComponenteMsg c, LoteComponenteMsg lote)
         {
             SendMessageToClient(me.ClientId, "Identificando reservas de otras órdenes de Fabricación para el lote: " + lote.Lote);
-            var cantidadesReservadasPorLote = GetCantidadesReservadasPorLote(me.ClientId, c.CodArticulo, lote.Lote);
+            var cantidadesReservadasPorLote = GetCantidadesReservadasPorLote(me, c.CodArticulo, lote.Lote);
             if (cantidadesReservadasPorLote.Count > 0){
                 
                 cantidadesReservadasPorLote.ForEach(crl =>
@@ -623,8 +665,7 @@ namespace jbp.business.hana
             return ms;
         }
 
-
-        private static List<CantidadesReservadasPorLoteMsg> GetCantidadesReservadasPorLote(string clientId, string codArticulo, string lote)
+        private static List<CantidadesReservadasPorLoteMsg> GetCantidadesReservadasPorLote(TsFromPickingME me, string codArticulo, string lote)
         {
             var ms= new List<CantidadesReservadasPorLoteMsg>();
             var sql = string.Format(@"
@@ -647,8 +688,8 @@ namespace jbp.business.hana
                   t3.""Lote""='{0}'
                   and t3.""CodArticulo""='{1}'
                   and t2.""LineStatus""='O'
-                  and upper(t2.""BodegaOrigen"") like '%MAT%' --otras reservas hechas por planificacion
-            ", lote, codArticulo);
+                  and t2.""BodegaOrigen""= '{2}' --otras reservas hechas por planificacion
+            ", lote, codArticulo, me.BodegaOrigen);
             var bc = new BaseCore();
             var dt= bc.GetDataTableByQuery(sql);
             foreach (DataRow dr in dt.Rows) {
@@ -662,6 +703,10 @@ namespace jbp.business.hana
                     IdSolicitudTraslado = bc.GetInt(dr["IdSolicitudTraslado"]),
                     LineNum = bc.GetInt(dr["LineNum"]),
                 });
+            }
+            if (ms.Count > 0){
+                var msg = string.Format("Se ha encontrado {0} STs de {1} a {2} en las que se han hecho reservas de este lote!", ms.Count, me.BodegaOrigen, me.BodegaDestino);
+                SendMessageToClient(me.ClientId, msg, eMessageType.Warning);
             }
             return ms;
         }
@@ -767,7 +812,7 @@ namespace jbp.business.hana
             catch (Exception ex) {
                 return new DocSapInsertadoMsg
                 {
-                    Error = ex.Message
+                    Error = "TransferenciaStockBusiness, TransferToUbicaciones:"+ex.Message
                 };
             }
             finally
@@ -807,6 +852,7 @@ namespace jbp.business.hana
             new BaseCore().Execute(sql);
         }
 
+
         private static void RegresarLotesAlEstadoAnterior()
         {
             //consulto todos los lotes que fueron modificados
@@ -842,7 +888,7 @@ namespace jbp.business.hana
         private static string QuitarCodArticuloDelLote(string lote)
         {
             //JB-230317151244&codArticulo=10500001
-            if (!string.IsNullOrEmpty(lote) && lote.Contains(" & ")) { 
+            if (!string.IsNullOrEmpty(lote) && lote.Contains("&")) { 
                 var matrix = lote.Split('&');
                 if (matrix.Count() == 2) { 
                     return matrix[0];
@@ -950,5 +996,7 @@ namespace jbp.business.hana
                 };
             }
         }
+
+        
     }
 }

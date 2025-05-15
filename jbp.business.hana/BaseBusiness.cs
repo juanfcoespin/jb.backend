@@ -32,6 +32,8 @@ namespace jbp.business.hana
         public static string SendMessageToClient(string clientId, string msg, eMessageType tipo=eMessageType.Info)
         {
             try {
+                if (string.IsNullOrEmpty(clientId))
+                    return null;
                 var rc = new RestCall();
                 var url = conf.Default.urlSignalR;
                 var me = new CommunicationMsg
@@ -49,14 +51,15 @@ namespace jbp.business.hana
                 return e.Message;
             }
         }
-        public void EnviarPorCorreo(string to, string titulo, string msg, List<string> filePaths=null)
+        public bool EnviarPorCorreo(string to, string titulo, string msg, List<string> filePaths=null)
         {
-            MailUtils.Send(
+            return MailUtils.Send(
                 to,
                 titulo,
                 msg,
                 filePaths
             );
+            
         }
 
         public void testCorreo(string msg)

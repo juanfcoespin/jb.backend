@@ -31,7 +31,7 @@ namespace jbp.msg.sap
         public string Vendedor { get; set; }
         public string fechaImpresion { get; set; }
         public string numRecibo { get; set; }
-
+        public string ClientId { get; set; }
 
         public object Clone()
         {

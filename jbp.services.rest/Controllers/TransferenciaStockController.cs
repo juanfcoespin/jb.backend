@@ -30,6 +30,15 @@ namespace jbp.services.rest.Controllers
             return TransferenciaStockBussiness.TransferToUbicaciones(me);
         }
 
+        
+
+        [HttpPost]
+        [Route("api/tsFromPesajeToMat")]
+        public DocSapInsertadoMsg TransferFromPesajeToMat([FromBody] TsFromPesajeToMatMsg me)
+        {
+            return TransferenciaStockBussiness.TransferFromPesajeToMat(me);
+        }
+
         [HttpPost]
         [Route("api/tsFromST")]
         public DocSapInsertadoMsg TransferFromPicking([FromBody] TsFromPickingME me)

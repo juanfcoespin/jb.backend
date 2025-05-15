@@ -166,7 +166,23 @@ namespace jbp.msg.sap
         public string UbicacionHasta { get; set; }
         public int IdUbicacionDesde { get; set; }
         public int IdUbicacionHasta { get; set; }
-    }    
+    }
+    public class TsFromPesajeToMatMsg
+    {
+        public string codBodegaDestino;
+
+        public string ClientId { get; set; }
+        public DetalleLotePsjToMat detalleLote { get; set; }
+        public string Responsable { get; set; }
+    }
+    public class DetalleLotePsjToMat
+    {
+        public string CodBodega { get; set; }
+        public double Cantidad { get; set; }
+        public string CodArticulo { get; set; }
+        public string Lote { get; set; }
+    }
+
     public class TsFromPickingME
     {
         public string ClientId;
