@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using jbp.msg.sap;
 using SAPbobsCOM;
@@ -18,6 +19,7 @@ namespace jbp.core.sapDiApi
         public DocSapInsertadoMsg AddST(StMsg me)
         {
             var ms = new DocSapInsertadoMsg();
+            Monitor.Enter(this);
             StockTransfer stockTransfer = this.Company.GetBusinessObject(BoObjectTypes.oInventoryTransferRequest);
             //stockTransfer.DocObjectCode = SAPbobsCOM.BoObjectTypes.oInventoryTransferRequest;
             stockTransfer.FromWarehouse = me.BodegaOrigen;
@@ -49,6 +51,7 @@ namespace jbp.core.sapDiApi
                 }
             });
             var error = stockTransfer.Add();
+            Monitor.Exit(this); 
             if (error != 0)
                 ms.Error = this.Company.GetLastErrorDescription();
             else

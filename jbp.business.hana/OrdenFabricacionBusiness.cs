@@ -15,13 +15,15 @@ namespace jbp.business.hana
         {
             var ms = new List<OrdenFabricacionLiberadaPesajeMsg>();
             var sql = @"
-                select
-                 distinct
+                select 
                  ""DocNum"",
                  ""CodArticulo"",
                  ""Articulo""
-                from 
-                 ""JbVw_OFsConTSaPesaje""
+                from  
+                 ""JbpVw_OrdenFabricacion""
+                where ""DocNum"" in(
+                 select	distinct DOC_NUM_OF from JB_LOTES_PESAJE
+                )
             ";
             if (!string.IsNullOrEmpty(codPT) && !string.IsNullOrEmpty(codInsumo))
             {
@@ -58,6 +60,7 @@ namespace jbp.business.hana
                  ""Insumo"",
                  ""CantidadPlanificada"",
                  ""Lote"",
+                 ""BodegaDesde"",
                  ""BodegaHasta"",
                  ""LoteInsumo"",
                  ""FechaVencimiento"",
@@ -99,7 +102,7 @@ namespace jbp.business.hana
                     ms.Descripcion = dr["Articulo"].ToString();
                     var docNumOf = bc.GetInt(dr["DocNum"]);
                     // bodega origen y destino para los componentes fraccionados
-                    ms.BodegaDesde = "PSJ1";
+                    ms.BodegaDesde = dr["BodegaDesde"].ToString(); 
                     ms.BodegaHasta = dr["BodegaHasta"].ToString();
                     ms.LotePT = dr["Lote"].ToString();
                     ms.IdST = bc.GetInt(dr["IdST"]);

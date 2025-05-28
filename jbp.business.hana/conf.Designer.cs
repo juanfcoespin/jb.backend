@@ -103,5 +103,14 @@ namespace jbp.business.hana {
                 return ((string)(this["urlSignalR"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("jespin@jbp.com.ec; juanfco.espin@gmail.com")]
+        public string CorreosNotificacionesFVI {
+            get {
+                return ((string)(this["CorreosNotificacionesFVI"]));
+            }
+        }
     }
 }

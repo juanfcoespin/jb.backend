@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using jbp.msg.sap;
 using SAPbobsCOM;
@@ -119,57 +120,15 @@ namespace jbp.core.sapDiApi
                 ms.Id = this.Company.GetNewObjectKey();
             return ms;
         }
-
-        //proyecto Espinosa Paez
-        public DocSapInsertadoMsg TransferirSinUbicaciones(TsBalanzasMsg me)
-        {
-            var ms = new DocSapInsertadoMsg();
-            StockTransfer stockTransfer = this.Company.GetBusinessObject(BoObjectTypes.oStockTransfer);
-            stockTransfer.DocDate = DateTime.Now;
-            stockTransfer.FromWarehouse = me.CodBodegaDesde;
-            stockTransfer.ToWarehouse = me.CodBodegaHasta;
-            if (conf.Default.NroSerieTSPorDefecto > 0)
-            {
-                stockTransfer.Series = conf.Default.NroSerieTSPorDefecto; //TR_HUM
-            }
-            me.Lineas.ForEach(line =>
-            {
-                var cantLinea = 0.0;
-
-               
-                stockTransfer.Lines.BaseType = SAPbobsCOM.InvBaseDocTypeEnum.InventoryTransferRequest; // Solicitud de transferencia
-                stockTransfer.Lines.BaseEntry = line.IdSt;
-                stockTransfer.Lines.BaseLine = line.LineNumST;
-                stockTransfer.Lines.ItemCode = line.CodArticulo;
-                stockTransfer.Lines.FromWarehouseCode = me.CodBodegaDesde;
-                stockTransfer.Lines.WarehouseCode = me.CodBodegaHasta;
-                line.Lotes.ForEach(lote => {
-                    cantLinea += lote.Cantidad;
-                    stockTransfer.Lines.BatchNumbers.BatchNumber = lote.Lote;
-                    stockTransfer.Lines.BatchNumbers.Quantity = lote.Cantidad;
-                    stockTransfer.Lines.BatchNumbers.Add();
-                });
-                stockTransfer.Lines.Quantity = cantLinea;
-                stockTransfer.Lines.Add();
-
-            });
-            var error = stockTransfer.Add();
-            if (error != 0)
-                ms.Error = "Error: " + this.Company.GetLastErrorDescription();
-            else
-                ms.Id = this.Company.GetNewObjectKey();
-            return ms;
-        }
-
-        
         public DocSapInsertadoMsg AddFromSt(TsFromPickingME me)
          {
+            //para garantizar que solo un hilo acceda a la vez
             var ms = new DocSapInsertadoMsg();
             StockTransfer stockTransfer = this.Company.GetBusinessObject(BoObjectTypes.oStockTransfer);
             stockTransfer.FromWarehouse = me.BodegaOrigen;
             stockTransfer.ToWarehouse = me.BodegaDestino;
             stockTransfer.DocDate = DateTime.Now;
-            stockTransfer.Comments = me.Comentario;
+            stockTransfer.Comments = me.Responsable;
             if (conf.Default.NroSerieTSPorDefecto > 0)
             {
                 stockTransfer.Series = conf.Default.NroSerieTSPorDefecto; //TR_HUM

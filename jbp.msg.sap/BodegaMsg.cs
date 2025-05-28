@@ -210,6 +210,8 @@ namespace jbp.msg.sap
         public int LineNum { get; set; }
         public List<LoteComponenteMsg> Lotes { get; set; }
         public double CantidadRequerida { get; set; }
+        public string ClientId { get; set; }
+
         public ComponenteMsg(){
             this.Lotes=new List<LoteComponenteMsg>();
         }
@@ -249,7 +251,6 @@ namespace jbp.msg.sap
         public int DocNumOF { get; set; }
         public List<TsBalanzasLineaMsg> Lineas { get; set; }
         public int IdST { get; set; }
-
         public TsBalanzasMsg() {
             this.Lineas = new List<TsBalanzasLineaMsg>();
         }

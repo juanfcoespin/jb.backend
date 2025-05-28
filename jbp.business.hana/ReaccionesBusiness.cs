@@ -308,6 +308,7 @@ namespace jbp.business.hana
                             });
                             //throw new Exception("Error de prueba de rollback");
                             ms.Add("ok");
+                            NotificarReaccionPorCorreo(reaccion);
                         }
                         catch (Exception e) {
                             var error=rollback(idReaccion,bc);
@@ -322,6 +323,32 @@ namespace jbp.business.hana
                 });
             }
             return ms;
+        }
+
+        private void NotificarReaccionPorCorreo(ReaccionesMsg me)
+        {
+            var msg = string.Format(@"
+                Se ha registrado una nueva reaccion adversa en el sistema.
+                <br/>
+                <br/>
+                <b>Nombre:</b> {0} {1}
+                <br/>",me.nombres, me.apellidos);
+            me.medicamentos.ForEach(m =>
+            {
+                msg += string.Format(@"
+                    <b>Medicamento:</b> {0}
+                    <br/>
+                    <b>Lote:</b> {1}
+                    <br/>
+                    <b>Fecha Vencimiento:</b> {2}
+                    <br/>
+                    <b>Fecha Utilizacion:</b> {3}
+                    <br/>
+                ", m.medicamento, m.lote, m.fechaVencimiento, m.fechaUtilizacion);
+            });
+            msg += "<br><br>";
+            msg += "Revisar detalles en el módulo administrativo";
+            EnviarPorCorreo(conf.Default.CorreosNotificacionesFVI, "Reaccion Adversa Reportada", msg);
         }
 
         private string rollback(int idReaccion, BaseCore bc)
