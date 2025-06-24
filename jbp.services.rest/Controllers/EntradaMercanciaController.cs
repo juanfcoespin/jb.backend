@@ -24,7 +24,7 @@ namespace jbp.services.rest.Controllers
         [Route("api/EntradaMercanciaCompra")]
         public EntradaMercanciaMsg EntradaMercanciaCompra([FromBody] EntradaMercanciaMsg me)
         {
-            var ms = EntradaMercanciaBussiness.Ingresar(me, true);
+             var ms = EntradaMercanciaBussiness.Ingresar(me, true);
             return ms;
         }
     }

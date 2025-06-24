@@ -381,22 +381,26 @@ namespace jbp.business.hana
             return ms;
             
         }
-        public static BodegasMS GetBodegas()
+        public static BodegasMS GetBodegas(string planta=null)
         {
 
             var ms = new BodegasMS();
             try
             {
                 var sql = @"
-                select 
-                 distinct ""CodBodega""
-                from
-                 ""JbpVw_Bodegas"" 
-                where 
-                 ""CodBodega"" not like '%CUAR%'
-                 and ""CodBodega"" not like '%RECH%'
-                order by 1
-            ";
+                    select 
+                        ""CodBodega""
+                    from
+                        ""JbpVw_Bodegas"" 
+                    where 
+                        ""CodBodega"" not like '%CUAR%'
+                        and ""CodBodega"" not like '%RECH%'
+                ";
+                if(!string.IsNullOrEmpty(planta))
+                {
+                    planta = planta.ToLower().Trim();//pifo, puembo
+                    sql += string.Format(@" and lower(""Bodega"") like '%{0}%'", planta);
+                }   
                 var dt = new BaseCore().GetDataTableByQuery(sql);
                 foreach (DataRow dr in dt.Rows)
                 {
@@ -776,6 +780,7 @@ namespace jbp.business.hana
                      t0.""Articulo"",
                      round(t0.""Cantidad"", 4) ""CantidadPedido"",
                      t5.""UnidadMedida"",
+                     t5.""TipoArticuloAbreviado"",
                      sum(ifnull(t3.""Cantidad"", 0)) ""CantidadEntregada""
 
                     from
@@ -798,7 +803,8 @@ namespace jbp.business.hana
                      t0.""CodArticulo"",
                      t0.""Articulo"",
                      round(t0.""Cantidad"", 4),
-                     t5.""UnidadMedida""
+                     t5.""UnidadMedida"",
+                     t5.""TipoArticuloAbreviado""
                     order by t1.""DocNum"" desc
                 ", codProveedor);
                 var bc = new BaseCore();
@@ -824,6 +830,7 @@ namespace jbp.business.hana
                         CantidadPedido = bc.GetDecimal(dr["CantidadPedido"],4),
                         CantidadEntregada = bc.GetDecimal(dr["CantidadEntregada"],4),
                         UnidadMedida = dr["UnidadMedida"].ToString(),
+                        EsMateriaPrima = dr["TipoArticuloAbreviado"].ToString()=="MP"
                     };
                     linea.CantidadPendiente = linea.CantidadPedido - linea.CantidadEntregada;
                     pedido.Lineas.Add(linea);
@@ -832,41 +839,97 @@ namespace jbp.business.hana
             }
             catch (Exception e)
             {
-                ms.Error = e.Message;
+                ms.Error = e.Message+ e.StackTrace;
             }
             return ms;
         }
+        public static object GetDetalleLoteEnPesaje(InfoLotePesajeMe me)
+        {
+            try
+            {
+                string ubicacionPesaje = TransferenciaStockBussiness.GetUbicacionPesajeFromBodegaMat(me.CodBodegaMat);
+                var sql = string.Format(@"
+                select 
+                 t0.""Cantidad"",
+                 t0.""IdLote"",
+                 t0.""IdUbicacion"",
+                 t1.""Lote"",
+                 t0.""CodArticulo"",
+                 t1.""Articulo""
+                from 
+                 ""JbpVw_UbicacionPorLote"" t0 inner join
+                 ""JbpVw_Lotes"" t1 on t1.""Id""=t0.""IdLote"" inner join
+                 ""JbpVw_Ubicaciones"" t2 on t2.""Id""=t0.""IdUbicacion""
+                where
+                 t1.""Lote""='{0}'
+                 and t2.""Ubicacion""='{1}'
+            ", me.Lote, ubicacionPesaje);
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql);
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    var lote = dt.Rows[0]["Lote"].ToString();
+                    var matrix = GetUbicacionOriginalMatYNumOf(lote);
+                    var ms = new
+                    {
+                        UbicacionPesaje = ubicacionPesaje,
+                        Cantidad = bc.GetDecimal(dt.Rows[0]["Cantidad"], 4),
+                        IdLote = dt.Rows[0]["IdLote"].ToString(),
+                        IdUbicacion = dt.Rows[0]["IdUbicacion"].ToString(),
+                        Lote = lote,
+                        CodArticulo = dt.Rows[0]["CodArticulo"].ToString(),
+                        Articulo = dt.Rows[0]["Articulo"].ToString(),
+                        UbicacionMATOriginal = matrix.UbicacionMatOriginal,
+                        DocNumOf = matrix.DocNumOf
+                    };
+                    return ms;
+                }
+                return null;
+            }
+            catch (Exception e) {
+                return new { error = e.Message };
+            }   
+        }
 
-        public static object GetDetalleLoteEnPesaje(string lote)
+        private static AsociadosLotesPesajeMsg GetUbicacionOriginalMatYNumOf(string lote)
         {
             var sql = string.Format(@"
                 select 
-                    top 1
-                    t0.""CodBodega"",
-                    t0.""Cantidad"",
-                    t1.""Lote"",
-                    t2.""CodArticulo"",
-                    t2.""Articulo""
-                from
-                    ""JbpVw_CantidadesPorLote"" t0 inner join
-                    ""JbpVw_Lotes"" t1 on t1.""Id""=t0.""IdLote"" inner join
-                    ""JbpVw_Articulos"" t2 on t2.""CodArticulo""=t0.""CodArticulo""
-                where
-                    t0.""CodBodega"" like '%PSJ%'
-                    and t1.""Lote""='{0}'
-                    and t0.""Cantidad"">0
+                 top 1
+                 T0.DOC_NUM_OF,
+                 T1.UBICACION_DESDE 
+                from 
+                 JB_LOTES_PESAJE T0 inner join 
+                 JB_MOVIMIENTOS_LOTE_PESAJE T1 on T1.ID_LOTE_PESAJE=T0.ID
+                WHERE
+                 T0.LOTE='{0}'
+                 AND T0.FINALIZADO='Y'
+                 AND UBICACION_HASTA LIKE '%PSJ%'
+                ORDER BY
+                 FECHA DESC
             ", lote);
-            var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
-            if (dt != null && dt.Rows.Count > 0) {
-                return new
-                {
-                    CodBodega = dt.Rows[0]["CodBodega"].ToString(),
-                    Cantidad = bc.GetDecimal(dt.Rows[0]["Cantidad"],4),
-                    Lote = dt.Rows[0]["Lote"].ToString(),
-                    CodArticulo = dt.Rows[0]["CodArticulo"].ToString(),
-                    Articulo = dt.Rows[0]["Articulo"].ToString()
-                };
+            var bc=new BaseCore();
+            var dt=bc.GetDataTableByQuery(sql);
+            if (dt.Rows.Count == 0)
+                throw new Exception($"No se podido determinar la ubicación original del lote {lote} antes de enviarlo a pesaje. Lo mas probable es que todavía no se haya fraccionado!!");    
+            
+            var dr = dt.Rows[0];
+            return new AsociadosLotesPesajeMsg
+            {
+                DocNumOf = bc.GetInt(dr["DOC_NUM_OF"]),
+                UbicacionMatOriginal = dr["UBICACION_DESDE"].ToString()
+            };
+        }
+
+        public static string GetUbicacionPesaje(string codBodega)
+        {
+            if (!string.IsNullOrEmpty(codBodega)) {
+                switch (codBodega) {
+                    case "MAT1":
+                        return "MAT1-PSJ1";
+                    case "MAT2":
+                        return "MAT2-PSJ2";
+                }
             }
             return null;
         }

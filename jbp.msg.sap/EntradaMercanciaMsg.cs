@@ -31,6 +31,34 @@ namespace jbp.msg.sap
         public string Comentario { get; set; }
         public string tipo { get; set; }
         public List<GastosAdicionalesMsg> GastosAdicionales { get; set; }
+
+        public static void SetCodBodegaEnLineas(List<EntradaMercanciaLineaMsg> lineas)
+        {
+            var codBodega=getCodBodega(lineas);
+            lineas.ForEach(linea =>
+            {
+                linea.CodBodega = codBodega;
+            });
+        }
+        public static string getCodBodega(List<EntradaMercanciaLineaMsg> lineas) {
+            if (lineas.Count > 0 && !string.IsNullOrEmpty(lineas[0].CodArticulo))
+            {
+                try
+                {
+                    if (lineas[0].AsignacionesLote.Count > 0)
+                    {
+                        var ubicacion = lineas[0].AsignacionesLote[0].Ubicacion;
+                        if (!string.IsNullOrEmpty(ubicacion))
+                        {
+                            var matrix = ubicacion.Split('-');
+                            return matrix[0];
+                        }
+                    }
+                }
+                catch{}
+            }
+            throw new Exception($"No se ha podido establecer el codBodega del producto {lineas[0].CodArticulo}");
+        }
     }
     
     public class EntradaMercanciaLineaMsg {

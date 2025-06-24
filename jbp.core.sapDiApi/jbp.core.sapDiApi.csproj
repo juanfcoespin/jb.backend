@@ -49,8 +49,6 @@
       <DependentUpon>conf.settings</DependentUpon>
     </Compile>
     <Compile Include="SapEntradaMercancia.cs" />
-    <Compile Include="SapPagoRecibido - 14Sep2023.cs" />
-    <Compile Include="SapPagoRecibido07Feb2025.cs" />
     <Compile Include="SapSolicitudTransferencia.cs" />
     <Compile Include="SapTransferenciaStock.cs" />
     <Compile Include="SapEmisionProduccion.cs" />

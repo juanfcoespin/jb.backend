@@ -108,83 +108,83 @@ namespace jbp.business.hana
             return "Efectivo";
         }
 
-        public static List<CarteraMsg> GetCarteraByCodVendedor(string codVendedor)
+        public static object GetCarteraByCodVendedor(string codVendedor)
         {
-            if (string.IsNullOrEmpty(codVendedor) || codVendedor == "0")
-                throw new Exception("Código de vendedor incorrecto!!: " + codVendedor);
-            var ms = new List<CarteraMsg>();
-            var sql = @"
-              select
-                 t0.""IdFactura"",
-                 t0.""DocNum"",
-                 t1.""CodSocioNegocio"", 
-                 t0.""TipoDocumento"",
-                 t0.""Vendedor"",
-                 t0.""NumFolio"",
-                 to_char(t0.""FechaDocumento"", 'yyyy-mm-dd') ""FechaDocumento"",
-                 t0.""TotalDocumento"",
-                 to_char(t0.""FechaVencimiento"", 'yyyy-mm-dd') ""FechaVencimiento"",
-                 t0.""DiasVencido"",
-                 t0.""TotalPago"",
-                 t0.""SaldoVencido"",
-                 t0.""RangoDiasVencido"",
-                 t0.""OrdenRango"",
-                 t0.""OrdenTipoDocumento"",
-                 t0.""Comentarios"",
-                 t0.""TipoNC""
-                from ""JbpVw_Cartera"" t0  inner join
-                ""JbpVw_SocioNegocio"" t1 on t1.""CodSocioNegocio"" = t0.""CodCliente""
-            ";
-            if (!string.IsNullOrEmpty(codVendedor) && codVendedor != "0") {// si no es administrador (es vendedor)
-                sql += string.Format(@"
-                where
-                 t1.""CodVendedor"" = {0}
-                ",codVendedor
-                );
-            }
-            sql +=@"
-                order by
-                 t1.""CodSocioNegocio"",
-                 t0.""OrdenRango""
-            "; 
-            var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
-            if (dt != null && dt.Rows.Count > 0)
-            {
-                foreach (DataRow dr in dt.Rows)
+            try {
+                if (string.IsNullOrEmpty(codVendedor) || codVendedor == "0")
+                    throw new Exception("No se ha identificado el código del vendedor. Solicite al departamento de ventas que registre correctamente su correo en SAP!!");
+                var ms = new List<CarteraMsg>();
+                var sql = string.Format(@"
+                  select
+                     t0.""IdFactura"",
+                     t0.""DocNum"",
+                     t1.""CodSocioNegocio"", 
+                     t0.""TipoDocumento"",
+                     t0.""Vendedor"",
+                     t0.""NumFolio"",
+                     to_char(t0.""FechaDocumento"", 'yyyy-mm-dd') ""FechaDocumento"",
+                     t0.""TotalDocumento"",
+                     to_char(t0.""FechaVencimiento"", 'yyyy-mm-dd') ""FechaVencimiento"",
+                     t0.""DiasVencido"",
+                     t0.""TotalPago"",
+                     t0.""SaldoVencido"",
+                     t0.""RangoDiasVencido"",
+                     t0.""OrdenRango"",
+                     t0.""OrdenTipoDocumento"",
+                     t0.""Comentarios"",
+                     t0.""TipoNC""
+                  from ""JbpVw_Cartera"" t0  inner join
+                    ""JbpVw_SocioNegocio"" t1 on t1.""CodSocioNegocio"" = t0.""CodCliente""
+                  where
+                     t1.""CodVendedor"" = {0}
+                  order by
+                     t1.""CodSocioNegocio"",
+                     t0.""OrdenRango""
+                ", codVendedor);
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql);
+                if (dt != null && dt.Rows.Count > 0)
                 {
-                    ms.Add(new CarteraMsg
+                    foreach (DataRow dr in dt.Rows)
                     {
-                        IdFactura = bc.GetInt(dr["IdFactura"]),
-                        DocNum = bc.GetInt(dr["DocNum"]),
-                        CodSocioNegocio = dr["CodSocioNegocio"].ToString(),
-                        TipoDocumento = dr["TipoDocumento"].ToString(),
-                        Vendedor = dr["Vendedor"].ToString(),
-                        NumFolio = dr["NumFolio"].ToString(),
-                        FechaDocumento = dr["FechaDocumento"].ToString(),
-                        TotalDocumento = bc.GetDecimal(dr["TotalDocumento"]),
-                        FechaVencimiento = dr["FechaVencimiento"].ToString(),
-                        DiasVencido = bc.GetInt(dr["DiasVencido"]),
-                        TotalPago = bc.GetDecimal(dr["TotalPago"]),
-                        SaldoVencido = bc.GetDecimal(dr["SaldoVencido"]),
-                        RangoDiasVencido = dr["RangoDiasVencido"].ToString(),
-                        OrdenRango= bc.GetInt(dr["OrdenRango"]),
-                        OrdenTipoDocumento = bc.GetInt(dr["OrdenTipoDocumento"]),
-                        Comentarios = dr["Comentarios"].ToString(),
-                        TipoNC = dr["TipoNC"].ToString()
-                    });
+                        ms.Add(new CarteraMsg
+                        {
+                            IdFactura = bc.GetInt(dr["IdFactura"]),
+                            DocNum = bc.GetInt(dr["DocNum"]),
+                            CodSocioNegocio = dr["CodSocioNegocio"].ToString(),
+                            TipoDocumento = dr["TipoDocumento"].ToString(),
+                            Vendedor = dr["Vendedor"].ToString(),
+                            NumFolio = dr["NumFolio"].ToString(),
+                            FechaDocumento = dr["FechaDocumento"].ToString(),
+                            TotalDocumento = bc.GetDecimal(dr["TotalDocumento"]),
+                            FechaVencimiento = dr["FechaVencimiento"].ToString(),
+                            DiasVencido = bc.GetInt(dr["DiasVencido"]),
+                            TotalPago = bc.GetDecimal(dr["TotalPago"]),
+                            SaldoVencido = bc.GetDecimal(dr["SaldoVencido"]),
+                            RangoDiasVencido = dr["RangoDiasVencido"].ToString(),
+                            OrdenRango = bc.GetInt(dr["OrdenRango"]),
+                            OrdenTipoDocumento = bc.GetInt(dr["OrdenTipoDocumento"]),
+                            Comentarios = dr["Comentarios"].ToString(),
+                            TipoNC = dr["TipoNC"].ToString()
+                        });
+                    }
                 }
+                //se agregan pagos y retenciones a las facturas
+                ms.ForEach(fact =>
+                {
+                    if (fact.TipoDocumento == "Factura")
+                    {
+                        fact.Retenciones = FacturaBusiness.GetRetencionesByDocNum(fact.DocNum);
+                        fact.Pagos = FacturaBusiness.GetPagosByDocNum(fact.DocNum);
+                        fact.PagosBorrador = FacturaBusiness.GetPagosBorradorByIdFactura(fact.IdFactura);
+                    }
+                });
+                return ms;
             }
-            //se agregan pagos y retenciones a las facturas
-            ms.ForEach(fact =>
+            catch(Exception e)
             {
-                if (fact.TipoDocumento == "Factura") {
-                    fact.Retenciones = FacturaBusiness.GetRetencionesByDocNum(fact.DocNum);
-                    fact.Pagos = FacturaBusiness.GetPagosByDocNum(fact.DocNum);
-                    fact.PagosBorrador = FacturaBusiness.GetPagosBorradorByIdFactura(fact.IdFactura);
-                }
-            });
-            return ms;
+                return new { error = e.Message + e.StackTrace };
+            }
         }
 
         public static List<ItemCombo> GetList()

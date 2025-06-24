@@ -14,6 +14,8 @@ namespace jbp.core.sapDiApi
         public SAPbobsCOM.Company Company;
         public delegate void dDisconected(bool connected);
         public event dDisconected onDisconected;
+        public delegate void dNotififacationMessage(string msg);
+        public event dNotififacationMessage onNotififacationMessage;
 
         public BaseSapObj()
         {
@@ -24,6 +26,7 @@ namespace jbp.core.sapDiApi
             this.Company.UseTrusted = false;
             this.Company.DbUserName = conf.Default.dbUser;
             this.Company.DbPassword = conf.Default.dbPwd;
+            
         }
         public void StartTransaction() { 
             this.Company.StartTransaction();
@@ -39,11 +42,16 @@ namespace jbp.core.sapDiApi
         {
             return this.Company.Connected;
         }
+        public void sendNotififacationMessage(string msg)
+        {
+            this.onNotififacationMessage?.Invoke(msg);
+        }
         public bool Connect(BaseSapObj me=null)
         {
             try
             {
-                if(me!=null && me.Company!=null)
+                this.onNotififacationMessage?.Invoke("Conectando a SAP Business One... " + conf.Default.server + " - " + conf.Default.dbName);
+                if (me!=null && me.Company!=null)
                     this.Company=me.Company;
                 if (this.Company.Connected)
                     return true;

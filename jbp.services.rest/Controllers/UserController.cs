@@ -45,6 +45,13 @@ namespace jbp.services.rest.Controllers
             return UserBusiness.Log(me);
         }
 
-        
+        [HttpPost]
+        [Route("api/user/testCorreo")]
+        public object TestCorreo([FromBody] CorreoMsg me)
+        {
+            return UserBusiness.TestCorreo(me);
+        }
+
+
     }
 }

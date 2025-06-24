@@ -27,9 +27,16 @@ namespace jbp.business.hana
                 };
             }
             catch (Exception e) {
+                var errorStr = string.Empty;
+                if (me != null && !string.IsNullOrEmpty(me.ruc))
+                    errorStr = $"Ruc Enviado: {me.ruc}";
+                else
+                    errorStr = "No se ha pasado el ruc del participante como parámetro!!";
+                errorStr += " - " + e.Message + e.StackTrace;
                 return new
                 {
-                    error = e.Message
+
+                    error = errorStr
                 };
             }
         }

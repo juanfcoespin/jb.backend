@@ -12,12 +12,13 @@ namespace jbp.msg.sap
 
         public string linea { get; set; }
         public string docNumOF { get; set; }
+        public string CodBodegaMat { get; set; }
     }
     public class CantidadesReservadasPorLoteMsg
     {
         public int DocNumST { get; set; }
         public double Cantidad { get; set; }
-        public string DocNumOF { get; set; }
+        public int DocNumOF { get; set; }
         public string Lote { get; set; }
         public string BodegaDestino { get; set; }
         public int IdSolicitudTraslado { get; set; }
@@ -73,7 +74,7 @@ namespace jbp.msg.sap
 
         public string BodegaOrigen { get; set; }
         public List<LineStMsg> Lines { get; set; }
-        public string DocNumOF { get; set; }
+        public int DocNumOF { get; set; }
         public string Comentarios { get; set; }
 
         public StMsg() { 

@@ -44,7 +44,7 @@ namespace jbp.services.rest.Controllers
         [Route("api/tsFromST")]
         public DocSapInsertadoMsg TransferFromPicking([FromBody] TsFromPickingME me)
         {
-            return TransferenciaStockBussiness.SaveFromST(me);
+            return TransferenciaStockBussiness.TransferFromPicking(me);
         }
     }
 }

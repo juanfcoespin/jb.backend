@@ -49,6 +49,7 @@
     <Compile Include="PlanCuentasProcesadoMsg.cs" />
     <Compile Include="ProductMsg.cs" />
     <Compile Include="PromotickMsg.cs" />
+    <Compile Include="TransferenciaStockMsg.cs" />
     <Compile Include="UserMsg.cs" />
     <Compile Include="SocioNegocioMsg.cs" />
     <Compile Include="ComunMsg.cs" />

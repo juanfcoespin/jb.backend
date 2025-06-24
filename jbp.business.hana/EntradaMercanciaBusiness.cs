@@ -41,6 +41,11 @@ namespace jbp.business.hana
                         sapEntradaMercancia = new SapEntradaMercancia();
                     if (!sapEntradaMercancia.IsConected())
                         sapEntradaMercancia.Connect();//se conecta a sap
+                    //desde la app no se controla el envío de lineas sin asignacion lote
+                    me.Lineas = me.Lineas.FindAll(l => l.AsignacionesLote.Count > 0);
+                    if (me.Lineas == null)
+                        throw new Exception("SRV: Ninguna línea de la entrada de mergancía tiene lotes asignados");
+                    EntradaMercanciaMsg.SetCodBodegaEnLineas(me.Lineas); //se asigna el código de bodega a las líneas de la entrada de mercancia
                     SetNewLotes(me); //se asigna los lotes nuevos desde la bdd
                     me.Lineas.ForEach(line => {
                         line.AsignacionesLote.ForEach(al => {
@@ -77,6 +82,8 @@ namespace jbp.business.hana
                 return new EntradaMercanciaMsg { Error = e.Message };
             }
         }
+
+        
 
         private static void SetGastosAdicionales(ref EntradaMercanciaMsg me)
         {

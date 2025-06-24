@@ -112,5 +112,14 @@ namespace jbp.business.hana {
                 return ((string)(this["CorreosNotificacionesFVI"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("pcastro@jbp.com.ec; cpalacios@jbp.com.ec; jespin@jbp.com.ec")]
+        public string EmailPesaje {
+            get {
+                return ((string)(this["EmailPesaje"]));
+            }
+        }
     }
 }

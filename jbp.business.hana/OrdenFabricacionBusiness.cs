@@ -16,14 +16,12 @@ namespace jbp.business.hana
             var ms = new List<OrdenFabricacionLiberadaPesajeMsg>();
             var sql = @"
                 select 
+                 distinct
                  ""DocNum"",
                  ""CodArticulo"",
                  ""Articulo""
                 from  
-                 ""JbpVw_OrdenFabricacion""
-                where ""DocNum"" in(
-                 select	distinct DOC_NUM_OF from JB_LOTES_PESAJE
-                )
+                 ""JbVw_OFsConTSaPesaje""
             ";
             if (!string.IsNullOrEmpty(codPT) && !string.IsNullOrEmpty(codInsumo))
             {

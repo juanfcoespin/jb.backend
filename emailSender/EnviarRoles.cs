@@ -12,6 +12,8 @@ using System.Threading;
 using jbp.business.hana;
 using TechTools.Net;
 using static System.Net.WebRequestMethods;
+using System.Net.Mail;
+using System.Net;
 
 namespace emailSender
 {
@@ -52,6 +54,8 @@ namespace emailSender
             this.ui = new UiMsg();
             this.uiMsgBindingSource.DataSource = this.ui;
             backgroundWorker1.RunWorkerAsync();
+            button1.Enabled = true;
+
         }
         public void enviarCorreoPrueba() {
             var mail = "juanfco.espin@gmail.com";
@@ -79,6 +83,12 @@ namespace emailSender
             var processed = 0;
             this.roles.ForEach(rolFileWithPath =>
             {
+                if (backgroundWorker1.CancellationPending)
+                {
+                    
+                    e.Cancel = true;
+                    return; //cancela el procesamiento
+                }
                 //Ej. RolFile: 1803281631_Juan Francisco Espin.pdf
                 var rolFile = GetRoleFileName(rolFileWithPath);
                 var matrix = rolFile.Split(new char[] { '_', '.' });
@@ -150,6 +160,47 @@ namespace emailSender
                 var path= dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
                 System.Diagnostics.Process.Start(path);
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            button1.Enabled = false;
+            MessageBox.Show("Se está finalizando el procesamiento!!");
+            backgroundWorker1.CancelAsync();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            /*var bb = new BaseBusiness();
+            bb.EnviarPorCorreo("jespin@jbp.com.ec", "test correo", "msg correo");*/
+            testCorreo();
+        }
+        private void testCorreo() {
+            try
+            {
+                var from = "rr_hh@jbp.com.ec";
+                var to = "jespin@jbp.com.ec";
+                //var contraseñaApp = "dQn8Q~t.16l1ukNrcgAE4vC66hVd5jKdpaYI0a1a"; // Tu contraseña de aplicación
+                var contraseñaApp = "486750"; // Tu contraseña de aplicación
+
+                MailMessage mail = new MailMessage(from, to);
+                mail.Subject = "Prueba de conexión SMTP";
+                mail.Body = "Este es un mensaje de prueba enviado desde C# con Office 365.";
+
+                SmtpClient smtp = new SmtpClient("smtp.office365.com", 587);
+                smtp.EnableSsl = true;
+                smtp.Credentials = new NetworkCredential(from, contraseñaApp);
+                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtp.Timeout = 20000;
+
+                smtp.Send(mail);
+                MessageBox.Show(to + " - Correo enviado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);    
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al enviar el correo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
     }
 }

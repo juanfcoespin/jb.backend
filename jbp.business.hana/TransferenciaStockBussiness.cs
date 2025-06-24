@@ -8,11 +8,11 @@ using jbp.core.sapDiApi;
 using System.Threading;
 using TechTools.Core.Hana;
 using System.Data;
-using jbp.msg.sap;
 using jbp.msg;
 using System.Security.Policy;
 using System.Runtime.CompilerServices;
 using TechTools.Utils;
+using TechTools.Net;
 
 namespace jbp.business.hana
 {
@@ -24,13 +24,14 @@ namespace jbp.business.hana
 
         #region Desde solicitud de transferencia
 
-        public static List<TsBodegaMsg> MapToTsBodegaMsg(ComponenteMsg me, string responsable, string ubicacionPesaje) { 
+        public static List<TsBodegaMsg> Map(ComponenteMsg me, string responsable, string ubicacionPesaje) { 
             var ms = new List<TsBodegaMsg>();
             me.Lotes.ForEach(lote => { 
                 var obj=new TsBodegaMsg();
                 obj.Responsable = responsable;
                 obj.CodArticulo = me.CodArticulo;
                 obj.Lote = lote.Lote;
+                obj.ClientId = me.ClientId;
                 lote.Ubicaciones.ForEach(ubicacion => {
                     obj.movimientos.Add(new MovimientoTsMsg { 
                         Cantidad=ubicacion.Cantidad,
@@ -44,20 +45,32 @@ namespace jbp.business.hana
             });
             return ms;
         }
+        public static string GetUbicacionPesajeFromBodegaMat(string codBodegaMat) {
+            switch (codBodegaMat) { 
+                case "MAT1":
+                    return "MAT1-PSJ1";
+                case "MAT2":
+                    return "MAT2-PSJ2";
+            }
 
-        public static DocSapInsertadoMsg SaveFromST(TsFromPickingME me) {
+            return null;
+        }
+        public static DocSapInsertadoMsg TransferFromPicking(TsFromPickingME me) {
             try
             {
                 var ms = new DocSapInsertadoMsg();
                 //se hace una transferencia de la ubicación origen a la ubicación de pesaje
-                var ubicacionPesaje = "MAT1-PSJ1";
+                var ubicacionPesaje = GetUbicacionPesajeFromBodegaMat(me.CodBodegaMat);
+                if(ubicacionPesaje == null)
+                    throw new Exception("No se ha podido determinar la ubicación de pesaje para la bodega de MAT: " + me.CodBodegaMat);
                 me.Componentes.ForEach(c =>
                 {
                     SendMessageToClient(c.ClientId, "Procesando componente: " + c.CodArticulo, eMessageType.Warning);
-                    var lotesConUbicaciones = MapToTsBodegaMsg(c, me.Responsable, ubicacionPesaje);
+                    var lotesConUbicaciones = Map(c, me.Responsable, ubicacionPesaje);
                     lotesConUbicaciones.ForEach(loteConUbicacion => { 
                         SendMessageToClient(c.ClientId, $"Procesando lote: {loteConUbicacion.Lote}" , eMessageType.Warning);
-                        var loteMS = TransferToUbicaciones(loteConUbicacion, c.ClientId);
+                        var loteMS = TransferToUbicaciones(loteConUbicacion);
+                        loteConUbicacion.DocNumTS=loteMS.DocNum; 
                         if (!string.IsNullOrEmpty(loteMS.Error))
                         {
                             SendMessageToClient(c.ClientId, $"Error: {loteMS.Error}", eMessageType.Error);
@@ -78,6 +91,7 @@ namespace jbp.business.hana
             }
             catch (Exception e)
             {
+                SendMessageToClient(me.ClientId, e.Message, eMessageType.Error);
                 return new DocSapInsertadoMsg { Error = e.Message };
             }
         }
@@ -87,70 +101,34 @@ namespace jbp.business.hana
             double cant = 0;
             loteConUbicacion.movimientos.ForEach(m => cant += m.Cantidad);
             var sql = string.Format(@"
-                insert into JB_LOTES_PESAJE(LOTE, COD_ARTICULO, ID_ST, CANTIDAD, DOC_NUM_OF, FECHA)
-                values('{0}','{1}', {2}, {3}, {4}, CURRENT_TIMESTAMP)
+                insert into JB_LOTES_PESAJE(LOTE, COD_ARTICULO, ID_ST, CANTIDAD, DOC_NUM_OF, FINALIZADO)
+                values('{0}','{1}', {2}, {3}, {4}, 'N')
             ", loteConUbicacion.Lote, loteConUbicacion.CodArticulo, me.Id, cant.ToString().Replace(',','.'), me.NumOF);
+            new BaseCore().Execute(sql);
+            var movimientos = TransferenciaStockMsg.Map(loteConUbicacion, me.NumOF);
+            movimientos.ForEach(m => {
+                SetLogMovimientoPesaje(m);
+            });
+        }
+
+        private static void SetLogMovimientoPesaje(MovimientoPesajeMsg me) {
+            me.IdLotePesaje = GetIdLotePesaje(me.Lote, me.CodArticulo, me.DocNumOf);
+            var sql = string.Format(@"
+                insert into JB_MOVIMIENTOS_LOTE_PESAJE(ID_LOTE_PESAJE, DOC_NUM_TS, CANTIDAD, UBICACION_DESDE, UBICACION_HASTA)
+                values({0}, {1}, {2}, '{3}', '{4}')
+            ", me.IdLotePesaje, me.DocNumTs, me.Cantidad.ToString().Replace(',','.'), me.UbicacionDesde, me.UbicacionHasta);
             new BaseCore().Execute(sql);
         }
 
-        public static async Task<DocSapInsertadoMsg> SaveFromST_bk(TsFromPickingME me)
-        {
-            var tareas = new List<Task<DocSapInsertadoMsg>>();
-            var ms = new DocSapInsertadoMsg();
-
-            //por cada componente se ejecuta una transaccion
-            var cantComponentes = 0;
-            foreach (var c in me.Componentes)
-            {
-                if (c.CantidadEnviada <= 0)
-                    continue;
-                cantComponentes++;
-                var newMe=GetCopyMeSinComponentes(me);
-                newMe.Componentes.Add(c);
-                newMe.ClientId = c.ClientId;
-                tareas.Add(Task.Run(async () =>
-                {
-                    //semaforo.WaitAsync(); // Espera espacio en el semáforo
-                    try
-                    {
-                        return ProcessTSFromST(newMe, 0, false);
-                    }
-                    finally
-                    {
-                        //semaforo.Release(); // Siempre libera aunque falle
-                    }
-                }));
-                // Desfase en ms para que no se crucen las transacciones
-                await Task.Delay(1000);
-            }
-            if (cantComponentes == 0)
-            {
-                ms.Error = "No se han enviado componentes para la transferencia!!";
-                return ms;
-            }
-            // Ejecutamos todo en paralelo
-            //var resultados = await Task.WhenAll(tareas);
-            var resultados = await Task.WhenAll(tareas);
-
-            // Revisamos errores
-            foreach (var r in resultados)
-            {
-                if (!string.IsNullOrEmpty(r.Error))
-                {
-                    return r; // Retorna el primero con error
-                }
-                else {
-                    UpdateResponsableTS(me.Responsable, r.Id);
-                }
-            }
-            //si no hay error en ningún componente:
-            var lastResultadoComponente = resultados.Last();
-            lastResultadoComponente.DocNum = GetDocNumBYId(lastResultadoComponente.Id); //retorna el ultimo componente
-            return lastResultadoComponente;
+        private static int GetIdLotePesaje(string lote, string codArticulo, int docNumOf) {
+            var sql = string.Format(@"
+                select top 1 ID from JB_LOTES_PESAJE
+                where LOTE='{0}' and COD_ARTICULO='{1}' and DOC_NUM_OF={2}",
+                lote, codArticulo, docNumOf);
+            return new BaseCore().GetIntScalarByQuery(sql);
         }
-            
-        
-        
+
+
         private static DocSapInsertadoMsg ProcessTSFromST(TsFromPickingME me, int numIntentos = 0, bool esHijo = false, SapTransferenciaStock sapTs = null)
         {
             /*
@@ -215,7 +193,7 @@ namespace jbp.business.hana
                     });
                 });
                 me.Comentario = "ApiPesaje (Responsable: " + me.Responsable + " )";
-                if (!string.IsNullOrEmpty(me.NumOF))
+                if (me.NumOF>0)
                     msg = string.Format("Creando TS para OF:{0} de {1}->{2}", me.NumOF, me.BodegaOrigen, me.BodegaDestino);
                 else
                     msg = string.Format("Creando TS de {0}->{1}", me.BodegaOrigen, me.BodegaDestino);
@@ -302,44 +280,12 @@ namespace jbp.business.hana
             }
             return ms;
         }
-
-        private static TsFromPickingME GetCopyMeSinComponentes(TsFromPickingME me)
-        {
-            var ms= new TsFromPickingME();
-            ms.Responsable=me.Responsable;
-            ms.Id= me.Id;
-            ms.BodegaDestino = me.BodegaDestino;
-            ms.BodegaOrigen = me.BodegaOrigen;
-            ms.NumST = me.NumST;
-            ms.NumOF = me.NumOF;
-            ms.BodegaProd = me.BodegaProd;
-            ms.Comentario = me.Comentario;
-            return ms;
-        }
-
-        public static DocSapInsertadoMsg SaveFromST_bk2(TsFromPickingME me)
-        {
-            Monitor.Enter(control);
-            try
-            {
-                var ms = ProcessTSFromST(me);
-                if (string.IsNullOrEmpty(ms.Error))
-                {
-                    ms.DocNum = GetDocNumBYId(ms.Id);
-                    UpdateResponsableTS(me.Responsable, ms.Id);
-                }
-                return ms;
-            }
-            finally
-            {
-                Monitor.Exit(control);
-            }
-        }
+        
         
         //sistema balanzas espinoza paez
         public static DocSapInsertadoMsg TransferFromBalanzas(TsBalanzasMsg me)
         {
-            var ubicacionPesaje = "MAT1-PSJ1";
+            var ubicacionPesaje = GetUbicacionPesajeFromIpBalanza(me.IpBalanza);
             var ms = new DocSapInsertadoMsg();
             try
             {
@@ -359,7 +305,11 @@ namespace jbp.business.hana
                 {
                     ms.DocNum = GetDocNumBYId(ms.Id);
                     CheckAllInsumosPesados(me.DocNumOF); //verifica si todos los componentes fueron pesados
-                    BorrarLogPesaje(me);
+                    var movimientos = TransferenciaStockMsg.Map(newMe, me.DocNumOF, ms.DocNum);
+                    movimientos.ForEach(m => {
+                        SetLogMovimientoPesaje(m);
+                    });
+                    FinalizarLogPesaje(me);
                 }
                 else
                 {
@@ -378,13 +328,31 @@ namespace jbp.business.hana
             return ms;
         }
 
-        private static void BorrarLogPesaje(TsBalanzasMsg me)
+        private static string GetUbicacionPesajeFromIpBalanza(string ipBalanza)
+        {
+            //para hacer el mapero de las ips a las ubicaciones de pesaje
+            MailUtils.Send("jespin@jbp.com.ec", "IP Balanza: " + ipBalanza, "Se ha recibido una solicitud de pesaje desde la balanza con IP: " + ipBalanza);
+            
+            var ipsPifo= new List<string>() { "192.168.100.162" };
+            foreach (var ip in ipsPifo)
+            {
+                if (ipBalanza == ip)
+                    return "MAT1-PSJ1"; //ubicación de pesaje para la balanza de Pifo
+            }
+            ///Todo: agregar más ips de balanzas de puembo
+            
+            // por defecto retorna la ubicación de pesaje de pifo si la ip no está identificada
+            return "MAT1-PSJ1";
+        }
+
+        private static void FinalizarLogPesaje(TsBalanzasMsg me)
         {
             var bc = new BaseCore();
             me.Lineas.ForEach(linea => {
                 linea.Lotes.ForEach(lote => {
                     var sql = string.Format(@"
-                    delete from JB_LOTES_PESAJE 
+                    update JB_LOTES_PESAJE 
+                    set FINALIZADO='Y'
                     where 
                         ID_ST={0}
                         AND LOTE='{1}'
@@ -406,9 +374,7 @@ namespace jbp.business.hana
                  ""JbpVw_Insumos"" t2 on t2.""CodInsumo""=t0.""CodInsumo"" 
                 where
                  t2.""TipoInsumo""='Artículo'
-                 and t2.""CodInsumo"" not in(
-                  '11000238' --Agua purificada
-                 )
+                 and lower(t2.""Insumo"") not like '%agua%' -- el agua no se fracciona
                  and t0.""CantidadPesada"" < t0.""CantidadPlanificada""
                  and lower(t2.""UnidadMedida"") in ('kg', 'g', 'l')
                  and t1.""DocNum""={0}
@@ -416,8 +382,19 @@ namespace jbp.business.hana
             var insumosPorPesar = new BaseCore().GetIntScalarByQuery(sql);
             if (insumosPorPesar == 0) { // se fraccionaron todos los insumos
                 SetOFPesada(docNumOF);
+                EnviarCorreoFinalizacionPesaje(docNumOF);
             }
         }
+        public static bool EnviarCorreoFinalizacionPesaje(int docNumOF)
+        {
+            return TechTools.Net.MailUtils.Send(
+                conf.Default.EmailPesaje,
+                "Finalización de Pesaje de OF: " + docNumOF,
+                "Se ha finalizado el pesaje de la OF: " + docNumOF + ". Por favor imprimir la asignación de materiales a PROD.",
+                null
+            );
+        }
+        
         private static void SetOFPesada(int docNumOF)
         {
             var sql = string.Format(@"
@@ -520,42 +497,26 @@ namespace jbp.business.hana
             Monitor.Enter(control);
             try
             {
-                var newMe = MapFromPesajeToMat(me);
-                return ProcessTSFromST(newMe);
+                var newMe = TransferenciaStockMsg.Map(me);
+                var ms=TransferToUbicaciones(newMe);
+                if (string.IsNullOrEmpty(ms.Error)){
+                    var movimientos = TransferenciaStockMsg.Map(newMe, me.detalleLote.DocNumOf);
+                    movimientos.ForEach(m => {
+                        m.DocNumTs = ms.DocNum;
+                        SetLogMovimientoPesaje(m);
+                    });
+                }
+                return ms;
+            }
+            catch (Exception e) {
+                return new DocSapInsertadoMsg { Error = e.Message };
             }
             finally
             {
                 Monitor.Exit(control);
             }
         }
-        private static TsFromPickingME MapFromPesajeToMat(TsFromPesajeToMatMsg me)
-        {
-            var ms = new TsFromPickingME();
-            ms.ClientId = me.ClientId;
-            ms.Responsable = me.Responsable;
-            ms.Componentes = new List<ComponenteMsg>();
-            var componente = new ComponenteMsg
-            {
-                BodegaOrigen = me.detalleLote.CodBodega,
-                BodegaDestino = me.codBodegaDestino,
-                CantidadEnviada = me.detalleLote.Cantidad,
-                CodArticulo = me.detalleLote.CodArticulo
 
-            };
-            componente.Lotes = new List<LoteComponenteMsg>();
-            componente.Lotes.Add(new LoteComponenteMsg { 
-                CantidadEnviada=componente.CantidadEnviada,
-                CantidadReservada = componente.CantidadEnviada,
-                Lote = me.detalleLote.Lote,
-            });
-            ms.Componentes.Add(componente);
-            ms.BodegaOrigen = componente.BodegaOrigen;
-            ms.BodegaDestino = componente.BodegaDestino;
-
-            return ms;
-        }
-        
-        
         
 
         private static int ManejarError(TsFromPickingME me, int numIntentos, bool esHijo, DocSapInsertadoMsg ms, Exception e)
@@ -785,7 +746,7 @@ namespace jbp.business.hana
                 ms.Add(new CantidadesReservadasPorLoteMsg
                 { 
                     DocNumST= bc.GetInt(dr["DocNum"]),
-                    DocNumOF= dr["DocNumOrdenFabricacion"].ToString(),
+                    DocNumOF= bc.GetInt(dr["DocNumOrdenFabricacion"]),
                     Cantidad = bc.GetDouble(dr["Cantidad"]),
                     Lote = lote,
                     BodegaDestino = dr["BodegaDestino"].ToString(),
@@ -843,11 +804,16 @@ namespace jbp.business.hana
         #endregion
 
         // app bodega
-        public static DocSapInsertadoMsg TransferToUbicaciones(TsBodegaMsg me, string clientId=null)
+        public static DocSapInsertadoMsg TransferToUbicaciones(TsBodegaMsg me)
         {
             Monitor.Enter(control);
             try
             {
+                //se notifica al cliente las transacciones de la DIapi de SAP
+                sapTransferenciaStock.onNotififacationMessage += (msg =>
+                {
+                    SendMessageToClient(me.ClientId, msg, eMessageType.Info);
+                });
                 me.Lote = QuitarCodArticuloDelLote(me.Lote);
                 string error = null;
                 me.movimientos.ForEach(movimiento => {
@@ -858,7 +824,7 @@ namespace jbp.business.hana
                         }
                         if (error == null)
                         {
-                            SendMessageToClient(clientId, "Estableciendo Ids de ubicaciones");
+                            SendMessageToClient(me.ClientId, "Estableciendo Ids de ubicaciones");
                             if (!string.IsNullOrEmpty(movimiento.UbicacionDesde))
                             { //si se envia la ubicación destino explicitamente
                                 movimiento.IdUbicacionDesde = BodegaBusiness.GetIdUbicacionByName(movimiento.UbicacionDesde);
@@ -876,7 +842,7 @@ namespace jbp.business.hana
                         Error = error
                     };
                 }
-                SendMessageToClient(clientId, "Trayendo estado del lote");
+                SendMessageToClient(me.ClientId, "Trayendo estado del lote");
                 var estadoLote = getEstadoLote(me);
                 /*
                  solo se permiten hacer transferencias de stock en lotes liberados
@@ -886,24 +852,33 @@ namespace jbp.business.hana
                 */
                 if (estadoLote != Convert.ToInt32(eEstadoLote.Liberado).ToString())
                 {
-                    SendMessageToClient(clientId, "Poniendo temporalmente el lote como liberado");
+                    SendMessageToClient(me.ClientId, "Poniendo temporalmente el lote como liberado");
                     PonerLoteTemporalmenteComoLiberado(me, estadoLote);
                 }
 
-                SendMessageToClient(clientId, "Procesando Transferencia");
-                var ms = ProcessTS(me, clientId);
+                SendMessageToClient(me.ClientId, "Procesando Transferencia");
+
+                ConectarASap(me.ClientId, sapTransferenciaStock);
+                SendMessageToClient(me.ClientId, "Transfiriendo a ubicación destino...");
+                var ms = sapTransferenciaStock.TranferirEntreUbicaciones(me);
+                SendMessageToClient(me.ClientId, "Verificando consistencia de estado de lotes...");
                 RegresarLotesAlEstadoAnterior();//vuelte al estado anterior
                 if (string.IsNullOrEmpty(ms.Error))
                 {
                     ms.DocNum = GetDocNumBYId(ms.Id);
-                    UpdateResponsableTS(me.Responsable, ms.Id);
+                    SendMessageToClient(me.ClientId, "Transferencia Exitosa. Num SAP:" + ms.DocNum, eMessageType.Success);
+                }
+                else { 
+                    throw new Exception(ms.Error);
                 }
                 return ms;
             }
             catch (Exception ex) {
+                var error = "TransferenciaStockBusiness, TransferToUbicaciones:" + ex.Message;
+                SendMessageToClient(me.ClientId, error, eMessageType.Error);
                 return new DocSapInsertadoMsg
                 {
-                    Error = "TransferenciaStockBusiness, TransferToUbicaciones:"+ex.Message
+                    Error = error
                 };
             }
             finally
@@ -1023,64 +998,5 @@ namespace jbp.business.hana
             ", id);
             return new BaseCore().GetIntScalarByQuery(sql);
         }
-
-
-        private static List<CantidadLoteMsg> GetLotesByCodArt_CodBodega(string codArticulo, string codBodegaDesde)
-        {
-            var ms = new List<CantidadLoteMsg>();
-            var sql = string.Format(@"
-                select
-                 ""Lote"",
-                 ""Disponible"",
-                 ""CodAlmacen""
-                from ""JbpVw_CantDisponibleArticuloPorLotes""
-                where
-                 ""CodArticulo"" = '{0}'
-                 and ""CodAlmacen"" = '{1}'
-                 and  ""Disponible"" > 0
-                 and ""FechaVencimiento"">=current_Date --lotes que no estén vencidos
-                order by
-                 ""FechaVencimiento"" -- Desde lo que esta mas próximo a vencerse
-            ", codArticulo, codBodegaDesde);
-            var bc = new BaseCore();
-            var dt=bc.GetDataTableByQuery(sql);
-            foreach (DataRow dr in dt.Rows) {
-                ms.Add(new CantidadLoteMsg
-                {
-                    Lote = dr["Lote"].ToString(),
-                    Disponible = bc.GetDouble(dr["Disponible"]),
-                    CodBodega =dr["CodAlmacen"].ToString()
-                });
-            }
-            return ms;
-        }
-
-        private static DocSapInsertadoMsg ProcessTS(TsBodegaMsg me, string clientId=null)
-        {
-            try
-            {
-                if (me != null)
-                {
-                    if (sapTransferenciaStock == null)
-                        sapTransferenciaStock = new SapTransferenciaStock();
-                    if (!sapTransferenciaStock.IsConected())
-                    {
-                        SendMessageToClient(clientId, "Conectando con SAP...");
-                        sapTransferenciaStock.Connect();//se conecta a sap
-                    }
-                    SendMessageToClient(clientId, "Transfiriendo a ubicación destino...");
-                    return sapTransferenciaStock.TranferirEntreUbicaciones(me);
-                }
-                return null;
-            }
-            catch (Exception e)
-            {
-                return new DocSapInsertadoMsg { 
-                    Error = e.Message
-                };
-            }
-        }
-
-        
     }
 }

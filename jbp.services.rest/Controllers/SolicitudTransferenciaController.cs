@@ -15,7 +15,7 @@ namespace jbp.services.rest.Controllers
     {
         [HttpPost]
         [Route("api/st/getST_OF_Liberadas")]
-        public List<ST_OF_LiberadasMsg> GetST_OF_Liberadas([FromBody] FiltroPickingProdME me)
+        public object GetST_OF_Liberadas([FromBody] FiltroPickingProdME me)
         {
             return SolicitudTransferenciaBusiness.GetST_OF_Liberadas(me);
         }
@@ -25,14 +25,6 @@ namespace jbp.services.rest.Controllers
         {
             return SolicitudTransferenciaBusiness.Save(me);
         }
-
-        [HttpGet]
-        [Route("api/st/getST_OF_Liberadas")]
-        public List<ST_OF_LiberadasMsg> GetST_OF_Liberadas()
-        {
-            return SolicitudTransferenciaBusiness.GetST_OF_Liberadas();
-        }
-       
 
         [HttpGet]
         [Route("api/st/GetComponetesConLotesById/{id}")]

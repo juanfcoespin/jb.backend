@@ -74,5 +74,12 @@ namespace jbp.msg
         public string Date { get; set; }
         public string Msg { get; set; }
     }
+    public class CorreoMsg
+    {
+        public string subject;
+
+        public string body { get; set; }
+        public string to { get; set; }
+    }
 
 }

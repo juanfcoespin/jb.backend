@@ -59,6 +59,7 @@
     <Compile Include="ReaccionesMsg.cs" />
     <Compile Include="RentencionMsgcs.cs" />
     <Compile Include="SocioNegocioMsg.cs" />
+    <Compile Include="TransferenciaStockMsg.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\jbp.msg\jbp.msg.csproj">

@@ -25,7 +25,7 @@ namespace jbp.core.sapDiApi
             stockTransfer.FromWarehouse = me.BodegaOrigen;
             stockTransfer.ToWarehouse = me.BodegaDestino;
             stockTransfer.DocDate = DateTime.Now;
-            stockTransfer.JournalMemo = me.DocNumOF;
+            stockTransfer.JournalMemo = me.DocNumOF.ToString();
             stockTransfer.Comments = me.Comentarios;
 
             if (conf.Default.NroSerieTSPorDefecto > 0)

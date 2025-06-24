@@ -15,6 +15,7 @@ namespace jbp.core.sapDiApi
     }
     public class SapTransferenciaStock:BaseSapObj
     {
+        
         public SapTransferenciaStock()
         {
             //this.Connect();
@@ -27,11 +28,13 @@ namespace jbp.core.sapDiApi
              Se transfiere las cantidades de un solo lote
                 de n bodegas y ubicaciones origen a n bodegas y ubicaciones destino
              */
-
+            this.sendNotififacationMessage("Iniciando DIAPI transferencia entre ubicaciones");
             var ms = new DocSapInsertadoMsg();
             StockTransfer stockTransfer= this.Company.GetBusinessObject(BoObjectTypes.oStockTransfer);
+            this.sendNotififacationMessage("Estableciendo parámetros generales");
             stockTransfer.DocDate = DateTime.Now;
             stockTransfer.PriceList = -2; //Último precio determinado
+            stockTransfer.Comments = me.Responsable;
             if (conf.Default.NroSerieTSPorDefecto > 0)
             {
                 stockTransfer.Series = conf.Default.NroSerieTSPorDefecto; //TR_HUM
@@ -50,6 +53,7 @@ namespace jbp.core.sapDiApi
             int numLotes = 0;
 
             lineas.ForEach(l => {
+                this.sendNotififacationMessage("Parametrizando líneas de transferencia");
                 if (i == 0) //solo en la primera linea asigno las bodegas de la TS
                 {
                     stockTransfer.FromWarehouse = l.bd;
@@ -67,8 +71,9 @@ namespace jbp.core.sapDiApi
 
                 var ubicacionesDesde = new List<int>();
                 var ubicacionesHasta = new List<int>();
-                movimientosPorLinea.ForEach(m => { 
-                    if(!ubicacionesDesde.Contains(m.IdUbicacionDesde) && m.IdUbicacionDesde > 0)
+                
+                movimientosPorLinea.ForEach(m => {
+                    if (!ubicacionesDesde.Contains(m.IdUbicacionDesde) && m.IdUbicacionDesde > 0)
                         ubicacionesDesde.Add(m.IdUbicacionDesde);
                 });
                 movimientosPorLinea.ForEach(m => {
@@ -76,12 +81,14 @@ namespace jbp.core.sapDiApi
                         ubicacionesHasta.Add(m.IdUbicacionHasta);
                 });
                 //----------- retistro las ubicaciones por linea ----------------
-                
+
                 //registro el lote por linea
+                this.sendNotififacationMessage("Parametrizando lotes");
                 stockTransfer.Lines.BatchNumbers.BatchNumber = me.Lote;
                 stockTransfer.Lines.BatchNumbers.Quantity = cantLinea;
                 stockTransfer.Lines.BatchNumbers.Add();
 
+                this.sendNotififacationMessage("Parametrizando ubicaciones");
                 //ubicaciones desde
                 ubicacionesDesde.ForEach(idUbicacion => {
                     var cantUbicacion = 0.0;
@@ -112,7 +119,7 @@ namespace jbp.core.sapDiApi
                 stockTransfer.Lines.Add();
                 i++;
             });
-            
+            this.sendNotififacationMessage("Insertando transaccion en la DIAPI de SAP...");
             var error = stockTransfer.Add();
             if (error != 0)
                 ms.Error = this.Company.GetLastErrorDescription();

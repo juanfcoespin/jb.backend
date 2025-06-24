@@ -50,10 +50,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FacturaBusinessUT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SocioNegocioUT.cs" />
-    <Compile Include="OrdenBusinessUT.cs" />
+    <Compile Include="TestCorreo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

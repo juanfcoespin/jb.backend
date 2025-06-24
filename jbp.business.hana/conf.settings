@@ -32,5 +32,8 @@
     <Setting Name="CorreosNotificacionesFVI" Type="System.String" Scope="Application">
       <Value Profile="(Default)">jespin@jbp.com.ec; juanfco.espin@gmail.com</Value>
     </Setting>
+    <Setting Name="EmailPesaje" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">pcastro@jbp.com.ec; cpalacios@jbp.com.ec; jespin@jbp.com.ec</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

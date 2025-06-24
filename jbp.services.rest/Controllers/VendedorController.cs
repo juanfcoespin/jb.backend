@@ -14,7 +14,7 @@ namespace jbp.services.rest.Controllers
     {
         [HttpGet]
         [Route("api/vendor/getCarteraByCodVendedor/{codVendedor}")]
-        public List<CarteraMsg> GetCarteraByCodVendedor(string codVendedor)
+        public object GetCarteraByCodVendedor(string codVendedor)
         {
             return VendedorBusiness.GetCarteraByCodVendedor(codVendedor);
         }
