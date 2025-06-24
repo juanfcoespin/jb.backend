@@ -180,7 +180,6 @@ namespace emailSender
             {
                 var from = "rr_hh@jbp.com.ec";
                 var to = "jespin@jbp.com.ec";
-                //var contraseñaApp = "dQn8Q~t.16l1ukNrcgAE4vC66hVd5jKdpaYI0a1a"; // Tu contraseña de aplicación
                 var contraseñaApp = "486750"; // Tu contraseña de aplicación
 
                 MailMessage mail = new MailMessage(from, to);
