@@ -11,7 +11,7 @@ namespace jbp.business.hana
 {
     public class LoteBusiness : BaseBusiness
     {
-        internal static List<LoteMsg> GetLotesByCodArticulo(string codArticulo)
+        public static List<LoteMsg> GetLotesByCodArticulo(string codArticulo)
         {
             var ms = new List<LoteMsg>();
             var sql = string.Format(@"

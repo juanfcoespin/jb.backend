@@ -28,5 +28,23 @@ namespace jbp.services.rest.Controllers
             var ms = new ReaccionesBusiness().GetCatalogos();
             return ms;
         }
+
+        [HttpGet]
+        [Route("api/reacciones/getLotesByCodArticulo/{codArticulo}")]
+        public object getLotesByCodArticulo(string codArticulo)
+        {
+            try
+            {
+                return LoteBusiness.GetLotesByCodArticulo(codArticulo);
+            }
+            catch (Exception ex)
+            {
+                return new
+                {
+                    error = ex.Message + ex.StackTrace
+                };
+            }
+        }
+    
     }
 }

@@ -77,9 +77,10 @@ namespace jbp.business.hana
                     articulo = dr["Articulo"].ToString()
                 }); 
             }
+            //esto se cargará bajo demanda una vez que escojan el artículo
             ms.ForEach(articulo => {
                 articulo.lotes = LoteBusiness.GetLotesByCodArticulo(articulo.codArticulo);
-            });
+            }); 
             return ms;
         }
         public List<ReaccionesMsg> GetReacciones()
