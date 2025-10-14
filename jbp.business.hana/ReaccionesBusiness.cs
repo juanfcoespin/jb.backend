@@ -78,9 +78,9 @@ namespace jbp.business.hana
                 }); 
             }
             //esto se cargará bajo demanda una vez que escojan el artículo
-            ms.ForEach(articulo => {
+            /*ms.ForEach(articulo => {
                 articulo.lotes = LoteBusiness.GetLotesByCodArticulo(articulo.codArticulo);
-            }); 
+            });*/ 
             return ms;
         }
         public List<ReaccionesMsg> GetReacciones()
@@ -349,7 +349,8 @@ namespace jbp.business.hana
             });
             msg += "<br><br>";
             msg += "Revisar detalles en el módulo administrativo";
-            EnviarPorCorreo(conf.Default.CorreosNotificacionesFVI, "Reaccion Adversa Reportada", msg);
+            string error = null;
+            EnviarPorCorreo(conf.Default.CorreosNotificacionesFVI, "Reaccion Adversa Reportada", msg, ref error);
         }
 
         private string rollback(int idReaccion, BaseCore bc)

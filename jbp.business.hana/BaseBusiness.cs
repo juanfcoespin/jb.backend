@@ -51,29 +51,9 @@ namespace jbp.business.hana
                 return e.Message;
             }
         }
-        public bool EnviarPorCorreo(string to, string titulo, string msg, List<string> filePaths=null)
+        public bool EnviarPorCorreo(string to, string titulo, string msg, ref string error, List<string> filePaths=null)
         {
-            return MailUtils.Send(
-                to,
-                titulo,
-                msg,
-                filePaths
-            );
-            
-        }
-
-        public void testCorreo(string msg)
-        {
-            try
-            {
-                EnviarPorCorreo("jespin@jbp.com.ec", "Msg prueba", msg);
-            }
-            catch (Exception e)
-            {
-                msg = e.Message;
-                throw;
-            }
-            
+            return MailUtils.Send(to,titulo,msg,ref error,filePaths);
         }
     }
 }

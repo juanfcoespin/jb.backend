@@ -13,6 +13,13 @@ namespace jbp.services.rest.Controllers
 {
     public class BodegaController : ApiController
     {
+        [HttpGet]
+        [Route("api/bodega/getLotesConStockByCodArticulo/{codArticulo}/{tipoEtiqueta}")]
+        public object GetLotesConStockByCodArticulo(string codArticulo, string tipoEtiqueta)
+        {
+            //se consume desde la app de bodega
+            return BodegaBusiness.GetLotesConStockByCodArticulo(codArticulo, tipoEtiqueta);
+        }
 
         [HttpGet]
         [Route("api/bodega/getLotesConStockByCodArticulo/{codArticulo}")]

@@ -174,16 +174,15 @@ namespace jbp.business.hana
 
         public static object TestCorreo(CorreoMsg me)
         {
-            try
-            {
-                return TechTools.Net.MailUtils.Send(me.to, me.subject, me.body);
-            }
-            catch (Exception e) {
+            string error = null;
+            var resp=TechTools.Net.MailUtils.Send(me.to, me.subject, me.body, ref error);
+            if (!string.IsNullOrEmpty(error)) {
                 return new
                 {
-                    Error = e.Message + e.StackTrace
+                    Error = error
                 };
             }
+            return true;
         }
     }
 }

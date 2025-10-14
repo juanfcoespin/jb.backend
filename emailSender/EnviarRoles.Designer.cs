@@ -42,20 +42,21 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.uiMsgBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.label7 = new System.Windows.Forms.Label();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.usuarioDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.mailDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FilePath = new System.Windows.Forms.DataGridViewLinkColumn();
             this.Error = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.listaCorreosNoEnviadosBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.label8 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.usuarioDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.mailDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.uiMsgBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.cmdTestCorreo = new System.Windows.Forms.Button();
+            this.txtError = new System.Windows.Forms.TextBox();
+            ((System.ComponentModel.ISupportInitialize)(this.uiMsgBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.listaCorreosNoEnviadosBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.uiMsgBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // txtRolesFolder
@@ -178,6 +179,10 @@
             this.label6.TabIndex = 15;
             this.label6.Text = "0";
             // 
+            // uiMsgBindingSource
+            // 
+            this.uiMsgBindingSource.DataSource = typeof(emailSender.UiMsg);
+            // 
             // label7
             // 
             this.label7.AutoSize = true;
@@ -210,6 +215,25 @@
             this.dataGridView1.Size = new System.Drawing.Size(581, 109);
             this.dataGridView1.TabIndex = 17;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            // 
+            // usuarioDataGridViewTextBoxColumn
+            // 
+            this.usuarioDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.usuarioDataGridViewTextBoxColumn.DataPropertyName = "Usuario";
+            this.usuarioDataGridViewTextBoxColumn.HeaderText = "Usuario";
+            this.usuarioDataGridViewTextBoxColumn.MinimumWidth = 8;
+            this.usuarioDataGridViewTextBoxColumn.Name = "usuarioDataGridViewTextBoxColumn";
+            this.usuarioDataGridViewTextBoxColumn.ReadOnly = true;
+            this.usuarioDataGridViewTextBoxColumn.Width = 68;
+            // 
+            // mailDataGridViewTextBoxColumn
+            // 
+            this.mailDataGridViewTextBoxColumn.DataPropertyName = "Mail";
+            this.mailDataGridViewTextBoxColumn.HeaderText = "Mail";
+            this.mailDataGridViewTextBoxColumn.MinimumWidth = 8;
+            this.mailDataGridViewTextBoxColumn.Name = "mailDataGridViewTextBoxColumn";
+            this.mailDataGridViewTextBoxColumn.ReadOnly = true;
+            this.mailDataGridViewTextBoxColumn.Width = 150;
             // 
             // FilePath
             // 
@@ -256,45 +280,31 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // button2
+            // cmdTestCorreo
             // 
-            this.button2.Location = new System.Drawing.Point(330, 115);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(110, 21);
-            this.button2.TabIndex = 20;
-            this.button2.Text = "Test Correo";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.cmdTestCorreo.Location = new System.Drawing.Point(242, 12);
+            this.cmdTestCorreo.Name = "cmdTestCorreo";
+            this.cmdTestCorreo.Size = new System.Drawing.Size(110, 21);
+            this.cmdTestCorreo.TabIndex = 20;
+            this.cmdTestCorreo.Text = "Test Correo";
+            this.cmdTestCorreo.UseVisualStyleBackColor = true;
+            this.cmdTestCorreo.Click += new System.EventHandler(this.button2_Click);
             // 
-            // usuarioDataGridViewTextBoxColumn
+            // txtError
             // 
-            this.usuarioDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
-            this.usuarioDataGridViewTextBoxColumn.DataPropertyName = "Usuario";
-            this.usuarioDataGridViewTextBoxColumn.HeaderText = "Usuario";
-            this.usuarioDataGridViewTextBoxColumn.MinimumWidth = 8;
-            this.usuarioDataGridViewTextBoxColumn.Name = "usuarioDataGridViewTextBoxColumn";
-            this.usuarioDataGridViewTextBoxColumn.ReadOnly = true;
-            this.usuarioDataGridViewTextBoxColumn.Width = 68;
-            // 
-            // mailDataGridViewTextBoxColumn
-            // 
-            this.mailDataGridViewTextBoxColumn.DataPropertyName = "Mail";
-            this.mailDataGridViewTextBoxColumn.HeaderText = "Mail";
-            this.mailDataGridViewTextBoxColumn.MinimumWidth = 8;
-            this.mailDataGridViewTextBoxColumn.Name = "mailDataGridViewTextBoxColumn";
-            this.mailDataGridViewTextBoxColumn.ReadOnly = true;
-            this.mailDataGridViewTextBoxColumn.Width = 150;
-            // 
-            // uiMsgBindingSource
-            // 
-            this.uiMsgBindingSource.DataSource = typeof(emailSender.UiMsg);
+            this.txtError.Location = new System.Drawing.Point(265, 83);
+            this.txtError.Multiline = true;
+            this.txtError.Name = "txtError";
+            this.txtError.Size = new System.Drawing.Size(331, 81);
+            this.txtError.TabIndex = 21;
             // 
             // EnviarRoles
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(608, 371);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.txtError);
+            this.Controls.Add(this.cmdTestCorreo);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.dataGridView1);
@@ -315,9 +325,9 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "EnviarRoles";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            ((System.ComponentModel.ISupportInitialize)(this.uiMsgBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.listaCorreosNoEnviadosBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.uiMsgBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -348,6 +358,7 @@
         private System.Windows.Forms.DataGridViewLinkColumn FilePath;
         private System.Windows.Forms.DataGridViewTextBoxColumn Error;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button cmdTestCorreo;
+        private System.Windows.Forms.TextBox txtError;
     }
 }

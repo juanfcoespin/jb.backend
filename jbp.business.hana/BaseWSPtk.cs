@@ -21,8 +21,8 @@ namespace jbp.business.hana
         }
         public void EnviarPorCorreo(string titulo, string msg)
         {
-            this.EnviarPorCorreo(conf.Default.CorreosNotificacionesPromotick, titulo, msg);
-            
+            string error = null;
+            this.EnviarPorCorreo(conf.Default.CorreosNotificacionesPromotick, titulo, msg, ref error);
         }
     }
 }

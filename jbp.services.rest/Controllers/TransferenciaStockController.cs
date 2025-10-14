@@ -15,7 +15,7 @@ namespace jbp.services.rest.Controllers
     public class TransferenciaStockController : ApiController
     {
         //esta api utiliza el sistema de balanzas pesaje Espinoza - Paez
-        // en el mensaje de entrada debe estar bodegas de orign y desitno asi como los respectivos lotes 
+        // en el mensaje de entrada debe estar bodegas de origen y destino asi como los respectivos lotes 
         // en los artículos
         [HttpPost]
         [Route("api/transferenciaStock")]

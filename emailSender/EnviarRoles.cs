@@ -58,14 +58,21 @@ namespace emailSender
 
         }
         public void enviarCorreoPrueba() {
-            var mail = "juanfco.espin@gmail.com";
-            //var mail = "jespin@jbp.com.ec";
+            var titulo = "Correo de prueba desde el core";
+            string msg = "<b>Hola</b><br>Juan Francisco te adjunto archivos usando dll de core";
+            var attachFilePaths = new List<string>();
+            attachFilePaths.Add(@"c:\tmp\test.pdf");
+            attachFilePaths.Add(@"c:\tmp\img.png");
+            var destinationMails = "techtoolsecu@gmail.com;jespin@jbp.com.ec;juanfco.espin@gmail.com;juan.espin@yahoo.com";
             string error = null;
-            var msg = "hola";
-            MailUtils.SendAndGetError(ref error, mail, conf.Default.asunto, msg);
-
+            var resp = MailUtils.Send(destinationMails, titulo, msg, ref error, attachFilePaths);
+            if (resp)
+                MessageBox.Show("ok");
+            else
+                MessageBox.Show(error);
+            
         }
-
+        
         private static List<string> getRoles(string[] filesName)
         {
             var rolFiles = new List<string>();
@@ -109,7 +116,7 @@ namespace emailSender
                     files.Add(rolFileWithPath);
                     //var enviarCorreo = !(mail.ToLower().Contains("@jbp.com.ec") || mail.ToLower().Contains("@jamesbrownpharma.com"));
                     //if (enviarCorreo) {
-                        var enviado = MailUtils.SendAndGetError(ref error, mail, conf.Default.asunto, msg, files);
+                        var enviado = MailUtils.Send(mail, conf.Default.asunto, msg, ref error, files);
                         if (enviado)
                             this.ui.CorreosEnviados++;
                         else
@@ -171,8 +178,9 @@ namespace emailSender
 
         private void button2_Click(object sender, EventArgs e)
         {
-            /*var bb = new BaseBusiness();
-            bb.EnviarPorCorreo("jespin@jbp.com.ec", "test correo", "msg correo");*/
+            cmdTestCorreo.Enabled=false;
+            enviarCorreoPrueba();
+            cmdTestCorreo.Enabled = true;
         }
     }
 }

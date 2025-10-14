@@ -43,6 +43,7 @@ namespace jbp.business.hana
             if (documentos.Count == 0)
                 return;
             InsertarDocumentosAEnviar(documentos);
+            //var tmp = "";
             SendDocumentosToWS(documentos);
         }
 
@@ -232,9 +233,10 @@ namespace jbp.business.hana
                 where 
                  ID_DOCUMENTO ={0}
                  and NRO_DOCUMENTO='{1}'
-                 and TIPO_DOCUMENTO='{2}'                
+                 and TIPO_DOCUMENTO='{2}'    
+                 and PUNTOS={3}
             ",
-            documento.id, documento.numFactura, documento.tipoDocumento);
+            documento.id, documento.numFactura, documento.tipoDocumento, documento.puntos);
             var numreg = new BaseCore().GetIntScalarByQuery(sql);
             return numreg > 0;
         }
@@ -248,6 +250,8 @@ namespace jbp.business.hana
         }
         private void ActualizarReintentosEnvio(DocumentoPromotickMsg documento)
         {
+            if (documento.id == 0)
+                return;
             documento.numIntentosTx +=1;
             var sql = string.Format(@"
                 update JBP_LOG_ENVIO_DOCUMENTOS_PTK 

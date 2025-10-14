@@ -34,6 +34,13 @@ namespace jbp.services.rest.Controllers
         {
             return jbp.business.hana.SocioNegocioBusiness.getVentasYPuntosMesPorRucPrincipal(rucPrincipal);
         }
+        [HttpGet]
+        [Route("api/socioNegocio/getVentasYPuntosMes/")]
+        public object getVentasYPuntosMes()
+        {
+            // para clientes que no participan en el plan puntos
+            return null;
+        }
 
         [HttpGet]
         [Route("api/socioNegocio/getHistoricoClientesByNombre/{nombre}")]

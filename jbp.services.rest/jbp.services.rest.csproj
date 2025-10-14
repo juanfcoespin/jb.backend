@@ -177,27 +177,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="OrderRequestExample.json" />
-    <Content Include="WebPruebas.config" />
-    <Content Include="WebPruebas.Debug.config">
-      <DependentUpon>WebPruebas.config</DependentUpon>
-    </Content>
-    <Content Include="WebPruebas.Release.config">
-      <DependentUpon>WebPruebas.config</DependentUpon>
-    </Content>
-    <Content Include="WebProd.config" />
-    <Content Include="WebProd.Debug.config">
-      <DependentUpon>WebProd.config</DependentUpon>
-    </Content>
-    <Content Include="WebProd.Release.config">
-      <DependentUpon>WebProd.config</DependentUpon>
-    </Content>
+    <Content Include="Web - test.config" />
+    <Content Include="Web - prod.config" />
     <Content Include="Web.config" />
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

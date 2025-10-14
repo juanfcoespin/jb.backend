@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="asunto" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Rol de Pagos</Value>
+      <Value Profile="(Default)">Rol de Pagos James Brown Pharma</Value>
     </Setting>
     <Setting Name="cuerpoMensaje" Type="System.String" Scope="User">
       <Value Profile="(Default)">

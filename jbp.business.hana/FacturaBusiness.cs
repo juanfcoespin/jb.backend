@@ -144,7 +144,7 @@ namespace jbp.business.hana
             new BaseCore().Execute(sql);
         }
 
-        internal static List<ValorPagadoMsg> GetPagosByDocNum(int docNum)
+        internal static List<ValorPagadoMsg> GetPagosByIdFactura(int idFactura)
         {
             var ms = new List<ValorPagadoMsg>();
             var sql = string.Format(@"
@@ -158,8 +158,8 @@ namespace jbp.business.hana
                  ""JbpVw_Factura"" t2 on t2.""Id"" = t0.""IdFactura""
                 where
                  upper(t1.""Comentario"") not like '%RET%'--que no sea una retencion
-                 and t2.""DocNum"" = {0}
-            ", docNum);
+                 and t2.""Id"" = {0}
+            ", idFactura);
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
             foreach (DataRow dr in dt.Rows) {

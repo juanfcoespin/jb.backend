@@ -18,7 +18,7 @@ namespace jbp.business.hana
              en este store procedure configurar los meses y los articulos participantes
              */
             var sql = string.Format(@"
-                call ""JbpSp_Aceleradores""()
+                call ""JbpSp_Aceleradores""('07','08', '09')
             ");
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);

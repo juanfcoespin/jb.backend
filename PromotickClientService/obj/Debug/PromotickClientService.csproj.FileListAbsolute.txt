@@ -81,3 +81,5 @@ D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\P
 D:\ownCloud\1. Catálogo de servicios\5. Sistemas de Apoyo\10. JBP\jbp.backend\PromotickClientService\bin\Debug\TechTools.Utils.dll
 D:\DesarrolloSw\JBP\jbp.backend\PromotickClientService\obj\Debug\PromotickClientService.csproj.AssemblyReference.cache
 D:\DesarrolloSw\JBP\jbp.backend\PromotickClientService\obj\Debug\PromotickClientService.csproj.CoreCompileInputs.cache
+C:\JB\jb.backend\PromotickClientService\obj\Debug\PromotickClientService.csproj.AssemblyReference.cache
+C:\JB\jb.backend\PromotickClientService\obj\Debug\PromotickClientService.csproj.CoreCompileInputs.cache

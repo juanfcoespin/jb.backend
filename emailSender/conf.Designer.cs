@@ -12,7 +12,7 @@ namespace emailSender {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.0.3.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.14.0.0")]
     internal sealed partial class conf : global::System.Configuration.ApplicationSettingsBase {
         
         private static conf defaultInstance = ((conf)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new conf())));
@@ -25,7 +25,7 @@ namespace emailSender {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Rol de Pagos")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Rol de Pagos James Brown Pharma")]
         public string asunto {
             get {
                 return ((string)(this["asunto"]));

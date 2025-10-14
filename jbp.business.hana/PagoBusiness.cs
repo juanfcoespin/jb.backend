@@ -318,7 +318,8 @@ namespace jbp.business.hana
                 if (correoCliente != null && TechTools.Utils.ValidacionUtils.EmailValid(correoCliente))
                     destinatarios += "; " + correoCliente;
             }
-            this.EnviarPorCorreo(destinatarios, titulo, msg, fotosPath);
+            string error=null;
+            this.EnviarPorCorreo(destinatarios, titulo, msg, ref error, fotosPath);
         }
         private string getNombreComprobantePago(string codCliente, int numFile)
         {

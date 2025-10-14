@@ -13,6 +13,7 @@ using System.Security.Policy;
 using System.Runtime.CompilerServices;
 using TechTools.Utils;
 using TechTools.Net;
+using System.Net;
 
 namespace jbp.business.hana
 {
@@ -91,8 +92,8 @@ namespace jbp.business.hana
             }
             catch (Exception e)
             {
-                SendMessageToClient(me.ClientId, e.Message, eMessageType.Error);
-                return new DocSapInsertadoMsg { Error = e.Message };
+                SendMessageToClient(me.ClientId, e.StackTrace, eMessageType.Error);
+                return new DocSapInsertadoMsg { Error = e.StackTrace };
             }
         }
 
@@ -100,24 +101,66 @@ namespace jbp.business.hana
         {
             double cant = 0;
             loteConUbicacion.movimientos.ForEach(m => cant += m.Cantidad);
-            var sql = string.Format(@"
-                insert into JB_LOTES_PESAJE(LOTE, COD_ARTICULO, ID_ST, CANTIDAD, DOC_NUM_OF, FINALIZADO)
-                values('{0}','{1}', {2}, {3}, {4}, 'N')
-            ", loteConUbicacion.Lote, loteConUbicacion.CodArticulo, me.Id, cant.ToString().Replace(',','.'), me.NumOF);
-            new BaseCore().Execute(sql);
+            SetCabeceraLogLotesPesaje(loteConUbicacion.Lote, loteConUbicacion.CodArticulo, me.Id, cant, me.NumOF);
             var movimientos = TransferenciaStockMsg.Map(loteConUbicacion, me.NumOF);
             movimientos.ForEach(m => {
                 SetLogMovimientoPesaje(m);
             });
         }
+        private static void SetCabeceraLogLotesPesaje(string lote, string codArticulo, int idSt, double cantAbiertaInsumo, int docNumOf) {
+            var sql = string.Format(@"
+                insert into JB_LOTES_PESAJE(LOTE, COD_ARTICULO, ID_ST, CANTIDAD, DOC_NUM_OF, FINALIZADO)
+                values('{0}','{1}', {2}, {3}, {4}, 'N')
+            ", lote, codArticulo, idSt, cantAbiertaInsumo.ToString().Replace(',', '.'), docNumOf);
+            new BaseCore().Execute(sql);
+        }
 
         private static void SetLogMovimientoPesaje(MovimientoPesajeMsg me) {
+            
             me.IdLotePesaje = GetIdLotePesaje(me.Lote, me.CodArticulo, me.DocNumOf);
+            //cuando se trata de una of en la que no se hizo el picking del componente porque 
+            //previamente ya se mando el bulto de dicho insumo en otra orden se inserta una nueva cabecera
+            if (me.IdLotePesaje == 0)
+            {
+                var obj=GetIdStYCantAbiertaInsumo(me.DocNumOf, me.CodArticulo);
+                SetCabeceraLogLotesPesaje(me.Lote, me.CodArticulo, obj.IdSt, obj.CantAbiertaInsumo, me.DocNumOf);
+                var bc = new BaseCore();
+                var strIdLotePsj=bc.GetScalarByQuery("select max(ID) from JB_LOTES_PESAJE");
+                me.IdLotePesaje = bc.GetInt(strIdLotePsj);
+
+            }
             var sql = string.Format(@"
                 insert into JB_MOVIMIENTOS_LOTE_PESAJE(ID_LOTE_PESAJE, DOC_NUM_TS, CANTIDAD, UBICACION_DESDE, UBICACION_HASTA)
                 values({0}, {1}, {2}, '{3}', '{4}')
             ", me.IdLotePesaje, me.DocNumTs, me.Cantidad.ToString().Replace(',','.'), me.UbicacionDesde, me.UbicacionHasta);
             new BaseCore().Execute(sql);
+        }
+        public class IdStYCant
+        {
+            public int IdSt { get; internal set; }
+            public double CantAbiertaInsumo { get; internal set; }
+        }
+        public static IdStYCant GetIdStYCantAbiertaInsumo(int docNumOf, string codArticulo) {
+            var sql = string.Format(@"
+            select
+             t1.""Id"",
+             t0.""CantidadAbierta""
+            from ""JbpVw_SolicitudTrasladoLinea"" t0 inner join
+             ""JbpVw_SolicitudTraslado"" t1 on t1.""Id""=t0.""IdSolicitudTraslado""
+            where
+             t1.""DocNumOrdenFabricacion""={0}
+             and t0.""CodArticulo""='{1}'
+            ", docNumOf, codArticulo);
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql);
+            if (dt != null && dt.Rows.Count > 0) {
+                return new IdStYCant
+                {
+                    IdSt = bc.GetInt(dt.Rows[0]["Id"]),
+                    CantAbiertaInsumo = bc.GetDouble(dt.Rows[0]["CantidadAbierta"])
+                };
+            }
+            return null;
         }
 
         private static int GetIdLotePesaje(string lote, string codArticulo, int docNumOf) {
@@ -331,7 +374,7 @@ namespace jbp.business.hana
         private static string GetUbicacionPesajeFromIpBalanza(string ipBalanza)
         {
             //para hacer el mapero de las ips a las ubicaciones de pesaje
-            MailUtils.Send("jespin@jbp.com.ec", "IP Balanza: " + ipBalanza, "Se ha recibido una solicitud de pesaje desde la balanza con IP: " + ipBalanza);
+            //MailUtils.Send("jespin@jbp.com.ec", "IP Balanza: " + ipBalanza, "Se ha recibido una solicitud de pesaje desde la balanza con IP: " + ipBalanza);
             
             var ipsPifo= new List<string>() { "192.168.100.162" };
             foreach (var ip in ipsPifo)
@@ -387,11 +430,12 @@ namespace jbp.business.hana
         }
         public static bool EnviarCorreoFinalizacionPesaje(int docNumOF)
         {
+            string error = null;
             return TechTools.Net.MailUtils.Send(
                 conf.Default.EmailPesaje,
                 "Finalización de Pesaje de OF: " + docNumOF,
                 "Se ha finalizado el pesaje de la OF: " + docNumOF + ". Por favor imprimir la asignación de materiales a PROD.",
-                null
+                ref error
             );
         }
         

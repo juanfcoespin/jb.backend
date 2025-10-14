@@ -11,7 +11,7 @@ namespace jbp.business.hana
 {
     public class OrdenFabricacionBusiness
     {
-        public static List<OrdenFabricacionLiberadaPesajeMsg> GetOfLiberadasPesaje(string codPT=null, string codInsumo=null)
+        public static List<OrdenFabricacionLiberadaPesajeMsg> GetOfLiberadasPesaje(string codArticuloAFabricar = null, string codInsumo = null)
         {
             var ms = new List<OrdenFabricacionLiberadaPesajeMsg>();
             var sql = @"
@@ -19,18 +19,28 @@ namespace jbp.business.hana
                  distinct
                  ""DocNum"",
                  ""CodArticulo"",
-                 ""Articulo""
+                 ""Articulo"",
+                 ""Lote""
                 from  
                  ""JbVw_OFsConTSaPesaje""
             ";
-            if (!string.IsNullOrEmpty(codPT) && !string.IsNullOrEmpty(codInsumo))
+            if (!string.IsNullOrEmpty(codArticuloAFabricar))
             {
-                sql = string.Format(@"
-                {0}
-                 and ""CodArticulo""='{1}'
-                 and ""CodInsumo""='{2}'
-                ", sql, codPT, codInsumo);
+                sql += string.Format(@"
+                 where ""CodArticulo""='{0}'
+                ", codArticuloAFabricar);
             }
+            if (!string.IsNullOrEmpty(codArticuloAFabricar) && !string.IsNullOrEmpty(codInsumo))
+            {
+                sql += string.Format(@"
+                 and ""CodInsumo""='{0}'
+                ",codInsumo);
+            }
+            //lote del producto a fabricarse (para que se respete el orden de resarva de los lotes de los componentes)
+            sql += @"
+                order by 
+                 ""Lote"" 
+            ";
             
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
@@ -38,7 +48,8 @@ namespace jbp.business.hana
                 ms.Add(new OrdenFabricacionLiberadaPesajeMsg() { 
                     NumOrdenFabricacion=bc.GetInt(dr["DocNum"]),
                     CodigoArticulo= dr["CodArticulo"].ToString(),
-                    Descripcion= dr["Articulo"].ToString()
+                    Descripcion= dr["Articulo"].ToString(),
+                    Lote= dr["Lote"].ToString()
                 });
             }
             return ms;
@@ -48,7 +59,44 @@ namespace jbp.business.hana
             var ms = new OFMasComponentesMsg();
             ms.NumOrdenFabricacion = docNum;
             var sql = string.Format(@"
-                select 
+            select 
+             ""Id"",
+             ""DocNum"",
+             ""CodArticulo"",
+             ""Articulo"",
+             ""CodInsumo"",
+             ""UnidadMedida"",
+             ""Insumo"",
+             ""CantidadPlanificada"",
+             ""BodegaDesde"",
+             ""BodegaHasta"",
+             ""Lote"",
+             ""FechaVencimiento"",
+             ""Observaciones"",
+             ""IdST"",
+             ""LineNumST"",
+             ""LoteInsumo"",
+             sum(""Cantidad"") ""Cantidad""
+            from 
+             ""JbVw_OFsConTSaPesaje""
+            where
+             ""DocNum""={0}
+            
+            ", docNum);
+            if (!string.IsNullOrEmpty(codInsumo))
+            {
+                sql += string.Format(@"
+                 and ""CodInsumo""='{0}'
+                ", codInsumo);
+            }
+            /*else
+                sql += string.Format(@"
+                order by 
+                   ""CodInsumo"" 
+            ");*/
+            sql = string.Format(@"
+            {0}
+            group by
                  ""Id"",
                  ""DocNum"",
                  ""CodArticulo"",
@@ -57,32 +105,15 @@ namespace jbp.business.hana
                  ""UnidadMedida"",
                  ""Insumo"",
                  ""CantidadPlanificada"",
-                 ""Lote"",
                  ""BodegaDesde"",
                  ""BodegaHasta"",
-                 ""LoteInsumo"",
+                 ""Lote"",
                  ""FechaVencimiento"",
                  ""Observaciones"",
-                 ""Cantidad"",
                  ""IdST"",
-                 ""LineNumST""
-                from 
-                 ""JbVw_OFsConTSaPesaje""
-                where
-                 ""DocNum""={0}                  
-
-            ", docNum);
-            if (!string.IsNullOrEmpty(codInsumo))
-            {
-                sql += string.Format(@"
-                 and ""CodInsumo""='{0}'
-                ", codInsumo);
-            }
-            else
-                sql += string.Format(@"
-                order by 
-                   ""CodInsumo"" 
-            ");
+                 ""LineNumST"",
+                 ""LoteInsumo""
+            ", sql);
 
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);

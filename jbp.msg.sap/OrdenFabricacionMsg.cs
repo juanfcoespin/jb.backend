@@ -30,6 +30,7 @@ namespace jbp.msg.sap
     public class OrdenFabricacionLiberadaPesajeMsg : OFBaseMsg
     {
         public int NumOrdenFabricacion { get; set; }
+        public string Lote { get; set; }
     }
     public class OFMasComponentesMsg {
         public int IdOf { get; set; }

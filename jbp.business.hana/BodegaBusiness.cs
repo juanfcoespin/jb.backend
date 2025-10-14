@@ -141,10 +141,10 @@ namespace jbp.business.hana
         }
 
 
-        public static msDetArticuloPorLote GetLotesConStockByCodArticulo(string codArticulo) {
+        public static msDetArticuloPorLote GetLotesConStockByCodArticulo(string codArticulo, string tipoEtiqueta = "digital") {
             try
             {
-                var ms = GetDetArticuloQR(null, codArticulo);
+                var ms = GetDetArticuloQR(codArticulo, tipoEtiqueta, null);
                 ms.Lotes.ForEach(item =>
                 {
                     item.Cantidad = GetCantidadArticuloPorLote(item.Lote, codArticulo);
@@ -484,7 +484,7 @@ namespace jbp.business.hana
             return ms;
         }
 
-        public static msDetArticuloPorLote GetDetArticuloQR(string lote = null, string codArticulo=null)
+        public static msDetArticuloPorLote GetDetArticuloQR(string codArticulo, string tipoEtiqueta, string lote = null)
         {
             try
             {
@@ -493,7 +493,10 @@ namespace jbp.business.hana
                     var token = codArticulo.Substring(0, 1);
                     esPT = (token == "8");
                 }
-                
+                // el otro caso es impresa mediante los dispositivos zebra
+                var codPoeNoPT = tipoEtiqueta == "digital" ? "FOR-CCQ-079 REV.01 / I-POE-CCQ-033" : "FOR-BPH-009 Rev.02 / I-POE-BPH-001";
+
+
                 var ms=new msDetArticuloPorLote();
                 var sql = @"
                      select 
@@ -502,7 +505,6 @@ namespace jbp.business.hana
                       t1.""CodArticulo"",
                       t1.""Articulo"",
                       t1.""Lote"",
-                      ""JbFn_GetCodPoePorEstadoLote""(t1.""Estado"") ""CodPoe"",
                       t1.""Estado"",
                       t2.""UnidadMedida"",
                       t1.""LoteProveedor"",
@@ -560,7 +562,7 @@ namespace jbp.business.hana
                         CodArticulo = dr["CodArticulo"].ToString(),
                         Articulo = dr["Articulo"].ToString(),
                         Lote = dr["Lote"].ToString(),
-                        CodPoe = dr["CodPoe"].ToString(),
+                        CodPoe = codPoeNoPT,
                         Estado = dr["Estado"].ToString(),
                         UnidadMedida = dr["UnidadMedida"].ToString(),
                         LoteProveedor = dr["LoteProveedor"].ToString(),
@@ -602,11 +604,11 @@ namespace jbp.business.hana
             }
         }
 
-        public static DetArticuloPorLote GetUbicacionesYDetArticuloPorLote(string lote, string codArticulo=null)
+        public static DetArticuloPorLote GetUbicacionesYDetArticuloPorLote(string lote, string codArticulo=null, string tipoEtiqueta = "digital")
         {
             try
             {
-                var me = GetDetArticuloQR(lote, codArticulo);
+                var me = GetDetArticuloQR(codArticulo, tipoEtiqueta, lote);
                 if (me != null && me.Lotes.Count > 0)
                 {
                     var ms = me.Lotes[0]; //solo se coge el primer registro

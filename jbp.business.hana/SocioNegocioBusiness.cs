@@ -126,7 +126,7 @@ namespace jbp.business.hana
                 if (fact.TipoDocumento == "Factura")
                 {
                     fact.Retenciones = FacturaBusiness.GetRetencionesByDocNum(fact.DocNum);
-                    fact.Pagos = FacturaBusiness.GetPagosByDocNum(fact.DocNum);
+                    fact.Pagos = FacturaBusiness.GetPagosByIdFactura(fact.DocNum);
                 }
             });
             return ms;

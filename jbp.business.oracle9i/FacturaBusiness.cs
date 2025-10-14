@@ -302,8 +302,9 @@ namespace jbp.business.oracle9i
                         ms.RemoveAt(i - 1);
                         var subject = string.Format("Factura {0} sin guia de remisión", fact.CodFactura);
                         var msg = string.Format("La factura <b>{0}</b> del cliente <b>{1}</b> no se envia para aprobar en stupendo debido a que no se ha emitido guía de remisión", fact.CodFactura, fact.Ruc);
-                        if (!MailUtils.Send(conf.Default.mailErrorVentas, subject, msg))
-                            new LogUtils().AddLog(string.Format("No se pudo enviar el correo: {0}", msg));
+                        string error = null;
+                        if (!MailUtils.Send(conf.Default.mailErrorVentas, subject, msg,ref error))
+                            new LogUtils().AddLog(string.Format("No se pudo enviar el correo: {0}, error: {1}", msg, error));
                     }
                 };
                 return ms;

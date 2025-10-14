@@ -207,31 +207,41 @@ namespace jbp.business.hana
         {
             var ms = new List<ST_ComponentesMsg>();
             var sql = string.Format(@"
-                 select 
-                    t0.""CodArticulo"",
-                    t0.""Articulo"",
-                    t2.""Lote"",
-                    t0.""CantidadAbierta"" ""Cantidad"",
-                    t2.""Cantidad"" ""CantidadReservada"",
-                    t1.""UnidadMedida"",
-                    t3.""Id"" ""IdLote"",
-                    t0.""BodegaOrigen"",
-                    t0.""BodegaDestino"",
-                    t0.""LineNum""
-                from
-                    ""JbpVw_SolicitudTrasladoLinea"" t0 inner join
-                    ""JbpVw_Articulos"" t1 on t1.""CodArticulo"" = t0.""CodArticulo"" inner join
-                    ""JbpVw_OperacionesLote"" t2 on
-                        t2.""CodArticulo"" = t1.""CodArticulo"" and
-                        t2.""IdDocBase"" = t0.""IdSolicitudTraslado"" left outer join
-                    ""JbpVw_Lotes"" t3 on t3.""Lote""=t2.""Lote"" and t3.""CodArticulo""=t2.""CodArticulo"" left outer join
-                    JB_LOTES_PESAJE t6 on t6.ID_ST=t0.""IdSolicitudTraslado"" and t6.LOTE=t3.""Lote"" and t6.COD_ARTICULO=t0.""CodArticulo""
-                where
-                    t0.""IdSolicitudTraslado"" = {0}
-                    and t0.""LineStatus""='O' --abierto
-                    and t2.""DireccionTexto"" = 'Asignada'
-                    and t2.""Cantidad"">0
-                    and t6.LOTE IS NULL --lotes que no han sido transferidos a pesaje
+                select
+            *
+            from
+            (
+              select 
+                t0.""CodArticulo"",
+                t0.""Articulo"",
+                t2.""Lote"",
+                t0.""CantidadAbierta"" ""Cantidad"", -- cuando hacen ajuste de potencia actualizan la ST posterior al picking
+	            ""JbFnGetCantPesaje""(t0.""IdSolicitudTraslado"", t0.""CodArticulo"") ""CantidadPesaje"",
+                t0.""LineStatus"",
+                t2.""Cantidad"" - ifnull(t6.CANTIDAD,0) ""CantidadReservada"",
+                --t6.CANTIDAD ""CantLote"",
+                t1.""UnidadMedida"",
+                t3.""Id"" ""IdLote"",
+                t0.""BodegaOrigen"",
+                t0.""BodegaDestino"",
+                t0.""LineNum""
+            from
+                ""JbpVw_SolicitudTrasladoLinea"" t0 inner join
+                ""JbpVw_Articulos"" t1 on t1.""CodArticulo"" = t0.""CodArticulo"" inner join
+                ""JbpVw_OperacionesLote"" t2 on
+                    t2.""CodArticulo"" = t1.""CodArticulo"" and
+                    t2.""IdDocBase"" = t0.""IdSolicitudTraslado"" left outer join
+                ""JbpVw_Lotes"" t3 on t3.""Lote""=t2.""Lote"" and t3.""CodArticulo""=t2.""CodArticulo"" left outer join
+                JB_LOTES_PESAJE t6 on t6.ID_ST=t0.""IdSolicitudTraslado"" and t6.LOTE=t3.""Lote"" and t6.COD_ARTICULO=t0.""CodArticulo""
+            where
+                t0.""IdSolicitudTraslado"" = {0}
+                and t0.""LineStatus""='O' --abierto
+                and t2.""DireccionTexto"" = 'Asignada'
+                and t2.""Cantidad"">0
+            )
+            where
+             ""CantidadReservada"">0
+             and ""Cantidad"">""CantidadPesaje""
 
             ", id);
             var bc = new BaseCore();
