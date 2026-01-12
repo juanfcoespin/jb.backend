@@ -323,9 +323,37 @@ namespace jbp.business.hana
             }
             return ms;
         }
-        
-        
+
+
         //sistema balanzas espinoza paez
+        private static bool ConectarASAP(int numMaximoIntentos) {
+            // probar por n veces la conexión
+            var numIntentos = 0;
+            while (numIntentos < numMaximoIntentos)
+            {
+                numIntentos++;
+                if (sapTransferenciaStock == null)
+                    sapTransferenciaStock = new SapTransferenciaStock();
+                try
+                {
+                    if (!sapTransferenciaStock.IsConected())
+                    {
+                        sapTransferenciaStock.Connect();//se conecta a sap
+                        if(sapTransferenciaStock.IsConected())
+                            return true;
+                    }
+                    sapTransferenciaStock = null;
+                }
+                catch (Exception e)
+                {
+                    if (e.Message == "You are not connected to a company" || e.Message.Contains("RPC_E_SERVERFAULT"))
+                    {
+                        sapTransferenciaStock = null;
+                    }
+                }
+            }
+            return false;
+        }
         public static DocSapInsertadoMsg TransferFromBalanzas(TsBalanzasMsg me)
         {
             var ubicacionPesaje = GetUbicacionPesajeFromIpBalanza(me.IpBalanza);
@@ -335,10 +363,9 @@ namespace jbp.business.hana
                 if (me == null || me.DocNumOF == 0)
                     throw new Exception("No se ha pasado como parámetro en número de orden de fabricación 'DocNumOF'");
                 Monitor.Enter(control);
-                if (sapTransferenciaStock == null)
-                    sapTransferenciaStock = new SapTransferenciaStock();
-                if (!sapTransferenciaStock.IsConected())
-                    sapTransferenciaStock.Connect();//se conecta a sap
+                var numIntentosConexion = 3;
+                if (!ConectarASAP(3))
+                    throw new Exception("Ha sido imposible conectar sap despues de " + numIntentosConexion);
                 SetCantidadPesadaByTS(me);
                 SetAsociadosSTEnComponentes(me);
                 var newMe = Map(me, ubicacionPesaje);
@@ -428,17 +455,57 @@ namespace jbp.business.hana
                 EnviarCorreoFinalizacionPesaje(docNumOF);
             }
         }
-        public static bool EnviarCorreoFinalizacionPesaje(int docNumOF)
+        public static void EnviarCorreoFinalizacionPesaje(int docNumOF)
         {
-            string error = null;
-            return TechTools.Net.MailUtils.Send(
-                conf.Default.EmailPesaje,
-                "Finalización de Pesaje de OF: " + docNumOF,
-                "Se ha finalizado el pesaje de la OF: " + docNumOF + ". Por favor imprimir la asignación de materiales a PROD.",
-                ref error
-            );
+            try
+            {
+                Task.Run(() =>
+                {
+                    var appName = "API - Transferencia Stock Balanzas";
+                    try
+                    {
+                        string error = null;
+
+                        TechTools.Net.MailUtils.Send(
+                            conf.Default.EmailPesaje,
+                            "Finalización de Pesaje de OF: " + docNumOF,
+                            "Se ha finalizado el pesaje de la OF: " + docNumOF +
+                            ". Por favor imprimir la asignación de materiales a PROD.",
+                            ref error
+                        );
+
+                        if (!string.IsNullOrEmpty(error))
+                        {
+                            // Registrar error (log, DB, EventViewer, etc.)
+                            LogErrorCorreo(docNumOF, error, appName);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Nunca dejes que la excepción escape del hilo
+                        LogErrorCorreo(docNumOF, ex.ToString(), appName);
+                    }
+                });
+            }
+            catch { }
+            
         }
-        
+
+        private static void LogErrorCorreo(int docNumOF, string err, string appName)
+        {
+            try
+            {
+                UserBusiness.Log(new LogMsg
+                {
+                    AppName = appName,
+                    Obs = err,
+                    UserName = ""
+                });
+            }
+            catch { }
+            
+        }
+
         private static void SetOFPesada(int docNumOF)
         {
             var sql = string.Format(@"

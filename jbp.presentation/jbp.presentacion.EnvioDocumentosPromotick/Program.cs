@@ -15,11 +15,11 @@ namespace jbp.presentacion.EnvioDocumentosPromotick
         {
             //Console.WriteLine("Inicio Proceso");
             //new DocumentosPtkBusiness().EnviarDocumentosAPromotick();
-            //new DocumentosPtkBusiness().EnviarNotasCreditoManuales();
+            new DocumentosPtkBusiness().EnviarNotasCreditoManuales();
             //new DocumentosPtkBusiness().EnviarAjustes();
             //new DocumentosPtkBusiness().EnviarAceleradores("Jul-Sep 2025");
             //new ParticipantePtkBusiness().InactivarParticipantes();
-            new ParticipantePtkBusiness().ActualizacionMasivaParticipantes();
+            //new ParticipantePtkBusiness().ActualizacionMasivaParticipantes();
             //new ParticipantePtkBusiness().RegistroMasivoParticipantes();
             //new BaseBusiness().testCorreo("<b>Cabecera</b><br> Esto es una prueba");
             //new ParticipantePtkBusiness().AsignacionMasivaVendedor();

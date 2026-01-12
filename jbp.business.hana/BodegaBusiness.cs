@@ -88,6 +88,7 @@ namespace jbp.business.hana
                     and t0.""Cancelado"" = 'No'
                     and t0.""Estado"" = 'Abierto'
                     and t1.""Cantidad"" - ifnull(t2.""Cantidad"", 0) > 0 -- CantPendiente
+                    and t2.""LineStatus"" is null or t2.""LineStatus""='O' -- si no existe EM ó si la linea de la EM esta abierta
             ", codProveedor);
             var bc= new BaseCore();
             var dt = bc.GetDataTableByQuery(sql);
@@ -510,7 +511,10 @@ namespace jbp.business.hana
                       t1.""LoteProveedor"",
                       t1.""Fabricante"",
                       to_char(t1.""FechaIngreso"", 'yyyy-mm-dd') ""FechaIngreso"",
-                      to_char(t1.""FechaFabricacion"", 'yyyy-mm-dd') ""FechaFabricacion"",
+                      case
+                       when t5.""FechaInicioPesaje"" is null then to_char(t1.""FechaFabricacion"", 'yyyy-mm-dd')
+                       else to_char(t5.""FechaInicioPesaje"", 'yyyy-mm-dd')
+                      end ""FechaFabricacion"",
                       to_char(t1.""FechaVencimiento"", 'yyyy-mm-dd') ""FechaVencimiento"",
                       to_char(t1.""FechaRetesteo"", 'yyyy-mm-dd') ""FechaRetest"",
                       t1.""Bultos"",
@@ -534,10 +538,11 @@ namespace jbp.business.hana
                       t4.""BodegaDestino""
                     ";
                 }
-                     sql+=@"
+                     sql+= @"
                         from
                      ""JbpVw_Lotes"" t1 inner join
-                     ""JbpVw_Articulos"" t2 on t2.""CodArticulo"" = t1.""CodArticulo""
+                     ""JbpVw_Articulos"" t2 on t2.""CodArticulo"" = t1.""CodArticulo"" left outer join
+                     ""JbpVw_OrdenFabricacion"" t5 on t5.""Lote""=t1.""Lote"" and t5.""CodArticulo""=t1.""CodArticulo""
                      ";
                 if (!esPT)
                     sql += @" left outer join ""JbpVw_EtiqAproME_MP"" t3 on t3.""Lote"" = t1.""Lote"" and t3.""CodArticulo"" = t1.""CodArticulo"" ";
