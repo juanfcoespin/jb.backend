@@ -15,8 +15,15 @@ namespace jbp.core.sapDiApi
         }
         public string Add(OrdenMsg me)
         {
+            this.sendNotififacationMessage("Agregando Pedido a sap...");
             this.obj = this.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oOrders);
             var ms = "ok";
+            try
+            {
+                this.obj.Series = 144; //PC_MOVIL
+            }
+            catch { }//por si cambia o elimina la serie
+            
             this.obj.DocDueDate = DateTime.Now;
             this.obj.CardCode = me.CodCliente;
             this.obj.Comments = me.Comentario;
@@ -37,7 +44,9 @@ namespace jbp.core.sapDiApi
             if (error != 0)
             {
                 ms= "Error: "+this.Company.GetLastErrorDescription();
+
             }
+            this.sendNotififacationMessage(ms);
             return ms;
         }
         public OrdenMsg GetById(int id)

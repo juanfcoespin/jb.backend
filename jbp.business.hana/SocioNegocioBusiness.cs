@@ -737,5 +737,21 @@ namespace jbp.business.hana
             }
             return ms;
         }
+
+        internal static string GetByCodigo(string codCliente)
+        {
+            if (string.IsNullOrEmpty(codCliente))
+                return "";
+            var ms = new List<string>();
+            var sql = string.Format(@"
+                select
+                 ""Nombre""
+                from
+                 ""JbpVw_SocioNegocio""
+                where
+                 ""CodSocioNegocio"" = '{0}'
+            ", codCliente);
+            return new BaseCore().GetScalarByQuery(sql);
+        }
     }
 }

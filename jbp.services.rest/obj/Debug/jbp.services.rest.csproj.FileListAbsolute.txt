@@ -140,6 +140,8 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.cs
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.serv.BACDC056.Up2Date
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.dll
 D:\DesarrolloSw\JBP\jbp.backend\jbp.services.rest\obj\Debug\jbp.services.rest.pdb
+C:\JB\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.AssemblyReference.cache
+C:\JB\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CoreCompileInputs.cache
 C:\JB\jb.backend\jbp.services.rest\bin\jbp.services.rest.dll.config
 C:\JB\jb.backend\jbp.services.rest\bin\jbp.services.rest.dll
 C:\JB\jb.backend\jbp.services.rest\bin\jbp.services.rest.pdb
@@ -216,6 +218,7 @@ C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Core.Hana.dll
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Net.dll
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Core.Base.dll
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Exceptions.dll
+C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Serializador.dll
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Utils.dll
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.DelegatesAndEnums.dll
 C:\JB\jb.backend\jbp.services.rest\bin\jbp.core.Oracle9i.dll
@@ -224,17 +227,16 @@ C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Core.Oracle9i.dll
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.WinServices.dll
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Logs.dll
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Msg.dll
-C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Serializador.dll
 C:\JB\jb.backend\jbp.services.rest\bin\Sap.Data.Hana.v4.5.dll
 C:\JB\jb.backend\jbp.services.rest\bin\MimeKit.dll
 C:\JB\jb.backend\jbp.services.rest\bin\MailKit.dll
 C:\JB\jb.backend\jbp.services.rest\bin\System.ValueTuple.dll
+C:\JB\jb.backend\jbp.services.rest\bin\System.Threading.Tasks.Extensions.dll
 C:\JB\jb.backend\jbp.services.rest\bin\System.Memory.dll
 C:\JB\jb.backend\jbp.services.rest\bin\BouncyCastle.Cryptography.dll
 C:\JB\jb.backend\jbp.services.rest\bin\System.Buffers.dll
 C:\JB\jb.backend\jbp.services.rest\bin\System.Runtime.CompilerServices.Unsafe.dll
 C:\JB\jb.backend\jbp.services.rest\bin\System.Formats.Asn1.dll
-C:\JB\jb.backend\jbp.services.rest\bin\System.Threading.Tasks.Extensions.dll
 C:\JB\jb.backend\jbp.services.rest\bin\System.Numerics.Vectors.dll
 C:\JB\jb.backend\jbp.services.rest\bin\jbp.business.hana.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\jbp.business.hana.dll.config
@@ -266,6 +268,7 @@ C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Net.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Net.dll.config
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Core.Base.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Exceptions.pdb
+C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Serializador.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Utils.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.DelegatesAndEnums.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\jbp.core.Oracle9i.pdb
@@ -277,7 +280,6 @@ C:\JB\jb.backend\jbp.services.rest\bin\TechTools.WinServices.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Logs.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Logs.dll.config
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Msg.pdb
-C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Serializador.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\Sap.Data.Hana.v4.5.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\Sap.Data.Hana.v4.5.xml
 C:\JB\jb.backend\jbp.services.rest\bin\Sap.Data.Hana.v4.5.dll.config
@@ -292,10 +294,7 @@ C:\JB\jb.backend\jbp.services.rest\bin\BouncyCastle.Cryptography.xml
 C:\JB\jb.backend\jbp.services.rest\bin\System.Buffers.xml
 C:\JB\jb.backend\jbp.services.rest\bin\System.Runtime.CompilerServices.Unsafe.xml
 C:\JB\jb.backend\jbp.services.rest\bin\System.Formats.Asn1.xml
-C:\JB\jb.backend\jbp.services.rest\bin\System.Threading.Tasks.Extensions.xml
 C:\JB\jb.backend\jbp.services.rest\bin\System.Numerics.Vectors.xml
-C:\JB\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.AssemblyReference.cache
-C:\JB\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.csproj.CoreCompileInputs.cache
 C:\JB\jb.backend\jbp.services.rest\obj\Debug\jbp.serv.BACDC056.Up2Date
 C:\JB\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.dll
 C:\JB\jb.backend\jbp.services.rest\obj\Debug\jbp.services.rest.pdb

@@ -1,0 +1,39 @@
+﻿    internal class ConectarSAPPedidos
+    {
+        resp=sapOrder.Add(order);// llama a DIAPI
+
+        //manejo excepcion:
+        catch (Exception e)
+            {
+                if (e.Message == "You are not connected to a company" || e.Message.Contains("RPC_E_SERVERFAULT"))
+                {
+                    //me vuelvo a conectar y reproceso
+                    sapOrder = null;
+                    numIntentos++;
+                    return ProcessOrder(order, numIntentos);
+    }
+                else
+                    return e.Message;
+            }
+private static void ConectarASap()
+        {
+            if (sapOrder == null)
+                sapOrder = new SapOrder();
+
+            if (!sapOrder.IsConected())
+            {
+                if (!sapOrder.Connect()) // cuando no se puede conectar es por que el obj sap se inhibe
+                {
+                    sapOrder = null;
+                    sapOrder = new SapOrder(); //se reinicia el objeto para hacer otro intento de conexión
+                    if (!sapOrder.Connect())
+                    {
+                        sapOrder = null;
+                        throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
+                    }
+                }
+            }
+        }
+
+    }
+

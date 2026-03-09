@@ -193,10 +193,10 @@ namespace jbp.business.hana
         {
             var participantes = GetParticipantesToInactivate();
             participantes.ForEach(p => {
-                if (!string.IsNullOrEmpty(p.nombres)) {
-                    if(RegistrarParticipante(p, false)) //se pone false para escoger la api de registro / inactivacion 
-                        QuitarParticipanteADesactivar(p.nroDocumento);
-                }
+                //if (!string.IsNullOrEmpty(p.nombres)) {
+                if(RegistrarParticipante(p, false)) //se pone false para escoger la api de registro / inactivacion 
+                    QuitarParticipanteADesactivar(p.nroDocumento);
+                //}
            });
         }
 

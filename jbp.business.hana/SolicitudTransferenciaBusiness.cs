@@ -230,7 +230,8 @@ namespace jbp.business.hana
                 ""JbpVw_Articulos"" t1 on t1.""CodArticulo"" = t0.""CodArticulo"" inner join
                 ""JbpVw_OperacionesLote"" t2 on
                     t2.""CodArticulo"" = t1.""CodArticulo"" and
-                    t2.""IdDocBase"" = t0.""IdSolicitudTraslado"" left outer join
+                    t2.""IdDocBase"" = t0.""IdSolicitudTraslado"" and
+                    t2.""NumLineaDocBase""= t0.""LineNum"" left outer join
                 ""JbpVw_Lotes"" t3 on t3.""Lote""=t2.""Lote"" and t3.""CodArticulo""=t2.""CodArticulo"" left outer join
                 JB_LOTES_PESAJE t6 on t6.ID_ST=t0.""IdSolicitudTraslado"" and t6.LOTE=t3.""Lote"" and t6.COD_ARTICULO=t0.""CodArticulo""
             where

@@ -12,8 +12,19 @@ namespace jbp.msg.sap
         public string CodCliente { get; set; }
         public string Comentario { get; set; }
         public List<OrdenLinesMsg> Lines { get; set; }
+        private double _total=0;
+        public double Total
+        {
+            get {
+                this._total = 0;
+                this.Lines.ForEach(line => this._total += line.price * line.CantSolicitada);
+                return this._total;
+            }
+        }
         public int Id { get; set; }
         public string Vendedor { get; set; }
+        public string IdCache { get; set; }
+        public string FechaSincronizacionVendedor { get; set; }
 
         public OrdenMsg()
         {

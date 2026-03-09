@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,16 @@ namespace jbp.business.hana
    
     public class BaseBusiness
     {
+        public event dMsg onError;
+        public event dMsg onNotifyMsg;
+        public delegate void dMsg(string msg);
+        public void RaiseError(string err) { 
+            this.onError(err);
+        }
+        public void NotifyMsg(string msg)
+        {
+            this.onNotifyMsg(msg);
+        }
         public enum eMessageType
         {
             Info,

@@ -12,9 +12,10 @@ using System.ComponentModel;
 using System.Net.NetworkInformation;
 
 
+
 namespace jbp.business.hana
 {
-    public class OrderBusiness
+    public class OrderBusiness:BaseBusiness
     {
         //para controlar la concurrencia
         public static readonly object control = new object();
@@ -33,25 +34,7 @@ namespace jbp.business.hana
                 Monitor.Exit(control);
             }
         }
-        private static void ConectarASap()
-        {
-            if (sapOrder == null)
-                sapOrder = new SapOrder();
-
-            if (!sapOrder.IsConected())
-            {
-                if (!sapOrder.Connect()) // cuando no se puede conectar es por que el obj sap se inhibe
-                {
-                    sapOrder = null;
-                    sapOrder = new SapOrder(); //se reinicia el objeto para hacer otro intento de conexión
-                    if (!sapOrder.Connect())
-                    {
-                        sapOrder = null;
-                        throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
-                    }
-                }
-            }
-        }
+       
         private static List<string> ProcessOrders(List<OrdenMsg> ordenes)
         {
             var ms = new List<string>();
@@ -65,49 +48,100 @@ namespace jbp.business.hana
             return ms;
         }
 
-        private static string ProcessOrder(OrdenMsg order, int numIntentos=0)
+        private static string ProcessOrder(OrdenMsg order)
         {
-            if (numIntentos > 3)
-                return "Se ha tratado de procesar este pago por 3 veces y no se ha podido establecer conexión con SAP!!";
-            ConectarASap();
             try
             {
                 var longitudComentario = 250;
                 if(!string.IsNullOrEmpty(order.Comentario) && order.Comentario.Length>longitudComentario)
                     order.Comentario=order.Comentario.Substring(0,longitudComentario);
                 var resp = "";
-                if (numIntentos == 0 && DuplicateOrder(order))
+                if (DuplicateOrder(order))
                     resp = "Anteriormente ya se procesó esta orden!";
                 else
                 {
                     if(string.IsNullOrEmpty(order.Vendedor))
                         order.Vendedor = SocioNegocioBusiness.GetVendedorByCodSocioNegocio(order.CodCliente).Vendedor;
+                    if (string.IsNullOrEmpty(order.Cliente))
+                        order.Cliente = SocioNegocioBusiness.GetByCodigo(order.CodCliente);
                     order.Lines.ForEach(line =>
                     {
-                        var listaPrecioPVP = ProductBusiness.GetPriceListByCodArticulo(line.CodArticulo, "PVP");
-                        if (listaPrecioPVP != null && listaPrecioPVP.Count > 0)
-                            line.price = Convert.ToDouble(listaPrecioPVP[0].price);
                         if (EsProductoVeterinaria(line.CodArticulo))
                             line.CodBodega = "PICK2"; //es la bodega de despachos de veterinaria
                         if(line.price== 0)
                             line.price = SocioNegocioBusiness.GetPrecioByCodSocioNegocioCodArticulo(order.CodCliente, line.CodArticulo);
                     });
-                    resp=sapOrder.Add(order);
+                    resp=SavePedidoEnCache(order);
                 }
                 return resp;
             }
             catch (Exception e)
             {
-                if (e.Message == "You are not connected to a company" || e.Message.Contains("RPC_E_SERVERFAULT"))
-                {
-                    //me vuelvo a conectar y reproceso
-                    sapOrder = null;
-                    numIntentos++;
-                    return ProcessOrder(order, numIntentos);
-                }
-                else
-                    return e.Message;
+                var err=e.Message;
+                err += e.StackTrace;
+                return err;
             }
+        }
+        
+        public List<OrdenMsg> GetOrderToSync() {
+            var ms = new List<OrdenMsg>();
+            try
+            {
+                var sql = string.Format(@"
+                    SELECT ID, to_char(FECHA_SINCRONIZACION, 'YYYY-MM-DD HH24:MI:SS') ""FECHA_SINCRONIZACION"", MSG FROM JB_CACHE_PEDIDOS
+                ");
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql);
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        var id = dr["ID"].ToString();
+                        ActualizarEstado(id, "1");
+                        var msg = dr["MSG"].ToString();
+                        var order = TechTools.Serializador.SerializadorJson.Deserializar(typeof(OrdenMsg), msg);
+                        var item = (OrdenMsg)order;
+                        item.IdCache = id;
+                        item.FechaSincronizacionVendedor = dr["FECHA_SINCRONIZACION"].ToString();
+                        ms.Add(item);
+                    }
+                }
+            }
+            catch (Exception e) {
+                var err = e.Message;
+                err += e.StackTrace;
+                this.RaiseError(err);
+            }
+            return ms;
+        }
+
+        private static void ActualizarEstado(string id, string estado)
+        {
+            var sql = string.Format(@"
+                update JB_CACHE_PEDIDOS
+                set PROCESANDO={0}
+                where ID={1}
+            ", estado, id);
+            new BaseCore().Execute(sql);
+        }
+
+        private static string SavePedidoEnCache(OrdenMsg me)
+        {
+            try
+            {
+                var strMsg = TechTools.Serializador.SerializadorJson.Serializar(me);
+                var sql = string.Format(@"
+                    insert into JB_CACHE_PEDIDOS(VENDEDOR, CLIENTE, MONTO, MSG)
+                    values ('{0}', '{1}', {2}, '{3}')
+                ",me.Vendedor, me.Cliente, me.Total, strMsg);
+                new BaseCore().Execute(sql);
+                return "ok";
+            }
+            catch (Exception e) {
+                var err = e.Message;
+                return err+ e.StackTrace;
+            }
+            
         }
 
         private static bool EsProductoVeterinaria(string codArticulo)
@@ -277,6 +311,31 @@ namespace jbp.business.hana
                 }
             }
             return ms;
+        }
+
+        internal void MoveToHistorico(OrdenMsg me)
+        {
+            try
+            {
+                var strMsg = TechTools.Serializador.SerializadorJson.Serializar(me);
+                string strTotal = me.Total.ToString();
+                strTotal = strTotal.Replace(",", ".");
+                var sql = string.Format(@"
+                    insert into JB_HISTORICO_PEDIDOS(ID, FECHA_SINCRONIZACION, VENDEDOR, CLIENTE, MONTO, MSG)
+                    values ({0},'{1}', '{2}', '{3}',{4}, '{5}')
+                ",me.IdCache,me.FechaSincronizacionVendedor, me.Vendedor, me.Cliente, strTotal, strMsg);
+                new BaseCore().Execute(sql);
+                // se borra el pedido sincronizado de cache
+                sql = string.Format(@"
+                    delete from JB_CACHE_PEDIDOS where ID={0}
+                ", me.IdCache);
+                new BaseCore().Execute(sql);
+
+            }
+            catch (Exception e) { 
+                var err= e.Message;
+                this.RaiseError(err + e.StackTrace);
+            }
         }
     }
 }

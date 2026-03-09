@@ -469,7 +469,7 @@ namespace jbp.business.hana
                         TechTools.Net.MailUtils.Send(
                             conf.Default.EmailPesaje,
                             "Finalización de Pesaje de OF: " + docNumOF,
-                            "Se ha finalizado el pesaje de la OF: " + docNumOF +
+                            "Se ha finalizado el pesaje de la OF: " + docNumOF + " en ambiente: "+ BaseCore.GetBddName()+
                             ". Por favor imprimir la asignación de materiales a PROD.",
                             ref error
                         );

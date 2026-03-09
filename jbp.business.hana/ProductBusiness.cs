@@ -199,6 +199,7 @@ namespace jbp.business.hana
                 ""Precio""
                from ""JbpVw_ListaPrecio""
                where ""Precio""!=0 and ""CodArticulo"" = '{0}'
+               and upper(""ListaPrecio"") not like '%EXPORTACION%' -- se excluyen las listas de precio de exportacion
             ", codArticulo);
             if (!string.IsNullOrEmpty(listaPrecio)){
                 sql += string.Format(@" and upper(""ListaPrecio"") like '%{0}%'", listaPrecio);

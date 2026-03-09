@@ -67,19 +67,21 @@ namespace jbp.business.hana
              ""CodInsumo"",
              ""UnidadMedida"",
              ""Insumo"",
+             ""CantidadPlanificada"",
              ""BodegaDesde"",
              ""BodegaHasta"",
              ""Lote"",
              ""FechaVencimiento"",
              ""Observaciones"",
              ""IdST"",
+             ""LineNumST"",
              ""LoteInsumo"",
-             sum(""CantidadPlanificada"") ""CantidadPlanificada"",
-             sum(""Cantidad"") ""Cantidad"" --reservada del lote
+             sum(""Cantidad"") ""Cantidad""
             from 
              ""JbVw_OFsConTSaPesaje""
             where
              ""DocNum""={0}
+            
             ", docNum);
             if (!string.IsNullOrEmpty(codInsumo))
             {
@@ -87,24 +89,30 @@ namespace jbp.business.hana
                  and ""CodInsumo""='{0}'
                 ", codInsumo);
             }
-            
+            /*else
+                sql += string.Format(@"
+                order by 
+                   ""CodInsumo"" 
+            ");*/
             sql = string.Format(@"
             {0}
             group by
-             ""Id"",
-             ""DocNum"",
-             ""CodArticulo"",
-             ""Articulo"",
-             ""CodInsumo"",
-             ""UnidadMedida"",
-             ""Insumo"",
-             ""BodegaDesde"",
-             ""BodegaHasta"",
-             ""Lote"",
-             ""FechaVencimiento"",
-             ""Observaciones"",
-             ""IdST"",
-             ""LoteInsumo""
+                 ""Id"",
+                 ""DocNum"",
+                 ""CodArticulo"",
+                 ""Articulo"",
+                 ""CodInsumo"",
+                 ""UnidadMedida"",
+                 ""Insumo"",
+                 ""CantidadPlanificada"",
+                 ""BodegaDesde"",
+                 ""BodegaHasta"",
+                 ""Lote"",
+                 ""FechaVencimiento"",
+                 ""Observaciones"",
+                 ""IdST"",
+                 ""LineNumST"",
+                 ""LoteInsumo""
             ", sql);
 
             var bc = new BaseCore();
@@ -136,7 +144,7 @@ namespace jbp.business.hana
                         CodigoArticulo = dr["CodInsumo"].ToString(),
                         UnidadMedida = dr["UnidadMedida"].ToString(),
                         Descripcion = dr["Insumo"].ToString(),
-                        //LineNumST = bc.GetInt(dr["LineNumST"]),
+                        LineNumST = bc.GetInt(dr["LineNumST"]),
                         CantidadRequerida = bc.GetDecimal(dr["CantidadPlanificada"], 6),
                         CantidadesPorLote = new List<CantidadLoteOFMsg>()
                     };
