@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="ArticuloMsg.cs" />
     <Compile Include="BaseMsg.cs" />
+    <Compile Include="SincronizationMsg.cs" />
     <Compile Include="MarketingMsg.cs" />
     <Compile Include="SolicitudTrasladoMsg.cs" />
     <Compile Include="BodegaMsg.cs" />

@@ -54,7 +54,11 @@ namespace jbp.core.sapDiApi
                 if (me!=null && me.Company!=null)
                     this.Company=me.Company;
                 if (this.Company.Connected)
+                {
+                    this.onNotififacationMessage?.Invoke("Se ha establecido anteriormente la conexión a SAP");
                     return true;
+                }
+                    
                 this.Company.Server = conf.Default.server;
                 this.Company.CompanyDB = conf.Default.dbName;
                 this.Company.DbUserName = conf.Default.dbUser;
@@ -62,7 +66,9 @@ namespace jbp.core.sapDiApi
                 this.Company.UserName = conf.Default.sapUser;
                 this.Company.Password = conf.Default.sapPwd;
                 this.Company.Connect();
-                return this.Company.Connected;
+                var resp= this.Company.Connected;
+                this.onNotififacationMessage?.Invoke("Respuesta de conexión a SAP: " + resp);
+                return resp;
             }
             catch
             {
@@ -71,7 +77,13 @@ namespace jbp.core.sapDiApi
         }
         public void Disconnect() {
             if (this.Company!=null && this.Company.Connected)
+            {
+                this.onNotififacationMessage?.Invoke("Desconectando de SAP: ");
                 this.Company.Disconnect();
+                var resp = this.Company.Connected;
+                this.onNotififacationMessage?.Invoke("Conectado a SAP: " + resp);
+            }
+                
             //CheckIfIsDisconectedAsync();
         }
 
