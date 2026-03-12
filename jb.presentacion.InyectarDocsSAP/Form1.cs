@@ -36,13 +36,11 @@ namespace jb.presentacion.InyectarDocsSAP
             BloquearDesbloquearInicioServicio(iniciar);
             setTimer(iniciar);
         }
-
         private void BloquearDesbloquearInicioServicio(bool iniciar)
         {
             this.cmdIniciar.Enabled = !iniciar;
             this.cmdDetener.Enabled = iniciar;
         }
-
         private void setTimer(bool start)
         {
             if (start)
@@ -55,7 +53,6 @@ namespace jb.presentacion.InyectarDocsSAP
             this.timer1.Enabled = start;
 
         }
-
         private void mostrarMsgOnTrySystem(string msg)
         {
             notifyIcon1.BalloonTipTitle = "Notificación Sync - AppVET";
@@ -93,7 +90,6 @@ namespace jb.presentacion.InyectarDocsSAP
 
         private void procesarDocumentos()
         {
-            //log(string.Format("{0} pedidos de venta por sincronizar", cantOrdenes));
             var syncBusiness = new SincronizationBusiness();
             syncBusiness.onError += (err) =>
             {
@@ -167,12 +163,32 @@ namespace jb.presentacion.InyectarDocsSAP
             ConsultarHistorico();
         }
 
+        private OrdenMsg _currentPedido;
         private void ConsultarHistorico()
         {
-            var syncBusiness = new SincronizationBusiness();
-
+            cmdConsultarHistorico.Enabled = false;
+            ordenMsgBindingSource.Clear();
             this.bsFiltroHistorico.EndEdit();
-            syncBusiness.ConsultarHistorico(this._filtroConsultaHistorico);
+            var syncBusiness = new SincronizationBusiness();
+            syncBusiness.onError += (err) => { MessageBox.Show(err); };
+            if (this._filtroConsultaHistorico.TipoDocumento == "Pedido")
+            {
+                var pedidos = syncBusiness.ConsultarHistoricoPedidos(this._filtroConsultaHistorico);
+                ordenMsgBindingSource.DataSource = pedidos;
+                if (pedidos != null && pedidos.Count > 0)
+                    this._currentPedido = pedidos[0];
+            }
+            else
+            {
+                MessageBox.Show("No implementado");
+            }
+            cmdConsultarHistorico.Enabled = true;
+        }
+
+        
+        private void dgResultadoBusqueda_SelectionChanged(object sender, EventArgs e)
+        {
+            this._currentPedido=(OrdenMsg)dgResultadoBusqueda.CurrentRow.DataBoundItem;
         }
     }
 }

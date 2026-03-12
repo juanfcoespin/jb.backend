@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using jbp.msg.sap;
 using jbp.core.sapDiApi;
+using TechTools.Core.Hana;
+using System.Data;
 
 namespace jbp.business.hana
 {
@@ -106,9 +108,50 @@ namespace jbp.business.hana
             onDocsToSync?.Invoke(docsToSync);
         }
 
-        public void ConsultarHistorico(FiltroHistoricoMsg filtro)
+        public List<OrdenMsg> ConsultarHistoricoPedidos(FiltroHistoricoMsg filtro)
         {
-            
+            var ms = new List<OrdenMsg>();
+            try
+            {
+                
+                var desde = filtro.Desde.ToString("yyyy-MM-dd");
+                var hasta = filtro.Hasta.ToString("yyyy-MM-dd");
+                var sql = string.Format(@"
+                    select
+                     to_char(FECHA_SINCRONIZACION,'yyyy-mm-dd hh24:MM:ss') FECHA_SINCRONIZACION,
+                     to_char(FECHA_INGRESO_SAP,'yyyy-mm-dd hh24:MM:ss') FECHA_INGRESO_SAP,
+                     VENDEDOR,
+                     CLIENTE,
+                     MONTO,
+                     MSG
+                    from
+                     JB_HISTORICO_PEDIDOS  
+                    where
+                     upper(VENDEDOR) like '%{0}%'
+                     and upper(CLIENTE) like '%{1}%'
+                     and FECHA_SINCRONIZACION >= TO_DATE('{2}','yyyy-mm-dd')
+						AND   FECHA_SINCRONIZACION <  ADD_DAYS(TO_DATE('{3}','yyyy-mm-dd'),1);
+                ", filtro.Vendedor.ToUpper(), filtro.Cliente.ToUpper(), desde, hasta);
+                var dt = new BaseCore().GetDataTableByQuery(sql);
+                if (dt.Rows != null && dt.Rows.Count > 0) {
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        var jsonPedido = dr["MSG"].ToString();
+                        var obj = TechTools.Serializador.SerializadorJson.Deserializar(typeof(OrdenMsg), jsonPedido);
+                        OrdenMsg pedido =(OrdenMsg)obj;
+                        pedido.Lines.ForEach(line => {
+                            line.Articulo = ProductBusiness.GetNombreArticuloByCodigo(line.CodArticulo);
+                        });
+                        pedido.FechaSincronizacionVendedor = dr["FECHA_SINCRONIZACION"].ToString();
+                        pedido.FechaIngresoSap= dr["FECHA_INGRESO_SAP"].ToString();
+                        ms.Add(pedido);
+                    }
+                }
+            }
+            catch (Exception e) { 
+                RaiseError(e.Message+e.StackTrace);
+            }
+            return ms;
         }
     }
 }

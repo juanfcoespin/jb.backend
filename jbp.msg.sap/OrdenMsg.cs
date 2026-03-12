@@ -25,6 +25,7 @@ namespace jbp.msg.sap
         public string Vendedor { get; set; }
         public string IdCache { get; set; }
         public string FechaSincronizacionVendedor { get; set; }
+        public string FechaIngresoSap { get; set; }
 
         public OrdenMsg()
         {
@@ -56,6 +57,7 @@ namespace jbp.msg.sap
         }
 
         public string CodBodega { get; set; }
+        public string Articulo { get; set; }
     }
 
     public class OrdenAppMsg

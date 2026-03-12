@@ -29,13 +29,9 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSyncAppVET));
             tabControl1 = new TabControl();
-            tabPage1 = new TabPage();
-            dgDocsToSync = new DataGridView();
-            tabPage2 = new TabPage();
-            tabPage3 = new TabPage();
-            dgLog = new DataGridView();
             tabPage4 = new TabPage();
             tabControl2 = new TabControl();
             tabPage5 = new TabPage();
@@ -48,20 +44,32 @@
             label7 = new Label();
             tabPage6 = new TabPage();
             groupBox2 = new GroupBox();
-            dataGridView1 = new DataGridView();
+            dgResultadoBusqueda = new DataGridView();
+            clienteDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            vendedorDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            totalDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            fechaSincronizacionVendedorDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            fechaIngresoSapDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            ordenMsgBindingSource = new BindingSource(components);
             groupBox1 = new GroupBox();
+            groupBox4 = new GroupBox();
             dateTimePicker2 = new DateTimePicker();
             bsFiltroHistorico = new BindingSource(components);
             dateTimePicker1 = new DateTimePicker();
+            label4 = new Label();
+            label5 = new Label();
             textBox2 = new TextBox();
             textBox1 = new TextBox();
             comboBox1 = new ComboBox();
             label6 = new Label();
             cmdConsultarHistorico = new Button();
-            label5 = new Label();
-            label4 = new Label();
             label3 = new Label();
             label2 = new Label();
+            tabPage1 = new TabPage();
+            dgDocsToSync = new DataGridView();
+            tabPage2 = new TabPage();
+            tabPage3 = new TabPage();
+            dgLog = new DataGridView();
             cmdIniciar = new Button();
             cmdDetener = new Button();
             label1 = new Label();
@@ -75,86 +83,40 @@
             cerrarToolStripMenuItem = new ToolStripMenuItem();
             timer1 = new System.Windows.Forms.Timer(components);
             lblIntentos = new Label();
+            bsCurrentPedido = new BindingSource(components);
             tabControl1.SuspendLayout();
-            tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dgDocsToSync).BeginInit();
-            tabPage3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dgLog).BeginInit();
             tabPage4.SuspendLayout();
             tabControl2.SuspendLayout();
             tabPage5.SuspendLayout();
             groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
             groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgResultadoBusqueda).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ordenMsgBindingSource).BeginInit();
             groupBox1.SuspendLayout();
+            groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)bsFiltroHistorico).BeginInit();
+            tabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgDocsToSync).BeginInit();
+            tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgLog).BeginInit();
             panel1.SuspendLayout();
             contextMenuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)bsCurrentPedido).BeginInit();
             SuspendLayout();
             // 
             // tabControl1
             // 
             tabControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tabControl1.Controls.Add(tabPage4);
             tabControl1.Controls.Add(tabPage1);
             tabControl1.Controls.Add(tabPage2);
             tabControl1.Controls.Add(tabPage3);
-            tabControl1.Controls.Add(tabPage4);
-            tabControl1.Location = new Point(40, 71);
+            tabControl1.Location = new Point(12, 51);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(1012, 550);
+            tabControl1.Size = new Size(1040, 570);
             tabControl1.TabIndex = 0;
-            // 
-            // tabPage1
-            // 
-            tabPage1.Controls.Add(dgDocsToSync);
-            tabPage1.Location = new Point(4, 24);
-            tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(1004, 522);
-            tabPage1.TabIndex = 0;
-            tabPage1.Text = "Docs en Sincronización";
-            tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // dgDocsToSync
-            // 
-            dgDocsToSync.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            dgDocsToSync.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgDocsToSync.Location = new Point(6, 6);
-            dgDocsToSync.Name = "dgDocsToSync";
-            dgDocsToSync.Size = new Size(964, 502);
-            dgDocsToSync.TabIndex = 1;
-            // 
-            // tabPage2
-            // 
-            tabPage2.Location = new Point(4, 24);
-            tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(1004, 522);
-            tabPage2.TabIndex = 1;
-            tabPage2.Text = "Documentos con Error";
-            tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // tabPage3
-            // 
-            tabPage3.Controls.Add(dgLog);
-            tabPage3.Location = new Point(4, 24);
-            tabPage3.Name = "tabPage3";
-            tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(1004, 522);
-            tabPage3.TabIndex = 2;
-            tabPage3.Text = "Log";
-            tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // dgLog
-            // 
-            dgLog.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            dgLog.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgLog.Location = new Point(6, 6);
-            dgLog.Name = "dgLog";
-            dgLog.Size = new Size(992, 510);
-            dgLog.TabIndex = 0;
             // 
             // tabPage4
             // 
@@ -163,7 +125,7 @@
             tabPage4.Controls.Add(groupBox1);
             tabPage4.Location = new Point(4, 24);
             tabPage4.Name = "tabPage4";
-            tabPage4.Size = new Size(1004, 522);
+            tabPage4.Size = new Size(1032, 542);
             tabPage4.TabIndex = 3;
             tabPage4.Text = "Consulta Histórica";
             tabPage4.UseVisualStyleBackColor = true;
@@ -176,7 +138,7 @@
             tabControl2.Location = new Point(13, 190);
             tabControl2.Name = "tabControl2";
             tabControl2.SelectedIndex = 0;
-            tabControl2.Size = new Size(968, 317);
+            tabControl2.Size = new Size(996, 337);
             tabControl2.TabIndex = 4;
             // 
             // tabPage5
@@ -190,7 +152,7 @@
             tabPage5.Location = new Point(4, 24);
             tabPage5.Name = "tabPage5";
             tabPage5.Padding = new Padding(3);
-            tabPage5.Size = new Size(960, 289);
+            tabPage5.Size = new Size(988, 309);
             tabPage5.TabIndex = 0;
             tabPage5.Text = "Detalle del Pedido";
             tabPage5.UseVisualStyleBackColor = true;
@@ -210,7 +172,7 @@
             groupBox3.Controls.Add(dataGridView2);
             groupBox3.Location = new Point(8, 77);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(930, 206);
+            groupBox3.Size = new Size(958, 226);
             groupBox3.TabIndex = 6;
             groupBox3.TabStop = false;
             groupBox3.Text = "Líneas del Pedido";
@@ -221,7 +183,7 @@
             dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView2.Location = new Point(9, 22);
             dataGridView2.Name = "dataGridView2";
-            dataGridView2.Size = new Size(910, 170);
+            dataGridView2.Size = new Size(938, 190);
             dataGridView2.TabIndex = 5;
             // 
             // label10
@@ -273,34 +235,92 @@
             // groupBox2
             // 
             groupBox2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            groupBox2.Controls.Add(dataGridView1);
+            groupBox2.Controls.Add(dgResultadoBusqueda);
             groupBox2.Location = new Point(478, 22);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(513, 162);
+            groupBox2.Size = new Size(541, 162);
             groupBox2.TabIndex = 2;
             groupBox2.TabStop = false;
             groupBox2.Text = "Resultado";
             // 
-            // dataGridView1
+            // dgResultadoBusqueda
             // 
-            dataGridView1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(6, 19);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(501, 137);
-            dataGridView1.TabIndex = 0;
+            dgResultadoBusqueda.AllowUserToAddRows = false;
+            dgResultadoBusqueda.AllowUserToDeleteRows = false;
+            dgResultadoBusqueda.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgResultadoBusqueda.AutoGenerateColumns = false;
+            dgResultadoBusqueda.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dgResultadoBusqueda.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dgResultadoBusqueda.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgResultadoBusqueda.Columns.AddRange(new DataGridViewColumn[] { clienteDataGridViewTextBoxColumn, vendedorDataGridViewTextBoxColumn, totalDataGridViewTextBoxColumn, fechaSincronizacionVendedorDataGridViewTextBoxColumn, fechaIngresoSapDataGridViewTextBoxColumn });
+            dgResultadoBusqueda.DataSource = ordenMsgBindingSource;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = SystemColors.Window;
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle1.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            dgResultadoBusqueda.DefaultCellStyle = dataGridViewCellStyle1;
+            dgResultadoBusqueda.Location = new Point(6, 19);
+            dgResultadoBusqueda.Name = "dgResultadoBusqueda";
+            dgResultadoBusqueda.ReadOnly = true;
+            dgResultadoBusqueda.Size = new Size(529, 137);
+            dgResultadoBusqueda.TabIndex = 0;
+            dgResultadoBusqueda.SelectionChanged += dgResultadoBusqueda_SelectionChanged;
+            // 
+            // clienteDataGridViewTextBoxColumn
+            // 
+            clienteDataGridViewTextBoxColumn.DataPropertyName = "Cliente";
+            clienteDataGridViewTextBoxColumn.HeaderText = "Cliente";
+            clienteDataGridViewTextBoxColumn.Name = "clienteDataGridViewTextBoxColumn";
+            clienteDataGridViewTextBoxColumn.ReadOnly = true;
+            clienteDataGridViewTextBoxColumn.Width = 69;
+            // 
+            // vendedorDataGridViewTextBoxColumn
+            // 
+            vendedorDataGridViewTextBoxColumn.DataPropertyName = "Vendedor";
+            vendedorDataGridViewTextBoxColumn.HeaderText = "Vendedor";
+            vendedorDataGridViewTextBoxColumn.Name = "vendedorDataGridViewTextBoxColumn";
+            vendedorDataGridViewTextBoxColumn.ReadOnly = true;
+            vendedorDataGridViewTextBoxColumn.Width = 82;
+            // 
+            // totalDataGridViewTextBoxColumn
+            // 
+            totalDataGridViewTextBoxColumn.DataPropertyName = "Total";
+            totalDataGridViewTextBoxColumn.HeaderText = "Total";
+            totalDataGridViewTextBoxColumn.Name = "totalDataGridViewTextBoxColumn";
+            totalDataGridViewTextBoxColumn.ReadOnly = true;
+            totalDataGridViewTextBoxColumn.Width = 58;
+            // 
+            // fechaSincronizacionVendedorDataGridViewTextBoxColumn
+            // 
+            fechaSincronizacionVendedorDataGridViewTextBoxColumn.DataPropertyName = "FechaSincronizacionVendedor";
+            fechaSincronizacionVendedorDataGridViewTextBoxColumn.HeaderText = "FechaSincronizacionVendedor";
+            fechaSincronizacionVendedorDataGridViewTextBoxColumn.Name = "fechaSincronizacionVendedorDataGridViewTextBoxColumn";
+            fechaSincronizacionVendedorDataGridViewTextBoxColumn.ReadOnly = true;
+            fechaSincronizacionVendedorDataGridViewTextBoxColumn.Width = 190;
+            // 
+            // fechaIngresoSapDataGridViewTextBoxColumn
+            // 
+            fechaIngresoSapDataGridViewTextBoxColumn.DataPropertyName = "FechaIngresoSap";
+            fechaIngresoSapDataGridViewTextBoxColumn.HeaderText = "FechaIngresoSap";
+            fechaIngresoSapDataGridViewTextBoxColumn.Name = "fechaIngresoSapDataGridViewTextBoxColumn";
+            fechaIngresoSapDataGridViewTextBoxColumn.ReadOnly = true;
+            fechaIngresoSapDataGridViewTextBoxColumn.Width = 121;
+            // 
+            // ordenMsgBindingSource
+            // 
+            ordenMsgBindingSource.DataSource = typeof(jbp.msg.sap.OrdenMsg);
             // 
             // groupBox1
             // 
-            groupBox1.Controls.Add(dateTimePicker2);
-            groupBox1.Controls.Add(dateTimePicker1);
+            groupBox1.Controls.Add(groupBox4);
             groupBox1.Controls.Add(textBox2);
             groupBox1.Controls.Add(textBox1);
             groupBox1.Controls.Add(comboBox1);
             groupBox1.Controls.Add(label6);
             groupBox1.Controls.Add(cmdConsultarHistorico);
-            groupBox1.Controls.Add(label5);
-            groupBox1.Controls.Add(label4);
             groupBox1.Controls.Add(label3);
             groupBox1.Controls.Add(label2);
             groupBox1.Location = new Point(13, 22);
@@ -310,14 +330,27 @@
             groupBox1.TabStop = false;
             groupBox1.Text = "Filtrar Búsqueda Por:";
             // 
+            // groupBox4
+            // 
+            groupBox4.Controls.Add(dateTimePicker2);
+            groupBox4.Controls.Add(dateTimePicker1);
+            groupBox4.Controls.Add(label4);
+            groupBox4.Controls.Add(label5);
+            groupBox4.Location = new Point(276, 43);
+            groupBox4.Name = "groupBox4";
+            groupBox4.Size = new Size(171, 75);
+            groupBox4.TabIndex = 7;
+            groupBox4.TabStop = false;
+            groupBox4.Text = "Fecha Sync Vendedor";
+            // 
             // dateTimePicker2
             // 
-            dateTimePicker2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            dateTimePicker2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             dateTimePicker2.DataBindings.Add(new Binding("Value", bsFiltroHistorico, "Hasta", true));
             dateTimePicker2.Format = DateTimePickerFormat.Short;
-            dateTimePicker2.Location = new Point(323, 87);
+            dateTimePicker2.Location = new Point(56, 44);
             dateTimePicker2.Name = "dateTimePicker2";
-            dateTimePicker2.Size = new Size(112, 23);
+            dateTimePicker2.Size = new Size(107, 23);
             dateTimePicker2.TabIndex = 10;
             // 
             // bsFiltroHistorico
@@ -326,13 +359,31 @@
             // 
             // dateTimePicker1
             // 
-            dateTimePicker1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            dateTimePicker1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             dateTimePicker1.DataBindings.Add(new Binding("Value", bsFiltroHistorico, "Desde", true));
             dateTimePicker1.Format = DateTimePickerFormat.Short;
-            dateTimePicker1.Location = new Point(323, 63);
+            dateTimePicker1.Location = new Point(56, 20);
             dateTimePicker1.Name = "dateTimePicker1";
-            dateTimePicker1.Size = new Size(112, 23);
+            dateTimePicker1.Size = new Size(107, 23);
             dateTimePicker1.TabIndex = 9;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(8, 26);
+            label4.Name = "label4";
+            label4.Size = new Size(42, 15);
+            label4.TabIndex = 2;
+            label4.Text = "Desde:";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(8, 45);
+            label5.Name = "label5";
+            label5.Size = new Size(40, 15);
+            label5.TabIndex = 3;
+            label5.Text = "Hasta:";
             // 
             // textBox2
             // 
@@ -382,26 +433,6 @@
             cmdConsultarHistorico.UseVisualStyleBackColor = true;
             cmdConsultarHistorico.Click += cmdConsultarHistorico_Click;
             // 
-            // label5
-            // 
-            label5.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label5.AutoSize = true;
-            label5.Location = new Point(275, 88);
-            label5.Name = "label5";
-            label5.Size = new Size(40, 15);
-            label5.TabIndex = 3;
-            label5.Text = "Hasta:";
-            // 
-            // label4
-            // 
-            label4.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label4.AutoSize = true;
-            label4.Location = new Point(275, 69);
-            label4.Name = "label4";
-            label4.Size = new Size(42, 15);
-            label4.TabIndex = 2;
-            label4.Text = "Desde:";
-            // 
             // label3
             // 
             label3.AutoSize = true;
@@ -419,6 +450,56 @@
             label2.Size = new Size(60, 15);
             label2.TabIndex = 0;
             label2.Text = "Vendedor:";
+            // 
+            // tabPage1
+            // 
+            tabPage1.Controls.Add(dgDocsToSync);
+            tabPage1.Location = new Point(4, 24);
+            tabPage1.Name = "tabPage1";
+            tabPage1.Padding = new Padding(3);
+            tabPage1.Size = new Size(1004, 522);
+            tabPage1.TabIndex = 0;
+            tabPage1.Text = "Docs en Sincronización";
+            tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // dgDocsToSync
+            // 
+            dgDocsToSync.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgDocsToSync.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgDocsToSync.Location = new Point(6, 6);
+            dgDocsToSync.Name = "dgDocsToSync";
+            dgDocsToSync.Size = new Size(964, 502);
+            dgDocsToSync.TabIndex = 1;
+            // 
+            // tabPage2
+            // 
+            tabPage2.Location = new Point(4, 24);
+            tabPage2.Name = "tabPage2";
+            tabPage2.Padding = new Padding(3);
+            tabPage2.Size = new Size(1004, 522);
+            tabPage2.TabIndex = 1;
+            tabPage2.Text = "Documentos con Error";
+            tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // tabPage3
+            // 
+            tabPage3.Controls.Add(dgLog);
+            tabPage3.Location = new Point(4, 24);
+            tabPage3.Name = "tabPage3";
+            tabPage3.Padding = new Padding(3);
+            tabPage3.Size = new Size(1004, 522);
+            tabPage3.TabIndex = 2;
+            tabPage3.Text = "Log";
+            tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // dgLog
+            // 
+            dgLog.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgLog.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgLog.Location = new Point(6, 6);
+            dgLog.Name = "dgLog";
+            dgLog.Size = new Size(992, 510);
+            dgLog.TabIndex = 0;
             // 
             // cmdIniciar
             // 
@@ -447,7 +528,7 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label1.Location = new Point(25, 32);
+            label1.Location = new Point(16, 12);
             label1.Name = "label1";
             label1.Size = new Size(311, 21);
             label1.TabIndex = 3;
@@ -468,16 +549,16 @@
             panel1.Controls.Add(lblError);
             panel1.Controls.Add(lblOk);
             panel1.Controls.Add(lblProcesando);
-            panel1.Location = new Point(946, 12);
+            panel1.Location = new Point(818, 12);
             panel1.Name = "panel1";
-            panel1.Size = new Size(109, 70);
+            panel1.Size = new Size(237, 36);
             panel1.TabIndex = 5;
             // 
             // lblError
             // 
             lblError.AutoSize = true;
             lblError.ForeColor = Color.Red;
-            lblError.Location = new Point(4, 41);
+            lblError.Location = new Point(132, 11);
             lblError.Name = "lblError";
             lblError.Size = new Size(38, 15);
             lblError.TabIndex = 6;
@@ -488,7 +569,7 @@
             lblOk.AutoSize = true;
             lblOk.BackColor = SystemColors.Control;
             lblOk.ForeColor = Color.Green;
-            lblOk.Location = new Point(4, 26);
+            lblOk.Location = new Point(73, 11);
             lblOk.Name = "lblOk";
             lblOk.Size = new Size(29, 15);
             lblOk.TabIndex = 5;
@@ -553,10 +634,6 @@
             Text = "Sincronización AppVET";
             Load += frmSyncAppVET_Load;
             tabControl1.ResumeLayout(false);
-            tabPage1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)dgDocsToSync).EndInit();
-            tabPage3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)dgLog).EndInit();
             tabPage4.ResumeLayout(false);
             tabControl2.ResumeLayout(false);
             tabPage5.ResumeLayout(false);
@@ -564,13 +641,21 @@
             groupBox3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dataGridView2).EndInit();
             groupBox2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgResultadoBusqueda).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ordenMsgBindingSource).EndInit();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            groupBox4.ResumeLayout(false);
+            groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)bsFiltroHistorico).EndInit();
+            tabPage1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgDocsToSync).EndInit();
+            tabPage3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgLog).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             contextMenuStrip1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)bsCurrentPedido).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -610,7 +695,7 @@
         private TextBox textBox2;
         private TextBox textBox1;
         private GroupBox groupBox2;
-        private DataGridView dataGridView1;
+        private DataGridView dgResultadoBusqueda;
         private TabControl tabControl2;
         private TabPage tabPage5;
         private TabPage tabPage6;
@@ -622,5 +707,13 @@
         private GroupBox groupBox3;
         private DataGridView dataGridView2;
         private DateTimePicker dateTimePicker2;
+        private DataGridViewTextBoxColumn clienteDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn vendedorDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn totalDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn fechaSincronizacionVendedorDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn fechaIngresoSapDataGridViewTextBoxColumn;
+        private BindingSource ordenMsgBindingSource;
+        private GroupBox groupBox4;
+        private BindingSource bsCurrentPedido;
     }
 }
