@@ -17,39 +17,78 @@ namespace jbp.business.hana
 
         public delegate void dNotyfySyncStatus(DocsToSyncMsg doc);
         public event dNotyfySyncStatus onChangeSyncStatus;
+        public event dNotyfySyncStatus onDocSyncOK;
 
         public void SincronizarPedidoYCobros()
         {
-            /*
+            try
+            {
+                /*
              Primero sincroniza los pedidos, y reutiliza la misma conección a sap 
              para sincronizar los cobros
              */
-            var ordenBussines = new jbp.business.hana.OrderBusiness();
-            ordenBussines.onError += (string err) =>
-            {
-                if (this.pedidoActual != null)
-                    NofifySyncStatus(this.pedidoActual, err, eTipoMsg.Error);
-                else
-                    RaiseError(err);
-                NotificarErrorPorCorreo(err);
-            };
-            var pedidos = ordenBussines.GetOrderToSync();
-            if (pedidos != null && pedidos.Count > 0) {
-                this.pedidoActual = pedidos[0];
-                var cantOrdenes = pedidos.Count;
-                if (cantOrdenes == 0)
+                var ordenBussines = new jbp.business.hana.OrderBusiness();
+                ordenBussines.onError += (string err) =>
                 {
-                    NotifyMsg("No existen pedidos por sincronizar");
-                    return;
+                    if (this.pedidoActual != null)
+                    {
+                        NofifySyncStatus(this.pedidoActual, err, eTipoMsg.Error);
+                        RegistrarErrEnCache(this.pedidoActual, err);
+                    }
+                    else
+                        RaiseError(err);
+                    NotificarErrorPorCorreo(err);
+                };
+                var pedidos = ordenBussines.GetOrderToSync();
+                if (pedidos != null && pedidos.Count > 0)
+                {
+                    this.pedidoActual = pedidos[0];
+                    var cantOrdenes = pedidos.Count;
+                    if (cantOrdenes == 0)
+                    {
+                        NotifyMsg("No existen pedidos por sincronizar");
+                        return;
+                    }
+                    NotificarPedidosToSync(pedidos);
+                    SyncPedidos(pedidos);
                 }
-                NotificarPedidosToSync(pedidos);
-                SyncPedidos(pedidos);
             }
+            catch (Exception e) {
+                RaiseError(e.Message + e.StackTrace);
+            }
+            
+        }
+
+        private void RegistrarErrEnCache(OrdenMsg pedido, string err)
+        {
+            if (pedido != null && pedido.IdCache !=null) {
+                try
+                {
+                    var sql = string.Format(@"
+                        update JB_CACHE_PEDIDOS
+                        set ERROR='{0}'
+                        where ID={1}
+                    ", err,pedido.IdCache);
+                    new BaseCore().Execute(sql);
+                    NotificarErrorPorCorreo(GetPedidoStrResumen(pedido) + err);
+                }
+                catch (Exception e)
+                {
+                    NofifySyncStatus(pedido,e.Message + e.StackTrace,eTipoMsg.Error);
+                }
+            }
+
+            
+        }
+
+        private string GetPedidoStrResumen(OrdenMsg me)
+        {
+            return string.Format("Cliente: {0}, Vendedor: {1}, Monto: {2}, FechaSyncVendedor: {3}",
+                me.Cliente, me.Vendedor, me.Total, me.FechaSincronizacionVendedor);
         }
 
         private void NotificarErrorPorCorreo(string err)
         {
-            throw new NotImplementedException();
         }
 
         private OrdenMsg pedidoActual;
@@ -57,45 +96,47 @@ namespace jbp.business.hana
         {
             var sapPedido = new jbp.core.sapDiApi.SapOrder();
             this.pedidoActual = pedidos[0];
-            sapPedido.onNotififacationMessage += (msg) => { 
-                NofifySyncStatus(this.pedidoActual, msg);
+            sapPedido.onNotififacationMessage += (msg) => {
+                this.pedidoActual.Status += string.Format("{0}: {1}", DateTime.Now.ToString(), msg);
+                NofifySyncStatus(this.pedidoActual,msg);
             };
             if (sapPedido.Connect())
             {
-                foreach (var pedido in pedidos)
+                try
                 {
-                    this.pedidoActual = pedido;
-                    var resp = sapPedido.Add(pedido);
-                    if (resp == "ok")
+                    foreach (var pedido in pedidos)
                     {
-                        var orderBusiness = new OrderBusiness();
-                        orderBusiness.onError += (msg) => { NofifySyncStatus(this.pedidoActual, msg, eTipoMsg.Error); };
-                        orderBusiness.MoveToHistorico(pedido);
+                        this.pedidoActual = pedido;
+                        var resp = sapPedido.Add(pedido);
+                        if (resp == "ok")
+                        {
+                            var orderBusiness = new OrderBusiness();
+                            orderBusiness.onError += (msg) => { NofifySyncStatus(this.pedidoActual, msg, eTipoMsg.Error); };
+                            orderBusiness.MoveToHistorico(pedido);
+                            onDocSyncOK?.Invoke(pedido);
+                        }
+                        else
+                        {
+                            NofifySyncStatus(this.pedidoActual, resp, eTipoMsg.Error);
+                            RegistrarErrEnCache(this.pedidoActual, resp);
+                        }
                     }
                 }
-                sapPedido.Disconnect();
+                catch {
+                    sapPedido.Disconnect();
+                }
             }
         }
 
-        private void NofifySyncStatus(OrdenMsg pedido, string msg, eTipoMsg tipoMsg=eTipoMsg.Info)
+        private void NofifySyncStatus(DocsToSyncMsg docToSync, string msg, eTipoMsg tipoMsg=eTipoMsg.Info)
         {
-            var docStatus = GetDocSatusFromPedido(pedido);
-            docStatus.Status += string.Format("{0}: {1}", DateTime.Now.ToString(), msg);
-            docStatus.TipoMsg=tipoMsg;
-            onChangeSyncStatus?.Invoke(docStatus);
-        }
-
-        private static DocsToSyncMsg GetDocSatusFromPedido(OrdenMsg pedido)
-        {
-            return new DocsToSyncMsg
-            {
-                IdCache = pedido.IdCache,
-                FechaSincronizacionVendedor = pedido.FechaSincronizacionVendedor,
-                TipoDocumento = "Pedido de Venta",
-                Cliente = pedido.Cliente,
-                Vendedor = pedido.Vendedor,
-                Monto = pedido.Total,
-            };
+            //concatenar con el status anterior
+            docToSync.MensajesSincronizacion.Add(new MsgSincronizacion {
+                FechaLog= DateTime.Now,
+                Msg = msg,
+                TipoMsg = tipoMsg,
+            }); 
+            onChangeSyncStatus?.Invoke(docToSync);
         }
 
         private void NotificarPedidosToSync(List<OrdenMsg> pedidos)
@@ -103,7 +144,7 @@ namespace jbp.business.hana
             var docsToSync = new List<DocsToSyncMsg>();
             pedidos.ForEach(pedido =>
             {
-                docsToSync.Add(GetDocSatusFromPedido(pedido));
+                docsToSync.Add(pedido);
             });
             onDocsToSync?.Invoke(docsToSync);
         }
@@ -118,8 +159,8 @@ namespace jbp.business.hana
                 var hasta = filtro.Hasta.ToString("yyyy-MM-dd");
                 var sql = string.Format(@"
                     select
-                     to_char(FECHA_SINCRONIZACION,'yyyy-mm-dd hh24:MM:ss') FECHA_SINCRONIZACION,
-                     to_char(FECHA_INGRESO_SAP,'yyyy-mm-dd hh24:MM:ss') FECHA_INGRESO_SAP,
+                     to_char(FECHA_SINCRONIZACION,'yyyy-mm-dd hh24:mi:ss') FECHA_SINCRONIZACION,
+                     to_char(FECHA_INGRESO_SAP,'yyyy-mm-dd hh24:mi:ss') FECHA_INGRESO_SAP,
                      VENDEDOR,
                      CLIENTE,
                      MONTO,

@@ -6,26 +6,43 @@ using System.Threading.Tasks;
 
 namespace jbp.msg.sap
 {
-    public class OrdenMsg
+    /*
+     public class DocsToSyncMsg
     {
+        public string IdCache { get; set; }
+        public string FechaSincronizacionVendedor { get; set; }
         public string Cliente { get; set; }
+        public double Monto { get; set; }
+        public string Vendedor { get; set; }
+        public string TipoDocumento { get; set; }
+        public List<MsgSincronizacion> MensajesSincronizacion { get; set; }
+        public DocsToSyncMsg() {
+            this.MensajesSincronizacion = new List<MsgSincronizacion>();
+        }
+
+    }
+     */
+    public class OrdenMsg:DocsToSyncMsg
+    {
         public string CodCliente { get; set; }
         public string Comentario { get; set; }
         public List<OrdenLinesMsg> Lines { get; set; }
-        private double _total=0;
-        public double Total
+        public override double Total
         {
             get {
-                this._total = 0;
-                this.Lines.ForEach(line => this._total += line.price * line.CantSolicitada);
-                return this._total;
+                double total = 0;
+                //para no perder decimales no se ocupa el subtotal redondeado de la linea
+                this.Lines.ForEach(line => total += line.price * line.CantSolicitada);
+                return Math.Round(total, 2);
             }
         }
+        public override string TipoDocumento
+        {
+            get { return "Pedido de Venta"; }
+        }
         public int Id { get; set; }
-        public string Vendedor { get; set; }
-        public string IdCache { get; set; }
-        public string FechaSincronizacionVendedor { get; set; }
-        public string FechaIngresoSap { get; set; }
+        
+        public string Status { get; set; }
 
         public OrdenMsg()
         {
@@ -45,7 +62,7 @@ namespace jbp.msg.sap
     }
     public class OrdenLinesMsg
     {
-        public double price;
+        public double price { get; set; }
 
         public string CodArticulo { get; set; }
         public int CantSolicitada { get; set; }
@@ -58,6 +75,11 @@ namespace jbp.msg.sap
 
         public string CodBodega { get; set; }
         public string Articulo { get; set; }
+        public double SubTotal { 
+            get { 
+                return Math.Round(this.CantSolicitada*this.price,2);
+            } 
+        }
     }
 
     public class OrdenAppMsg
