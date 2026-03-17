@@ -82,49 +82,6 @@ namespace jbp.business.hana
                 return err;
             }
         }
-        
-        public List<OrdenMsg> GetOrderToSync() {
-            var ms = new List<OrdenMsg>();
-            try
-            {
-                var sql = string.Format(@"
-                    SELECT ID, to_char(FECHA_SINCRONIZACION, 'YYYY-MM-DD HH24:MI:SS') ""FECHA_SINCRONIZACION"", MSG FROM JB_CACHE_PEDIDOS
-                ");
-                var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql);
-                if (dt != null && dt.Rows.Count > 0)
-                {
-                    foreach (DataRow dr in dt.Rows)
-                    {
-                        var id = dr["ID"].ToString();
-                        ActualizarEstado(id, "1");
-                        var msg = dr["MSG"].ToString();
-                        var order = TechTools.Serializador.SerializadorJson.Deserializar(typeof(OrdenMsg), msg);
-                        var item = (OrdenMsg)order;
-                        item.IdCache = id;
-                        item.FechaSincronizacionVendedor = dr["FECHA_SINCRONIZACION"].ToString();
-                        ms.Add(item);
-                    }
-                }
-            }
-            catch (Exception e) {
-                var err = e.Message;
-                err += e.StackTrace;
-                this.RaiseError(err);
-            }
-            return ms;
-        }
-
-        private static void ActualizarEstado(string id, string estado)
-        {
-            var sql = string.Format(@"
-                update JB_CACHE_PEDIDOS
-                set PROCESANDO={0}
-                where ID={1}
-            ", estado, id);
-            new BaseCore().Execute(sql);
-        }
-
         private static string SavePedidoEnCache(OrdenMsg me)
         {
             try
@@ -313,29 +270,6 @@ namespace jbp.business.hana
             return ms;
         }
 
-        internal void MoveToHistorico(OrdenMsg me)
-        {
-            try
-            {
-                var strMsg = TechTools.Serializador.SerializadorJson.Serializar(me);
-                string strTotal = me.Total.ToString();
-                strTotal = strTotal.Replace(",", ".");
-                var sql = string.Format(@"
-                    insert into JB_HISTORICO_PEDIDOS(ID, FECHA_SINCRONIZACION, VENDEDOR, CLIENTE, MONTO, MSG)
-                    values ({0},'{1}', '{2}', '{3}',{4}, '{5}')
-                ",me.IdCache,me.FechaSincronizacionVendedor, me.Vendedor, me.Cliente, strTotal, strMsg);
-                new BaseCore().Execute(sql);
-                // se borra el pedido sincronizado de cache
-                sql = string.Format(@"
-                    delete from JB_CACHE_PEDIDOS where ID={0}
-                ", me.IdCache);
-                new BaseCore().Execute(sql);
-
-            }
-            catch (Exception e) { 
-                var err= e.Message;
-                this.RaiseError(err + e.StackTrace);
-            }
-        }
+        
     }
 }

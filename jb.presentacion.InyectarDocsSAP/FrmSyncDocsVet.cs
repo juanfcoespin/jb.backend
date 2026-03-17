@@ -9,13 +9,16 @@ namespace jb.presentacion.InyectarDocsSAP
 {
     public partial class frmSyncAppVET : Form
     {
-        private List<DocsToSyncMsg> _logs = new List<DocsToSyncMsg>();
-        private List<DocsToSyncMsg> _docsToSync = new List<DocsToSyncMsg>();
+        private BindingList<DocsToSyncMsg> _logs = new BindingList<DocsToSyncMsg>();
+        private BindingList<DocsToSyncMsg> _docsConError = new BindingList<DocsToSyncMsg>();
+        private BindingList<DocsToSyncMsg> _docsToSync = new BindingList<DocsToSyncMsg>();
+        FiltroHistoricoMsg _filtroConsultaHistorico;
+        private bool procesando = false;
+        private int numConsultas = 0;
         public frmSyncAppVET()
         {
             InitializeComponent();
         }
-
         private void inicializarBindings()
         {
             this._filtroConsultaHistorico = new FiltroHistoricoMsg
@@ -24,6 +27,10 @@ namespace jb.presentacion.InyectarDocsSAP
                 Hasta = DateTime.Today,
             };
             this.bsFiltroHistorico.DataSource = this._filtroConsultaHistorico;
+            //se asignan los bindings en los controles de visualización
+            
+            ctrlDocsError.SetData(_docsConError);
+            ctrlDocsLogs.SetData(_logs);
         }
         #region Timer Region
         private void cmdIniciar_Click(object sender, EventArgs e)
@@ -58,7 +65,7 @@ namespace jb.presentacion.InyectarDocsSAP
         {
             this.numConsultas++;
             this.lblIntentos.Text = "Num: " + numConsultas.ToString();
-            if (!this.procesando)
+            if (!this.procesando && !backgroundWorkerSyncDocs.IsBusy)
             {
                 backgroundWorkerSyncDocs.RunWorkerAsync();
             }
@@ -108,58 +115,82 @@ namespace jb.presentacion.InyectarDocsSAP
             else
                 action();
         }
-
-        private bool procesando = false;
-        private int numConsultas = 0;
         
         private void procesarDocumentos()
         {
             var syncBusiness = new SincronizationBusiness();
+            //errores no controlados en la capa de negocio
             syncBusiness.onError += (err) =>
             {
                 // cuando se da un error se para el timer y mustra el msg
-                iniciar(false);
-                MessageBox.Show(err);
+                RunOnUI(() =>
+                {
+                    iniciar(false);
+                    MessageBox.Show(err);
+                });
             };
             syncBusiness.onDocsToSync += (docs) =>
             {
                 if (docs.Count == 0)
                     return;
-
+                //muestra los documentos a sincronizar
                 RunOnUI(() =>
                 {
-                    //muestra los documentos a sincronizar
-                    _docsToSync=docs;
+                    _docsToSync= new BindingList<DocsToSyncMsg>(docs);
                     ctrDocsToSync.SetData(_docsToSync);
+                    ctrDocsToSync.RefreshMensgesOnSync();
                 });
             };
+            //actualizaciones de sincronización o error
             syncBusiness.onChangeSyncStatus += (docOnSync) =>
             {
                 //actualiza el estado de la sincronización
                 RunOnUI(() =>
                 {
+                    if (_docsToSync == null || _docsToSync.Count == 0)
+                        return;
                     var doc = _docsToSync.FirstOrDefault(d => d.IdCache == docOnSync.IdCache);
                     if (doc != null)
                     {
                         doc.MensajesSincronizacion = docOnSync.MensajesSincronizacion;
                         ctrDocsToSync.RefreshMensgesOnSync();
+                        if (doc.TieneError)
+                        {
+                            UpdateGridControl(doc, ctrlDocsError, _docsConError);
+                            lblError.Text = "Error: " + _docsConError.Count.ToString();
+                        }
                     }
-
                 });
             };
             //Cuando se sincroniza mando al log
             syncBusiness.onDocSyncOK += (docSincronizado) =>
             {
-                _docsToSync.RemoveAll(d => d.IdCache==docSincronizado.IdCache);
-                _logs.Add(docSincronizado);
-                ctrlDocsLogs.SetData(_logs);
+                RunOnUI(() =>
+                {
+                    UpdateGridControl(docSincronizado, ctrlDocsLogs, _logs);
+                    lblOk.Text = "OK: " + _logs.Count.ToString();
+                });
             };
             syncBusiness.SincronizarPedidoYCobros();
         }
 
-        
 
-        FiltroHistoricoMsg _filtroConsultaHistorico;
+        private void UpdateGridControl(DocsToSyncMsg docSincronizado, DocsToSyncViewer ctrl, BindingList<DocsToSyncMsg> list)
+        {
+            var docEnList = list.FirstOrDefault(d => d.IdCache == docSincronizado.IdCache);
+            // no hay opción que este documento exista previemante en la grilla de destino por eso solo se lo añade
+            if (docEnList == null)
+            {
+                list.Add(docSincronizado);
+                ctrl.RefreshMensgesOnSync();
+            }
+            // remuevo el item del control por sincronizar (o dio error o se sincronizó)
+            var item = _docsToSync.FirstOrDefault(d => d.IdCache == docSincronizado.IdCache);
+            if (item != null) {
+                _docsToSync.Remove(item);
+                ctrDocsToSync.RefreshMensgesOnSync();
+            }
+        }
         private void frmSyncAppVET_Load(object sender, EventArgs e)
         {
             inicializarBindings();
@@ -168,16 +199,16 @@ namespace jb.presentacion.InyectarDocsSAP
         private void ConsultarHistorico()
         {
             cmdConsultarHistorico.Enabled = false;
-            ordenMsgBindingSource.Clear();
             this.bsFiltroHistorico.EndEdit();
             var syncBusiness = new SincronizationBusiness();
             syncBusiness.onError += (err) => { MessageBox.Show(err); };
             if (this._filtroConsultaHistorico.TipoDocumento == "Pedido")
             {
                 var pedidos = syncBusiness.ConsultarHistoricoPedidos(this._filtroConsultaHistorico);
-                ordenMsgBindingSource.DataSource = pedidos;
-                if (pedidos != null && pedidos.Count > 0)
-                    setCurrentPedido(pedidos[0]);
+                if (pedidos != null && pedidos.Count > 0) {
+                    ctrResultado.SetData(new BindingList<DocsToSyncMsg>(pedidos));
+                }
+                    
             }
             else
             {
@@ -186,22 +217,15 @@ namespace jb.presentacion.InyectarDocsSAP
             cmdConsultarHistorico.Enabled = true;
         }
 
-        private void setCurrentPedido(OrdenMsg me)
-        {
-            bsCurrentPedido.DataSource = me;
-            bsCurrentPedido.EndEdit();
-        }
+        
 
-        private void dgResultadoBusqueda_SelectionChanged(object sender, EventArgs e)
-        {
-            if (dgResultadoBusqueda.CurrentRow != null && dgResultadoBusqueda.CurrentRow.DataBoundItem != null)
-                this.setCurrentPedido((OrdenMsg)dgResultadoBusqueda.CurrentRow.DataBoundItem);
-        }
+        
 
         private void backgroundWorkerSyncDocs_DoWork(object sender, DoWorkEventArgs e)
         {
             this.procesando = true;
             procesarDocumentos();
+            this.procesando = false;
         }
 
         private void backgroundWorkerSyncDocs_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

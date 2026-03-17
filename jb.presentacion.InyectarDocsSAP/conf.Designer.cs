@@ -25,7 +25,7 @@ namespace jb.presentacion.InyectarDocsSAP {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
         public int IntervaloPoolingSegundos {
             get {
                 return ((int)(this["IntervaloPoolingSegundos"]));

@@ -235,6 +235,7 @@ namespace jbp.business.hana
                  and NRO_DOCUMENTO='{1}'
                  and TIPO_DOCUMENTO='{2}'    
                  and PUNTOS={3}
+                 and to_char(FECHA_TX,'yyyy-mm-dd')=to_char(current_date,'yyyy-mm-dd')
             ",
             documento.id, documento.numFactura, documento.tipoDocumento, documento.puntos);
             var numreg = new BaseCore().GetIntScalarByQuery(sql);

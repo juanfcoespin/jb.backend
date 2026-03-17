@@ -46,7 +46,6 @@ namespace jbp.core.sapDiApi
                 ms= "Error: "+this.Company.GetLastErrorDescription();
 
             }
-            this.sendNotififacationMessage(ms);
             return ms;
         }
         public OrdenMsg GetById(int id)

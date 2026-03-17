@@ -24,22 +24,10 @@ namespace jbp.business.hana
             try
             {
                 /*
-             Primero sincroniza los pedidos, y reutiliza la misma conección a sap 
-             para sincronizar los cobros
-             */
-                var ordenBussines = new jbp.business.hana.OrderBusiness();
-                ordenBussines.onError += (string err) =>
-                {
-                    if (this.pedidoActual != null)
-                    {
-                        NofifySyncStatus(this.pedidoActual, err, eTipoMsg.Error);
-                        RegistrarErrEnCache(this.pedidoActual, err);
-                    }
-                    else
-                        RaiseError(err);
-                    NotificarErrorPorCorreo(err);
-                };
-                var pedidos = ordenBussines.GetOrderToSync();
+                 Primero sincroniza los pedidos, y reutiliza la misma conexión a sap 
+                 para sincronizar los cobros
+                */
+                var pedidos = GetOrderToSync();
                 if (pedidos != null && pedidos.Count > 0)
                 {
                     this.pedidoActual = pedidos[0];
@@ -57,6 +45,31 @@ namespace jbp.business.hana
                 RaiseError(e.Message + e.StackTrace);
             }
             
+        }
+        
+        private static void ActualizarEstado(string id, string estado)
+        {
+            var sql = string.Format(@"
+                update JB_CACHE_PEDIDOS
+                set PROCESANDO={0}
+                where ID={1}
+            ", estado, id);
+            new BaseCore().Execute(sql);
+        }
+        private OrdenMsg GetOrderdenMsgFromStrJson(string strJson, string idCache, string fechaSyncVendedor)
+        {
+            var order = TechTools.Serializador.SerializadorJson.Deserializar(typeof(OrdenMsg), strJson);
+            var ms = (OrdenMsg)order;
+            ms.IdCache = idCache;
+
+            ms.FechaSincronizacionVendedor = fechaSyncVendedor;
+            ms.Lines.ForEach(line => {
+                if (string.IsNullOrEmpty(line.Articulo) && !string.IsNullOrEmpty(line.CodArticulo))
+                    line.Articulo = ProductBusiness.GetNombreArticuloByCodigo(line.CodArticulo);
+                if (line.price > 0)
+                    line.price = Math.Round(line.price, 2);
+            });
+            return ms;
         }
 
         private void RegistrarErrEnCache(OrdenMsg pedido, string err)
@@ -97,7 +110,6 @@ namespace jbp.business.hana
             var sapPedido = new jbp.core.sapDiApi.SapOrder();
             this.pedidoActual = pedidos[0];
             sapPedido.onNotififacationMessage += (msg) => {
-                this.pedidoActual.Status += string.Format("{0}: {1}", DateTime.Now.ToString(), msg);
                 NofifySyncStatus(this.pedidoActual,msg);
             };
             if (sapPedido.Connect())
@@ -110,29 +122,64 @@ namespace jbp.business.hana
                         var resp = sapPedido.Add(pedido);
                         if (resp == "ok")
                         {
-                            var orderBusiness = new OrderBusiness();
-                            orderBusiness.onError += (msg) => { NofifySyncStatus(this.pedidoActual, msg, eTipoMsg.Error); };
-                            orderBusiness.MoveToHistorico(pedido);
+                            NofifySyncStatus(pedido, "Pedido registrado en SAP correctamente!!");
+                            MoveToHistorico(pedido);
                             onDocSyncOK?.Invoke(pedido);
                         }
                         else
                         {
-                            NofifySyncStatus(this.pedidoActual, resp, eTipoMsg.Error);
+                            NofifySyncStatus(pedido, "Registrando err en bdd");
                             RegistrarErrEnCache(this.pedidoActual, resp);
+                            NotificarErrorPorCorreo(resp);
+                            NofifySyncStatus(this.pedidoActual, resp, eTipoMsg.Error);
                         }
                     }
-                }
-                catch {
                     sapPedido.Disconnect();
                 }
+                catch (Exception e)
+                {
+                    sapPedido.Disconnect();
+                    RaiseError(e.Message + e.StackTrace);
+                }
+            }
+        }
+        internal void MoveToHistorico(OrdenMsg me)
+        {
+            try
+            {
+                NofifySyncStatus(me, "Moviendo pedido a histórico...");
+                var strMsg = TechTools.Serializador.SerializadorJson.Serializar(me);
+                string strTotal = me.Total.ToString();
+                strTotal = strTotal.Replace(",", ".");
+                var sql = string.Format(@"
+                    insert into JB_HISTORICO_PEDIDOS(ID, FECHA_SINCRONIZACION, VENDEDOR, CLIENTE, MONTO, MSG)
+                    values ({0},'{1}', '{2}', '{3}',{4}, '{5}')
+                ", me.IdCache, me.FechaSincronizacionVendedor, me.Vendedor, me.Cliente, strTotal, strMsg);
+                new BaseCore().Execute(sql);
+                // se borra el pedido sincronizado de cache
+                NofifySyncStatus(me, "Eliminando pedido del caché...");
+                sql = string.Format(@"
+                    delete from JB_CACHE_PEDIDOS where ID={0}
+                ", me.IdCache);
+                new BaseCore().Execute(sql);
+            }
+            catch (Exception e)
+            {
+                var err = e.Message + e.StackTrace;
+                RaiseError(err);
             }
         }
 
         private void NofifySyncStatus(DocsToSyncMsg docToSync, string msg, eTipoMsg tipoMsg=eTipoMsg.Info)
         {
+            // para que no se dupliquen los mensajes
+            if (docToSync.MensajesSincronizacion.Exists(ms => ms.Msg == msg))
+                return;
             //concatenar con el status anterior
             docToSync.MensajesSincronizacion.Add(new MsgSincronizacion {
-                FechaLog= DateTime.Now,
+
+                Key= Guid.NewGuid().ToString(),
+                FechaLog = DateTime.Now,
                 Msg = msg,
                 TipoMsg = tipoMsg,
             }); 
@@ -149,9 +196,42 @@ namespace jbp.business.hana
             onDocsToSync?.Invoke(docsToSync);
         }
 
-        public List<OrdenMsg> ConsultarHistoricoPedidos(FiltroHistoricoMsg filtro)
+        public List<OrdenMsg> GetOrderToSync()
         {
             var ms = new List<OrdenMsg>();
+            try
+            {
+                var sql = string.Format(@"
+                    SELECT
+                     ID,
+                     to_char(FECHA_SINCRONIZACION, 'YYYY-MM-DD HH24:MI:SS') ""FECHA_SINCRONIZACION"",
+                     MSG FROM JB_CACHE_PEDIDOS
+                    where PROCESANDO=0
+                ");
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql);
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        var id = dr["ID"].ToString();
+                        ActualizarEstado(id, "1");
+                        var msgJson = dr["MSG"].ToString();
+                        var pedido = GetOrderdenMsgFromStrJson(msgJson, id, dr["FECHA_SINCRONIZACION"].ToString());
+                        pedido.MensajesSincronizacion = new List<MsgSincronizacion>();
+                        ms.Add(pedido);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                RaiseError(e.Message + e.StackTrace);
+            }
+            return ms;
+        }
+        public List<DocsToSyncMsg> ConsultarHistoricoPedidos(FiltroHistoricoMsg filtro)
+        {
+            var ms = new List<DocsToSyncMsg>();
             try
             {
                 
@@ -159,6 +239,7 @@ namespace jbp.business.hana
                 var hasta = filtro.Hasta.ToString("yyyy-MM-dd");
                 var sql = string.Format(@"
                     select
+                     ID,
                      to_char(FECHA_SINCRONIZACION,'yyyy-mm-dd hh24:mi:ss') FECHA_SINCRONIZACION,
                      to_char(FECHA_INGRESO_SAP,'yyyy-mm-dd hh24:mi:ss') FECHA_INGRESO_SAP,
                      VENDEDOR,
@@ -178,12 +259,9 @@ namespace jbp.business.hana
                     foreach (DataRow dr in dt.Rows)
                     {
                         var jsonPedido = dr["MSG"].ToString();
-                        var obj = TechTools.Serializador.SerializadorJson.Deserializar(typeof(OrdenMsg), jsonPedido);
-                        OrdenMsg pedido =(OrdenMsg)obj;
-                        pedido.Lines.ForEach(line => {
-                            line.Articulo = ProductBusiness.GetNombreArticuloByCodigo(line.CodArticulo);
-                        });
-                        pedido.FechaSincronizacionVendedor = dr["FECHA_SINCRONIZACION"].ToString();
+                        var idCache = dr["ID"].ToString();
+                        var fechaSincronizacionVendedor = dr["FECHA_SINCRONIZACION"].ToString();
+                        var pedido = GetOrderdenMsgFromStrJson(jsonPedido, idCache, fechaSincronizacionVendedor);
                         pedido.FechaIngresoSap= dr["FECHA_INGRESO_SAP"].ToString();
                         ms.Add(pedido);
                     }

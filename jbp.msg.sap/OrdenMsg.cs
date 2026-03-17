@@ -42,8 +42,6 @@ namespace jbp.msg.sap
         }
         public int Id { get; set; }
         
-        public string Status { get; set; }
-
         public OrdenMsg()
         {
             this.Lines = new List<OrdenLinesMsg>();
