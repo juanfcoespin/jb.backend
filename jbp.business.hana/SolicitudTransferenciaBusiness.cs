@@ -119,17 +119,27 @@ namespace jbp.business.hana
                      ""JbpVw_OrdenFabricacion"" t1 on cast(t1.""DocNum"" as nvarchar(50)) = t0.""DocNumOrdenFabricacion""
                     where
                      t0.""DocStatus"" = 'O'--Abierto
-                     and upper(""Serie"") like '%{0}%' 
+                     and upper(""Serie"") like ? 
                      and t1.""Estado"" = 'Liberado'
-                     and upper(t0.""BodegaOrigen"") = '{1}' -- porque se enviará de MAT->PSJ (picking) luego de PSJ->PROD (área pesaje)
+                     and upper(t0.""BodegaOrigen"") = ? -- porque se enviará de MAT->PSJ (picking) luego de PSJ->PROD (área pesaje)
                      and t1.""FraccionadoPesaje"" != 'SI'  
-                ", filtro.linea, filtro.CodBodegaMat);
+                ");
+                var parametros = new Dictionary<string, object> {
+                    {"@0","%"+filtro.linea+"%"},
+                    {"@1",filtro.CodBodegaMat }
+                };
                 if (!string.IsNullOrEmpty(filtro.docNumOF))
-                    sql += string.Format(@" and t1.""DocNum""={0}", filtro.docNumOF);
+                {
+                    sql += string.Format(@" and t1.""DocNum""=?");
+                    parametros.Add("@3", filtro.docNumOF);
+                }
                 if (!string.IsNullOrEmpty(filtro.articulo))
-                    sql += string.Format(@" and upper(t1.""Articulo"") like '%{0}%'", filtro.articulo.ToUpper());
+                {
+                    sql += string.Format(@" and upper(t1.""Articulo"") like ?");
+                    parametros.Add("@4", "%"+filtro.articulo.ToUpper()+"%");
+                }
                 var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql);
+                var dt = bc.GetDataTableByQuery(sql, parametros);
                 if (dt != null && dt.Rows.Count > 0)
                 {
                     foreach (DataRow dr in dt.Rows)
@@ -180,12 +190,14 @@ namespace jbp.business.hana
   	            and t2.COD_ARTICULO=t0.""CodArticulo""
   	            and t2.CANTIDAD>t0.""CantidadAbierta""
                where
-                t0.""IdSolicitudTraslado"" = {0}
+                t0.""IdSolicitudTraslado"" = ?
                 and t0.""LineStatus""='O' --abierto
                 and t2.LOTE is null --solo las lineas que no tienen lotes transferidos a PSJ
-            ", id);
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",id }
+            });
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -235,7 +247,7 @@ namespace jbp.business.hana
                 ""JbpVw_Lotes"" t3 on t3.""Lote""=t2.""Lote"" and t3.""CodArticulo""=t2.""CodArticulo"" left outer join
                 JB_LOTES_PESAJE t6 on t6.ID_ST=t0.""IdSolicitudTraslado"" and t6.LOTE=t3.""Lote"" and t6.COD_ARTICULO=t0.""CodArticulo""
             where
-                t0.""IdSolicitudTraslado"" = {0}
+                t0.""IdSolicitudTraslado"" = ?
                 and t0.""LineStatus""='O' --abierto
                 and t2.""DireccionTexto"" = 'Asignada'
                 and t2.""Cantidad"">0
@@ -244,9 +256,11 @@ namespace jbp.business.hana
              ""CantidadReservada"">0
              and ""Cantidad"">""CantidadPesaje""
 
-            ", id);
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",id }
+            });
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -283,11 +297,13 @@ namespace jbp.business.hana
                  ""JbpVw_UbicacionPorLote"" t4 on t4.""IdLote""=t3.""Id"" left outer join
                  ""JbpVw_Ubicaciones"" t5 on t5.""Id""=t4.""IdUbicacion""
                 where
-                 t3.""Id"" = {0}
-                 and t5.""Ubicacion"" like '{1}%'
-            ", idLote, bodegaOrigen);
+                 t3.""Id"" = ?
+                 and t5.""Ubicacion"" like ?
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",idLote }, {"@1",bodegaOrigen+"%"}
+            });
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -324,11 +340,13 @@ namespace jbp.business.hana
                  ""JbpVw_UbicacionPorLote"" t3 on t3.""IdLote"" = t2.""Id"" and t3.""CodBodega"" = t1.""Bodega"" left outer join
                  ""JbpVw_Ubicaciones"" t4 on t4.""Id"" = t3.""IdUbicacion""
                 where
-                 t0.""IdSolicitudTraslado"" = {0}
+                 t0.""IdSolicitudTraslado"" = ?
                  and t1.""DireccionTexto"" = 'Asignada'
-            ", id);
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",id }
+            });
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)

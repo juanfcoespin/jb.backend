@@ -33,12 +33,14 @@ namespace jbp.business.hana
                  JB_CATALOG_VALUES T0 inner join
                  JB_CATALOG T1 ON T1.ID=T0.ID_CATALOG
                 WHERE
-                 T1.NAME='{0}'
-            ",catalogName);
+                 T1.NAME=?
+            ");
             if (ordenado)
                 sql += " order by T0.VALUE";
             var bc = new BaseCore();
-            var dt=bc.GetDataTableByQuery(sql);
+            var dt=bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+               {"@0",catalogName }
+            });
             foreach (DataRow dr in dt.Rows) {
                 ms.Add(new ItemCatalogo { 
                     id = bc.GetInt(dr["ID"]),

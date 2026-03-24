@@ -24,7 +24,6 @@ namespace jbp.msg.sap
      */
     public class OrdenMsg:DocsToSyncMsg
     {
-        public string CodCliente { get; set; }
         public string Comentario { get; set; }
         public List<OrdenLinesMsg> Lines { get; set; }
         public override double Total
@@ -38,7 +37,7 @@ namespace jbp.msg.sap
         }
         public override string TipoDocumento
         {
-            get { return "Pedido de Venta"; }
+            get { return eTipoDocToSync.Pedido.ToString(); }
         }
         public int Id { get; set; }
         

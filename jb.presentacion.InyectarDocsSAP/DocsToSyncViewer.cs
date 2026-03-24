@@ -31,24 +31,46 @@ namespace jb.presentacion.InyectarDocsSAP
             if (bsDocs.Count == 0)
             {
                 bsMensajes.DataSource = null;
-                bsCurrentPedido.DataSource = null;
+                bsCurrentDocToSync.DataSource = null;
                 return;
             }
 
             if (bsDocs.Current is DocsToSyncMsg doc)
             {
                 bsMensajes.DataSource = doc.MensajesSincronizacion;
+                bsCurrentDocToSync.DataSource = doc;
                 if (doc.GetType() == typeof(OrdenMsg))
-                    bsCurrentPedido.DataSource = doc;
+                {
+                    tabDetalleDocToSync.SelectedTab = tpPedido;
+                    linesBindingSource.DataSource = ((OrdenMsg)doc).Lines;
+                }
+                if (doc.GetType() == typeof(PagosMsg))
+                {
+                    tabDetalleDocToSync.SelectedTab = tpCobro;
+                    docCarteraMsgBindingSource.DataSource = ((PagosMsg)doc).facturasAPagar;
+                    tipoPagoMsgBindingSource.DataSource = ((PagosMsg)doc).tiposPagoToSave;
+                }
+
+
             }
         }
 
-        public void SetData(BindingList<DocsToSyncMsg> docs) {
+        public void SetData(BindingList<DocsToSyncMsg> docs)
+        {
             bsDocs.DataSource = null;
             bsDocs.DataSource = docs;
         }
-        public void RefreshMensgesOnSync() {
+        public void RefreshMensgesOnSync()
+        {
             bsMensajes.ResetBindings(false);
+        }
+
+        private void tipoPagoMsgBindingSource_CurrentChanged(object sender, EventArgs e)
+        {
+            if (tipoPagoMsgBindingSource.Current is TipoPagoMsg tipoPago)
+            {
+                chequeMsgBindingSource.DataSource = tipoPago.cheques;
+            }
         }
     }
 }

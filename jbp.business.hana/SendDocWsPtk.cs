@@ -71,9 +71,15 @@ namespace jbp.business.hana
         {
             var sql = string.Format(@"
                 insert into JBP_ACELERADORES(PERIODO, RUC, PUNTOS, FECHA_ENVIO, COD_RESPUESTA_WS, MSG_RESPUESTA_WS) 
-                values('{0}', '{1}', {2}, CURRENT_TIMESTAMP, {3}, '{4}')
-            ", periodo, acelerador.nroDocumento, acelerador.puntos, resp.codigo, resp.mensaje);
-            new BaseCore().Execute(sql);
+                values(?, ?, ?, CURRENT_TIMESTAMP, ?, ?)
+            ");
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                {"@0",periodo },
+                {"@1",acelerador.nroDocumento },
+                {"@2",acelerador.puntos },
+                {"@3",resp.codigo },
+                {"@4",resp.mensaje }
+            });
         }
 
         public void SendDocumentosToWS(List<DocumentoPromotickMsg> documentos, bool esNcAjuste=false)
@@ -108,16 +114,26 @@ namespace jbp.business.hana
                         //se inserta la NC por ajuste
                         var sql = string.Format(@"
                             insert into JBP_NC_MANUALES(FECHA_FACTURA, NUM_FOLIO, RUC_PRINCIPAL, MONTO_FACTURA, PUNTOS, DESCRIPCION)
-                            VALUES('{0}', '{1}', '{2}', {3}, {4}, '{5}')
-                        ",nc.fechaFactura, nc.numFactura, nc.numDocumento, nc.montoFactura, nc.puntos, nc._description);
-                        bc.Execute(sql);
+                            VALUES(?, ?, ?, ?, ?, ?)
+                        ");
+                        bc.Execute(sql, new Dictionary<string, object> {
+                            {"@0",nc.fechaFactura },
+                            {"@1", nc.numFactura },
+                            {"@2",nc.numDocumento },
+                            {"@3", nc.montoFactura },
+                            {"@4",nc.puntos },
+                            {"@5",nc._description }
+                        });
                         // se borra NC de documentos temporales
                         sql = string.Format(@"
                             delete from JBP_TMP_DOCS_PTK
-                            where NUMDOCUMENTO='{0}'
-                            and NUMFACTURA='{1}'
-                        ", nc.numDocumento, nc.numFactura);
-                        bc.Execute(sql);
+                            where NUMDOCUMENTO=?
+                            and NUMFACTURA=?
+                        ");
+                        bc.Execute(sql, new Dictionary<string, object> {
+                            {"@0", nc.numDocumento },
+                            {"@1", nc.numFactura }
+                        });
                     }
                 }
 
@@ -146,18 +162,20 @@ namespace jbp.business.hana
                             FECHA_TX, NUM_INTENTOS_TX, TIPO_DOCUMENTO, 
                             FECHA_DOCUMENTO_ORIGINAL, DESCRIPCION
                         )values(
-                            {0},'{1}','{2}',
-                            '{3}',{4},{5},
-                            NOW(),1,'{6}',
-                            '{7}', '{8}'
+                            ?,?,?,
+                            ?,?,?,
+                            NOW(),1,?,
+                            ?, ?
                         )
-                    ", documento.id, documento.fechaFactura, documento.numFactura,
-                    documento.numDocumento, documento.montoFactura, documento.puntos,
-                    documento.tipoDocumento, 
-                    documento.fechaDocumentoOriginal, documento.descripcion
+                    "
                     );
                     var bc = new BaseCore();
-                    bc.Execute(sql);
+                    bc.Execute(sql, new Dictionary<string, object> {
+                        {"@0", documento.id }, {"@1",documento.fechaFactura }, {"@2",documento.numFactura },
+                        {"@3",documento.numDocumento }, {"@4",documento.montoFactura }, {"@5",documento.puntos },
+                        {"@6",documento.tipoDocumento },
+                        {"@7",documento.fechaDocumentoOriginal}, {"@8",documento.descripcion }
+                    });
                 }
             });
         }
@@ -182,12 +200,14 @@ namespace jbp.business.hana
             var bc = new BaseCore();
             var sql = string.Format(@"
                 update JBP_LOG_ENVIO_DOCUMENTOS_PTK 
-                 set COD_RESPUESTA_WS={0},
-                 MSG_RESPUESTA_WS='{1}'
+                 set COD_RESPUESTA_WS=?,
+                 MSG_RESPUESTA_WS=?
                 where 
-                 NRO_DOCUMENTO='{2}' 
-            ", item.codigo, item.mensaje, item.numFactura);
-            bc.Execute(sql);
+                 NRO_DOCUMENTO=? 
+            ");
+            bc.Execute(sql, new Dictionary<string, object> {
+                {"@0", item.codigo }, {"@1",item.mensaje }, {"@2",item.numFactura }
+            });
         }
         private void GestionarRespuestaWS(RespPtkWSFacturasMsg resp)
         {
@@ -256,12 +276,13 @@ namespace jbp.business.hana
             documento.numIntentosTx +=1;
             var sql = string.Format(@"
                 update JBP_LOG_ENVIO_DOCUMENTOS_PTK 
-                set NUM_INTENTOS_TX={0},
+                set NUM_INTENTOS_TX=?,
                 FECHA_TX=NOW()
-                where ID_DOCUMENTO={1} and TIPO_DOCUMENTO='{2}'
-            ",
-            documento.numIntentosTx, documento.id, documento.tipoDocumento);
-            new BaseCore().Execute(sql);
+                where ID_DOCUMENTO=? and TIPO_DOCUMENTO=?
+            ");
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                {"@0",documento.numIntentosTx }, {"@1",documento.id }, {"@2",documento.tipoDocumento }
+            });
         }
     }
 }

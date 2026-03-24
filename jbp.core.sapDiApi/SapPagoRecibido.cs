@@ -25,7 +25,7 @@ namespace jbp.core.sapDiApi
         {
             //this.Connect();
         }
-        public void SafePago(PagosMsg me)
+        public string SafePago(PagosMsg me)
         {
             try
             {
@@ -41,7 +41,7 @@ namespace jbp.core.sapDiApi
                  - Un Documento de Pago SAP puede contener una o mas facturas, pero un solo tipo de pago (por reglas de JB)
                  - Se registran todos los pagos o ninguno incluidas NC si aplica (se lo maneja como una transacción atómica)
                 */
-                Notify("Iniciando Transacción");
+                sendNotififacationMessage("Iniciando Transacción");
                 this.Company.StartTransaction();
                 var requiereNC = this.RequiereCreacionNotaCredito(me);
                 if (requiereNC)
@@ -50,7 +50,7 @@ namespace jbp.core.sapDiApi
                 setSaldosPorTipoPago(me);
 
                 me.tiposPagoToSave.ForEach(tipoPago => {
-                    Notify("Distribuyendo Pagos en Facturas");
+                    sendNotififacationMessage("Distribuyendo Pagos en Facturas");
                     DistribuirTipoPagoEnFacturas(tipoPago, me.facturasAPagar);
                     // Una vez distribuidos los pagos del tipo de pago a las facturas:
                     RegistrarTipoPagoEnSap(me,tipoPago);
@@ -63,10 +63,11 @@ namespace jbp.core.sapDiApi
                     this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
                 }
                 catch { }
-                throw new Exception(ex.Message);
+                return ex.Message+ex.StackTrace;
             }
             this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
-            Notify("Transacción Completada");
+            sendNotififacationMessage("Transacción Completada");
+            return "ok";
         }
 
         private void DistribuirTipoPagoEnFacturas(TipoPagoMsg tipoPagoActual, List<DocCarteraMsg> facturasAPagar)
@@ -190,22 +191,13 @@ namespace jbp.core.sapDiApi
 
         private void setSaldosPorTipoPago(PagosMsg me)
         {
-            establecerTotalPagadoCheques(me);
             // en tipos de pago
             me.tiposPagoToSave.ForEach(tp => tp.saldo = tp.monto);
             //en facturas
             me.facturasAPagar.ForEach(factura => factura.saldo = factura.toPayMasProntoPago);
         }
 
-        private void establecerTotalPagadoCheques(PagosMsg me)
-        {
-            me.tiposPagoToSave.ForEach(tp => { 
-                tp.cheques.ForEach(cheque => {
-                    tp.monto += cheque.monto;
-                    tp.monto = Math.Round(tp.monto, 2); 
-                });
-            });
-        }
+        
 
         private void addCheques(TipoPagoMsg tipoPago, dynamic pago, string numReciboCobro)
         {

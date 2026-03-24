@@ -39,7 +39,7 @@ namespace jbp.business.hana
                      --and to_char(current_date, 'mm-dd') = to_char(""U_idfecnac"", 'mm-dd')
                      and to_char(current_date, 'mm') = to_char(""U_idfecnac"", 'mm')
                 ");
-                var dt = new BaseCore().GetDataTableByQuery(sql);
+                var dt = new BaseCore().GetDataTableByQuery(sql,null);
                 var ms=new List<object>();  
                 foreach (DataRow dr in dt.Rows) {
                     ms.Add(new {

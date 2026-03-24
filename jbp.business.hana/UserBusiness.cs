@@ -111,9 +111,11 @@ namespace jbp.business.hana
             {
                 var sql = string.Format(@"
                 insert into JB_LOG(USER, APP_NAME, FECHA, OBS)
-                VALUES('{0}', '{1}', CURRENT_TIMESTAMP, '{2}')
-                ", me.UserName, me.AppName, me.Obs);
-                new BaseCore().Execute(sql);
+                VALUES(?, ?, CURRENT_TIMESTAMP, ?)
+                ");
+                new BaseCore().Execute(sql, new Dictionary<string, object> {
+                    {"@0", me.UserName }, {"@1",me.AppName }, {"@2",me.Obs }
+                });
                 return "ok";
             }
             catch(Exception e) {

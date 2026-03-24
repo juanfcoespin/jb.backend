@@ -22,9 +22,11 @@ namespace jbp.business.hana
             from
              ""JbpVw_Lotes""
             where
-             ""CodArticulo"" = '{0}'
-            ", codArticulo);
-            var dt = new BaseCore().GetDataTableByQuery(sql);
+             ""CodArticulo"" = ?
+            ");
+            var dt = new BaseCore().GetDataTableByQuery(sql,new Dictionary<string, object> {
+                {"@0", codArticulo }
+            });
             foreach (DataRow dr in dt.Rows) {
                 ms.Add(new LoteMsg
                 {

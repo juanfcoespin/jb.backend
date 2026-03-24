@@ -32,7 +32,7 @@ namespace jbp.business.hana
                 "
                 );
                 var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql);
+                var dt = bc.GetDataTableByQuery(sql,null);
                 foreach (DataRow dr in dt.Rows)
                 {
                     var dash = new Dash
@@ -70,9 +70,11 @@ namespace jbp.business.hana
             try
             {
                 var sql = string.Format(@"
-                        delete from JB_DASHBOARDS where ID={0}
-                    ", id);
-                new BaseCore().Execute(sql);
+                        delete from JB_DASHBOARDS where ID=?
+                    ");
+                new BaseCore().Execute(sql, new Dictionary<string, object> {
+                    {"@0", id }
+                });
                 return "ok";
             }
             catch (Exception e)
@@ -97,14 +99,19 @@ namespace jbp.business.hana
                 else {
                     sql = string.Format(@"
                         update JB_DASHBOARDS
-                            set NOMBRE='{0}',
-                            URL='{1}',
-                            MODULOS='{2}'
+                            set NOMBRE=?,
+                            URL=?,
+                            MODULOS=?
                         where
-                            ID={3}
-                    ", me.nombre, me.url, me.modulosStr, me.id);
+                            ID=?
+                    ");
                 }
-                new BaseCore().Execute(sql);
+                new BaseCore().Execute(sql, new Dictionary<string, object> {
+                    {"@0", me.nombre },
+                    {"@1", me.url },
+                    {"@2", me.modulosStr },
+                    {"@3", me.id }
+                });
                 if (esNuevo) {
                     sql = "select top 1 ID from JB_DASHBOARDS order by ID desc";
                     me.id = new BaseCore().GetIntScalarByQuery(sql);

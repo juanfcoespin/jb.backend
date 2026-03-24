@@ -3,7 +3,7 @@ using System;
 
 namespace jbp.msg.sap
 {
-    public class PagosMsg: ICloneable
+    public class PagosMsg: DocsToSyncMsg
     {
         public double totalAPagar { get; set; }
         public double GetTotalPagado() {
@@ -22,10 +22,21 @@ namespace jbp.msg.sap
                 }
                 return ms;
         }
+        public override string TipoDocumento
+        {
+            get { return eTipoDocToSync.Cobro.ToString(); }
+        }
+        public override double Total
+        {
+            get
+            {
+                return GetTotalPagado();
+            }
+        }
         public List<DocCarteraMsg> facturasAPagar { get; set; }
         public List<TipoPagoMsg> tiposPagoToSave { get; set; }
         public List<string> fotosComprobantes { get; set; }
-        public string CodCliente { get; set; }
+        
         public string client { get; set; }
         public string comment { get; set; }
         public string Vendedor { get; set; }
@@ -47,12 +58,26 @@ namespace jbp.msg.sap
             return ms;
         }
     }
-    public class TipoPagoMsg: ICloneable
+    public class TipoPagoMsg : ICloneable
     {
         public dynamic fechaTransferencia;
 
         public string tipoPago { get; set; }
-        public double monto { get; set; }
+        private double _monto;
+        public double monto {
+            get {
+                if (this.cheques != null && this.cheques.Count > 0) {
+                    this._monto = 0;
+                    this.cheques.ForEach(cheque => {
+                        this._monto += cheque.monto;
+                    });
+                }
+                return Math.Round(this._monto,2);
+            }
+            set{
+                this._monto = value;
+            }
+        }
         public List<ChequeMsg> cheques { get; set; }
 
         //Transferencia
@@ -72,7 +97,7 @@ namespace jbp.msg.sap
 
     public class ChequeMsg
     {
-        public dynamic monto;
+        public dynamic monto { get; set; }
 
         //cheque
         public string CodigoCuentaCheque { get; set; }

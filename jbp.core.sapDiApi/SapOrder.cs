@@ -11,7 +11,6 @@ namespace jbp.core.sapDiApi
     {
         public SapOrder()
         {
-            //this.Connect();
         }
         public string Add(OrdenMsg me)
         {

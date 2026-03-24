@@ -56,7 +56,7 @@ namespace jbp.business.hana
                  and t0.""CodTipoSocioNegocio"" = 'C'
                  and t0.""SincronizadoConBddPromotick""='NO'
             ";
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql,null);
             if (dt.Rows.Count > 0)
             {
                 foreach(DataRow dr in dt.Rows)
@@ -105,17 +105,19 @@ namespace jbp.business.hana
                             FECHA
                         )
                         VALUES(
-                         '{0}', '{1}', '{2}',
-                         {3}, '{4}', CURRENT_TIMESTAMP
+                         ?, ?, ?,
+                         ?, ?, CURRENT_TIMESTAMP
                         )
-                     ",
-                    participante.nroDocumento,
-                    campo.nombreCampo,
-                    campo.valor,
-                    resp.codigo,
-                    resp.mensaje
+                     "
+                    
                 );
-                new BaseCore().Execute(sql);
+                new BaseCore().Execute(sql, new Dictionary<string, object> {
+                    {"@0", participante.nroDocumento },
+                    {"@1", campo.nombreCampo },
+                    {"@2", campo.valor },
+                    {"@3", resp.codigo },
+                    {"@4", resp.mensaje }
+                });
             });
         }
 
@@ -135,10 +137,12 @@ namespace jbp.business.hana
              MSG_RESPUESTA_WS,
              DESCRIPCION
             from JBP_LOG_ENVIO_DOCUMENTOS_PTK
-            where RUC='{0}'
-            ", ruc);
+            where RUC=?
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",ruc }
+            });
             foreach (DataRow dr in dt.Rows)
             {
                 ms.Add(new DocumentoEnviadoMsg { 
@@ -174,9 +178,11 @@ namespace jbp.business.hana
                   set ""U_JBP_RucPrincipal""=""LicTradNum""
                  where
                   U_IXX_APLICA_PUNTOS = 'SI'
-                  and ""LicTradNum"" = '{0}'
-                ", ruc);
-                new BaseCore().Execute(sql);
+                  and ""LicTradNum"" = ?
+                ");
+                new BaseCore().Execute(sql, new Dictionary<string, object> {
+                    {"@0", ruc }
+                });
             });
         }
         public void RegistroMasivoParticipantes()
@@ -204,9 +210,11 @@ namespace jbp.business.hana
         {
             var sql = string.Format(@"
                 delete from JBP_PARTICIPANTES_A_DESACTIVAR
-                where RUC='{0}'
-            ",ruc);
-            new BaseCore().Execute(sql);
+                where RUC=?
+            ");
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                { "@0", ruc } 
+            });
         }
 
         private List<ParticipantesPuntosMsg> GetParticipantesToInactivate()
@@ -216,9 +224,8 @@ namespace jbp.business.hana
                  RUC
                 from
                  JBP_PARTICIPANTES_A_DESACTIVAR
-                -- where RUC='1311218786'
             ";
-            var dtRucs = new BaseCore().GetDataTableByQuery(sql);
+            var dtRucs = new BaseCore().GetDataTableByQuery(sql, null);
             var ms = GetParticipantesByRucs(dtRucs, "RUC", -1); //estado -1 para desactivar
             return ms;
         }
@@ -236,7 +243,7 @@ namespace jbp.business.hana
                  and ""SincronizadoConBddPromotick"" = 'NO'
                  and ""CodTipoSocioNegocio"" = 'C'
             ";
-            var dtRucs = new BaseCore().GetDataTableByQuery(sql);
+            var dtRucs = new BaseCore().GetDataTableByQuery(sql, null);
             var ms = GetParticipantesByRucs(dtRucs, "Ruc",1); //estado 1 para actualizar o insertar
             return ms;
         }
@@ -443,21 +450,23 @@ namespace jbp.business.hana
                     COD_WS, MSG_WS
                 )
                 VALUES(
-                 CURRENT_TIMESTAMP, {0}, '{1}', '{2}',
-                 '{3}', {4}, '{5}',
-                 '{6}', '{7}', '{8}',
-                 '{9}', {10}, {11},
-                  {12}, '{13}', {14},
-                  {15}, '{16}'
+                 CURRENT_TIMESTAMP, ?, ?, ?,
+                 ?, ?, ?,
+                 ?, ?, ?,
+                 ?, ?, ?,
+                 ?, ?, ?,
+                 ?, ?
                 )
-             ", me.estado, me.nombres, me.apellidos,
-              me.email, me.tipoDocumento, me.nroDocumento,
-              me.clave, me.fechaNacimiento, me.celular,
-              me.telefono, me.tipoGenero, me.idCatalogo,
-              me.tipoCatalogo, me.vendedor, me.metaAnual,
-              resp.codigo, resp.mensaje
+             "
              );
-            new BaseCore().Execute(sql);
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+              {"@0", me.estado },{"@1", me.nombres },{"@2", me.apellidos },
+              {"@3",me.email }, {"@4",me.tipoDocumento }, {"@5",me.nroDocumento },
+              {"@6",me.clave }, {"@7",me.fechaNacimiento }, {"@8",me.celular },
+              {"@9",me.telefono }, {"@10",me.tipoGenero }, {"@11",me.idCatalogo },
+              {"@12",me.tipoCatalogo }, {"@13",me.vendedor }, {"@14",me.metaAnual },
+              {"@15",resp.codigo }, {"@16",resp.mensaje }
+            });
         }
        
         public bool ParticipanteValido(string rucPrincipal, ref string errorParticipante) {
@@ -638,13 +647,12 @@ namespace jbp.business.hana
                  ""JbpVw_Vendedores"" t1 on t1.""CodVendedor"" = t0.""CodVendedor""
                 where
                  t0.""Ruc"" = t0.""RucPrincipal""
-                 and t0.""Ruc"" = '{0}'
+                 and t0.""Ruc"" = ?
                  and t0.""Activo"" = 'Y'
                  and t0.""AplicaPuntos"" = 'SI'
                  and t0.""CodTipoSocioNegocio"" = 'C'
-            ", ruc);
-            
-            var dt = bc.GetDataTableByQuery(sql);
+            ");
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> { { "@0", ruc } });
             if (dt.Rows.Count > 0)
             {
                 ms.Activo = true;
@@ -692,10 +700,12 @@ namespace jbp.business.hana
                  ""montoFactura"",
                  ""puntos""
                 from ""JbpVw_FacturasMasNCParticipantes""
-                where ""RucPrincipal"" = '{0}'
+                where ""RucPrincipal"" = ?
                     
-            ", ruc);
-            var dt = new BaseCore().GetDataTableByQuery(sql);
+            ");
+            var dt = new BaseCore().GetDataTableByQuery(sql, new Dictionary<string, object> { 
+                { "@0", ruc } 
+            });
             if (dt.Rows.Count > 0) {
                 foreach(DataRow dr in dt.Rows) {
                     ms.Add(new DocumentoParticipanteMsg

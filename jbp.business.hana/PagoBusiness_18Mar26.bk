@@ -43,10 +43,27 @@ namespace jbp.business.hana
             
             if (pagos != null && pagos.Count > 0)
             {
+                var clientId = pagos[0].ClientId;
                 pagos.ForEach(pago =>
                 {
-                   ms.Add(ProcessPago(pago, correosPendientes));
+                    var numIntentos = 1;
+                    try
+                    {
+                        SendMessageToClient(clientId, "Procesando pago(s) del cliente " + pago.client, eMessageType.Success);
+                        ProcessPago(pago, correosPendientes, numIntentos, clientId);
+                        SendMessageToClient(clientId, "Pago Registrado Correctamente!!", eMessageType.Success);
+                        ms.Add("ok");
+                    }
+                    catch (Exception e)
+                    {
+                        var error = "Error al procesar el pago";
+                        error+=e.Message;
+                        error += e.StackTrace;
+                        ms.Add(error);
+                        SendMessageToClient(clientId, "Error al procesar el pago: " + error, eMessageType.Error);
+                    }
                 });
+                SendMessageToClient(clientId, "Enviando correos electrónicos");
                 // se envían los correos en otro hilo
                 EnviarCorreosAsync(correosPendientes);
             }
@@ -54,42 +71,7 @@ namespace jbp.business.hana
         }
 
 
-        private string ProcessPago(PagosMsg pago, List<PagosMsg> correosPendientes)
-        {
-            try
-            {
-                if (DuplicatePago(pago))
-                {
-                    throw new Exception("Error: Se ha identificado que este pago está duplicado. Anteriormente ya se procesó este item!");
-                }
-                else
-                {
-                    pago.facturasAPagar.ForEach(factura =>
-                    {
-                        var folioNum = GetNumFolio(factura.numDoc);
-                        factura.folioNum = folioNum;
-                        if (factura.IdFactura == 0)
-                            throw new Exception("Debe actualizar el aplicativo a la versión 3.4.7.0 o superior");
-                        factura.DatosAdicionales = FacturaBusiness.GetDatosFactura(factura.IdFactura);
-                        if (factura.DatosAdicionales != null && factura.tipoDocumento != "Cheque Protestado")
-                            factura.DocEntry = factura.DatosAdicionales.Id;
-                        if (factura.tipoDocumento == "Cheque Protestado")
-                            factura.DocEntry = FacturaBusiness.GetIdChequeProtestadoByDocNum(factura.numDoc);
-                    });
-                    correosPendientes.Add(pago);
-                    pago.JsonObj = TechTools.Serializador.SerializadorJson.Serializar(pago);
-                    return SincronizationBusiness.SaveDocEnCache(pago, eTipoDocToSync.Cobro);
-                }
-            }
-            catch (Exception e)
-            {
-                return "Error: "+e.Message + e.StackTrace;
-            }
-        }
-
-        
-
-        /*private static void ProcessPago_BK(PagosMsg pago, List<PagosMsg> correosPendientes, int numIntentos, string clientId=null)
+        private static void ProcessPago(PagosMsg pago, List<PagosMsg> correosPendientes, int numIntentos, string clientId=null)
         {
             if (numIntentos > 3)
                 throw new Exception("Se ha tratado de procesar este pago por 3 veces y no se ha podido establecer conexión con SAP!!");
@@ -137,11 +119,31 @@ namespace jbp.business.hana
                     //me vuelvo a conectar y reproceso
                     sapPagoRecibido = null;
                     numIntentos++;
-                    ProcessPago_BK(pagoBk, correosPendientes, numIntentos);
+                    ProcessPago(pagoBk, correosPendientes, numIntentos);
                 }else
                     throw e;
             }
-        }*/
+        }
+
+        private static void ConectarASap()
+        {
+            if (sapPagoRecibido == null)
+                sapPagoRecibido = new SapPagoRecibido();
+
+            if (!sapPagoRecibido.IsConected())
+            {
+                if (!sapPagoRecibido.Connect()) // cuando no se puede conectar es por que el obj sap se inhibe
+                {
+                    sapPagoRecibido = null;
+                    sapPagoRecibido = new SapPagoRecibido(); //se reinicia el objeto para hacer otro intento de conexión
+                    if (!sapPagoRecibido.Connect())
+                    {
+                        sapPagoRecibido = null;
+                        throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
+                    }
+                }
+            }
+        }
 
         private static void EnviarCorreosAsync(List<PagosMsg> pagos) {
             if (pagos == null || pagos.Count == 0)

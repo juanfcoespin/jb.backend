@@ -49,6 +49,7 @@
     <Compile Include="MarketingBusiness.cs" />
     <None Include="PagoBusinessBk_23Feb26.bk" />
     <None Include="OrdenFabricacionBusiness_24Feb26.bk" />
+    <None Include="PagoBusiness_18Mar26.bk" />
     <Compile Include="SincronizationBusiness.cs" />
     <Compile Include="SolicitudTransferenciaBusiness.cs" />
     <Compile Include="conf.Designer.cs">
@@ -68,7 +69,6 @@
     <Compile Include="LoteBusiness.cs" />
     <Compile Include="NotaCreditoBusiness.cs" />
     <Compile Include="OrdenFabricacionBusiness.cs" />
-    <Compile Include="OrderBusiness_13Ene2021.cs" />
     <Compile Include="OrderBusiness.cs" />
     <Compile Include="ReaccionesBusiness.cs" />
     <Compile Include="PagoBusiness.cs" />

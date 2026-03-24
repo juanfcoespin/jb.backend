@@ -88,7 +88,7 @@
             tabControl1.Location = new Point(12, 51);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(984, 638);
+            tabControl1.Size = new Size(1131, 641);
             tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -99,7 +99,7 @@
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(976, 610);
+            tabPage1.Size = new Size(1123, 613);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Docs en Sincronización";
             tabPage1.UseVisualStyleBackColor = true;
@@ -119,13 +119,13 @@
             ctrDocsToSync.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             ctrDocsToSync.Location = new Point(6, 22);
             ctrDocsToSync.Name = "ctrDocsToSync";
-            ctrDocsToSync.Size = new Size(1099, 554);
+            ctrDocsToSync.Size = new Size(1111, 585);
             ctrDocsToSync.TabIndex = 0;
             // 
             // lblOk
             // 
             lblOk.AutoSize = true;
-            lblOk.BackColor = SystemColors.Control;
+            lblOk.BackColor = Color.Transparent;
             lblOk.ForeColor = Color.Green;
             lblOk.Location = new Point(15, 4);
             lblOk.Name = "lblOk";
@@ -139,7 +139,7 @@
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(976, 610);
+            tabPage3.Size = new Size(976, 613);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Log Documentos Sincronizados";
             tabPage3.UseVisualStyleBackColor = true;
@@ -149,7 +149,7 @@
             ctrlDocsLogs.Dock = DockStyle.Fill;
             ctrlDocsLogs.Location = new Point(3, 3);
             ctrlDocsLogs.Name = "ctrlDocsLogs";
-            ctrlDocsLogs.Size = new Size(970, 604);
+            ctrlDocsLogs.Size = new Size(970, 607);
             ctrlDocsLogs.TabIndex = 0;
             // 
             // tabPage2
@@ -158,7 +158,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(976, 610);
+            tabPage2.Size = new Size(976, 613);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Documentos con Error";
             tabPage2.UseVisualStyleBackColor = true;
@@ -168,7 +168,7 @@
             ctrlDocsError.Dock = DockStyle.Fill;
             ctrlDocsError.Location = new Point(3, 3);
             ctrlDocsError.Name = "ctrlDocsError";
-            ctrlDocsError.Size = new Size(970, 604);
+            ctrlDocsError.Size = new Size(970, 607);
             ctrlDocsError.TabIndex = 1;
             // 
             // tabPage4
@@ -177,7 +177,7 @@
             tabPage4.Controls.Add(groupBox1);
             tabPage4.Location = new Point(4, 24);
             tabPage4.Name = "tabPage4";
-            tabPage4.Size = new Size(976, 610);
+            tabPage4.Size = new Size(976, 613);
             tabPage4.TabIndex = 3;
             tabPage4.Text = "Consulta Histórica Documentos Sincronizados";
             tabPage4.UseVisualStyleBackColor = true;
@@ -185,9 +185,9 @@
             // ctrResultado
             // 
             ctrResultado.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ctrResultado.Location = new Point(13, 105);
+            ctrResultado.Location = new Point(13, 62);
             ctrResultado.Name = "ctrResultado";
-            ctrResultado.Size = new Size(942, 502);
+            ctrResultado.Size = new Size(942, 548);
             ctrResultado.TabIndex = 2;
             // 
             // groupBox1
@@ -201,9 +201,9 @@
             groupBox1.Controls.Add(cmdConsultarHistorico);
             groupBox1.Controls.Add(label3);
             groupBox1.Controls.Add(label2);
-            groupBox1.Location = new Point(13, 5);
+            groupBox1.Location = new Point(13, 0);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(940, 92);
+            groupBox1.Size = new Size(940, 55);
             groupBox1.TabIndex = 1;
             groupBox1.TabStop = false;
             groupBox1.Text = "Filtrar Búsqueda Por:";
@@ -214,21 +214,20 @@
             groupBox4.Controls.Add(dateTimePicker1);
             groupBox4.Controls.Add(label4);
             groupBox4.Controls.Add(label5);
-            groupBox4.Location = new Point(329, 8);
+            groupBox4.Location = new Point(537, 10);
             groupBox4.Name = "groupBox4";
-            groupBox4.Size = new Size(306, 72);
+            groupBox4.Size = new Size(300, 41);
             groupBox4.TabIndex = 7;
             groupBox4.TabStop = false;
-            groupBox4.Text = "Fecha Sync Vendedor";
+            groupBox4.Text = "Fecha Sincronización del Vendedor";
             // 
             // dateTimePicker2
             // 
-            dateTimePicker2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             dateTimePicker2.DataBindings.Add(new Binding("Value", bsFiltroHistorico, "Hasta", true));
             dateTimePicker2.Format = DateTimePickerFormat.Short;
-            dateTimePicker2.Location = new Point(56, 44);
+            dateTimePicker2.Location = new Point(198, 16);
             dateTimePicker2.Name = "dateTimePicker2";
-            dateTimePicker2.Size = new Size(242, 23);
+            dateTimePicker2.Size = new Size(97, 23);
             dateTimePicker2.TabIndex = 10;
             // 
             // bsFiltroHistorico
@@ -237,18 +236,17 @@
             // 
             // dateTimePicker1
             // 
-            dateTimePicker1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             dateTimePicker1.DataBindings.Add(new Binding("Value", bsFiltroHistorico, "Desde", true));
             dateTimePicker1.Format = DateTimePickerFormat.Short;
-            dateTimePicker1.Location = new Point(56, 20);
+            dateTimePicker1.Location = new Point(56, 17);
             dateTimePicker1.Name = "dateTimePicker1";
-            dateTimePicker1.Size = new Size(242, 23);
+            dateTimePicker1.Size = new Size(84, 23);
             dateTimePicker1.TabIndex = 9;
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(8, 26);
+            label4.Location = new Point(8, 20);
             label4.Name = "label4";
             label4.Size = new Size(42, 15);
             label4.TabIndex = 2;
@@ -257,7 +255,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(8, 45);
+            label5.Location = new Point(152, 20);
             label5.Name = "label5";
             label5.Size = new Size(40, 15);
             label5.TabIndex = 3;
@@ -266,28 +264,27 @@
             // textBox2
             // 
             textBox2.DataBindings.Add(new Binding("Text", bsFiltroHistorico, "Cliente", true));
-            textBox2.Location = new Point(70, 44);
+            textBox2.Location = new Point(386, 24);
             textBox2.Name = "textBox2";
-            textBox2.Size = new Size(242, 23);
+            textBox2.Size = new Size(140, 23);
             textBox2.TabIndex = 8;
             // 
             // comboBox1
             // 
-            comboBox1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             comboBox1.DataBindings.Add(new Binding("Text", bsFiltroHistorico, "TipoDocumento", true));
             comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox1.FormattingEnabled = true;
             comboBox1.Items.AddRange(new object[] { "Pedido", "Cobro" });
-            comboBox1.Location = new Point(783, 16);
+            comboBox1.Location = new Point(71, 24);
             comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(142, 23);
+            comboBox1.Size = new Size(77, 23);
             comboBox1.TabIndex = 6;
             // 
             // label6
             // 
             label6.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label6.AutoSize = true;
-            label6.Location = new Point(719, 19);
+            label6.Location = new Point(7, 27);
             label6.Name = "label6";
             label6.Size = new Size(58, 15);
             label6.TabIndex = 5;
@@ -296,15 +293,15 @@
             // textBox1
             // 
             textBox1.DataBindings.Add(new Binding("Text", bsFiltroHistorico, "Vendedor", true));
-            textBox1.Location = new Point(70, 17);
+            textBox1.Location = new Point(216, 22);
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(242, 23);
+            textBox1.Size = new Size(110, 23);
             textBox1.TabIndex = 7;
             // 
             // cmdConsultarHistorico
             // 
             cmdConsultarHistorico.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            cmdConsultarHistorico.Location = new Point(847, 57);
+            cmdConsultarHistorico.Location = new Point(850, 19);
             cmdConsultarHistorico.Name = "cmdConsultarHistorico";
             cmdConsultarHistorico.Size = new Size(78, 23);
             cmdConsultarHistorico.TabIndex = 4;
@@ -315,7 +312,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(11, 47);
+            label3.Location = new Point(341, 30);
             label3.Name = "label3";
             label3.Size = new Size(47, 15);
             label3.TabIndex = 1;
@@ -324,7 +321,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(7, 17);
+            label2.Location = new Point(154, 27);
             label2.Name = "label2";
             label2.Size = new Size(60, 15);
             label2.TabIndex = 0;
@@ -337,7 +334,7 @@
             // cmdIniciar
             // 
             cmdIniciar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            cmdIniciar.Location = new Point(837, 695);
+            cmdIniciar.Location = new Point(984, 698);
             cmdIniciar.Name = "cmdIniciar";
             cmdIniciar.Size = new Size(75, 23);
             cmdIniciar.TabIndex = 1;
@@ -349,7 +346,7 @@
             // 
             cmdDetener.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             cmdDetener.Enabled = false;
-            cmdDetener.Location = new Point(924, 695);
+            cmdDetener.Location = new Point(1071, 698);
             cmdDetener.Name = "cmdDetener";
             cmdDetener.Size = new Size(75, 23);
             cmdDetener.TabIndex = 2;
@@ -405,9 +402,9 @@
             lblIntentos.AutoSize = true;
             lblIntentos.Location = new Point(358, 12);
             lblIntentos.Name = "lblIntentos";
-            lblIntentos.Size = new Size(37, 15);
+            lblIntentos.Size = new Size(97, 15);
             lblIntentos.TabIndex = 6;
-            lblIntentos.Text = "Num:";
+            lblIntentos.Text = "Num Busquedas:";
             // 
             // backgroundWorkerSyncDocs
             // 
@@ -418,7 +415,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1011, 739);
+            ClientSize = new Size(1158, 729);
             ControlBox = false;
             Controls.Add(lblIntentos);
             Controls.Add(label1);

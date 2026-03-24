@@ -51,7 +51,7 @@ namespace jbp.business.hana
                  JBP_NC_MANUALES
                 ";
                 var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql);
+                var dt = bc.GetDataTableByQuery(sql, null);
                 return new DocumentosPtkBusiness().GetListDocumentosPtkFromDt(dt);
             }
             catch (Exception e)

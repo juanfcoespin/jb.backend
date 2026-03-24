@@ -30,7 +30,7 @@ namespace jbp.business.hana
                  and upper(t1.""Grupo"") like '%VET%'
             ";
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, null);
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -70,12 +70,14 @@ namespace jbp.business.hana
                      ""JbpVw_UbicacionPorLote"" t0 inner join
                      ""JbpVw_Lotes"" t1 on t1.""Id"" = t0.""IdLote""
                     where
-                     t0.""CodArticulo"" = '{0}'
+                     t0.""CodArticulo"" = ?
                      and t0.""CodBodega"" = 'PT1'
 
-                ", codArticulo);
+                ");
                 var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql);
+                var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                    {"@0",codArticulo }
+                });
                 var fechaConsulta = string.Empty;
                 foreach (DataRow dr in dt.Rows)
                 {
@@ -133,13 +135,16 @@ namespace jbp.business.hana
                  ""JbpVw_Articulos""
                 where");
                 var i = 0;
+                var parametros = new Dictionary<string, object> { };
                 listPatrones.ForEach(patronCodigo => {
+                    var nombreParametro = string.Format("@{0}", i.ToString());
                     if (i > 0)
                         sql += " or ";
-                    sql += string.Format(@" ""CodArticulo"" like {0}", patronCodigo);
+                    sql += string.Format(@" ""CodArticulo"" like ?");
+                    parametros.Add(nombreParametro, "%"+patronCodigo);
                     i++;
                 });
-                var dt = new BaseCore().GetDataTableByQuery(sql);
+                var dt = new BaseCore().GetDataTableByQuery(sql, parametros);
                 foreach (DataRow dr in dt.Rows) {
                     ms.Add(new ArticuloMsg { 
                         Codigo = dr["CodArticulo"].ToString(),
@@ -169,12 +174,12 @@ namespace jbp.business.hana
                 where
                  t0.""Cantidad"" > 0
                  and t1.""Estado"" = 'Liberado'
-                 and t0.""CodArticulo"" = '{0}'
+                 and t0.""CodArticulo"" = ?
                  and t0.""CodBodega"" in ('PT2', 'PT4', 'PICK2')
                 order by t1.""FechaVencimiento""
-            ", codArticulo);
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> { { "@0", codArticulo } });
             foreach(DataRow dr in dt.Rows)
             {
                 ms.Add(new LoteMsg()
@@ -198,14 +203,18 @@ namespace jbp.business.hana
                 ""ListaPrecio"", 
                 ""Precio""
                from ""JbpVw_ListaPrecio""
-               where ""Precio""!=0 and ""CodArticulo"" = '{0}'
+               where ""Precio""!=0 and ""CodArticulo"" = ?
                and upper(""ListaPrecio"") not like '%EXPORTACION%' -- se excluyen las listas de precio de exportacion
-            ", codArticulo);
+            ");
+            var parametros = new Dictionary<string, object> {
+                {"@0",codArticulo }
+            };
             if (!string.IsNullOrEmpty(listaPrecio)){
-                sql += string.Format(@" and upper(""ListaPrecio"") like '%{0}%'", listaPrecio);
+                sql += string.Format(@" and upper(""ListaPrecio"") like ?");
+                parametros.Add("@1","%"+listaPrecio+"%");
             }
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, parametros);
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -249,7 +258,7 @@ namespace jbp.business.hana
                  ""JbVw_DetalleArticulosMarketing""
             ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql,null);
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -293,7 +302,7 @@ namespace jbp.business.hana
                  ""JbVw_GetListaPreciosVET""
             ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, null);
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)

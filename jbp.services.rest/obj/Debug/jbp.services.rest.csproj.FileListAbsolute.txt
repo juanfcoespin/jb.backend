@@ -217,8 +217,8 @@ C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Rest.dll
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Core.Hana.dll
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Net.dll
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Core.Base.dll
-C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Exceptions.dll
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Serializador.dll
+C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Exceptions.dll
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Utils.dll
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.DelegatesAndEnums.dll
 C:\JB\jb.backend\jbp.services.rest\bin\jbp.core.Oracle9i.dll
@@ -267,8 +267,8 @@ C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Core.Hana.dll.config
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Net.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Net.dll.config
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Core.Base.pdb
-C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Exceptions.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Serializador.pdb
+C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Exceptions.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.Utils.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\TechTools.DelegatesAndEnums.pdb
 C:\JB\jb.backend\jbp.services.rest\bin\jbp.core.Oracle9i.pdb

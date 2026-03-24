@@ -41,7 +41,7 @@ namespace jbp.business.hana
                 from JBP_TMP_DOCS_PTK
             ";
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql,null);
             foreach (DataRow dr in dt.Rows) {
                 var documento = new DocumentoPromotickMsg
                 {

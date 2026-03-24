@@ -23,7 +23,7 @@ namespace jbp.business.hana
               where ""CodPais"" = 'EC'
             ";
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql,null);
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)

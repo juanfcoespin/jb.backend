@@ -3,6 +3,8 @@ using jbp.msg.sap;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
 using static jbp.business.hana.SincronizationBusiness;
 
 namespace jb.presentacion.InyectarDocsSAP
@@ -15,6 +17,7 @@ namespace jb.presentacion.InyectarDocsSAP
         FiltroHistoricoMsg _filtroConsultaHistorico;
         private bool procesando = false;
         private int numConsultas = 0;
+
         public frmSyncAppVET()
         {
             InitializeComponent();
@@ -28,11 +31,52 @@ namespace jb.presentacion.InyectarDocsSAP
             };
             this.bsFiltroHistorico.DataSource = this._filtroConsultaHistorico;
             //se asignan los bindings en los controles de visualización
-            
+
             ctrlDocsError.SetData(_docsConError);
             ctrlDocsLogs.SetData(_logs);
         }
+        #region test functions
+        public static string DesencriptarCadena()
+        {
+            var Cadena = "fIR6A9KwtrBjhtxmAUsWfxPhAUOSq2VDzYgdGOgbfQhz2SXWW3eGLbQ6IAG99AervNGciLc2kPOzKsHbF441XKUw5G9uXJxKnTLH/WfVaupRInPGzUvSle264FMWbB2W";
+            byte[] buffer = Convert.FromBase64String(Cadena);
+            byte[] numArray = new byte[buffer.Length];
+            string empty = string.Empty;
+            RijndaelManaged rijndaelManaged = new RijndaelManaged();
+            using (MemoryStream memoryStream = new MemoryStream(buffer))
+            {
+                var clave = Encoding.ASCII.GetBytes("SistemaZero102zz");
+                var IV = Encoding.ASCII.GetBytes("Cadena.RequErida");
+                using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, rijndaelManaged.CreateDecryptor(clave, IV), CryptoStreamMode.Read))
+                {
+                    using (StreamReader streamReader = new StreamReader((Stream)cryptoStream, true))
+                        return streamReader.ReadToEnd();
+                }
+            }
+        }
+        public static string EncriptarCadena(string Cadena)
+        {
+            var clave = Encoding.ASCII.GetBytes("SistemaZero102zz");
+            var IV = Encoding.ASCII.GetBytes("Cadena.RequErida");
+            byte[] bytes = Encoding.ASCII.GetBytes(Cadena);
+            RijndaelManaged rijndaelManaged = new RijndaelManaged();
+            byte[] array;
+            using (MemoryStream memoryStream = new MemoryStream(bytes.Length))
+            {
+                using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, rijndaelManaged.CreateEncryptor(clave, IV), CryptoStreamMode.Write))
+                {
+                    cryptoStream.Write(bytes, 0, bytes.Length);
+                    cryptoStream.FlushFinalBlock();
+                    cryptoStream.Close();
+                }
+                array = memoryStream.ToArray();
+            }
+            return "(encriptado)" + Convert.ToBase64String(array);
+        }
+        #endregion
         #region Timer Region
+
+
         private void cmdIniciar_Click(object sender, EventArgs e)
         {
 
@@ -63,12 +107,15 @@ namespace jb.presentacion.InyectarDocsSAP
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
+
             this.numConsultas++;
             this.lblIntentos.Text = "Num: " + numConsultas.ToString();
             if (!this.procesando && !backgroundWorkerSyncDocs.IsBusy)
             {
                 backgroundWorkerSyncDocs.RunWorkerAsync();
             }
+            if(this.numConsultas==1000)
+                this.numConsultas=0;
         }
         #endregion
         #region Interfaz region
@@ -115,7 +162,6 @@ namespace jb.presentacion.InyectarDocsSAP
             else
                 action();
         }
-        
         private void procesarDocumentos()
         {
             var syncBusiness = new SincronizationBusiness();
@@ -126,7 +172,7 @@ namespace jb.presentacion.InyectarDocsSAP
                 RunOnUI(() =>
                 {
                     iniciar(false);
-                    MessageBox.Show(err);
+                    MessageBox.Show(err, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 });
             };
             syncBusiness.onDocsToSync += (docs) =>
@@ -136,7 +182,7 @@ namespace jb.presentacion.InyectarDocsSAP
                 //muestra los documentos a sincronizar
                 RunOnUI(() =>
                 {
-                    _docsToSync= new BindingList<DocsToSyncMsg>(docs);
+                    _docsToSync = new BindingList<DocsToSyncMsg>(docs);
                     ctrDocsToSync.SetData(_docsToSync);
                     ctrDocsToSync.RefreshMensgesOnSync();
                 });
@@ -174,7 +220,6 @@ namespace jb.presentacion.InyectarDocsSAP
             syncBusiness.SincronizarPedidoYCobros();
         }
 
-
         private void UpdateGridControl(DocsToSyncMsg docSincronizado, DocsToSyncViewer ctrl, BindingList<DocsToSyncMsg> list)
         {
             var docEnList = list.FirstOrDefault(d => d.IdCache == docSincronizado.IdCache);
@@ -186,7 +231,8 @@ namespace jb.presentacion.InyectarDocsSAP
             }
             // remuevo el item del control por sincronizar (o dio error o se sincronizó)
             var item = _docsToSync.FirstOrDefault(d => d.IdCache == docSincronizado.IdCache);
-            if (item != null) {
+            if (item != null)
+            {
                 _docsToSync.Remove(item);
                 ctrDocsToSync.RefreshMensgesOnSync();
             }
@@ -198,28 +244,61 @@ namespace jb.presentacion.InyectarDocsSAP
 
         private void ConsultarHistorico()
         {
-            cmdConsultarHistorico.Enabled = false;
+
             this.bsFiltroHistorico.EndEdit();
             var syncBusiness = new SincronizationBusiness();
-            syncBusiness.onError += (err) => { MessageBox.Show(err); };
-            if (this._filtroConsultaHistorico.TipoDocumento == "Pedido")
+            syncBusiness.onError += (err) =>
             {
-                var pedidos = syncBusiness.ConsultarHistoricoPedidos(this._filtroConsultaHistorico);
-                if (pedidos != null && pedidos.Count > 0) {
-                    ctrResultado.SetData(new BindingList<DocsToSyncMsg>(pedidos));
-                }
-                    
+                MessageBox.Show(err);
+                cmdConsultarHistorico.Enabled = true;
+                return;
+            };
+            var tipoDoc = eTipoDocToSync.NoDefinido;
+            if (!FiltroConsultaValido())
+                return;
+
+            cmdConsultarHistorico.Enabled = false;
+            switch (this._filtroConsultaHistorico.TipoDocumento)
+            {
+                case "Pedido":
+                    tipoDoc = eTipoDocToSync.Pedido;
+                    break;
+                case "Cobro":
+                    tipoDoc = eTipoDocToSync.Cobro;
+                    break;
+                default:
+                    MessageBox.Show("No implementado");
+                    cmdConsultarHistorico.Enabled = true;
+                    return;
             }
+
+            var docs = syncBusiness.ConsultarHistoricoDocsSincronizados(this._filtroConsultaHistorico, tipoDoc);
+            if (docs != null && docs.Count > 0)
+                ctrResultado.SetData(new BindingList<DocsToSyncMsg>(docs));
             else
-            {
-                MessageBox.Show("No implementado");
-            }
+                MessageBox.Show("No se han encontrador resultados con el filtro aplicado!!");
             cmdConsultarHistorico.Enabled = true;
         }
 
-        
-
-        
+        private bool FiltroConsultaValido()
+        {
+            if (string.IsNullOrEmpty(_filtroConsultaHistorico.Vendedor))
+            {
+                MessageBox.Show("Debe indicar el vendedor a consultar!!");
+                return false;
+            }
+            if (string.IsNullOrEmpty(_filtroConsultaHistorico.Cliente))
+            {
+                MessageBox.Show("Debe indicar el cliente a consultar!!");
+                return false;
+            }
+            if (string.IsNullOrEmpty(_filtroConsultaHistorico.TipoDocumento))
+            {
+                MessageBox.Show("Debe seleccionar el tipo de documento a consultar!!");
+                return false;
+            }
+            return true;
+        }
 
         private void backgroundWorkerSyncDocs_DoWork(object sender, DoWorkEventArgs e)
         {

@@ -57,9 +57,11 @@ namespace jbp.business.hana
                 update OSLP
                  set U_SINCRONIZADO_PTK = 1 
                 where 
-                 ""U_cedula"" = '{0}'
-             ", cedulaVendedor);
-            new BaseCore().Execute(sql);
+                 ""U_cedula"" = ?
+             ");
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                {"@0", cedulaVendedor }
+            });
         }
 
         private void RegistrarVendedoresEnLog(VendedorPtkMsg me, RespWsMsg resp)
@@ -75,18 +77,19 @@ namespace jbp.business.hana
                     FECHA_TX
                 )
                 VALUES(
-                    '{0}',
-                    '{1}',
-                    '{2}',
-                    '{3}',
-                     {4},
-                    '{5}',
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
                     CURRENT_TIMESTAMP
                 )
-             ", me.nombreVendedor,me.usuarioVendedor, me.clave, me.correo,
-             resp.codigo, resp.mensaje
-             );
-            new BaseCore().Execute(sql);
+             ");
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                {"@0", me.nombreVendedor }, {"@1",me.usuarioVendedor }, {"@2",me.clave }, {"@3",me.correo },
+                {"@4", resp.codigo }, {"@5",resp.mensaje }
+            });
         }
 
         private bool VendedorValido(VendedorPtkMsg me, ref string errorVendedor)
@@ -172,7 +175,7 @@ namespace jbp.business.hana
                   or U_SINCRONIZADO_PTK = 0 --NO
                 )
             ");
-            var dt = new BaseCore().GetDataTableByQuery(sql);
+            var dt = new BaseCore().GetDataTableByQuery(sql,null);
             if (dt.Rows.Count > 0)
             {
                 foreach(DataRow dr in dt.Rows)

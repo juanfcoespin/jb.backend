@@ -26,7 +26,7 @@ namespace jbp.business.hana
                 
             ";
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, null);
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -56,12 +56,14 @@ namespace jbp.business.hana
                 ""JbpVw_Lotes"" t1 on t1.""Id"" = t0.""IdLote""
                 where
                  t0.""Cantidad"" > 0 and
-                 t0.""CodArticulo"" = '{0}' and
+                 t0.""CodArticulo"" = ? and
                  t0.""CodBodega"" in ('PT2', 'PT4')
                 order by t1.""FechaVencimiento""
-            ",codArticulo);
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",codArticulo }
+            });
             foreach(DataRow dr in dt.Rows)
             {
                 ms.Add(new LoteMsg()
@@ -84,10 +86,12 @@ namespace jbp.business.hana
                 ""ListaPrecio"", 
                 ""Precio""
                from ""JbpVw_ListaPrecio""
-               where ""Precio""!=0 and ""CodArticulo"" = '{0}'
-            ", codArticulo);
+               where ""Precio""!=0 and ""CodArticulo"" = ?
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",codArticulo }
+            });
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)

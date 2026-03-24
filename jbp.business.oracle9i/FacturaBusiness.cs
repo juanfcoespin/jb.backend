@@ -243,8 +243,6 @@ namespace jbp.business.oracle9i
                     var factura = new FacturaMsg
                     {
                         IdFactura = Convert.ToInt32(dr["IDFACT"]),
-                        IdOrden = Convert.ToInt32(dr["IDORDEN"]),
-                        CodOrden = dr["CODORDEN"].ToString(),
                         CodFactura = dr["FACTURA"].ToString(),
                         Sitio = dr["SITIO"].ToString(),
                         FechaFactura = fechaFactura,

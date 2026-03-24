@@ -93,9 +93,11 @@ namespace jbp.business.hana
                     ""ObjType"",
                     ""DocEntry"",
                     ""LineNum""
-                     from PCH3 where ""DocEntry"" = {0}
-                ", me.IdDocOrigen);
-                var dt = new BaseCore().GetDataTableByQuery(sql);
+                     from PCH3 where ""DocEntry"" = ?
+                ");
+                var dt = new BaseCore().GetDataTableByQuery(sql, new Dictionary<string, object> {
+                    {"@0", me.IdDocOrigen }
+                });
                 foreach (DataRow dr in dt.Rows) {
                     me.GastosAdicionales.Add(new GastosAdicionalesMsg { 
                         ObjType = dr["ObjType"].ToString(),
@@ -116,8 +118,10 @@ namespace jbp.business.hana
              */
             if (!LoteEnCuarentena(loteJB))
             {
-                var sql = string.Format(@"update OBTN set ""Status""=1 where ""DistNumber""='{0}'", loteJB);
-                new BaseCore().Execute(sql);
+                var sql = string.Format(@"update OBTN set ""Status""=1 where ""DistNumber""=?");
+                new BaseCore().Execute(sql, new Dictionary<string, object> {
+                    {"@0",loteJB }
+                });
             }
             
         }
@@ -160,10 +164,13 @@ namespace jbp.business.hana
             }
             var sql = string.Format(@"
                 update OPDN
-                set ""Comments""='{0}'
-                where ""DocEntry"" = {1}
-            ", me.Comentario, idEM );
-            new BaseCore().Execute(sql);
+                set ""Comments""=?
+                where ""DocEntry"" = ?
+            ");
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                {"@0", me.Comentario },
+                {"@1",idEM }
+            });
         }
 
         private static string GetComentarioEM(string idEM)

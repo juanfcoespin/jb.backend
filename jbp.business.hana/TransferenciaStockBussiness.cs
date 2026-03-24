@@ -110,9 +110,15 @@ namespace jbp.business.hana
         private static void SetCabeceraLogLotesPesaje(string lote, string codArticulo, int idSt, double cantAbiertaInsumo, int docNumOf) {
             var sql = string.Format(@"
                 insert into JB_LOTES_PESAJE(LOTE, COD_ARTICULO, ID_ST, CANTIDAD, DOC_NUM_OF, FINALIZADO)
-                values('{0}','{1}', {2}, {3}, {4}, 'N')
-            ", lote, codArticulo, idSt, cantAbiertaInsumo.ToString().Replace(',', '.'), docNumOf);
-            new BaseCore().Execute(sql);
+                values(?,?, ?, ?, ?, 'N')
+            ");
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                {"@0", lote },
+                {"@1", codArticulo },
+                {"@2",idSt },
+                {"@3", cantAbiertaInsumo.ToString().Replace(',', '.') },
+                {"@4",docNumOf }
+            });
         }
 
         private static void SetLogMovimientoPesaje(MovimientoPesajeMsg me) {
@@ -131,9 +137,15 @@ namespace jbp.business.hana
             }
             var sql = string.Format(@"
                 insert into JB_MOVIMIENTOS_LOTE_PESAJE(ID_LOTE_PESAJE, DOC_NUM_TS, CANTIDAD, UBICACION_DESDE, UBICACION_HASTA)
-                values({0}, {1}, {2}, '{3}', '{4}')
-            ", me.IdLotePesaje, me.DocNumTs, me.Cantidad.ToString().Replace(',','.'), me.UbicacionDesde, me.UbicacionHasta);
-            new BaseCore().Execute(sql);
+                values(?, ?, ?, ?, ?)
+            ");
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                {"@0", me.IdLotePesaje },
+                {"@1",me.DocNumTs },
+                {"@2",me.Cantidad.ToString().Replace(',','.') },
+                {"@3",me.UbicacionDesde },
+                {"@4",me.UbicacionHasta }
+            });
         }
         public class IdStYCant
         {
@@ -148,11 +160,13 @@ namespace jbp.business.hana
             from ""JbpVw_SolicitudTrasladoLinea"" t0 inner join
              ""JbpVw_SolicitudTraslado"" t1 on t1.""Id""=t0.""IdSolicitudTraslado""
             where
-             t1.""DocNumOrdenFabricacion""={0}
-             and t0.""CodArticulo""='{1}'
-            ", docNumOf, codArticulo);
+             t1.""DocNumOrdenFabricacion""=?
+             and t0.""CodArticulo""=?
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0", docNumOf }, {"@1",codArticulo }
+            });
             if (dt != null && dt.Rows.Count > 0) {
                 return new IdStYCant
                 {
@@ -424,11 +438,15 @@ namespace jbp.business.hana
                     update JB_LOTES_PESAJE 
                     set FINALIZADO='Y'
                     where 
-                        ID_ST={0}
-                        AND LOTE='{1}'
-                        AND COD_ARTICULO='{2}'
-                    ", linea.IdSt, lote.Lote, linea.CodArticulo);
-                    bc.Execute(sql);
+                        ID_ST=?
+                        AND LOTE=?
+                        AND COD_ARTICULO=?
+                    ");
+                    bc.Execute(sql, new Dictionary<string, object> {
+                        {"@0", linea.IdSt },
+                        {"@1",lote.Lote },
+                        {"@2",linea.CodArticulo }
+                    });
                 });
             });
         }
@@ -511,13 +529,13 @@ namespace jbp.business.hana
             var sql = string.Format(@"
                 update OWOR
                 set ""U_JbFraccionadoPesaje""='SI'
-                where ""DocNum""={0}
-            ", docNumOF);
-            new BaseCore().Execute(sql);
+                where ""DocNum""=?
+            ");
+            
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                {"@0", docNumOF }
+            });
         }
-
-        
-
         private static TsFromPickingME Map(TsBalanzasMsg me, string ubicacionPesaje)
         {
             var ms = new TsFromPickingME();
@@ -569,10 +587,12 @@ namespace jbp.business.hana
                 from 
                  ""JbVw_OFsConTSaPesaje""
                 where
-                 ""DocNum""={0}
-            ", me.DocNumOF);
+                 ""DocNum""=?
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",me.DocNumOF }
+            });
             foreach (DataRow dr in dt.Rows)
             {
                 me.Lineas.ForEach(linea => {
@@ -846,13 +866,15 @@ namespace jbp.business.hana
  	                and t3.""CodArticulo""=t2.""CodArticulo""
  	                and t3.""DireccionTexto""='Asignada'
                  where
-                  t3.""Lote""='{0}'
-                  and t3.""CodArticulo""='{1}'
+                  t3.""Lote""=?
+                  and t3.""CodArticulo""=?
                   and t2.""LineStatus""='O'
-                  and t2.""BodegaOrigen""= '{2}' --otras reservas hechas por planificacion
-            ", lote, codArticulo, me.BodegaOrigen);
+                  and t2.""BodegaOrigen""= ? --otras reservas hechas por planificacion
+            ");
             var bc = new BaseCore();
-            var dt= bc.GetDataTableByQuery(sql);
+            var dt= bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",lote }, {"@1",codArticulo }, {"@2",me.BodegaOrigen }
+            });
             foreach (DataRow dr in dt.Rows) {
                 ms.Add(new CantidadesReservadasPorLoteMsg
                 { 
@@ -901,10 +923,12 @@ namespace jbp.business.hana
         {
             var sql = string.Format(@"
                 select ""Id"" from ""vw_STConDocNumOF""
-                where ""DocNumOF"" = '{0}'
+                where ""DocNumOF"" = ?
             ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",docNum }
+            });
             if (dt.Rows.Count > 1)
                 throw new Exception("La Orden de fabriación " + docNum + " tiene mas de una Solicitud de transferencia activa!!");
             if (dt.Rows.Count == 1)
@@ -1002,12 +1026,14 @@ namespace jbp.business.hana
         {
             var sql = string.Format(@"
              update OBTN
-              set ""Status""={0}
+              set ""Status""=?
              where 
-              ""DistNumber""='{1}'
-              and ""ItemCode""='{2}'
-            ", estado, lote,codArticulo);
-            new BaseCore().Execute(sql);
+              ""DistNumber""=?
+              and ""ItemCode""=?
+            ");
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                {"@0", estado }, {"@1",lote }, {"@2",codArticulo }
+            });
         }
         private static void PonerLoteTemporalmenteComoLiberado(TsBodegaMsg me, string codEstadoOriginalLote)
         {
@@ -1024,9 +1050,11 @@ namespace jbp.business.hana
                  COD_ESTADO_ORIGINAL,
                  FECHA
                 ) 
-                values('{0}','{1}',{2},CURRENT_TIMESTAMP)
-            ", me.CodArticulo, me.Lote, codEstadoOriginalLote);
-            new BaseCore().Execute(sql);
+                values(?,?,?,CURRENT_TIMESTAMP)
+            ");
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                {"@0", me.CodArticulo }, {"@1",me.Lote }, {"@2",codEstadoOriginalLote }
+            });
         }
 
 
@@ -1040,7 +1068,7 @@ namespace jbp.business.hana
                  COD_ESTADO_ORIGINAL
                 from JB_MODIFICACION_ESTADO_LOTE
             ");
-            var dt = new BaseCore().GetDataTableByQuery(sql);
+            var dt = new BaseCore().GetDataTableByQuery(sql,null);
             foreach (DataRow dr in dt.Rows)
             {
                 var codArticulo = dr["COD_ARTICULO"].ToString();
@@ -1056,10 +1084,12 @@ namespace jbp.business.hana
             var sql = string.Format(@"
                 delete from JB_MODIFICACION_ESTADO_LOTE
                 where 
-                 COD_ARTICULO='{0}'
-                 and LOTE='{1}'
-            ", codArticulo, lote);
-            new BaseCore().Execute(sql);
+                 COD_ARTICULO=?
+                 and LOTE=?
+            ");
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                {"@0", codArticulo }, {"@1",lote }
+            });
         }
 
         private static string QuitarCodArticuloDelLote(string lote)
@@ -1091,10 +1121,12 @@ namespace jbp.business.hana
         {
             var sql = string.Format(@"
                 update OWTR
-                set ""Comments""='** Responsable Ingreso: {0} **   ' ||  ""Comments""
-                where ""DocEntry"" = {1}
-            ", responsable, id);
-            new BaseCore().Execute(sql);
+                set ""Comments""='** Responsable Ingreso: ? **   ' ||  ""Comments""
+                where ""DocEntry"" = ?
+            ");
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                {"@0", responsable }, {"@1",id }
+            });
         }
 
         private static int GetDocNumBYId(string id)

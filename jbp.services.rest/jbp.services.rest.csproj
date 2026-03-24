@@ -136,7 +136,6 @@
     <Compile Include="Controllers\EmpleadoController.cs" />
     <Compile Include="Controllers\MarketingController.cs" />
     <Compile Include="Controllers\SolicitudTransferenciaController.cs" />
-    <Compile Include="Controllers\CuentaController.cs" />
     <Compile Include="Controllers\DirectorioController.cs" />
     <Compile Include="Controllers\BodegaController.cs" />
     <Compile Include="Controllers\EntradaMercanciaController.cs" />

@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace jbp.msg
 {
-    public class OrdenMsg {
-        public int IdOrden { get; set; }
-        public string CodOrden { get; set; }
-        public OrdenMsg() { }
-    }
     public class FacturasHistoricasME
     {
         public string ruc;
@@ -53,7 +48,7 @@ namespace jbp.msg
 
         public string ruc { get; set; }
     }
-    public class FacturaServicioMsg:OrdenMsg {
+    public class FacturaServicioMsg {
         public int IdFactura { get; set; }
         public string CodFactura { get; set; }
         public string Sitio { get; set; }

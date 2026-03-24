@@ -48,7 +48,7 @@ namespace jbp.business.hana
                 var vendedorActual = new VendedorConCobrosMsg();
                 var cobroActual = new CobroMsg();
                 var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql);
+                var dt = bc.GetDataTableByQuery(sql, null);
                 string vendedorAnterior = null;
                 string cobroAnterior = null;
                 if (dt != null && dt.Rows.Count > 0)
@@ -136,13 +136,15 @@ namespace jbp.business.hana
                   from ""JbpVw_Cartera"" t0  inner join
                     ""JbpVw_SocioNegocio"" t1 on t1.""CodSocioNegocio"" = t0.""CodCliente""
                   where
-                     t1.""CodVendedor"" = {0}
+                     t1.""CodVendedor"" = ?
                   order by
                      t1.""CodSocioNegocio"",
                      t0.""OrdenRango""
-                ", codVendedor);
+                ");
                 var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql);
+                var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                    {"@0",codVendedor }
+                });
                 if (dt != null && dt.Rows.Count > 0)
                 {
                     foreach (DataRow dr in dt.Rows)
@@ -200,7 +202,7 @@ namespace jbp.business.hana
                 order by 3
             ";
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql,null);
             foreach (DataRow dr in dt.Rows) {
                 ms.Add(new ItemCombo { 
                     Id=bc.GetInt(dr["CodVendedor"]),
@@ -222,10 +224,12 @@ namespace jbp.business.hana
                     ""EstadoPago""
                 from ""JbVw_PagosEfectivoPorVendedor""
                 where
-                ""CodVendedor""={0}
-            ", codVendedor);
+                ""CodVendedor""=?
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",codVendedor }
+            });
             var ms = new List<object>();
             foreach (DataRow dr in dt.Rows) {
                 ms.Add(new

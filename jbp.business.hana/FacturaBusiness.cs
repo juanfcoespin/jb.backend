@@ -42,13 +42,9 @@ namespace jbp.business.hana
                  ""RespWS""
                 from
                  ""JbpVw_FacturasYNCToSendPtk""
-                --where
-                --""TipoDocumento""='Nota de Crédito'
-                 --""NumFolio""='001-010-000103191'
-                 --""RucPrincipal""='1900612134001'   
                 ";
                 var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql);
+                var dt = bc.GetDataTableByQuery(sql,null);
                 return new DocumentosPtkBusiness().GetListDocumentosPtkFromDt(dt);
             }
             catch (Exception e)
@@ -71,10 +67,12 @@ namespace jbp.business.hana
                  from
                  ""OINV"" 
                  where
-                  ""DocEntry""='{0}'
+                  ""DocEntry""=?
 
-            ", idFactura);
-            var dt = bc.GetDataTableByQuery(sql);
+            ");
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0", idFactura }
+            });
             if (dt != null && dt.Rows.Count > 0)
             {
                 var dr = dt.Rows[0];
@@ -111,10 +109,13 @@ namespace jbp.business.hana
                 registrarLogActualizacionFolioNum(me);
                 var sql = string.Format(@"
                     update OINV
-                    set ""FolioNum""='{0}', ""FolioPref"" = 'FV'
-                    where ""DocNum"" = {1};
-                ", me.FolioNum, me.DocNum);
-                new BaseCore().Execute(sql.ToString());
+                    set ""FolioNum""=?, ""FolioPref"" = 'FV'
+                    where ""DocNum"" = ?;
+                ");
+                new BaseCore().Execute(sql,new Dictionary<string, object> {
+                    {"@0", me.FolioNum },
+                    {"@1",me.DocNum }
+                });
                 return "ok";
             }
             catch (Exception e)
@@ -136,12 +137,16 @@ namespace jbp.business.hana
                     ACTUALIZADOR, DOC_NUM_SAP, NUM_FACTURA_ANTERIOR,
                     NUM_FACTURA_ACTUAL, FECHA_ACTUALIZACION
                 )VALUES(
-                    '{0}', {1}, {2},
-                    {3}, current_timestamp
+                    ?, ?, ?,
+                    ?, current_timestamp
                 )
-            ", me.Actualizador, me.DocNum, docNumAnterior,
-            me.FolioNum);
-            new BaseCore().Execute(sql);
+            ");
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                {"@0", me.Actualizador },
+                {"@1", me.DocNum },
+                {"@2", docNumAnterior },
+                {"@3",me.FolioNum }
+            });
         }
 
         internal static List<ValorPagadoMsg> GetPagosByIdFactura(int idFactura)
@@ -158,10 +163,12 @@ namespace jbp.business.hana
                  ""JbpVw_Factura"" t2 on t2.""Id"" = t0.""IdFactura""
                 where
                  upper(t1.""Comentario"") not like '%RET%'--que no sea una retencion
-                 and t2.""Id"" = {0}
-            ", idFactura);
+                 and t2.""Id"" = ?
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0", idFactura }
+            });
             foreach (DataRow dr in dt.Rows) {
                 ms.Add(new ValorPagadoMsg {
                     DocNum = dr["DocNum"].ToString(),
@@ -185,10 +192,12 @@ namespace jbp.business.hana
                  ""JbpVw_Factura"" t2 on t2.""Id"" = t0.""IdFactura""
                 where
                  upper(t1.""Comentario"") like '%RET%' --que el comentario indique que es una retencion
-                 and t2.""DocNum"" = {0}
-            ", docNumFactura);
+                 and t2.""DocNum"" = ?
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0", docNumFactura }
+            });
             foreach (DataRow dr in dt.Rows) {
                 ms.Add(new RetencionMsg { 
                     Valor = bc.GetDecimal(dr["ValorRetencion"]),
@@ -227,10 +236,10 @@ namespace jbp.business.hana
                  ""JbpVw_PagosBorrador"" t0 inner join
                  ""JbpVw_PagosBorradorLinea"" t1 on t1.""IdPago""=t0.""Id""
                 where 
-                 t1.""IdFactura"" = {0}
-            ", idFactura);
+                 t1.""IdFactura"" = ?
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql,new Dictionary<string, object> { { "@0", idFactura } });
             foreach (DataRow dr in dt.Rows)
             {
                 ms.Add(new ValorPagadoMsg

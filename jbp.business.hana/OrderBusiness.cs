@@ -60,10 +60,6 @@ namespace jbp.business.hana
                     resp = "Anteriormente ya se procesó esta orden!";
                 else
                 {
-                    if(string.IsNullOrEmpty(order.Vendedor))
-                        order.Vendedor = SocioNegocioBusiness.GetVendedorByCodSocioNegocio(order.CodCliente).Vendedor;
-                    if (string.IsNullOrEmpty(order.Cliente))
-                        order.Cliente = SocioNegocioBusiness.GetByCodigo(order.CodCliente);
                     order.Lines.ForEach(line =>
                     {
                         if (EsProductoVeterinaria(line.CodArticulo))
@@ -71,7 +67,8 @@ namespace jbp.business.hana
                         if(line.price== 0)
                             line.price = SocioNegocioBusiness.GetPrecioByCodSocioNegocioCodArticulo(order.CodCliente, line.CodArticulo);
                     });
-                    resp=SavePedidoEnCache(order);
+                    order.JsonObj = TechTools.Serializador.SerializadorJson.Serializar(order);
+                    resp =SincronizationBusiness.SaveDocEnCache(order, eTipoDocToSync.Pedido);
                 }
                 return resp;
             }
@@ -82,25 +79,7 @@ namespace jbp.business.hana
                 return err;
             }
         }
-        private static string SavePedidoEnCache(OrdenMsg me)
-        {
-            try
-            {
-                var strMsg = TechTools.Serializador.SerializadorJson.Serializar(me);
-                var sql = string.Format(@"
-                    insert into JB_CACHE_PEDIDOS(VENDEDOR, CLIENTE, MONTO, MSG)
-                    values ('{0}', '{1}', {2}, '{3}')
-                ",me.Vendedor, me.Cliente, me.Total, strMsg);
-                new BaseCore().Execute(sql);
-                return "ok";
-            }
-            catch (Exception e) {
-                var err = e.Message;
-                return err+ e.StackTrace;
-            }
-            
-        }
-
+        
         private static bool EsProductoVeterinaria(string codArticulo)
         {
             try
@@ -158,12 +137,14 @@ namespace jbp.business.hana
                  ""JbpVw_OrdenVenta"" 
                 where
                  ""Anulado""='No'
-                 and ""CodCliente"" = '{0}'
-                 and to_char(""Fecha"", 'yyyy-mm-dd') = '{1}'
+                 and ""CodCliente"" = ?
+                 and to_char(""Fecha"", 'yyyy-mm-dd') = ?
 
-            ",CodClient,orderDate.ToString("yyyy-MM-dd"));
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",CodClient }, {"@1",orderDate.ToString("yyyy-MM-dd") }
+            });
             if (dt!=null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -178,9 +159,11 @@ namespace jbp.business.hana
                         from
                         ""JbpVw_OrdenVentaLinea""
                         where
-                        ""IdOrdenVenta"" = {0}
-                    ", order.Id);
-                    var dt2 = bc.GetDataTableByQuery(sql2);
+                        ""IdOrdenVenta"" = ?
+                    ");
+                    var dt2 = bc.GetDataTableByQuery(sql2, new Dictionary<string, object> {
+                        {"@0",order.Id }
+                    });
                     foreach(DataRow dr2 in dt2.Rows)
                     {
                         order.Lines.Add(
@@ -213,12 +196,14 @@ namespace jbp.business.hana
 	                ""JbpVw_OrdenVenta"" t0 inner join
 	                ""JbpVw_SocioNegocio"" t1 on t1.""CodSocioNegocio""=t0.""CodCliente""
                 where
-                 t1.""CodVendedor""={0}
+                 t1.""CodVendedor""=?
                  and t1.""Activo""='Y'
                 order by t0.""Fecha"" desc
-            ", codVendor);
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0", codVendor }
+            });
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -250,10 +235,12 @@ namespace jbp.business.hana
                 from 
 	                ""JbpVw_OrdenVentaLinea""
                 where
-                 ""IdOrdenVenta""={0}
-            ", idOrder);
+                 ""IdOrdenVenta""=?
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",idOrder }
+            });
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)

@@ -35,5 +35,8 @@
     <Setting Name="EmailPesaje" Type="System.String" Scope="Application">
       <Value Profile="(Default)">pcastro@jbp.com.ec; cpalacios@jbp.com.ec; jespin@jbp.com.ec</Value>
     </Setting>
+    <Setting Name="correoErrorSync" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">jespin@jbp.com.ec; jcoloma@jbp.com.ec</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

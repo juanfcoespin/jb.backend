@@ -23,7 +23,7 @@ namespace jbp.business.hana
             from
              JBP_DIRECTORIO_TELEFONICO
             ";
-            var dt = new BaseCore().GetDataTableByQuery(sql);
+            var dt = new BaseCore().GetDataTableByQuery(sql,null);
             foreach(DataRow dr in dt.Rows)
             {
                 ms.Add(

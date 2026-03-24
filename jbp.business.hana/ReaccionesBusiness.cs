@@ -69,7 +69,7 @@ namespace jbp.business.hana
              ""Articulo"" 
             ";
             var bc = new BaseCore();
-            var dtProductos=bc.GetDataTableByQuery(sql);
+            var dtProductos=bc.GetDataTableByQuery(sql, null);
             foreach (DataRow dr in dtProductos.Rows) {
                 ms.Add(new MedicamentoConLotesMsg
                 {
@@ -110,7 +110,7 @@ namespace jbp.business.hana
                     T0.FECHA_REGISTRO desc
             ";
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql,null);
             foreach (DataRow dr in dt.Rows) {
 
                 var reaccion=new ReaccionesMsg
@@ -154,9 +154,11 @@ namespace jbp.business.hana
                 from JBP_REACCIONES_INFO T0 INNER JOIN
                     JB_CATALOG_VALUES T1 ON T1.ID = T0.ID_ESTADO_PERSONA_AFECTADA
                 where
-                 T0.ID_REACCION = {0}
-            ", idReaccion);
-            var dt = bc.GetDataTableByQuery(sql);
+                 T0.ID_REACCION = ?
+            ");
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",idReaccion }
+            });
             foreach (DataRow dr in dt.Rows)
             {
                 ms.Add(new InfoReaccion
@@ -196,9 +198,11 @@ namespace jbp.business.hana
                     JB_CATALOG_VALUES T2 ON t2.ID = T0.ID_QUE_PASO_CON_MEDICAMENTO INNER JOIN
                     OITM T3 ON T3.""ItemCode"" = t0.COD_ARTICULO
                 where
-                 T0.ID_REACCION = {0}
-            ", idReaccion);
-            var dt=bc.GetDataTableByQuery(sql);
+                 T0.ID_REACCION = ?
+            ");
+            var dt=bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",idReaccion }
+            });
             foreach (DataRow dr in dt.Rows) {
                 ms.Add(new MedicamentoItem {
                     id = bc.GetInt(dr["id"]),
@@ -270,31 +274,32 @@ namespace jbp.business.hana
                                 OTRA_ENFERMEDAD,
                                 REACCIONES
                             )VALUES(
-                                {0},
-                                {1},
+                                ?,
+                                ?,
                                 current_timestamp,
-                                '{2}', '{3}',  '{4}',
-                                {5}, {6},
-                                {7},
-                                '{8}',--NOTIFICADOR 
-                                '{9}',
-                                '{10}',
-                                '{11}',
-                                '{12}' --REACCIONES
+                                ?, ?, ?,
+                                ?, ?,
+                                ?,
+                                ?,--NOTIFICADOR 
+                                ?,
+                                ?,
+                                ?,
+                                ? --REACCIONES
                             )
-                        ",  
-                            reaccion.idRangoEdad,
-                            reaccion.idQuienPadecioReaccion,
-                            reaccion.nombres,reaccion.apellidos, reaccion.sexo,
-                            reaccion.pesoKg, reaccion.alturaCm,
-                            reaccion.padeceOtraEnfermedad,
-                            reaccion.notificador,
-                            reaccion.notificadorMail,
-                            reaccion.notificadorTelefono,
-                            reaccion.otraEnfermedad,
-                            getReaccionesChecked(reaccion.reacciones)
+                        "
                         );
-                        bc.Execute(sql);
+                        bc.Execute(sql, new Dictionary<string, object> {
+                            {"@0",reaccion.idRangoEdad },
+                            {"@1",reaccion.idQuienPadecioReaccion },
+                            {"@2",reaccion.nombres }, {"@3",reaccion.apellidos }, {"@4",reaccion.sexo },
+                            {"@5",reaccion.pesoKg }, {"@6",reaccion.alturaCm },
+                            {"@7",reaccion.padeceOtraEnfermedad },
+                            {"@8",reaccion.notificador },
+                            {"@9",reaccion.notificadorMail },
+                            {"@10",reaccion.notificadorTelefono },
+                            {"@11",reaccion.otraEnfermedad },
+                            {"@12",getReaccionesChecked(reaccion.reacciones) },
+                        });
                         sql = "select max(ID) from JBP_REACCIONES";
                         var idReaccion = bc.GetIntScalarByQuery(sql);
                         try
@@ -359,19 +364,25 @@ namespace jbp.business.hana
             {
                 var sql = string.Format(@"
                     DELETE FROM JBP_REACCIONES_MEDICAMENTOS            
-                    WHERE ID_REACCION={0}
-                ", idReaccion);
-                bc.Execute(sql);
+                    WHERE ID_REACCION=?
+                ");
+                bc.Execute(sql,new Dictionary<string, object> {
+                    {"@0", idReaccion }
+                });
                 sql = string.Format(@"
                     DELETE FROM JBP_REACCIONES_INFO            
-                    WHERE ID_REACCION={0}
-                ", idReaccion);
-                bc.Execute(sql);
+                    WHERE ID_REACCION=?
+                ");
+                bc.Execute(sql, new Dictionary<string, object> {
+                    {"@0", idReaccion }
+                });
                 sql = string.Format(@"
                     DELETE FROM JBP_REACCIONES
-                    WHERE ID={0}
-                ", idReaccion);
-                bc.Execute(sql);
+                    WHERE ID_REACCION=?
+                ");
+                bc.Execute(sql, new Dictionary<string, object> {
+                    {"@0", idReaccion }
+                });
                 return null;
             }
             catch(Exception e){
@@ -400,24 +411,25 @@ namespace jbp.business.hana
                     SINTOMAS,
                     TRATAMIENTO
                 )values(
-                    {0},
-                    {1},
-                    to_date('{2}','yyyy-mm-dd'),
-                    {3},
-                    {4},
-                    '{5}',
-                    '{6}'
+                    ?,
+                    ?,
+                    to_date(?,'yyyy-mm-dd'),
+                    ?,
+                    ?,
+                    ?,
+                    ?
                 )
-            ",
-                infoReaccion.idReaccion,
-                infoReaccion.idEstadoPersonaAfectada,
-                infoReaccion.fechaInicio.Substring(0, 10),
-                fechaFin,
-                infoReaccion.siguioTratamiento,
-                infoReaccion.sintomas,
-                infoReaccion.tratamiento
+            "
             );
-            bc.Execute(sql);
+            bc.Execute(sql, new Dictionary<string, object> {
+                {"@0",infoReaccion.idReaccion },
+                {"@1",infoReaccion.idEstadoPersonaAfectada },
+                {"@2",infoReaccion.fechaInicio.Substring(0, 10) },
+                {"@3",fechaFin },
+                {"@4",infoReaccion.siguioTratamiento },
+                {"@5",infoReaccion.sintomas },
+                {"@6", infoReaccion.tratamiento }
+            });
         }
         private void saveMedicamento(MedicamentoItem medicamento, BaseCore bc)
         {
@@ -436,34 +448,35 @@ namespace jbp.business.hana
                     PARA_QUE_UTILIZO,
                     POSOLOGIA
                 )values(
-                    {0},
-                    {1},
-                    {2},
-                    '{3}',
-                    '{4}',
-                    '{5}',
-                    '{6}',
-                    to_date('{7}','yyyy-mm-dd'),
-                    to_date('{8}','yyyy-mm-dd'),
-                    {9},
-                    '{10}',
-                    '{11}'
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    to_date(?,'yyyy-mm-dd'),
+                    to_date(?,'yyyy-mm-dd'),
+                    ?,
+                    ?,
+                    ?
                 )
-            ",
-                medicamento.idReaccion,
-                medicamento.codViaAdministracion,
-                medicamento.idQuePasoConMedicamento,
-                medicamento.codMedicamento,
-                medicamento.lote,
-                medicamento.fechaVencimiento,
-                medicamento.cantidadFrecuencia,
-                medicamento.fechaUtilizacion.Substring(0,10), //2022-03-15T10:52:00-05:00
-                (medicamento.cuandoDejoUsar!=null) ? medicamento.cuandoDejoUsar.Substring(0, 10):null,
-                medicamento.haVueltoReaccion,
-                medicamento.paraQueUtilizo,
-                medicamento.posologia
+            "
             );
-            bc.Execute(sql);
+            bc.Execute(sql, new Dictionary<string, object> {
+                {"@0",medicamento.idReaccion },
+                {"@1",medicamento.codViaAdministracion },
+                {"@2",medicamento.idQuePasoConMedicamento },
+                {"@3",medicamento.codMedicamento },
+                {"@4",medicamento.lote },
+                {"@5",medicamento.fechaVencimiento },
+                {"@6",medicamento.cantidadFrecuencia },
+                {"@7",medicamento.fechaUtilizacion.Substring(0,10) }, //2022-03-15T10:52:00-05:00
+                {"@8",(medicamento.cuandoDejoUsar!=null) ? medicamento.cuandoDejoUsar.Substring(0, 10):null },
+                {"@9",medicamento.haVueltoReaccion },
+                {"@10",medicamento.paraQueUtilizo },
+                {"@11",medicamento.posologia }
+            });
         }
         private string getReaccionesChecked(List<ReaccionItem> reacciones)
         {

@@ -89,13 +89,15 @@ namespace jbp.business.hana
                 from ""JbpVw_Cartera"" t0  inner join
                 ""JbpVw_SocioNegocio"" t1 on t1.""CodSocioNegocio"" = t0.""CodCliente""
                 where
-                 t1.""RucPrincipal""='{0}'
+                 t1.""RucPrincipal""=?
                 order by
                  t1.""CodSocioNegocio"",
                  t0.""OrdenRango""
-            ",rucPrincipal);
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",rucPrincipal }
+            });
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -143,11 +145,13 @@ namespace jbp.business.hana
                     from
                      ""JbpVw_FacturasMasNCParticipantes""
                     where
-                     ""RucPrincipal"" = '{0}'
+                     ""RucPrincipal"" = ?
                      and ""fechaFactura"" like '%' || to_char(current_date, 'mm/yyyy') || '%'
-                ",rucPrincipal);
+                ");
                 var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql);    
+                var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                    {"@0",rucPrincipal }
+                });    
                 if(dt.Rows.Count>0)
                     return new
                     {
@@ -193,7 +197,7 @@ namespace jbp.business.hana
                      and t0.""Estado"" = 'Abierto'
                      and t1.""Cantidad"" - ifnull(t2.""Cantidad"", 0) > 0-- CantPendiente por ingresar > 0
                 ";
-                var dt=new BaseCore().GetDataTableByQuery(sql);
+                var dt=new BaseCore().GetDataTableByQuery(sql,null);
                 foreach (DataRow dr in dt.Rows) {
                     ms.data.Add(new { 
                      codProveedor=dr["CodProveedor"].ToString(),
@@ -251,7 +255,7 @@ namespace jbp.business.hana
                      )
                 ";
                 var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql);
+                var dt = bc.GetDataTableByQuery(sql,null);
                 foreach (DataRow dr in dt.Rows) {
                     var email=dr["Email"].ToString();
                     if (email.Contains(";") || email.Contains(",")) { //se trae el primer correo 
@@ -277,9 +281,11 @@ namespace jbp.business.hana
         {
             var sql = string.Format(@"
                 insert into JB_ENVIO_MAILS_CLIENTES(FECHA_ENVIO, TITULO, ID_CLIENTE, ENVIADO)
-                values(current_timestamp, '{0}', {1}, {2})
-            ",me.Titulo, me.IdCliente, me.Enviado);
-            new BaseCore().Execute(sql);
+                values(current_timestamp, ?, ?, ?)
+            ");
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                {"@0",me.Titulo }, {"@1",me.IdCliente }, {"@2",me.Enviado }
+            });
         }
 
         internal static VendedorMsg GetVendedorByCodSocioNegocio(string codCliente)
@@ -292,9 +298,11 @@ namespace jbp.business.hana
                  from
                   ""JbpVw_SocioNegocio"" t0 inner join
                   ""JbpVw_Vendedores"" t1 on t1.""CodVendedor"" = t0.""CodVendedor""
-                 where t0.""CodSocioNegocio"" = '{0}'
-            ", codCliente);
-            var dt = new BaseCore().GetDataTableByQuery(sql);
+                 where t0.""CodSocioNegocio"" = ?
+            ");
+            var dt = new BaseCore().GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",codCliente }
+            });
             if (dt != null && dt.Rows.Count > 0)
             {
                 var dr = dt.Rows[0];
@@ -345,7 +353,7 @@ namespace jbp.business.hana
                  )t1 on t1.""CodProveedor"" = t0.""CodSocioNegocio""
                  order by 2
             ";
-                var dt = new BaseCore().GetDataTableByQuery(sql);
+                var dt = new BaseCore().GetDataTableByQuery(sql, null);
                 foreach (DataRow dr in dt.Rows)
                 {
                     ms.Add(new SocioNegocioItemMsg
@@ -392,7 +400,7 @@ namespace jbp.business.hana
                  )
                 order by 2
             ";
-                var dt = new BaseCore().GetDataTableByQuery(sql);
+                var dt = new BaseCore().GetDataTableByQuery(sql, null);
                 foreach (DataRow dr in dt.Rows)
                 {
                     data.Add(new
@@ -432,9 +440,11 @@ namespace jbp.business.hana
                  end ""Nombre""
                 from ""JbpVw_SocioNegocio""
                 where
-                 ""CodTipoSocioNegocio"" = 'C' {0}
-            ", searchCondition);
-            var dt = new BaseCore().GetDataTableByQuery(sql);
+                 ""CodTipoSocioNegocio"" = 'C' ?
+            ");
+            var dt = new BaseCore().GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",searchCondition }
+            });
             foreach(DataRow dr in dt.Rows)
             {
                 ms.Add(new SocioNegocioItemMsg { 
@@ -488,10 +498,12 @@ namespace jbp.business.hana
                 var bc = new BaseCore();
                 var sql = string.Format(@"
                     update OCRD
-                    set ""U_JBP_SincronizadoConBddPromotick""={0}
-                    where ""LicTradNum"" = '{1}'
-                ",bc.GetBooleanSAP(sincronizado),rucCliente);
-                bc.Execute(sql);
+                    set ""U_JBP_SincronizadoConBddPromotick""=?
+                    where ""LicTradNum"" = ?
+                ");
+                bc.Execute(sql, new Dictionary<string, object> {
+                    {"@0",bc.GetBooleanSAP(sincronizado) }, {"@1",rucCliente }
+                });
             }
             catch (Exception e)
             {
@@ -566,16 +578,19 @@ namespace jbp.business.hana
                 ""Activo""='Y'
                 and ""CodTipoSocioNegocio""='C'
             ";
-            if (!string.IsNullOrEmpty(codVendedor) && codVendedor!="0") { //no aplica para usuarios administradores
+            var parametros = new Dictionary<string, object> { };
+            if (!string.IsNullOrEmpty(codVendedor) && codVendedor != "0") { //no aplica para usuarios administradores
                 sql += string.Format(@"
-                    and ""CodVendedor"" = {0} 
-                ",codVendedor);
-            }
-            sql+=@"   
+                    and ""CodVendedor"" = ? 
+                ");
+                parametros.Add("@0",codVendedor);
+            } else
+                parametros = null;
+            sql += @"   
                order by 2
             ";
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, parametros);
             if(dt!=null && dt.Rows.Count > 0)
             {
                 foreach(DataRow dr in dt.Rows)
@@ -612,10 +627,12 @@ namespace jbp.business.hana
                 ""Ciudad"", 
                 ""CalleYNumero""
                from ""JbpVw_DireccionesSN""
-               where ""CodSocioNegocio"" = '{0}'
-            ", codSocioNegocio);
+               where ""CodSocioNegocio"" = ?
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",codSocioNegocio }
+            });
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -641,10 +658,12 @@ namespace jbp.business.hana
                 ""Email"",
                 ""Direccion""
                from ""JbpVw_Contactos""
-               where ""CodSocioNegocio"" = '{0}'
-            ", codSocioNegocio);
+               where ""CodSocioNegocio"" = ?
+            ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",codSocioNegocio }
+            });
             if (dt != null && dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -679,7 +698,7 @@ namespace jbp.business.hana
                  ""AplicaPuntos"" = 'SI'
                  and ""RucPrincipal"" is null
             ");
-            var dt = new BaseCore().GetDataTableByQuery(sql);
+            var dt = new BaseCore().GetDataTableByQuery(sql,null);
             foreach (DataRow dr in dt.Rows) {
                 ms.Add(dr["Ruc"].ToString());
             }
@@ -691,9 +710,11 @@ namespace jbp.business.hana
                 update OCRD
                  set ""U_JBP_SincronizadoConBddPromotick"" = 1 
                 where 
-                 ""LicTradNum"" = '{0}'
-             ",ruc);
-            new BaseCore().Execute(sql);
+                 ""LicTradNum"" = ?
+             ");
+            new BaseCore().Execute(sql,new Dictionary<string, object> {
+                {"@0",ruc }
+            });
         }
 
         public static List<object> GetClientes()
@@ -702,7 +723,7 @@ namespace jbp.business.hana
             var sql = string.Format(@"
                 SELECT * from ""JbpVw_rptBddClientes""
             ");
-            var dt = new BaseCore().GetDataTableByQuery(sql);
+            var dt = new BaseCore().GetDataTableByQuery(sql,null);
             foreach (DataRow dr in dt.Rows)
             {
                 ms.Add(new {

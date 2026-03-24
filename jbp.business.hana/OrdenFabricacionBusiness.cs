@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TechTools.Core.Hana;
 using System.Data;
 using jbp.msg.sap;
+using System.Threading;
 
 namespace jbp.business.hana
 {
@@ -24,17 +25,27 @@ namespace jbp.business.hana
                 from  
                  ""JbVw_OFsConTSaPesaje""
             ";
+            var hayParametros = false;
+            var parametros = new Dictionary<string, object> { };
             if (!string.IsNullOrEmpty(codArticuloAFabricar))
             {
+                hayParametros = true;
                 sql += string.Format(@"
-                 where ""CodArticulo""='{0}'
-                ", codArticuloAFabricar);
+                 where ""CodArticulo""=?
+                ");
+                parametros = new Dictionary<string, object> {
+                    { "@0", codArticuloAFabricar }
+                };
             }
             if (!string.IsNullOrEmpty(codArticuloAFabricar) && !string.IsNullOrEmpty(codInsumo))
             {
+                hayParametros = true;
                 sql += string.Format(@"
-                 and ""CodInsumo""='{0}'
-                ",codInsumo);
+                 and ""CodInsumo""=?
+                ");
+                parametros = new Dictionary<string, object> {
+                        { "@1", codInsumo }
+                };
             }
             //lote del producto a fabricarse (para que se respete el orden de resarva de los lotes de los componentes)
             sql += @"
@@ -43,7 +54,9 @@ namespace jbp.business.hana
             ";
             
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            if (!hayParametros)
+                parametros = null;
+            var dt = bc.GetDataTableByQuery(sql, parametros);
             foreach (DataRow dr in dt.Rows) {
                 ms.Add(new OrdenFabricacionLiberadaPesajeMsg() { 
                     NumOrdenFabricacion=bc.GetInt(dr["DocNum"]),
@@ -79,13 +92,17 @@ namespace jbp.business.hana
             from 
              ""JbVw_OFsConTSaPesaje""
             where
-             ""DocNum""={0}
-            ", docNum);
+             ""DocNum""=?
+            " );
+            var parametros = new Dictionary<string, object> {
+                {"@0",docNum }
+            };
             if (!string.IsNullOrEmpty(codInsumo))
             {
                 sql += string.Format(@"
-                 and ""CodInsumo""='{0}'
-                ", codInsumo);
+                 and ""CodInsumo""=?
+                ");
+                parametros.Add("@1",codInsumo);
             }
             
             sql = string.Format(@"
@@ -108,7 +125,7 @@ namespace jbp.business.hana
             ", sql);
 
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, parametros);
 
             //var bodegasComponentes = GetBodegasComponentes(docNum);
             string codInsumoAnterior = null;
@@ -157,115 +174,18 @@ namespace jbp.business.hana
             }
             return ms;
         }
-        public static OFMasComponentesMsg GetComponentesAPesarOfByDocNumBK(int docNum, string codInsumo = null)
-        {
-            var ms = new OFMasComponentesMsg();
-            ms.NumOrdenFabricacion = docNum;
-            var sql = string.Format(@"
-                 select 
-                  t1.""Id"",
-                  t1.""DocNum"",
-                  t1.""CodArticulo"",
-                  t1.""Articulo"",
-                  t2.""CodInsumo"",
-                  t2.""UnidadMedida"",
-                  t2.""Insumo"",
-                  t0.""CantidadPlanificada"",
-                  t0.""CantidadPesada"",
-                  t1.""Articulo"",
-                  t1.""Lote"",
-                  t1.""BodegaHasta"",
-                  t3.""Lote"" ""LoteInsumo"",
-                  t3.""FechaVencimiento"",
-                  t3.""Observaciones"",
-                  t3.""Cantidad""
-                 from 
-                  ""JbpVw_OrdenFabricacionLinea"" t0 inner join
-                  ""JbpVw_OrdenFabricacion"" t1 on t1.""Id""=t0.""IdOrdenFabricacion"" inner join
-                  ""JbpVw_Insumos"" t2 on t2.""CodInsumo""=t0.""CodInsumo"" inner join
-                  ""JbVw_OFsConTSaPesaje"" t3 on t3.""DocNumOrdenFabricacion""=t1.""DocNum"" and t3.""CodArticulo""=t0.""CodInsumo""
-                 where
-                  t1.""DocNum""={0}
-                  and t2.""TipoInsumo""='Artículo'
-                  and ( --solo componentes sujetos a pesarse ver si se incluyen litros
-                     lower(t2.""UnidadMedida"") like '%kg%'
-                     or lower(t2.""UnidadMedida"") like '%g%'
-                     or lower(t2.""UnidadMedida"") like '%mg%'
-                  )
-                  
-
-            ", docNum);
-            if (!string.IsNullOrEmpty(codInsumo))
-            {
-                sql += string.Format(@"
-                 and t2.""CodInsumo""='{0}'
-                ", codInsumo);
-            }
-            else
-                sql += string.Format(@"
-                order by 
-                   t2.""CodInsumo"" 
-            ");
-
-            var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
-
-            //var bodegasComponentes = GetBodegasComponentes(docNum);
-            string codInsumoAnterior = null;
-            string codInsumoActual = null;
-            var componente = new ComponentesMsg();
-            foreach (DataRow dr in dt.Rows)
-            {
-                if (ms.CodArticulo == null) // para registrar la cabecera del mensaje
-                {
-                    ms.IdOf = bc.GetInt(dr["Id"].ToString());
-                    ms.CodArticulo = dr["CodArticulo"].ToString();
-                    ms.Descripcion = dr["Articulo"].ToString();
-                    var docNumOf = bc.GetInt(dr["DocNum"]);
-                    // bodega origen y destino para los componentes fraccionados
-                    ms.BodegaDesde = "PSJ1";
-                    ms.BodegaHasta = dr["BodegaHasta"].ToString();
-                    ms.LotePT = dr["Lote"].ToString();
-                }
-                codInsumoActual = dr["CodInsumo"].ToString();
-                if (codInsumoActual != null && (codInsumoActual != codInsumoAnterior))
-                { //incluyo componente
-                    componente = new ComponentesMsg
-                    {
-                        CodigoArticulo = dr["CodInsumo"].ToString(),
-                        UnidadMedida = dr["UnidadMedida"].ToString(),
-                        Descripcion = dr["Insumo"].ToString(),
-                        CantidadRequerida = bc.GetDecimal(dr["CantidadPlanificada"], 6),
-                        CantidadPesada = bc.GetDecimal(dr["CantidadPesada"], 6),
-                        CantidadesPorLote = new List<CantidadLoteOFMsg>()
-                    };
-
-                }
-                //Añado lotes al componente nuevo o existente
-                componente.CantidadesPorLote.Add(new CantidadLoteOFMsg
-                {
-                    Lote = dr["LoteInsumo"].ToString(),
-                    Cantidad = bc.GetDecimal(dr["Cantidad"], 6),
-                    FechaVence = dr["FechaVencimiento"].ToString(),
-                    AnalisisMP = dr["Observaciones"].ToString(),
-                }
-                );
-                if (codInsumoActual != null && (codInsumoActual != codInsumoAnterior))
-                    ms.Componentes.Add(componente);
-                codInsumoAnterior = codInsumoActual;
-            }
-            return ms;
-        }
         private static List<CantidadLoteOFMsg> GetCantidadesPorLote(int docNumOF, string codigoArticulo)
         {
             var ms=new List<CantidadLoteOFMsg>();
             try
             {
                 var sql = string.Format(@"
-                    call ""JbSP_LotesTransferidosPorArticuloOF""('{0}', '{1}')
-                ", docNumOF, codigoArticulo);
+                    call ""JbSP_LotesTransferidosPorArticuloOF""(?, ?)
+                ");
                 var bc = new BaseCore();
-                var dt=bc.GetDataTableByQuery(sql);
+                var dt=bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                    {"@0" , docNumOF }, {"@1",codigoArticulo }
+                });
                 foreach (DataRow dr in dt.Rows) {
                     ms.Add(new CantidadLoteOFMsg
                     {

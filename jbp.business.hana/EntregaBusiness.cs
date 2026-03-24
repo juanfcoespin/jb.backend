@@ -19,10 +19,14 @@ namespace jbp.business.hana
             me.fechaHasta = me.fechaHasta.Substring(0, 10);
             var ms = new List<EntregaUrbanoMS>();
             var sql = string.Format(@"
-                call ""JbpSp_EntregasUrbano""('{0}','{1}','*','*','*', '{2}')",
-                me.fechaDesde, me.fechaHasta, me.bodega);
+                call ""JbpSp_EntregasUrbano""(?,?,'*','*','*', ?)"
+                );
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0", me.fechaDesde},
+                {"@1", me.fechaHasta},
+                {"@2", me.bodega},
+            });
             foreach(DataRow dr in dt.Rows)
             {
                 ms.Add(new EntregaUrbanoMS
@@ -72,12 +76,13 @@ namespace jbp.business.hana
                 from 
                  ""JbpVw_HojaDeRuta""
                 where 
-                 ""Fecha"" between to_date('{0}','yyyy-mm-dd') 
-                 and to_date('{1}', 'yyyy-mm-dd')
-                ",
-                me.fechaDesde, me.fechaHasta);
+                 ""Fecha"" between to_date(?,'yyyy-mm-dd') 
+                 and to_date(?, 'yyyy-mm-dd')
+                ");
             var bc = new BaseCore();
-            var dt = bc.GetDataTableByQuery(sql);
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",me.fechaDesde }, {"@1",me.fechaHasta }
+            });
             foreach (DataRow dr in dt.Rows)
             {
                 var bodega = dr["Bodega"].ToString();
