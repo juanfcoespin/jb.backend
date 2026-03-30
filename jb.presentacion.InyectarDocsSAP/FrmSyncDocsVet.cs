@@ -16,7 +16,6 @@ namespace jb.presentacion.InyectarDocsSAP
         private BindingList<DocsToSyncMsg> _docsToSync = new BindingList<DocsToSyncMsg>();
         FiltroHistoricoMsg _filtroConsultaHistorico;
         private bool procesando = false;
-        private int numConsultas = 0;
 
         public frmSyncAppVET()
         {
@@ -79,7 +78,7 @@ namespace jb.presentacion.InyectarDocsSAP
 
         private void cmdIniciar_Click(object sender, EventArgs e)
         {
-
+            lblFechaInicio.Text = string.Format("Fecha Inicio: {0}", DateTime.Now.ToString());
             this.WindowState = FormWindowState.Minimized;
             mostrarMsgOnTrySystem("Se ha iniciado el proceso de sincronización");
             iniciar(true);
@@ -107,15 +106,11 @@ namespace jb.presentacion.InyectarDocsSAP
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
-
-            this.numConsultas++;
-            this.lblIntentos.Text = "Num: " + numConsultas.ToString();
+            lblFechaUltimaConsulta.Text = string.Format("Fecha Última Consulta: {0}", DateTime.Now.ToString());
             if (!this.procesando && !backgroundWorkerSyncDocs.IsBusy)
             {
                 backgroundWorkerSyncDocs.RunWorkerAsync();
             }
-            if(this.numConsultas==1000)
-                this.numConsultas=0;
         }
         #endregion
         #region Interfaz region
@@ -214,7 +209,7 @@ namespace jb.presentacion.InyectarDocsSAP
                 RunOnUI(() =>
                 {
                     UpdateGridControl(docSincronizado, ctrlDocsLogs, _logs);
-                    lblOk.Text = "OK: " + _logs.Count.ToString();
+                    lblOk.Text = "Docs Sincronizados: " + _logs.Count.ToString();
                 });
             };
             syncBusiness.SincronizarPedidoYCobros();
@@ -266,6 +261,9 @@ namespace jb.presentacion.InyectarDocsSAP
                 case "Cobro":
                     tipoDoc = eTipoDocToSync.Cobro;
                     break;
+                case "Todos":
+                    tipoDoc = eTipoDocToSync.NoDefinido;
+                    break;
                 default:
                     MessageBox.Show("No implementado");
                     cmdConsultarHistorico.Enabled = true;
@@ -310,6 +308,25 @@ namespace jb.presentacion.InyectarDocsSAP
         private void backgroundWorkerSyncDocs_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             this.procesando = false;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ConsultarDocsConError();
+        }
+
+        private void ConsultarDocsConError()
+        {
+
+            var docsConError = new SincronizationBusiness().ConsultarDocsConError();
+            if (docsConError == null || docsConError.Count == 0)
+                MessageBox.Show("No existen documentos sin sincronizar :)");
+            else
+            {
+                this.ctrlDocsError.SetData(docsConError);
+                lblError.Text = "Error: " + docsConError.Count.ToString();
+            }
+                
         }
     }
 }

@@ -3,6 +3,7 @@ using jbp.msg;
 using jbp.msg.sap;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -30,6 +31,7 @@ namespace jbp.business.hana
                 {
                     this.docToSyncActual = pedidos[0];
                     onDocsToSync?.Invoke(pedidos);
+                    
                     SyncDocs(pedidos, eTipoDocToSync.Pedido);
                 }
                 var cobros = GetDocsVetToSyncByTipo(eTipoDocToSync.Cobro);
@@ -64,22 +66,39 @@ namespace jbp.business.hana
                     {
                         this.docToSyncActual = docToSync;
                         var resp = "";
-                        if (tipoDocToSync == eTipoDocToSync.Pedido)
-                            resp = ((SapOrder)sapDiapiObj).Add((OrdenMsg)docToSync);
+                        if (tipoDocToSync == eTipoDocToSync.Pedido) {
+                            /*
+                            ----- Asignar precios a lineas de pedido -------
+                            - Del app ya viene calculado el descuento financiero y la bonificación
+                            - Desde sap se requiere poner otra vez la lógica  x esto se setea denuevo el precio
+                            
+                            - se crea una copia del objeto para registrar en el historico del cache tal cual el precio le
+                              apareció al vededor
+                            */
+                            var pedido = (OrdenMsg)((OrdenMsg)docToSync).Clone();
+                            pedido.Lines.ForEach(line => {
+                                line.price = SocioNegocioBusiness.GetPrecioByCodSocioNegocioCodArticulo(pedido.CodCliente, line.CodArticulo);
+                            });
+                            
+                            resp = ((SapOrder)sapDiapiObj).Add(pedido);
+                        }
+                        
                         if (tipoDocToSync==eTipoDocToSync.Cobro)
                             resp = ((SapPagoRecibido)sapDiapiObj).SafePago((PagosMsg)docToSync);
                         if (resp == "ok")
                         {
                             NofifySyncStatus(docToSync, tipoDocToSync.ToString()+ " registrado en SAP correctamente!!");
                             MoveToHistorico(docToSync);
-                            docToSync.FechaIngresoSap = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
+                            // para mostrar en capa de presentación, en bdd ya se guarda al mover al historico
+                            docToSync.FechaIngresoSap = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); 
                             onDocSyncOK?.Invoke(docToSync);
                         }
                         else //se notifica el error
                         {
-                            NofifySyncStatus(docToSync, "Registrando err en bdd");
-                            RegistrarErrEnCache(this.docToSyncActual, resp);
-                            NotificarErrorPorCorreo(this.docToSyncActual, resp);
+                            NofifySyncStatus(docToSync, "Registrando error en bdd");
+                            this.docToSyncActual.Error = resp;
+                            RegistrarErrEnCache(this.docToSyncActual);
+                            NotificarErrorPorCorreo(this.docToSyncActual);
                             NofifySyncStatus(this.docToSyncActual, resp, eTipoMsg.Error);
                         }
                     }
@@ -121,23 +140,28 @@ namespace jbp.business.hana
         {
             var cobro = TechTools.Serializador.SerializadorJson.Deserializar(typeof(PagosMsg), strJson);
             var ms = (PagosMsg)cobro;
+            //para que no se procesen las fotos en la sincronización con sap
+            //este proceso se hace antes
+            ms.fotosComprobantes = null;
             return ms;
         }
-        private void RegistrarErrEnCache(DocsToSyncMsg docToSync, string err)
+        private void RegistrarErrEnCache(DocsToSyncMsg docToSync)
         {
             if (docToSync != null && docToSync.IdCache !=null) {
                 try
                 {
                     var sql = string.Format(@"
                         update JB_CACHE_DOCS_VET_TO_SYNC
-                        set ERROR=?
+                        set ERROR=?,
+                        PROCESANDO=0,
+                        NUM_INTENTOS = NUM_INTENTOS +1,
+                        FECHA_ULTIMO_INTENTO = CURRENT_TIMESTAMP
                         where ID=?
                     ");
                     new BaseCore().Execute(sql, new Dictionary<string, object> {
-                        {"@0", err },
+                        {"@0", docToSync.Error },
                         {"@1", docToSync.IdCache },
                     });
-                    NotificarErrorPorCorreo(docToSync, err);
                 }
                 catch (Exception e)
                 {
@@ -147,18 +171,19 @@ namespace jbp.business.hana
 
             
         }
-        private void NotificarErrorPorCorreo(DocsToSyncMsg doc, string err)
+        private void NotificarErrorPorCorreo(DocsToSyncMsg doc)
         {
             var titulo = "Error en sincronización de doc VET";
             var msg = string.Format(@"
-                <h1>{6}</h1>
+                <h1>{7}</h1>
                 <div>
-                    <p><b>Id:<b> {0}</p>
-                    <p><b>Tipo:<b> {1}</p>
-                    <p><b>Fecha Sincronización Vendedor:<b> {2}</p>
-                    <p><b>Cliente:<b> {3}</p>
-                    <p><b>Vendedor:<b> {4}</p>
-                    <p><b>Monto:<b> {5}</p>
+                    <p><b>Id:</b> {0}</p>
+                    <p><b>Tipo:</b> {1}</p>
+                    <p><b>Fecha Sincronización Vendedor:</b> {2}</p>
+                    <p><b>Cliente:</b> {3}</p>
+                    <p><b>Vendedor:</b> {4}</p>
+                    <p><b>Monto:</b> {5}</p>
+                    <p><b>Error:<br></b> {6}</p>
                 </div>",
                     doc.IdCache,
                     doc.TipoDocumento,
@@ -166,6 +191,7 @@ namespace jbp.business.hana
                     doc.Cliente,
                     doc.Vendedor,
                     doc.Total,
+                    doc.Error,
                     titulo);
             string error = null;
             this.EnviarPorCorreo(conf.Default.correoErrorSync, titulo, msg, ref error);
@@ -177,8 +203,12 @@ namespace jbp.business.hana
             {
                 NofifySyncStatus(me, "Moviendo pedido a histórico...");
                 var strMsg = TechTools.Serializador.SerializadorJson.Serializar(me);
-                string strTotal = me.Total.ToString();
-                strTotal = strTotal.Replace(",", ".");
+                string strTotal = string.Empty;
+                if (me.Total != null) {
+                    strTotal = me.Total.ToString();
+                    strTotal = strTotal.Replace(",", ".");
+                }
+                
                 // la fecha de ingreso a sap se registra automáticamente
                 var sql = string.Format(@"
                     insert into JB_HISTORICO_DOCS_SINCRONIZADOS(ID, TIPO_DOC, FECHA_SINCRONIZACION, VENDEDOR, CLIENTE, MONTO, MSG)
@@ -231,6 +261,7 @@ namespace jbp.business.hana
                 var sql = string.Format(@"
                     SELECT
                      ID,
+                     TIPO_DOC,   
                      CLIENTE,
                      VENDEDOR,
                      to_char(FECHA_SINCRONIZACION, 'YYYY-MM-DD HH24:MI:SS') ""FECHA_SINCRONIZACION"",
@@ -238,6 +269,8 @@ namespace jbp.business.hana
                     where 
                       PROCESANDO=0
                       and TIPO_DOC=?
+                      and NUM_INTENTOS<3
+                    order by FECHA_SINCRONIZACION
                 ");
                 var bc = new BaseCore();
                 var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
@@ -247,14 +280,8 @@ namespace jbp.business.hana
                 {
                     foreach (DataRow dr in dt.Rows)
                     {
-                        var id = dr["ID"].ToString();
-                        var fechaSincronizacionVendedor = dr["FECHA_SINCRONIZACION"].ToString();
-                        var cliente = dr["CLIENTE"].ToString();
-                        var vendedor = dr["VENDEDOR"].ToString();
-                        ActualizarEstado(id, "1");
-                        var msgJson = dr["MSG"].ToString();
-                        
-                        var docToSync = GetObjToSyncByType(tipoDocToSync, id, fechaSincronizacionVendedor, cliente, vendedor, msgJson);
+                        var docToSync = GetDocToSyncByDataRow(dr);
+                        ActualizarEstado(docToSync.IdCache, "1");
                         ms.Add(docToSync);
                     }
                 }
@@ -266,25 +293,50 @@ namespace jbp.business.hana
             return ms;
         }
 
-        private DocsToSyncMsg GetObjToSyncByType(eTipoDocToSync tipoDocToSync, string id, string fechaSincronizacionVendedor, string cliente, string vendedor, string msgJson)
+        private DocsToSyncMsg GetDocToSyncByDataRow(DataRow dr)
         {
             DocsToSyncMsg ms = null;
-            if (tipoDocToSync == eTipoDocToSync.Pedido)
+            string error=string.Empty;
+            string fechaIngresoSap = string.Empty;
+            var idCache = dr["ID"].ToString();
+            var tipoDocumento = dr["TIPO_DOC"].ToString();
+            var cliente = dr["CLIENTE"].ToString();
+            var vendedor = dr["VENDEDOR"].ToString();
+            var msgJsonObj = dr["MSG"].ToString();
+            try
             {
-                ms = GetOrderdenMsgFromStrJson(msgJson);
+                error= dr["ERROR"].ToString();
             }
-            if (tipoDocToSync == eTipoDocToSync.Cobro)
+            catch { }
+            try
             {
-                ms = GetCobroMsgFromStrJson(msgJson);
+                fechaIngresoSap = dr["FECHA_INGRESO_SAP"].ToString();
+            }
+            catch { }
+            var fechaSincronizacionVendedor = dr["FECHA_SINCRONIZACION"].ToString();
+            var eTipoDocumento = eTipoDocToSync.NoDefinido;
+            if (tipoDocumento == eTipoDocToSync.Pedido.ToString())
+                eTipoDocumento = eTipoDocToSync.Pedido;
+            if (tipoDocumento == eTipoDocToSync.Cobro.ToString())
+                eTipoDocumento = eTipoDocToSync.Cobro;
+            if (eTipoDocumento == eTipoDocToSync.Pedido)
+            {
+                ms = GetOrderdenMsgFromStrJson(msgJsonObj);
+            }
+            if (eTipoDocumento == eTipoDocToSync.Cobro)
+            {
+                ms = GetCobroMsgFromStrJson(msgJsonObj);
             }
             if (ms!=null)
             {
                 
-                ms.IdCache = id;
+                ms.IdCache = idCache;
                 ms.FechaSincronizacionVendedor = fechaSincronizacionVendedor;
                 ms.Cliente = cliente;
                 ms.Vendedor = vendedor;
                 ms.MensajesSincronizacion = new List<MsgSincronizacion>();
+                ms.Error = error;
+                ms.FechaIngresoSap = fechaIngresoSap;
             }
             return ms;
         }
@@ -306,6 +358,7 @@ namespace jbp.business.hana
                      VENDEDOR,
                      CLIENTE,
                      MONTO,
+                     FECHA_INGRESO_SAP,
                      MSG
                     from
                      JB_HISTORICO_DOCS_SINCRONIZADOS  
@@ -314,9 +367,11 @@ namespace jbp.business.hana
                      and upper(CLIENTE) like ?
                      and FECHA_SINCRONIZACION >= TO_DATE(?,'yyyy-mm-dd')
 					 AND FECHA_SINCRONIZACION <  ADD_DAYS(TO_DATE(?,'yyyy-mm-dd'),1)
-                     and upper(TIPO_DOC) like ?
-                    order by FECHA_SINCRONIZACION desc
                 ");
+                if (tipoDoc != eTipoDocToSync.NoDefinido) {
+                    sql += " and upper(TIPO_DOC) like ?";
+                }
+                sql += " order by FECHA_SINCRONIZACION desc";
                 var dt = new BaseCore().GetDataTableByQuery(sql, new Dictionary<string, object> {
                     {"@0", "%"+filtro.Vendedor.ToUpper()+"%" },
                     {"@1","%"+filtro.Cliente.ToUpper()+"%" },
@@ -327,21 +382,8 @@ namespace jbp.business.hana
                 if (dt.Rows != null && dt.Rows.Count > 0) {
                     foreach (DataRow dr in dt.Rows)
                     {
-                        
-                        var idCache = dr["ID"].ToString();
-                        var tipoDocumento= dr["TIPO_DOC"].ToString();
-                        var cliente=dr["CLIENTE"].ToString();
-                        var vendedor= dr["VENDEDOR"].ToString();
-                        var msgJsonObj = dr["MSG"].ToString();
-                        var fechaSincronizacionVendedor = dr["FECHA_SINCRONIZACION"].ToString();
-                        var eTipoDocumento = eTipoDocToSync.NoDefinido;
-                        if (tipoDocumento == eTipoDocToSync.Pedido.ToString())
-                            eTipoDocumento = eTipoDocToSync.Pedido;
-                        if (tipoDocumento == eTipoDocToSync.Cobro.ToString())
-                            eTipoDocumento = eTipoDocToSync.Cobro;
-                        var docToSync = GetObjToSyncByType(eTipoDocumento, idCache, fechaSincronizacionVendedor, cliente, vendedor, msgJsonObj);
+                        var docToSync = GetDocToSyncByDataRow(dr);
                         if (docToSync != null) {
-                            docToSync.FechaIngresoSap = dr["FECHA_INGRESO_SAP"].ToString();
                             ms.Add(docToSync);
                         }
                     }
@@ -378,6 +420,37 @@ namespace jbp.business.hana
                 var err = e.Message;
                 return err + e.StackTrace;
             }
+        }
+
+        public BindingList<DocsToSyncMsg> ConsultarDocsConError()
+        {
+            var ms = new BindingList<DocsToSyncMsg>();
+            try
+            {
+                var sql = string.Format(@"
+                SELECT 
+                 ID,
+                 TIPO_DOC,
+                 FECHA_SINCRONIZACION,
+                 VENDEDOR,
+                 CLIENTE,
+                 MONTO,
+                 MSG,
+                 ERROR
+                FROM JB_CACHE_DOCS_VET_TO_SYNC
+                where ERROR IS NOT null;
+                ");
+                var dt = new BaseCore().GetDataTableByQuery(sql, null);
+                if (dt != null && dt.Rows.Count > 0) {
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        var docToSync = GetDocToSyncByDataRow(dr);
+                        ms.Add(docToSync);
+                    }
+                }
+            }
+            catch { }
+            return ms;
         }
     }
 }

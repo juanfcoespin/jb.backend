@@ -64,8 +64,6 @@ namespace jbp.business.hana
                     {
                         if (EsProductoVeterinaria(line.CodArticulo))
                             line.CodBodega = "PICK2"; //es la bodega de despachos de veterinaria
-                        if(line.price== 0)
-                            line.price = SocioNegocioBusiness.GetPrecioByCodSocioNegocioCodArticulo(order.CodCliente, line.CodArticulo);
                     });
                     order.JsonObj = TechTools.Serializador.SerializadorJson.Serializar(order);
                     resp =SincronizationBusiness.SaveDocEnCache(order, eTipoDocToSync.Pedido);

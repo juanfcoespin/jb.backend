@@ -28,21 +28,24 @@ namespace jb.presentacion.InyectarDocsSAP
 
         private void BsDocs_CurrentChanged(object? sender, EventArgs e)
         {
+            ordenLinesMsgBindingSource.DataSource = null;
+            docCarteraMsgBindingSource.DataSource = null;
+            tipoPagoMsgBindingSource.DataSource = null;
+            chequesBindingSource.DataSource = null;
             if (bsDocs.Count == 0)
             {
                 bsMensajes.DataSource = null;
-                bsCurrentDocToSync.DataSource = null;
                 return;
             }
 
             if (bsDocs.Current is DocsToSyncMsg doc)
             {
+                bsDocsToSync.DataSource = doc;
                 bsMensajes.DataSource = doc.MensajesSincronizacion;
-                bsCurrentDocToSync.DataSource = doc;
                 if (doc.GetType() == typeof(OrdenMsg))
                 {
                     tabDetalleDocToSync.SelectedTab = tpPedido;
-                    linesBindingSource.DataSource = ((OrdenMsg)doc).Lines;
+                    ordenLinesMsgBindingSource.DataSource = ((OrdenMsg)doc).Lines;
                 }
                 if (doc.GetType() == typeof(PagosMsg))
                 {
@@ -67,9 +70,10 @@ namespace jb.presentacion.InyectarDocsSAP
 
         private void tipoPagoMsgBindingSource_CurrentChanged(object sender, EventArgs e)
         {
+            
             if (tipoPagoMsgBindingSource.Current is TipoPagoMsg tipoPago)
             {
-                chequeMsgBindingSource.DataSource = tipoPago.cheques;
+                chequesBindingSource.DataSource = tipoPago.cheques;
             }
         }
     }

@@ -33,9 +33,7 @@ namespace jbp.business.hana
                 sql += string.Format(@"
                  where ""CodArticulo""=?
                 ");
-                parametros = new Dictionary<string, object> {
-                    { "@0", codArticuloAFabricar }
-                };
+                parametros.Add("@0", codArticuloAFabricar);
             }
             if (!string.IsNullOrEmpty(codArticuloAFabricar) && !string.IsNullOrEmpty(codInsumo))
             {
@@ -43,14 +41,12 @@ namespace jbp.business.hana
                 sql += string.Format(@"
                  and ""CodInsumo""=?
                 ");
-                parametros = new Dictionary<string, object> {
-                        { "@1", codInsumo }
-                };
+                parametros.Add("@1", codInsumo);
             }
             //lote del producto a fabricarse (para que se respete el orden de resarva de los lotes de los componentes)
             sql += @"
                 order by 
-                 ""Lote"" 
+                 ""Lote"",""DocNum"" 
             ";
             
             var bc = new BaseCore();

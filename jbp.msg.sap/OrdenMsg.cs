@@ -22,7 +22,7 @@ namespace jbp.msg.sap
 
     }
      */
-    public class OrdenMsg:DocsToSyncMsg
+    public class OrdenMsg:DocsToSyncMsg, ICloneable
     {
         public string Comentario { get; set; }
         public List<OrdenLinesMsg> Lines { get; set; }
@@ -56,8 +56,18 @@ namespace jbp.msg.sap
                 }
             );
         }
+
+        public object Clone()
+        {
+            var ms = (OrdenMsg)MemberwiseClone();
+            ms.Lines=new List<OrdenLinesMsg>();
+            this.Lines.ForEach(l => {
+                ms.Lines.Add((OrdenLinesMsg)l.Clone());
+            });
+            return ms;
+        }
     }
-    public class OrdenLinesMsg
+    public class OrdenLinesMsg:ICloneable
     {
         public double price { get; set; }
 
@@ -76,6 +86,11 @@ namespace jbp.msg.sap
             get { 
                 return Math.Round(this.CantSolicitada*this.price,2);
             } 
+        }
+
+        public object Clone()
+        {
+            return (OrdenLinesMsg)MemberwiseClone();
         }
     }
 
