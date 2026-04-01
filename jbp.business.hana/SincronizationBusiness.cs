@@ -247,7 +247,7 @@ namespace jbp.business.hana
             docToSync.MensajesSincronizacion.Add(new MsgSincronizacion {
 
                 Key= Guid.NewGuid().ToString(),
-                FechaLog = DateTime.Now,
+                FechaLog = DateTime.Now.ToString(),
                 Msg = msg,
                 TipoMsg = tipoMsg,
             }); 
@@ -422,9 +422,9 @@ namespace jbp.business.hana
             }
         }
 
-        public BindingList<DocsToSyncMsg> ConsultarDocsConError()
+        public List<DocsToSyncMsg> ConsultarDocsConError()
         {
-            var ms = new BindingList<DocsToSyncMsg>();
+            var ms = new List<DocsToSyncMsg>();
             try
             {
                 var sql = string.Format(@"
@@ -449,7 +449,9 @@ namespace jbp.business.hana
                     }
                 }
             }
-            catch { }
+            catch(Exception e) {
+                RaiseError(e.Message+e.StackTrace);
+            }
             return ms;
         }
     }

@@ -32,14 +32,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSyncAppVET));
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
-            ctrDocsToSync = new DocsToSyncViewer();
             tabPage3 = new TabPage();
-            ctrlDocsLogs = new DocsToSyncViewer();
             tabPage2 = new TabPage();
             button1 = new Button();
-            ctrlDocsError = new DocsToSyncViewer();
             tabPage4 = new TabPage();
-            ctrResultado = new DocsToSyncViewer();
             groupBox1 = new GroupBox();
             groupBox4 = new GroupBox();
             dateTimePicker2 = new DateTimePicker();
@@ -66,8 +62,13 @@
             cerrarToolStripMenuItem = new ToolStripMenuItem();
             timer1 = new System.Windows.Forms.Timer(components);
             lblFechaInicio = new Label();
-            backgroundWorkerSyncDocs = new System.ComponentModel.BackgroundWorker();
             lblFechaUltimaConsulta = new Label();
+            label7 = new Label();
+            label8 = new Label();
+            ctrDocsToSync = new DocsToSyncViewer();
+            ctrlDocsLogs = new DocsToSyncViewer();
+            ctrlDocsError = new DocsToSyncViewer();
+            ctrResultado = new DocsToSyncViewer();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             tabPage3.SuspendLayout();
@@ -104,14 +105,6 @@
             tabPage1.Text = "Docs en Sincronización";
             tabPage1.UseVisualStyleBackColor = true;
             // 
-            // ctrDocsToSync
-            // 
-            ctrDocsToSync.Dock = DockStyle.Fill;
-            ctrDocsToSync.Location = new Point(3, 3);
-            ctrDocsToSync.Name = "ctrDocsToSync";
-            ctrDocsToSync.Size = new Size(1124, 607);
-            ctrDocsToSync.TabIndex = 0;
-            // 
             // tabPage3
             // 
             tabPage3.Controls.Add(ctrlDocsLogs);
@@ -123,18 +116,10 @@
             tabPage3.Text = "Log Documentos Sincronizados";
             tabPage3.UseVisualStyleBackColor = true;
             // 
-            // ctrlDocsLogs
-            // 
-            ctrlDocsLogs.Dock = DockStyle.Fill;
-            ctrlDocsLogs.Location = new Point(3, 3);
-            ctrlDocsLogs.Name = "ctrlDocsLogs";
-            ctrlDocsLogs.Size = new Size(1124, 607);
-            ctrlDocsLogs.TabIndex = 0;
-            // 
             // tabPage2
             // 
-            tabPage2.Controls.Add(button1);
             tabPage2.Controls.Add(ctrlDocsError);
+            tabPage2.Controls.Add(button1);
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
@@ -147,21 +132,13 @@
             // 
             button1.BackColor = Color.Brown;
             button1.ForeColor = Color.White;
-            button1.Location = new Point(402, 23);
+            button1.Location = new Point(402, 9);
             button1.Name = "button1";
             button1.Size = new Size(306, 23);
             button1.TabIndex = 2;
             button1.Text = "Consultar Documentos no Sincronizados";
             button1.UseVisualStyleBackColor = false;
             button1.Click += button1_Click;
-            // 
-            // ctrlDocsError
-            // 
-            ctrlDocsError.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ctrlDocsError.Location = new Point(3, 64);
-            ctrlDocsError.Name = "ctrlDocsError";
-            ctrlDocsError.Size = new Size(1121, 546);
-            ctrlDocsError.TabIndex = 1;
             // 
             // tabPage4
             // 
@@ -173,14 +150,6 @@
             tabPage4.TabIndex = 3;
             tabPage4.Text = "Consulta Histórica Documentos Sincronizados";
             tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // ctrResultado
-            // 
-            ctrResultado.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ctrResultado.Location = new Point(13, 62);
-            ctrResultado.Name = "ctrResultado";
-            ctrResultado.Size = new Size(1102, 548);
-            ctrResultado.TabIndex = 2;
             // 
             // groupBox1
             // 
@@ -221,10 +190,6 @@
             dateTimePicker2.Name = "dateTimePicker2";
             dateTimePicker2.Size = new Size(97, 23);
             dateTimePicker2.TabIndex = 10;
-            // 
-            // bsFiltroHistorico
-            // 
-            bsFiltroHistorico.DataSource = typeof(jbp.msg.sap.FiltroHistoricoMsg);
             // 
             // dateTimePicker1
             // 
@@ -321,9 +286,10 @@
             // 
             // lblError
             // 
+            lblError.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblError.AutoSize = true;
             lblError.ForeColor = Color.Red;
-            lblError.Location = new Point(379, 35);
+            lblError.Location = new Point(1029, 33);
             lblError.Name = "lblError";
             lblError.Size = new Size(90, 15);
             lblError.TabIndex = 6;
@@ -331,10 +297,11 @@
             // 
             // lblOk
             // 
+            lblOk.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblOk.AutoSize = true;
             lblOk.BackColor = Color.Transparent;
             lblOk.ForeColor = Color.Green;
-            lblOk.Location = new Point(379, 20);
+            lblOk.Location = new Point(1004, 18);
             lblOk.Name = "lblOk";
             lblOk.Size = new Size(115, 15);
             lblOk.TabIndex = 5;
@@ -369,10 +336,9 @@
             // 
             // label1
             // 
-            label1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label1.Location = new Point(835, 9);
+            label1.Location = new Point(16, 18);
             label1.Name = "label1";
             label1.Size = new Size(311, 21);
             label1.TabIndex = 3;
@@ -413,33 +379,85 @@
             // 
             // lblFechaInicio
             // 
+            lblFechaInicio.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblFechaInicio.AutoSize = true;
-            lblFechaInicio.Location = new Point(19, 20);
+            lblFechaInicio.Location = new Point(899, 18);
             lblFechaInicio.Name = "lblFechaInicio";
-            lblFechaInicio.Size = new Size(73, 15);
+            lblFechaInicio.Size = new Size(24, 15);
             lblFechaInicio.TabIndex = 6;
-            lblFechaInicio.Text = "Fecha Inicio:";
-            // 
-            // backgroundWorkerSyncDocs
-            // 
-            backgroundWorkerSyncDocs.DoWork += backgroundWorkerSyncDocs_DoWork;
-            backgroundWorkerSyncDocs.RunWorkerCompleted += backgroundWorkerSyncDocs_RunWorkerCompleted;
+            lblFechaInicio.Text = "NA";
             // 
             // lblFechaUltimaConsulta
             // 
+            lblFechaUltimaConsulta.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblFechaUltimaConsulta.AutoSize = true;
-            lblFechaUltimaConsulta.Location = new Point(19, 35);
+            lblFechaUltimaConsulta.Location = new Point(899, 33);
             lblFechaUltimaConsulta.Name = "lblFechaUltimaConsulta";
-            lblFechaUltimaConsulta.Size = new Size(129, 15);
+            lblFechaUltimaConsulta.Size = new Size(24, 15);
             lblFechaUltimaConsulta.TabIndex = 8;
-            lblFechaUltimaConsulta.Text = "Fecha Ultima Consulta:";
+            lblFechaUltimaConsulta.Text = "NA";
+            // 
+            // label7
+            // 
+            label7.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label7.AutoSize = true;
+            label7.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            label7.Location = new Point(820, 18);
+            label7.Name = "label7";
+            label7.Size = new Size(75, 15);
+            label7.TabIndex = 9;
+            label7.Text = "Fecha Inicio:";
+            // 
+            // label8
+            // 
+            label8.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label8.AutoSize = true;
+            label8.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            label8.Location = new Point(764, 33);
+            label8.Name = "label8";
+            label8.Size = new Size(132, 15);
+            label8.TabIndex = 10;
+            label8.Text = "Fecha Ultima Consulta:";
+            // 
+            // ctrDocsToSync
+            // 
+            ctrDocsToSync.Dock = DockStyle.Fill;
+            ctrDocsToSync.Location = new Point(3, 3);
+            ctrDocsToSync.Name = "ctrDocsToSync";
+            ctrDocsToSync.Size = new Size(1124, 607);
+            ctrDocsToSync.TabIndex = 0;
+            // 
+            // ctrlDocsLogs
+            // 
+            ctrlDocsLogs.Dock = DockStyle.Fill;
+            ctrlDocsLogs.Location = new Point(3, 3);
+            ctrlDocsLogs.Name = "ctrlDocsLogs";
+            ctrlDocsLogs.Size = new Size(1124, 607);
+            ctrlDocsLogs.TabIndex = 0;
+            // 
+            // ctrlDocsError
+            // 
+            ctrlDocsError.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ctrlDocsError.Location = new Point(6, 38);
+            ctrlDocsError.Name = "ctrlDocsError";
+            ctrlDocsError.Size = new Size(1121, 555);
+            ctrlDocsError.TabIndex = 3;
+            // 
+            // ctrResultado
+            // 
+            ctrResultado.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ctrResultado.Location = new Point(3, 61);
+            ctrResultado.Name = "ctrResultado";
+            ctrResultado.Size = new Size(1124, 541);
+            ctrResultado.TabIndex = 2;
             // 
             // frmSyncAppVET
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1165, 729);
-            ControlBox = false;
+            Controls.Add(label8);
+            Controls.Add(label7);
             Controls.Add(lblFechaUltimaConsulta);
             Controls.Add(lblError);
             Controls.Add(lblOk);
@@ -448,6 +466,7 @@
             Controls.Add(cmdDetener);
             Controls.Add(cmdIniciar);
             Controls.Add(tabControl1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "frmSyncAppVET";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Sincronización AppVET";
@@ -501,13 +520,14 @@
         private DateTimePicker dateTimePicker2;
         private GroupBox groupBox4;
         private BindingSource linesBindingSource;
-        private System.ComponentModel.BackgroundWorker backgroundWorkerSyncDocs;
         private DataGridViewTextBoxColumn fechaLogDataGridViewTextBoxColumn;
+        private Button button1;
+        private Label lblFechaUltimaConsulta;
+        private Label label7;
+        private Label label8;
         private DocsToSyncViewer ctrDocsToSync;
         private DocsToSyncViewer ctrlDocsLogs;
         private DocsToSyncViewer ctrlDocsError;
         private DocsToSyncViewer ctrResultado;
-        private Button button1;
-        private Label lblFechaUltimaConsulta;
     }
 }

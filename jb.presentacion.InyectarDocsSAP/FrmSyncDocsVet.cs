@@ -11,11 +11,16 @@ namespace jb.presentacion.InyectarDocsSAP
 {
     public partial class frmSyncAppVET : Form
     {
+        private BindingList<DocsToSyncMsg> _docsToSync = new BindingList<DocsToSyncMsg>();
         private BindingList<DocsToSyncMsg> _logs = new BindingList<DocsToSyncMsg>();
         private BindingList<DocsToSyncMsg> _docsConError = new BindingList<DocsToSyncMsg>();
-        private BindingList<DocsToSyncMsg> _docsToSync = new BindingList<DocsToSyncMsg>();
+        private BindingList<DocsToSyncMsg> _docsResultado = new BindingList<DocsToSyncMsg>();
+
         FiltroHistoricoMsg _filtroConsultaHistorico;
         private bool procesando = false;
+        private readonly object _lock = new object();
+
+        private SincronizationBusiness _syncBusiness = new SincronizationBusiness();
 
         public frmSyncAppVET()
         {
@@ -30,9 +35,12 @@ namespace jb.presentacion.InyectarDocsSAP
             };
             this.bsFiltroHistorico.DataSource = this._filtroConsultaHistorico;
             //se asignan los bindings en los controles de visualización
-
-            ctrlDocsError.SetData(_docsConError);
+            ctrDocsToSync.SetData(_docsToSync);
             ctrlDocsLogs.SetData(_logs);
+            ctrlDocsError.SetData(_docsConError);
+            ctrResultado.SetData(_docsResultado);
+
+
         }
         #region test functions
         public static string DesencriptarCadena()
@@ -78,7 +86,7 @@ namespace jb.presentacion.InyectarDocsSAP
 
         private void cmdIniciar_Click(object sender, EventArgs e)
         {
-            lblFechaInicio.Text = string.Format("Fecha Inicio: {0}", DateTime.Now.ToString());
+            lblFechaInicio.Text = DateTime.Now.ToString();
             this.WindowState = FormWindowState.Minimized;
             mostrarMsgOnTrySystem("Se ha iniciado el proceso de sincronización");
             iniciar(true);
@@ -104,12 +112,24 @@ namespace jb.presentacion.InyectarDocsSAP
             else
                 this.timer1.Stop();
         }
-        private void timer1_Tick(object sender, EventArgs e)
+        private async void timer1_Tick(object sender, EventArgs e)
         {
-            lblFechaUltimaConsulta.Text = string.Format("Fecha Última Consulta: {0}", DateTime.Now.ToString());
-            if (!this.procesando && !backgroundWorkerSyncDocs.IsBusy)
+
+            lblFechaUltimaConsulta.Text = DateTime.Now.ToString();
+            if (procesando)
+                return;
+            procesando = true;
+            try
             {
-                backgroundWorkerSyncDocs.RunWorkerAsync();
+                await Task.Run(() => procesarDocumentos());
+            }
+            catch (Exception ex)
+            {
+                showError(ex);
+            }
+            finally
+            {
+                procesando = false;
             }
         }
         #endregion
@@ -152,38 +172,90 @@ namespace jb.presentacion.InyectarDocsSAP
 
         void RunOnUI(Action action)
         {
-            if (this.InvokeRequired)
-                this.Invoke(action);
-            else
-                action();
+            try
+            {
+                if (this.IsDisposed || !this.IsHandleCreated)
+                    return;
+
+                if (this.InvokeRequired)
+                    this.Invoke(action);
+                else
+                    action();
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText("fatal.log",
+                    $"RunOnUI ERROR {DateTime.Now}\n{ex}\n\n");
+            }
         }
+        private void showError(Exception e)
+        {
+            showError(e.Message + e.StackTrace);
+        }
+        private void showError(string errorStr)
+        {
+            if (this.InvokeRequired)
+            {
+                try
+                {
+                    this.Invoke(() => MessageBox.Show(errorStr, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error));
+                }
+                catch
+                {
+                    // fallback si el form ya murió
+                    File.AppendAllText("fatal.log", DateTime.Now.ToString() + errorStr + Environment.NewLine);
+                }
+            }
+            else
+            {
+                MessageBox.Show(errorStr, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private bool _ejecutandoBusiness = false;
         private void procesarDocumentos()
         {
-            var syncBusiness = new SincronizationBusiness();
-            //errores no controlados en la capa de negocio
-            syncBusiness.onError += (err) =>
+            if (_ejecutandoBusiness)
+                return;
+            try
+            {
+                _ejecutandoBusiness = true;
+                _syncBusiness.SincronizarPedidoYCobros();
+            }
+            finally
+            {
+                _ejecutandoBusiness = false;
+            }
+        }
+        private void frmSyncAppVET_Load(object sender, EventArgs e)
+        {
+            inicializarEventosBussiness();
+            inicializarBindings();
+        }
+        private void inicializarEventosBussiness()
+        {
+            _syncBusiness.onError += (err) =>
             {
                 // cuando se da un error se para el timer y mustra el msg
                 RunOnUI(() =>
                 {
                     iniciar(false);
-                    MessageBox.Show(err, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    showError(err);
                 });
             };
-            syncBusiness.onDocsToSync += (docs) =>
+
+            //errores no controlados en la capa de negocio
+            _syncBusiness.onDocsToSync += (docs) =>
             {
                 if (docs.Count == 0)
                     return;
                 //muestra los documentos a sincronizar
                 RunOnUI(() =>
                 {
-                    _docsToSync = new BindingList<DocsToSyncMsg>(docs);
-                    ctrDocsToSync.SetData(_docsToSync);
-                    ctrDocsToSync.RefreshMensgesOnSync();
+                    mapDataToGrid(docs, ref _docsToSync);
                 });
             };
             //actualizaciones de sincronización o error
-            syncBusiness.onChangeSyncStatus += (docOnSync) =>
+            _syncBusiness.onChangeSyncStatus += (docOnSync) =>
             {
                 //actualiza el estado de la sincronización
                 RunOnUI(() =>
@@ -197,44 +269,27 @@ namespace jb.presentacion.InyectarDocsSAP
                         ctrDocsToSync.RefreshMensgesOnSync();
                         if (doc.TieneError)
                         {
-                            UpdateGridControl(doc, ctrlDocsError, _docsConError);
+                            _docsConError.Add(doc);
                             lblError.Text = "Error: " + _docsConError.Count.ToString();
                         }
                     }
                 });
             };
             //Cuando se sincroniza mando al log
-            syncBusiness.onDocSyncOK += (docSincronizado) =>
+            _syncBusiness.onDocSyncOK += (docSincronizado) =>
             {
                 RunOnUI(() =>
                 {
-                    UpdateGridControl(docSincronizado, ctrlDocsLogs, _logs);
-                    lblOk.Text = "Docs Sincronizados: " + _logs.Count.ToString();
+                    lock (_lock) {
+                        _logs.Add(docSincronizado);
+                        if (_docsToSync.Count > 0) { 
+                            var index=_docsToSync.IndexOf(docSincronizado);
+                            _docsToSync.RemoveAt(index);
+                        }
+                        lblOk.Text = "Docs Sincronizados: " + _logs.Count.ToString();
+                    }
                 });
             };
-            syncBusiness.SincronizarPedidoYCobros();
-        }
-
-        private void UpdateGridControl(DocsToSyncMsg docSincronizado, DocsToSyncViewer ctrl, BindingList<DocsToSyncMsg> list)
-        {
-            var docEnList = list.FirstOrDefault(d => d.IdCache == docSincronizado.IdCache);
-            // no hay opción que este documento exista previemante en la grilla de destino por eso solo se lo añade
-            if (docEnList == null)
-            {
-                list.Add(docSincronizado);
-                ctrl.RefreshMensgesOnSync();
-            }
-            // remuevo el item del control por sincronizar (o dio error o se sincronizó)
-            var item = _docsToSync.FirstOrDefault(d => d.IdCache == docSincronizado.IdCache);
-            if (item != null)
-            {
-                _docsToSync.Remove(item);
-                ctrDocsToSync.RefreshMensgesOnSync();
-            }
-        }
-        private void frmSyncAppVET_Load(object sender, EventArgs e)
-        {
-            inicializarBindings();
         }
 
         private void ConsultarHistorico()
@@ -271,11 +326,19 @@ namespace jb.presentacion.InyectarDocsSAP
             }
 
             var docs = syncBusiness.ConsultarHistoricoDocsSincronizados(this._filtroConsultaHistorico, tipoDoc);
-            if (docs != null && docs.Count > 0)
-                ctrResultado.SetData(new BindingList<DocsToSyncMsg>(docs));
-            else
+            mapDataToGrid(docs, ref _docsResultado);
+            if (_docsResultado.Count == 0)
                 MessageBox.Show("No se han encontrador resultados con el filtro aplicado!!");
             cmdConsultarHistorico.Enabled = true;
+        }
+
+        private void mapDataToGrid(List<DocsToSyncMsg>? docsLocalVariable, ref BindingList<DocsToSyncMsg> docsGlobalVariable)
+        {
+            docsGlobalVariable.Clear();
+            if (docsLocalVariable != null && docsLocalVariable.Count > 0) {
+                foreach (var doc in docsLocalVariable)
+                    docsGlobalVariable.Add(doc);
+            }
         }
 
         private bool FiltroConsultaValido()
@@ -298,17 +361,7 @@ namespace jb.presentacion.InyectarDocsSAP
             return true;
         }
 
-        private void backgroundWorkerSyncDocs_DoWork(object sender, DoWorkEventArgs e)
-        {
-            this.procesando = true;
-            procesarDocumentos();
-            this.procesando = false;
-        }
 
-        private void backgroundWorkerSyncDocs_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            this.procesando = false;
-        }
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -317,16 +370,13 @@ namespace jb.presentacion.InyectarDocsSAP
 
         private void ConsultarDocsConError()
         {
-
+            
             var docsConError = new SincronizationBusiness().ConsultarDocsConError();
-            if (docsConError == null || docsConError.Count == 0)
+            mapDataToGrid(docsConError, ref _docsConError);
+            
+            if (docsConError.Count == 0)
                 MessageBox.Show("No existen documentos sin sincronizar :)");
-            else
-            {
-                this.ctrlDocsError.SetData(docsConError);
-                lblError.Text = "Error: " + docsConError.Count.ToString();
-            }
-                
+            lblError.Text = "Error: " + _docsConError.Count.ToString();
         }
     }
 }

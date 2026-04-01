@@ -74,6 +74,15 @@
             saldoDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             tabPage1 = new TabPage();
             dataGridView1 = new DataGridView();
+            numDocDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            tipoDocumentoDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            totalDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            toPayDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            dateDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            pagadoDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            porcentajePPDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            descuentoPPDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            valorPagadoDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             docCarteraMsgBindingSource = new BindingSource(components);
             label16 = new Label();
             label15 = new Label();
@@ -182,7 +191,7 @@
             dgvMensajes.Location = new Point(3, 19);
             dgvMensajes.Name = "dgvMensajes";
             dgvMensajes.ReadOnly = true;
-            dgvMensajes.Size = new Size(1013, 138);
+            dgvMensajes.Size = new Size(1013, 119);
             dgvMensajes.TabIndex = 1;
             // 
             // fechaLogDataGridViewTextBoxColumn
@@ -217,7 +226,7 @@
             groupBox1.Controls.Add(dgvMensajes);
             groupBox1.Location = new Point(5, 146);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(1019, 160);
+            groupBox1.Size = new Size(1019, 141);
             groupBox1.TabIndex = 2;
             groupBox1.TabStop = false;
             groupBox1.Text = "Info Sincronización";
@@ -499,6 +508,7 @@
             dataGridView1.AutoGenerateColumns = false;
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { numDocDataGridViewTextBoxColumn, tipoDocumentoDataGridViewTextBoxColumn, totalDataGridViewTextBoxColumn, toPayDataGridViewTextBoxColumn, dateDataGridViewTextBoxColumn, pagadoDataGridViewTextBoxColumn, porcentajePPDataGridViewTextBoxColumn, descuentoPPDataGridViewTextBoxColumn, valorPagadoDataGridViewTextBoxColumn });
             dataGridView1.DataSource = docCarteraMsgBindingSource;
             dataGridView1.Dock = DockStyle.Fill;
             dataGridView1.Location = new Point(3, 3);
@@ -507,6 +517,73 @@
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.Size = new Size(991, 124);
             dataGridView1.TabIndex = 14;
+            // 
+            // numDocDataGridViewTextBoxColumn
+            // 
+            numDocDataGridViewTextBoxColumn.DataPropertyName = "numDoc";
+            numDocDataGridViewTextBoxColumn.HeaderText = "numDoc";
+            numDocDataGridViewTextBoxColumn.Name = "numDocDataGridViewTextBoxColumn";
+            numDocDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // tipoDocumentoDataGridViewTextBoxColumn
+            // 
+            tipoDocumentoDataGridViewTextBoxColumn.DataPropertyName = "tipoDocumento";
+            tipoDocumentoDataGridViewTextBoxColumn.HeaderText = "tipoDocumento";
+            tipoDocumentoDataGridViewTextBoxColumn.Name = "tipoDocumentoDataGridViewTextBoxColumn";
+            tipoDocumentoDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // totalDataGridViewTextBoxColumn
+            // 
+            totalDataGridViewTextBoxColumn.DataPropertyName = "total";
+            totalDataGridViewTextBoxColumn.HeaderText = "total";
+            totalDataGridViewTextBoxColumn.Name = "totalDataGridViewTextBoxColumn";
+            totalDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // toPayDataGridViewTextBoxColumn
+            // 
+            toPayDataGridViewTextBoxColumn.DataPropertyName = "toPay";
+            toPayDataGridViewTextBoxColumn.HeaderText = "toPay";
+            toPayDataGridViewTextBoxColumn.Name = "toPayDataGridViewTextBoxColumn";
+            toPayDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // dateDataGridViewTextBoxColumn
+            // 
+            dateDataGridViewTextBoxColumn.DataPropertyName = "date";
+            dateDataGridViewTextBoxColumn.HeaderText = "date";
+            dateDataGridViewTextBoxColumn.Name = "dateDataGridViewTextBoxColumn";
+            dateDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // pagadoDataGridViewTextBoxColumn
+            // 
+            pagadoDataGridViewTextBoxColumn.DataPropertyName = "pagado";
+            pagadoDataGridViewTextBoxColumn.HeaderText = "pagado";
+            pagadoDataGridViewTextBoxColumn.Name = "pagadoDataGridViewTextBoxColumn";
+            pagadoDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // porcentajePPDataGridViewTextBoxColumn
+            // 
+            porcentajePPDataGridViewTextBoxColumn.DataPropertyName = "porcentajePP";
+            porcentajePPDataGridViewTextBoxColumn.HeaderText = "porcentajePP";
+            porcentajePPDataGridViewTextBoxColumn.Name = "porcentajePPDataGridViewTextBoxColumn";
+            porcentajePPDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // descuentoPPDataGridViewTextBoxColumn
+            // 
+            descuentoPPDataGridViewTextBoxColumn.DataPropertyName = "descuentoPP";
+            descuentoPPDataGridViewTextBoxColumn.HeaderText = "descuentoPP";
+            descuentoPPDataGridViewTextBoxColumn.Name = "descuentoPPDataGridViewTextBoxColumn";
+            descuentoPPDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // valorPagadoDataGridViewTextBoxColumn
+            // 
+            valorPagadoDataGridViewTextBoxColumn.DataPropertyName = "valorPagado";
+            valorPagadoDataGridViewTextBoxColumn.HeaderText = "valorPagado";
+            valorPagadoDataGridViewTextBoxColumn.Name = "valorPagadoDataGridViewTextBoxColumn";
+            valorPagadoDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // docCarteraMsgBindingSource
+            // 
+            docCarteraMsgBindingSource.DataSource = typeof(jbp.msg.sap.DocCarteraMsg);
             // 
             // label16
             // 
@@ -647,7 +724,8 @@
             textBox1.Location = new Point(603, 327);
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(414, 55);
+            textBox1.ReadOnly = true;
+            textBox1.Size = new Size(414, 34);
             textBox1.TabIndex = 18;
             // 
             // textBox2
@@ -713,10 +791,8 @@
 
         private DataGridView dgvDocs;
         private DataGridViewTextBoxColumn fechaSincronizacionVendedorDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn tipoDocumentoDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn clienteDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn vendedorDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn totalDataGridViewTextBoxColumn;
         private DataGridView dgvMensajes;
         private GroupBox groupBox1;
         private TabControl tabDetalleDocToSync;
@@ -739,24 +815,12 @@
         private DataGridViewTextBoxColumn cantBonificacionDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn cantBrutaDataGridViewTextBoxColumn;
         private DataGridView dataGridView1;
-        private BindingSource docCarteraMsgBindingSource;
-        private DataGridViewTextBoxColumn folioNumDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn datosAdicionalesDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn codClienteDataGridViewTextBoxColumn;
         private TabControl tabControl1;
         private TabPage tabPage1;
         private TabPage tabPage2;
         private DataGridView dataGridView3;
-        private DataGridViewTextBoxColumn dateDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn numDocDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn totalDataGridViewTextBoxColumn1;
-        private DataGridViewTextBoxColumn toPayDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn pagadoDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn toPayMasProntoPagoDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn porcentajePPDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn descuentoPPDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn tipoDocumentoDataGridViewTextBoxColumn1;
-        private DataGridViewTextBoxColumn valorPagadoDataGridViewTextBoxColumn;
         private DataGridView dataGridView4;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
         private GroupBox groupBox2;
@@ -796,5 +860,15 @@
         private DataGridViewTextBoxColumn msgDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn tipoMsgDataGridViewTextBoxColumn;
         private TextBox textBox2;
+        private BindingSource docCarteraMsgBindingSource;
+        private DataGridViewTextBoxColumn numDocDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn tipoDocumentoDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn totalDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn toPayDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn dateDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn pagadoDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn porcentajePPDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn descuentoPPDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn valorPagadoDataGridViewTextBoxColumn;
     }
 }

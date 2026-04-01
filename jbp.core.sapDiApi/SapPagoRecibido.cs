@@ -217,7 +217,7 @@ namespace jbp.core.sapDiApi
 
         private void registrarNotasCreditoProntoPago(PagosMsg me)
         {
-            Notify("Registrando Notas de Crédito por pronto pago");
+            sendNotififacationMessage("Registrando Notas de Crédito por pronto pago");
             var sapNc = new SapNotaCredito();
             sapNc.Company = this.Company;
             me.facturasAPagar.ForEach(factura => {
@@ -226,11 +226,11 @@ namespace jbp.core.sapDiApi
                     factura.descuentoPP = factura.toPay - factura.toPayMasProntoPago;
                     //se registra la nota de credito por pronto pago
                     var ncPP = getNcProntoPagoFromFactura(factura, me);
-                    Notify("Aplicando "+ ncPP.TotalNC.ToString("C2") + " a la factura " + factura.numDoc);
+                    sendNotififacationMessage("Aplicando "+ ncPP.TotalNC.ToString("C2") + " a la factura " + factura.numDoc);
                     var respNc = sapNc.AddNcProntoPago(ncPP);
                     if (respNc != "ok")
                         throw new Exception(respNc);
-                    Notify("Nota de crédito por pronto pago registrada correctamente: ");
+                    sendNotififacationMessage("Nota de crédito por pronto pago registrada correctamente: ");
                 }
             });
         }
