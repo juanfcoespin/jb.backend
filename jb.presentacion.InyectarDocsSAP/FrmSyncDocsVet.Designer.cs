@@ -32,10 +32,14 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSyncAppVET));
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            ctrDocsToSync = new DocsToSyncViewer();
             tabPage3 = new TabPage();
+            ctrlDocsLogs = new DocsToSyncViewer();
             tabPage2 = new TabPage();
+            ctrlDocsError = new DocsToSyncViewer();
             button1 = new Button();
             tabPage4 = new TabPage();
+            ctrResultado = new DocsToSyncViewer();
             groupBox1 = new GroupBox();
             groupBox4 = new GroupBox();
             dateTimePicker2 = new DateTimePicker();
@@ -65,10 +69,6 @@
             lblFechaUltimaConsulta = new Label();
             label7 = new Label();
             label8 = new Label();
-            ctrDocsToSync = new DocsToSyncViewer();
-            ctrlDocsLogs = new DocsToSyncViewer();
-            ctrlDocsError = new DocsToSyncViewer();
-            ctrResultado = new DocsToSyncViewer();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             tabPage3.SuspendLayout();
@@ -105,6 +105,14 @@
             tabPage1.Text = "Docs en Sincronización";
             tabPage1.UseVisualStyleBackColor = true;
             // 
+            // ctrDocsToSync
+            // 
+            ctrDocsToSync.Dock = DockStyle.Fill;
+            ctrDocsToSync.Location = new Point(3, 3);
+            ctrDocsToSync.Name = "ctrDocsToSync";
+            ctrDocsToSync.Size = new Size(1124, 607);
+            ctrDocsToSync.TabIndex = 0;
+            // 
             // tabPage3
             // 
             tabPage3.Controls.Add(ctrlDocsLogs);
@@ -115,6 +123,14 @@
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Log Documentos Sincronizados";
             tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // ctrlDocsLogs
+            // 
+            ctrlDocsLogs.Dock = DockStyle.Fill;
+            ctrlDocsLogs.Location = new Point(3, 3);
+            ctrlDocsLogs.Name = "ctrlDocsLogs";
+            ctrlDocsLogs.Size = new Size(1124, 607);
+            ctrlDocsLogs.TabIndex = 0;
             // 
             // tabPage2
             // 
@@ -127,6 +143,14 @@
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Documentos con Error";
             tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // ctrlDocsError
+            // 
+            ctrlDocsError.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ctrlDocsError.Location = new Point(6, 38);
+            ctrlDocsError.Name = "ctrlDocsError";
+            ctrlDocsError.Size = new Size(1121, 555);
+            ctrlDocsError.TabIndex = 3;
             // 
             // button1
             // 
@@ -150,6 +174,14 @@
             tabPage4.TabIndex = 3;
             tabPage4.Text = "Consulta Histórica Documentos Sincronizados";
             tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // ctrResultado
+            // 
+            ctrResultado.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ctrResultado.Location = new Point(3, 61);
+            ctrResultado.Name = "ctrResultado";
+            ctrResultado.Size = new Size(1124, 541);
+            ctrResultado.TabIndex = 2;
             // 
             // groupBox1
             // 
@@ -402,7 +434,7 @@
             label7.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label7.AutoSize = true;
             label7.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            label7.Location = new Point(820, 18);
+            label7.Location = new Point(814, 18);
             label7.Name = "label7";
             label7.Size = new Size(75, 15);
             label7.TabIndex = 9;
@@ -413,43 +445,11 @@
             label8.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label8.AutoSize = true;
             label8.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            label8.Location = new Point(764, 33);
+            label8.Location = new Point(758, 33);
             label8.Name = "label8";
             label8.Size = new Size(132, 15);
             label8.TabIndex = 10;
             label8.Text = "Fecha Ultima Consulta:";
-            // 
-            // ctrDocsToSync
-            // 
-            ctrDocsToSync.Dock = DockStyle.Fill;
-            ctrDocsToSync.Location = new Point(3, 3);
-            ctrDocsToSync.Name = "ctrDocsToSync";
-            ctrDocsToSync.Size = new Size(1124, 607);
-            ctrDocsToSync.TabIndex = 0;
-            // 
-            // ctrlDocsLogs
-            // 
-            ctrlDocsLogs.Dock = DockStyle.Fill;
-            ctrlDocsLogs.Location = new Point(3, 3);
-            ctrlDocsLogs.Name = "ctrlDocsLogs";
-            ctrlDocsLogs.Size = new Size(1124, 607);
-            ctrlDocsLogs.TabIndex = 0;
-            // 
-            // ctrlDocsError
-            // 
-            ctrlDocsError.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ctrlDocsError.Location = new Point(6, 38);
-            ctrlDocsError.Name = "ctrlDocsError";
-            ctrlDocsError.Size = new Size(1121, 555);
-            ctrlDocsError.TabIndex = 3;
-            // 
-            // ctrResultado
-            // 
-            ctrResultado.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ctrResultado.Location = new Point(3, 61);
-            ctrResultado.Name = "ctrResultado";
-            ctrResultado.Size = new Size(1124, 541);
-            ctrResultado.TabIndex = 2;
             // 
             // frmSyncAppVET
             // 
@@ -470,6 +470,7 @@
             Name = "frmSyncAppVET";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Sincronización AppVET";
+            FormClosing += frmSyncAppVET_FormClosing;
             Load += frmSyncAppVET_Load;
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);

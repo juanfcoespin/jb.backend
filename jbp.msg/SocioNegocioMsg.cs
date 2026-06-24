@@ -143,6 +143,7 @@ namespace jbp.msg
     public class SocioNegocioItemMsg
     {
         public string error;
+        public int FactorConversionPuntos { get; set; }
 
         public string Codigo { get; set; }
         public string Ruc { get; set; }
@@ -150,6 +151,8 @@ namespace jbp.msg
         public string name { get {
                 return String.IsNullOrEmpty(this.Ruc)?this.Nombre:this.Nombre + " (" + this.Ruc + ")";    
         } }
+
+        public bool ParticipantePlanPuntos { get; set; }
     }
     public class ClientMsg
     {

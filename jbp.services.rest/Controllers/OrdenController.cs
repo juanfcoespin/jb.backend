@@ -20,6 +20,14 @@ namespace jbp.services.rest.Controllers
             return ms;
         }
 
+        // endpoint para probar el guardado de ordenes
+        [HttpPost]
+        [Route("api/orden/SaveOrders")]
+        public object SaveOrders([FromBody] List<OrdenMsg> ordenes){
+            var ms = OrderBusiness.SaveOrders(ordenes);
+            return ms;
+        }
+
         [HttpGet]
         [Route("api/orden/getOrdersByVendor/{codVendor}")]
         public List<OrdenAppMsg> GetOrdersByVendor(int codVendor)

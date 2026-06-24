@@ -136,9 +136,9 @@ namespace jbp.business.hana
                  from
                     ""JbpVw_Lotes""
                  where
-                    ""Lote""='{0}'
+                    ""Lote""=?
                 ");
-                var estado = new BaseCore().GetScalarByQuery(sql);
+                var estado = new BaseCore().GetScalarByQuery(sql, new Dictionary<string, object> { { "@0", loteJB } });
                 return estado == "Acceso Denegado";
             }
             catch
@@ -176,9 +176,9 @@ namespace jbp.business.hana
         private static string GetComentarioEM(string idEM)
         {
             var sql = string.Format(@"
-                select ""Comments"" from OPDN where ""DocEntry"" = {0}
-            ", idEM);
-            return new BaseCore().GetScalarByQuery(sql);
+                select ""Comments"" from OPDN where ""DocEntry"" = ?
+            ");
+            return new BaseCore().GetScalarByQuery(sql, new Dictionary<string, object> { { "@0", idEM } });
         }
 
         public static int GetDocNumById(string idEntradaMercancia) {
@@ -188,9 +188,9 @@ namespace jbp.business.hana
             from
              ""JbpVw_EntradaMercancia""
             where
-             ""Id"" = {0}
-            ", idEntradaMercancia);
-            return new BaseCore().GetIntScalarByQuery(sql);
+             ""Id"" = ?
+            ");
+            return new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> { { "@0", idEntradaMercancia } });
         }
         private static void SetNewLotes(EntradaMercanciaMsg me)
         {
@@ -202,7 +202,7 @@ namespace jbp.business.hana
                     if (string.IsNullOrEmpty(al.Lote))
                     {
                         var sql = "call SBO_SP_LOTES_OP('EP','');"; // se pasa como parámetro EP, para indicar a la base que es EM por compra
-                        al.Lote = new BaseCore().GetScalarByQuery(sql);
+                        al.Lote = new BaseCore().GetScalarByQuery(sql,null);
                         System.Threading.Thread.Sleep(1000); //para que se genere un nuevo lote
                     }
                 });

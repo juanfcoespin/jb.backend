@@ -209,9 +209,9 @@ namespace jbp.business.hana
                 from
                  ""JbpVw_OrdenFabricacion""
                 where
-                 ""DocNum"" = {0}
-            ", docNum);
-            return new BaseCore().GetIntScalarByQuery(sql);
+                 ""DocNum"" = ?
+            ");
+            return new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> { { "@0", docNum } });
         }
 
         internal static bool EstaLiberada(int idOF)
@@ -228,10 +228,85 @@ namespace jbp.business.hana
                 from
                  ""JbpVw_OrdenFabricacion""
                 where
-                 ""Id"" = {0}
-            ",idOF);
-            return new BaseCore().GetScalarByQuery(sql);
+                 ""Id"" = ?
+            ");
+            return new BaseCore().GetScalarByQuery(sql, new Dictionary<string, object> { { "@0", idOF } });
         }
-        
+
+        public static object getOrdenFab(int DocNum)
+        {
+            var sql = string.Format(@"
+                select
+                ""Id"",
+                ""DocNum"",
+                ""CodArticulo"",
+                ""Articulo"",
+                ""Lote"",
+                ""FechaFabricacion"",
+                ""FechaInicio"",
+                ""FechaVencimiento"",
+                ""FechaFinalizacion"",
+                ""FechaCierre"",
+                ""FechaCreacion"",
+                ""Estado""
+                from
+                 ""JbpVw_OrdenFabricacion""
+                where
+                 ""DocNum"" = ?
+            ");
+            var resp = new BaseCore().GetDataTableByQuery(sql, new Dictionary<string, object> {
+                    {"@0" , DocNum }
+                });
+
+            if (resp != null && !string.IsNullOrEmpty(resp.ToString())){
+                // toJSON
+                return new System.Web.Script.Serialization.JavaScriptSerializer().DeserializeObject(resp.ToString());
+            }
+            return resp;
+        }
+
+        public static void crearCampania(CampaniaRequest datos)
+        {
+            BaseCore bc = new BaseCore();
+
+            try{
+                bc.BeginTransaction();
+
+                // nueva campaña
+                var sqlCampania = @"
+                    INSERT INTO JB_CAMPANIA( NOMBRE, FECHA_DESDE, FECHA_HASTA, FINALIZADA)
+                    VALUES( ?, ?, ?, ?)";
+                bc.ExecuteQueryTransaction( sqlCampania, new Dictionary<string, object>{
+                        {"@1", datos.NombreCampania},
+                        {"@2", datos.FechaDesde},
+                        {"@3", datos.FechaHasta},
+                        {"@4", datos.Finalizada}
+                    }
+                );
+
+                // Obtener el ID
+                var sqlId = @"SELECT CURRENT_IDENTITY_VALUE() FROM DUMMY";
+                int campaniaId = bc.GetIntScalarTransaction(sqlId, null);
+
+                // Insertar detalle
+                foreach (var of in datos.OrdenesFabricacion){
+                    var sqlDetalle = @"
+                        INSERT INTO JB_ORDENES_FAB_CAMP(ID_CAMPANIA,NRO_OF)
+                        VALUES(?, ?)";
+                    bc.ExecuteQueryTransaction( sqlDetalle, new Dictionary<string, object>{
+                            {"@0", campaniaId},
+                            {"@1", of.DocNum}
+                        }
+                    );
+                }
+
+                bc.Commit();
+            }
+            catch{
+                bc.Rollback();
+                throw;
+            }
+        }
+
     }
 }

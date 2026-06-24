@@ -176,10 +176,13 @@ namespace jbp.business.hana
                  ""JbpVw_Lotes"" t1 on t1.""Id""=t0.""IdLote""
                 where
                  t0.""CodBodega"" not in ('EMP1', 'CONTM1', 'BAJ1') --para el producto terminado
-                 and t1.""Lote""='{0}'
-                 and t0.""CodArticulo""='{1}'
-                ", lote, codArticulo);
-                return new BaseCore().GetDecimalScalarByQuery(sql);
+                 and t1.""Lote""=?
+                 and t0.""CodArticulo""=?
+                ");
+                return new BaseCore().GetDecimalScalarByQuery(sql, new Dictionary<string, object> {
+                    { "@0", lote },
+                    { "@1", codArticulo }
+                });
             }
             catch {
                 return 0;
@@ -311,15 +314,16 @@ namespace jbp.business.hana
                 error = string.Format("La Orden de Fabricación {0} del componente a fraccionar no está en estado liberado!!",
                     me.IdOf);
 
-            if (me.CantPesada < camposOf.CantidadPlanificada) {
+            if (me.CantPesada < camposOf.CantidadPlanificada)
+            {
                 error = string.Format("La cantidad pesada ({0}{3}) del articulo {1} no puede ser menor a la planificada ({2}{3})!!",
                     me.CantPesada,
                     me.CodArticulo,
                     camposOf.CantidadPlanificada,
                     camposOf.UnidadMedida);
             }
-                
-            if(!string.IsNullOrEmpty(error))
+
+            if (!string.IsNullOrEmpty(error))
                 throw new Exception(error);
             var cantidadPesasa = !rollBack ? me.CantPesada : 0;
             var sql = string.Format(@"
@@ -337,7 +341,7 @@ namespace jbp.business.hana
             });
         }
 
-        private static CamposOF GetCamposOF(CantPesadaComponenteOF me)
+        public static CamposOF GetCamposOF(CantPesadaComponenteOF me)
         {
             var ms = new CamposOF();
             var sql = string.Format(@"
@@ -719,18 +723,21 @@ namespace jbp.business.hana
         {
             var sql = string.Format(@"
                 select ""Id"" from ""JbpVw_Lotes"" 
-                where ""Lote""='{0}' and ""CodArticulo""='{1}'
-            ", lote, codArticulo);
-            return new BaseCore().GetIntScalarByQuery(sql);
+                where ""Lote""=? and ""CodArticulo""=?
+            ");
+            return new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> {
+                { "@0", lote },
+                { "@1", codArticulo }
+            });
         }
 
         internal static int GetIdUbicacionByName(string ubicacion)
         {
             var sql = string.Format(@"
                 select ""Id"" from ""JbpVw_Ubicaciones"" 
-                where ""Ubicacion""='{0}'
-            ",ubicacion);
-            return new BaseCore().GetIntScalarByQuery(sql);
+                where ""Ubicacion""=?
+            ");
+            return new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> { { "@0", ubicacion } });
         }
 
         public static EMProveedorMsg GetEMPorProveedor(string codProveedor)
@@ -909,11 +916,11 @@ namespace jbp.business.hana
                  ""JbpVw_Ubicaciones"" t2 on t2.""Id""=t0.""IdUbicacion""
                 where
                  t1.""Lote""=?
-                 and t2.""Ubicacion""=?'
+                 and t2.""Ubicacion""=?
             ");
                 var bc = new BaseCore();
                 var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
-                    {"@0",me.Lote }, {"@1",ubicacionPesaje }
+                    {"@0",me.Lote }, {"@1","MAT1-PSJ1" }
                 });
                 if (dt != null && dt.Rows.Count > 0)
                 {

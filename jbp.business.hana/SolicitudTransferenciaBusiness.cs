@@ -215,6 +215,7 @@ namespace jbp.business.hana
             }
             return ms;
         }
+        //es el id de la ST
         public static List<ST_ComponentesMsg> GetComponetesConLotesById(int id)
         {
             var ms = new List<ST_ComponentesMsg>();
@@ -278,11 +279,30 @@ namespace jbp.business.hana
                         LineNum = bc.GetInt(dr["LineNum"]),
                     };
                     componente.Ubicaciones = GetUbicacionesPorLote(bc.GetInt(dr["IdLote"]), componente.BodegaOrigen);
+                    componente.RequierePicking = SeRequirePickingDelComponente(componente);
+                    
                     if(componente.Ubicaciones!=null && componente.Ubicaciones.Count>0 && componente.Ubicaciones[0].Cantidad>0)
                         ms.Add(componente);
                 }
             }
             return ms;
+        }
+
+        private static bool SeRequirePickingDelComponente(ST_ComponentesMsg componente)
+        {
+            //si solo tiene la ubicación de pesaje
+            var tieneUbicacionPesaje = false;
+            var tieneMasUbicaciones = false;
+            componente.Ubicaciones.ForEach(u =>
+            {
+                if (u.Ubicacion.ToLower().Contains("psj"))
+                    tieneUbicacionPesaje = true;
+                else
+                    tieneMasUbicaciones = true;
+            });
+            if(tieneUbicacionPesaje && !tieneMasUbicaciones)
+                return false;
+            return true;
         }
 
         private static List<UbicacionLoteMsg> GetUbicacionesPorLote(int idLote, string bodegaOrigen)

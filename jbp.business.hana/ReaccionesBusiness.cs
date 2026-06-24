@@ -230,9 +230,9 @@ namespace jbp.business.hana
             {
                 var sql = string.Format(@"
                     select value from JB_CATALOG_VALUES
-                    where id={0}
-                ",idReaccion);
-                ms.Add(bc.GetScalarByQuery(sql));
+                    where id=?
+                ");
+                ms.Add(bc.GetScalarByQuery(sql, new Dictionary<string, object> { { "@0", idReaccion } }));
             });
             return ms;
         }
@@ -301,7 +301,7 @@ namespace jbp.business.hana
                             {"@12",getReaccionesChecked(reaccion.reacciones) },
                         });
                         sql = "select max(ID) from JBP_REACCIONES";
-                        var idReaccion = bc.GetIntScalarByQuery(sql);
+                        var idReaccion = bc.GetIntScalarByQuery(sql, null);
                         try
                         {
                             reaccion.medicamentos.ForEach(medicamento => {
@@ -374,14 +374,14 @@ namespace jbp.business.hana
                     WHERE ID_REACCION=?
                 ");
                 bc.Execute(sql, new Dictionary<string, object> {
-                    {"@0", idReaccion }
+                    {"@1", idReaccion }
                 });
                 sql = string.Format(@"
                     DELETE FROM JBP_REACCIONES
-                    WHERE ID_REACCION=?
+                    WHERE ID=?
                 ");
                 bc.Execute(sql, new Dictionary<string, object> {
-                    {"@0", idReaccion }
+                    {"@2", idReaccion }
                 });
                 return null;
             }
@@ -392,6 +392,7 @@ namespace jbp.business.hana
 
         private void saveInfoReaccion(InfoReaccion infoReaccion, BaseCore bc)
         {
+            string fechaInicio= string.Format("to_date('{0}','yyyy-mm-dd')", infoReaccion.fechaInicio.Substring(0, 10));
             string fechaFin = null;
             if (string.IsNullOrEmpty(infoReaccion.fechaFin))
             {
@@ -413,7 +414,7 @@ namespace jbp.business.hana
                 )values(
                     ?,
                     ?,
-                    to_date(?,'yyyy-mm-dd'),
+                    ?,
                     ?,
                     ?,
                     ?,
@@ -424,8 +425,8 @@ namespace jbp.business.hana
             bc.Execute(sql, new Dictionary<string, object> {
                 {"@0",infoReaccion.idReaccion },
                 {"@1",infoReaccion.idEstadoPersonaAfectada },
-                {"@2",infoReaccion.fechaInicio.Substring(0, 10) },
-                {"@3",fechaFin },
+                {"@2",infoReaccion.fechaInicio },
+                {"@3",infoReaccion.fechaFin    },
                 {"@4",infoReaccion.siguioTratamiento },
                 {"@5",infoReaccion.sintomas },
                 {"@6", infoReaccion.tratamiento }

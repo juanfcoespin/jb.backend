@@ -177,8 +177,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="OrderRequestExample.json" />
-    <Content Include="Web - test.config" />
-    <Content Include="Web - prod.config" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

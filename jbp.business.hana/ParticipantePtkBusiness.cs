@@ -1,13 +1,14 @@
-﻿using System;
+﻿using jbp.msg;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using TechTools.Rest;
-using jbp.msg;
 using TechTools.Core.Hana;
 using TechTools.Exceptions;
-using System.Data;
+using TechTools.Rest;
 using TechTools.Utils;
 
 
@@ -27,6 +28,11 @@ namespace jbp.business.hana
                 var rc = new RestCall();
                 var resp = rc.SendPostOrPut(url, typeof(String),
                     me, typeof(EstadoCuentaMe), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
+                if (resp != null && !string.IsNullOrEmpty(resp.ToString()))
+                {
+                    // toJSON
+                    return new System.Web.Script.Serialization.JavaScriptSerializer().DeserializeObject(resp.ToString());
+                }
                 return resp;
             }
             catch (Exception e)
@@ -162,6 +168,52 @@ namespace jbp.business.hana
             return ms;
         }
 
+        //notas de credito enviadas una fecha determinada
+        public List<notacreditoManual> GetNCEnviadasByRuc(string fecha)
+        {
+            var ms = new List<notacreditoManual>();
+            var sql = string.Format(@"
+            select 
+             RUC,
+             TIPO_DOCUMENTO,
+             FECHA_TX,
+             FECHA_DOCUMENTO,
+             FECHA_DOCUMENTO_ORIGINAL,
+             NRO_DOCUMENTO,
+             MONTO,
+             PUNTOS,
+             COD_RESPUESTA_WS,
+             MSG_RESPUESTA_WS,
+             DESCRIPCION
+            from JBP_LOG_ENVIO_DOCUMENTOS_PTK
+            where TO_DATE(FECHA_TX)=?
+            AND TIPO_DOCUMENTO = 'notaCreditoManual'
+            ");
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",fecha }
+            });
+            foreach (DataRow dr in dt.Rows)
+            {
+                ms.Add(new notacreditoManual
+                {
+                    ruc = dr["RUC"].ToString(),
+                    tipoDocumento = dr["TIPO_DOCUMENTO"].ToString(),
+                    fechaEnvio = bc.GetDateTime(dr["FECHA_TX"]).ToString("yyyy-MM-dd HH:mm"),
+                    fechaDocumento = bc.GetDateTime(dr["FECHA_DOCUMENTO"]).ToString("yyyy-MM-dd"),
+                    fechaDocumentoOriginal = (bc.GetDateTime(dr["FECHA_DOCUMENTO_ORIGINAL"]) == DateTime.MinValue) ? "" :
+                        bc.GetDateTime(dr["FECHA_DOCUMENTO_ORIGINAL"]).ToString("yyyy-MM-dd"),
+                    nroDocumento = dr["NRO_DOCUMENTO"].ToString(),
+                    monto = bc.GetInt(dr["MONTO"]),
+                    puntos = bc.GetInt(dr["PUNTOS"]),
+                    codRespWS = bc.GetInt(dr["COD_RESPUESTA_WS"]),
+                    respWs = dr["MSG_RESPUESTA_WS"].ToString(),
+                    descripcion = dr["DESCRIPCION"].ToString()
+                });
+            }
+            return ms;
+        }
+
         public void RegistrarParticipante(string ruc, string numFactura=null)
         {
             if (string.IsNullOrEmpty(ruc))
@@ -185,15 +237,137 @@ namespace jbp.business.hana
                 });
             });
         }
-        public void RegistroMasivoParticipantes()
+
+        public void RegistrarParticipantePorRuc(string ruc)
         {
-            var participantes = GetParticipantesToUpdate();
-            participantes.ForEach(p => RegistrarParticipante(p,false)); //se para como parametro false cuando se va a registrar nuevo participante
+            //1. obtener datos del participante a registrar en promotick
+            var ms = new ParticipantesPuntosMsg();
+            var estado = 1;                                 //? estado 1 para actualizar o insertar
+            var participante = GetParticipantePuntosByRucPrincipal(ruc);
+
+            //2. verifica q tenga RucPrincipal
+            if (participante != null && !string.IsNullOrEmpty(participante.RucPrincipal))
+            {
+                participante.estado = estado;
+                ms = participante;
+            }
+            else
+            {
+                throw new Exception($"No se encontró el participante con el RUC {ruc}");
+            }
+
+            try
+            {
+                var errorParticipante = "";
+                //3. verifica q tenga los campos necesarios 
+                if (!ParticipanteValido(ms, ref errorParticipante))
+                    throw new Exception(errorParticipante);
+
+                this.RucParticipante = ms.nroDocumento;
+
+                var url = $"{conf.Default.ptkWsUrl}/gstparticipantes";
+                var rc = new RestCall();
+                var resp = new RespWsMsg();
+                //4. registrar participante
+                resp = (RespWsMsg)rc.SendPostOrPut(url, typeof(RespWsMsg), ms, typeof(ParticipantesPuntosMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
+                //5. actualizar estado a sincronizado o enviar error
+                GestionarRespuestaRegistrarParticipante(resp, ms, this.RucParticipante);
+                
+                RegistrarParticipanteEnLog(ms, resp);
+               
+            }
+            catch (Exception e)
+            {
+                var strJsonParticipante = new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(ms);
+                e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
+                EnviarPorCorreo("Error en el registro del Participante", strJsonParticipante + e.Message);
+
+                throw new Exception($"Error en el registro del Participante - {strJsonParticipante}");
+            }
         }
-        public void ActualizacionMasivaParticipantes()
+
+         public void ActualizarParticipantePorRuc(string ruc)
+        {
+            //1. obtener datos del participante a registrar en promotick
+            var ms = new ParticipantesPuntosMsg();
+            var estado = 1;                                 //? estado 1 para actualizar o insertar
+            var participante = GetParticipantePuntosByRucPrincipal(ruc);
+
+            //2. verifica q tenga RucPrincipal
+            if (participante != null && !string.IsNullOrEmpty(participante.RucPrincipal))
+            {
+                participante.estado = estado;
+                ms = participante;
+            }
+            else
+            {
+                throw new Exception($"No se encontró el participante con el RUC {ruc}");
+            }
+
+            try
+            {
+                var errorParticipante = "";
+                //3. verifica q tenga los campos necesarios 
+                if (!ParticipanteValido(ms, ref errorParticipante))
+                    throw new Exception(errorParticipante);
+
+                this.RucParticipante = ms.nroDocumento;
+
+                var url = $"{conf.Default.ptkWsUrl}/gstparticipantes/actualizar";
+                var rc = new RestCall();
+                var resp = new RespWsMsg();
+                var newMe = traducirMensaje(ms);
+                //4. actualizar participante
+                resp = (RespWsMsg)rc.SendPostOrPut(url, typeof(RespWsMsg), newMe, typeof(UpdateParticipanteMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
+                //5. actualizar estado a sincronizado o enviar error
+                GestionarRespuestaRegistrarParticipante(resp, newMe, this.RucParticipante);
+
+                RegistrarParticipanteEnLog(ms, resp);   
+            }
+            catch (Exception e)
+            {
+                var strJsonParticipante = new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(ms);
+                e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
+                EnviarPorCorreo("Error en la actualización del Participante", strJsonParticipante + e.Message);
+
+                throw new Exception($"Error en la actualización del Participante - {strJsonParticipante}");
+            }
+        }
+
+        public bool RegistroMasivoParticipantes()
         {
             var participantes = GetParticipantesToUpdate();
-            participantes.ForEach(p => RegistrarParticipante(p, true)); //se para como parametro true para actualizar uno o varios campos del participante
+            try
+            {
+                bool band = false;  //inicador de si todos los registros se procesaron con exito
+                participantes.ForEach(p =>
+                {
+                    band = RegistrarParticipante(p, false);
+
+                }); //se pasa como parametro false cuando se va a registrar nuevo participante
+                return band;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+        public bool ActualizacionMasivaParticipantes()
+        {
+            var participantes = GetParticipantesToUpdate();
+            try
+            {
+                bool band = false;  //inicador de si todos los registros se procesaron con exito
+                participantes.ForEach(p =>
+                {
+                    band = RegistrarParticipante(p, true);
+
+                }); //se pasa como parametro true para actualizar uno o varios campos del participante
+                return band;
+            }
+            catch (Exception ex) { 
+                return false;
+            }
         }
         public void InactivarParticipantes()
         {
@@ -581,11 +755,11 @@ namespace jbp.business.hana
                 from
                  JBP_LOG_ENVIO_DOCUMENTOS_PTK
                 where 
-                 NRO_DOCUMENTO='{0}' 
+                 NRO_DOCUMENTO=? 
                  and to_char(now(),'yyyy-mm-dd')=to_char(FECHA_TX,'yyyy-mm-dd')
-            ", numDocumento);
+            ");
             var bc = new BaseCore();
-            var ms = bc.GetScalarByQuery(sql);
+            var ms = bc.GetScalarByQuery(sql, new Dictionary<string, object> { { "@0", numDocumento } });
             return ms;
         }
         public static ParticipantesPuntosMsg GetParticipantePuntosByRucPrincipal(string ruc)

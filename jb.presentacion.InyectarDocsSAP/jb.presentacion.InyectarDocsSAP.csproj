@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\jbp.business.hana\jbp.business.hana.csproj" />
+    <ProjectReference Include="..\Techtools.net\TechTools.Utils\TechTools.Utils.csproj" />
   </ItemGroup>
 
   <ItemGroup>

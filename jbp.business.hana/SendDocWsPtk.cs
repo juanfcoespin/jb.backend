@@ -14,10 +14,10 @@ namespace jbp.business.hana
     public class SendDocWsPtk: BaseWSPtk
     {
 
-        public void SendDocumentosToPromotickWS(List<DocumentoPromotickMsg> documentos)
+        public RespuestasPtkWsFacturasMsg SendDocumentosToPromotickWS(List<DocumentoPromotickMsg> documentos)
         {
             if (documentos != null && documentos.Count == 0)
-                return;
+                return null;
             //valida si los datos del participante están correctos
             //previo a enviar a promotick
             var documentosAQuitar = new List<DocumentoPromotickMsg>();
@@ -41,10 +41,9 @@ namespace jbp.business.hana
             //solo se envian los documentos con participantes validados
             documentosAQuitar.ForEach(d =>documentos.Remove(d));
             if (documentos.Count == 0)
-                return;
+                return null;
             InsertarDocumentosAEnviar(documentos);
-            //var tmp = "";
-            SendDocumentosToWS(documentos);
+            return SendDocumentosToWS(documentos);
         }
 
         internal void SendAceleradoresToPromotickWS(List<AceleradoresMsg> aceleradores, string periodo)
@@ -82,7 +81,7 @@ namespace jbp.business.hana
             });
         }
 
-        public void SendDocumentosToWS(List<DocumentoPromotickMsg> documentos, bool esNcAjuste=false)
+        public RespuestasPtkWsFacturasMsg SendDocumentosToWS(List<DocumentoPromotickMsg> documentos, bool esNcAjuste=false)
         {
             DocumentosPtkMsg me = new DocumentosPtkMsg { facturas = documentos };
             try
@@ -95,11 +94,20 @@ namespace jbp.business.hana
                     ActualizarRespuestasWS(resp);
                 else
                     RegistrarNCAjuste(resp, documentos);
+                return resp;
             }
             catch (Exception e)
             {
                 e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
                 EnviarPorCorreo(e.Message, "Jbp-Promotick");
+                var ms = new List<RespPtkWSFacturasMsg>();
+                ms.Add(new RespPtkWSFacturasMsg { 
+                    mensaje=$"Error: {e.Message+e.StackTrace}"
+                });
+                return new RespuestasPtkWsFacturasMsg
+                {
+                    respuesta = ms
+                };
             }
         }
 
@@ -251,14 +259,18 @@ namespace jbp.business.hana
             var sql = string.Format(@"
                 select count(*) from JBP_LOG_ENVIO_DOCUMENTOS_PTK
                 where 
-                 ID_DOCUMENTO ={0}
-                 and NRO_DOCUMENTO='{1}'
-                 and TIPO_DOCUMENTO='{2}'    
-                 and PUNTOS={3}
+                 ID_DOCUMENTO =?
+                 and NRO_DOCUMENTO=?
+                 and TIPO_DOCUMENTO=?    
+                 and PUNTOS=?
                  and to_char(FECHA_TX,'yyyy-mm-dd')=to_char(current_date,'yyyy-mm-dd')
-            ",
-            documento.id, documento.numFactura, documento.tipoDocumento, documento.puntos);
-            var numreg = new BaseCore().GetIntScalarByQuery(sql);
+            ");
+            var numreg = new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> {
+             { "@0", documento.id},
+             { "@1", documento.numFactura},
+             { "@2", documento.tipoDocumento},
+             { "@3", documento.puntos},
+            });
             return numreg > 0;
         }
         private void NotificarPorCorreoNumIntentosExedidos(DocumentoPromotickMsg documento)

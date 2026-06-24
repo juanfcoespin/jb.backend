@@ -17,5 +17,14 @@ namespace jbp.services.rest.Controllers
         {
             return ConfBusiness.GetNumHojaRuta();
         }
+
+
+        [HttpGet]
+        [Route("api/getDate")]
+        public DateTime getDate()
+        {
+            return DateTime.Now;
+        }
+        
     }
 }

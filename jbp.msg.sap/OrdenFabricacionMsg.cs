@@ -48,4 +48,27 @@ namespace jbp.msg.sap
             this.Componentes = new List<ComponentesMsg>();
         }
     }
+
+    public class CampaniaRequest{
+        public string NombreCampania { get; set; }
+        public DateTime FechaDesde { get; set; }
+        public DateTime FechaHasta { get; set; }
+        public bool Finalizada {  get; set; }
+        public List<OrdenFabricacion> OrdenesFabricacion { get; set; }
+    }
+
+    public class OrdenFabricacion{
+        public int Id { get; set; }
+        public int DocNum { get; set; }
+        public string CodArticulo { get; set; } = string.Empty;
+        public string Articulo { get; set; } = string.Empty;
+        public string Lote { get; set; } = string.Empty;
+        public DateTime? FechaFabricacion { get; set; }
+        public DateTime? FechaInicio { get; set; }
+        public DateTime? FechaVencimiento { get; set; }
+        public DateTime? FechaFinalizacion { get; set; }
+        public DateTime? FechaCierre { get; set; }
+        public DateTime? FechaCreacion { get; set; }
+        public string Estado { get; set; } = string.Empty;
+    }
 }

@@ -25,7 +25,8 @@ namespace jbp.core.sapDiApi
             this.obj.CardCode = me.CodCliente;
             this.obj.Comments = me.Comentario;
             this.obj.UserFields.Fields.Item("U_NUM_FAC_REL").Value = me.FolioNumFacturaRelacionada.ToString();
-            if (me.DatosAdicionalesFactura != null) {
+            if (me.DatosAdicionalesFactura != null)
+            {
                 this.obj.UserFields.Fields.Item("U_SER_EST").Value = "001";
                 this.obj.UserFields.Fields.Item("U_NUM_AUT_FR").Value = me.DatosAdicionalesFactura.NumAutorizacion;
                 this.obj.UserFields.Fields.Item("U_SER_EST_FR").Value = me.DatosAdicionalesFactura.PtoEstablecimiento;
@@ -36,8 +37,7 @@ namespace jbp.core.sapDiApi
                 this.obj.UserFields.Fields.Item("U_tipo_comprob").Value = "04";
             }
             this.obj.UserFields.Fields.Item("U_MOT_NC").Value = "06"; // Descuento Pronto Pago (de la tabla de usuario)
-            // para que no se envie al SRI
-            this.obj.UserFields.Fields.Item("U_DOC_DECLARABLE").Value = "N";
+            
             switch (me.TipoDescPP) {
                 case eNcPPType.Veterinario:
                     this.obj.Lines.ItemCode = "DESC.PP.VET";

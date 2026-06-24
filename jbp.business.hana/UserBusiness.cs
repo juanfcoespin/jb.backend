@@ -10,6 +10,7 @@ using System.DirectoryServices.AccountManagement;
 using System.DirectoryServices;
 using TechTools.Core.Hana;
 using System.Data;
+using System.Threading;
 
 
 
@@ -165,12 +166,13 @@ namespace jbp.business.hana
         private static int GetIdVendorByUserName(string userName)
         {
             var ms = 0;
+            var email = string.Format("{0}@jbp.com.ec", userName);
             var sql = string.Format(@"
                 select ""CodVendedor""
                 from ""JbpVw_Vendedores""
-                where ""Email"" = '{0}@jbp.com.ec'
-            ", userName);
-            ms = new BaseCore().GetIntScalarByQuery(sql);
+                where ""Email"" = ?
+            ");
+            ms = new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> { { "@0", email } });
             return ms;
         }
 

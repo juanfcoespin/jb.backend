@@ -15,9 +15,9 @@ namespace jbp.business.hana
             var sql = string.Format(@"
                 select ""U_idemail"" 
                 from ""@A1A_MAFU"" 
-                where ""U_idcodigo""='{0}'
-            ",cedula);
-            return new BaseCore().GetScalarByQuery(sql);
+                where ""U_idcodigo""=?
+            ");
+            return new BaseCore().GetScalarByQuery(sql, new Dictionary<string, object> { { "@0", cedula } });
         }
 
         public static object getCumple()

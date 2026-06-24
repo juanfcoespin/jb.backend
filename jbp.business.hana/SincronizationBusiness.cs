@@ -17,6 +17,7 @@ namespace jbp.business.hana
     {
         public delegate void dDocsToSync(List<DocsToSyncMsg> docs);
         public event dDocsToSync onDocsToSync;
+        private object _lockSincPedidosYCobros = new object();
 
         public delegate void dNotyfySyncStatus(DocsToSyncMsg doc);
         public event dNotyfySyncStatus onChangeSyncStatus;
@@ -24,93 +25,162 @@ namespace jbp.business.hana
 
         public void SincronizarPedidoYCobros()
         {
-            try
-            {
-                var pedidos = GetDocsVetToSyncByTipo(eTipoDocToSync.Pedido);
-                if (pedidos != null && pedidos.Count > 0)
-                {
-                    this.docToSyncActual = pedidos[0];
-                    onDocsToSync?.Invoke(pedidos);
-                    
-                    SyncDocs(pedidos, eTipoDocToSync.Pedido);
-                }
-                var cobros = GetDocsVetToSyncByTipo(eTipoDocToSync.Cobro);
-                if (cobros != null && cobros.Count > 0) {
-                    onDocsToSync?.Invoke(cobros);
-                    SyncDocs(cobros, eTipoDocToSync.Cobro);
-                }
-            }
-            catch (Exception e) {
-                RaiseError(e.Message + e.StackTrace);
-            }
-            
-        }
-        private void SyncDocs(List<DocsToSyncMsg> docsToSync, eTipoDocToSync tipoDocToSync)
-        {
-            BaseSapObj sapDiapiObj =null;
-            if(tipoDocToSync==eTipoDocToSync.Pedido)
-                sapDiapiObj = new jbp.core.sapDiApi.SapOrder();
-            if (tipoDocToSync == eTipoDocToSync.Cobro)
-                sapDiapiObj = new jbp.core.sapDiApi.SapPagoRecibido();
-            if (sapDiapiObj == null)
-                throw new Exception("No se ha podido determinar el objeto DIAPI!!");
-            this.docToSyncActual = docsToSync[0];
-            sapDiapiObj.onNotififacationMessage += (msg) => {
-                NofifySyncStatus(this.docToSyncActual, msg);
-            };
-            if (sapDiapiObj.Connect())
+            lock (_lockSincPedidosYCobros)
             {
                 try
                 {
-                    foreach (var docToSync in docsToSync.ToList())
+                    var pedidos = GetDocsVetToSyncByTipo(eTipoDocToSync.Pedido);
+                    if (pedidos != null && pedidos.Count > 0)
                     {
-                        this.docToSyncActual = docToSync;
-                        var resp = "";
-                        if (tipoDocToSync == eTipoDocToSync.Pedido) {
-                            /*
-                            ----- Asignar precios a lineas de pedido -------
-                            - Del app ya viene calculado el descuento financiero y la bonificación
-                            - Desde sap se requiere poner otra vez la lógica  x esto se setea denuevo el precio
-                            
-                            - se crea una copia del objeto para registrar en el historico del cache tal cual el precio le
-                              apareció al vededor
-                            */
-                            var pedido = (OrdenMsg)((OrdenMsg)docToSync).Clone();
-                            pedido.Lines.ForEach(line => {
-                                line.price = SocioNegocioBusiness.GetPrecioByCodSocioNegocioCodArticulo(pedido.CodCliente, line.CodArticulo);
-                            });
-                            
-                            resp = ((SapOrder)sapDiapiObj).Add(pedido);
-                        }
-                        
-                        if (tipoDocToSync==eTipoDocToSync.Cobro)
-                            resp = ((SapPagoRecibido)sapDiapiObj).SafePago((PagosMsg)docToSync);
-                        if (resp == "ok")
-                        {
-                            NofifySyncStatus(docToSync, tipoDocToSync.ToString()+ " registrado en SAP correctamente!!");
-                            MoveToHistorico(docToSync);
-                            // para mostrar en capa de presentación, en bdd ya se guarda al mover al historico
-                            docToSync.FechaIngresoSap = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); 
-                            onDocSyncOK?.Invoke(docToSync);
-                        }
-                        else //se notifica el error
-                        {
-                            NofifySyncStatus(docToSync, "Registrando error en bdd");
-                            this.docToSyncActual.Error = resp;
-                            RegistrarErrEnCache(this.docToSyncActual);
-                            NotificarErrorPorCorreo(this.docToSyncActual);
-                            NofifySyncStatus(this.docToSyncActual, resp, eTipoMsg.Error);
-                        }
+                        onDocsToSync?.Invoke(pedidos);
+                        SyncDocs(pedidos, eTipoDocToSync.Pedido);
                     }
-                    sapDiapiObj.Disconnect();
+                    var cobros = GetDocsVetToSyncByTipo(eTipoDocToSync.Cobro);
+                    if (cobros != null && cobros.Count > 0)
+                    {
+                        onDocsToSync?.Invoke(cobros);
+                        SyncDocs(cobros, eTipoDocToSync.Cobro);
+                    }
+
+                    //reset a los q se quedaron en procesando 1
+                    resetEstadoProcesando();
                 }
                 catch (Exception e)
                 {
-                    sapDiapiObj.Disconnect();
                     RaiseError(e.Message + e.StackTrace);
                 }
             }
         }
+
+        private void resetEstadoProcesando()
+        {
+            // pone en estado no procesado 0 si no se proceso correctamente 1
+            try
+            {
+                var sql = string.Format(@"
+                update JB_CACHE_DOCS_VET_TO_SYNC        
+                set PROCESANDO=0
+                where PROCESANDO = ?
+            ");
+                new BaseCore().Execute(sql, new Dictionary<string, object> {
+                    {"@0", 1}
+                });
+            }
+            catch (Exception e)
+            {
+                //Rollback();
+                throw new Exception(
+                    "Error al reiniciar el estado a no procesado",
+                    e
+                );
+            }
+        }
+        private void SyncDocs(List<DocsToSyncMsg> docsToSync, eTipoDocToSync tipoDocToSync)
+        {
+            foreach (var docToSync in docsToSync.ToList())
+            {
+                var currentDoc = docToSync;
+                BaseSapObj sapDiapiObj = null;
+                if (tipoDocToSync == eTipoDocToSync.Pedido)
+                    sapDiapiObj = new jbp.core.sapDiApi.SapOrder();
+                if (tipoDocToSync == eTipoDocToSync.Cobro)
+                    sapDiapiObj = new jbp.core.sapDiApi.SapPagoRecibido();
+                if (sapDiapiObj == null)
+                    throw new Exception("No se ha podido determinar el objeto DIAPI!!");
+
+                BaseSapObj.dNotififacationMessage handler = null;
+                handler = (msg) =>
+                {
+                    try
+                    {
+                        NofifySyncStatus(currentDoc, msg);
+                    }
+                    catch(Exception e) {
+                        TechTools.Utils.Logger.Error("handler - bussiness");
+                        TechTools.Utils.Logger.Error(e);
+                    }
+                };
+                try
+                {
+                    sapDiapiObj.onNotififacationMessage += handler;
+                    if (!sapDiapiObj.Connect())
+                        throw new Exception("No se pudo conectar a SAP");
+
+                    var resp = "";
+                    if (tipoDocToSync == eTipoDocToSync.Pedido)
+                    {
+                        /*
+                        ----- Asignar precios a lineas de pedido -------
+                        - Del app ya viene calculado el descuento financiero y la bonificación
+                        - Desde sap se requiere poner otra vez la lógica  x esto se setea denuevo el precio
+
+                        - se crea una copia del objeto para registrar en el historico del cache tal cual el precio le
+                            apareció al vededor
+                        */
+                        var pedido = (OrdenMsg)((OrdenMsg)docToSync).Clone();
+                        pedido.Lines.ForEach(line =>
+                        {
+                            line.price = SocioNegocioBusiness.GetPrecioByCodSocioNegocioCodArticulo(pedido.CodCliente, line.CodArticulo);
+                        });
+
+                        resp = ((SapOrder)sapDiapiObj).Add(pedido);
+                    }
+
+                    if (tipoDocToSync == eTipoDocToSync.Cobro)
+                        resp = ((SapPagoRecibido)sapDiapiObj).SafePago((PagosMsg)docToSync);
+                    if (resp == "ok")
+                    {
+                        NofifySyncStatus(docToSync, tipoDocToSync.ToString() + " registrado en SAP correctamente!!");
+                        MoveToHistorico(docToSync);
+                        // para mostrar en capa de presentación, en bdd ya se guarda al mover al historico
+                        docToSync.FechaIngresoSap = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                        try
+                        {
+                            onDocSyncOK?.Invoke(docToSync);
+                        }
+                        catch (Exception ex) {
+                            TechTools.Utils.Logger.Error("onDocSyncOK - business");
+                            TechTools.Utils.Logger.Error(ex);
+                        }
+                    }
+                    else //se notifica el error
+                    {
+                        NofifySyncStatus(docToSync, "Registrando error en bdd");
+                        currentDoc.Error = resp;
+                        RegistrarErrEnCache(currentDoc);
+                        NotificarErrorPorCorreo(currentDoc);
+                        NofifySyncStatus(currentDoc, resp, eTipoMsg.Error);
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                finally {
+                    try
+                    {
+                        sapDiapiObj.onNotififacationMessage -= handler;
+                    }
+                    catch (Exception e) {
+                        TechTools.Utils.Logger.Error("Bussines: quitar handlers");
+                        TechTools.Utils.Logger.Error(e);
+                    }
+                    try
+                    {
+                        sapDiapiObj.Disconnect();
+                    }
+                    catch (Exception e)
+                    {
+                        TechTools.Utils.Logger.Error("Bussines: Desconexión sap");
+                        TechTools.Utils.Logger.Error(e);
+                    }
+                    
+                    
+                }                     
+            }            
+        }
+
+        
 
         private static void ActualizarEstado(string id, string estado)
         {
@@ -196,7 +266,7 @@ namespace jbp.business.hana
             string error = null;
             this.EnviarPorCorreo(conf.Default.correoErrorSync, titulo, msg, ref error);
         }
-        private DocsToSyncMsg docToSyncActual;
+        //private DocsToSyncMsg docToSyncActual;
         internal void MoveToHistorico(DocsToSyncMsg me)
         {
             try
@@ -240,18 +310,28 @@ namespace jbp.business.hana
         }
         private void NofifySyncStatus(DocsToSyncMsg docToSync, string msg, eTipoMsg tipoMsg=eTipoMsg.Info)
         {
-            // para que no se dupliquen los mensajes
-            if (docToSync.MensajesSincronizacion.Exists(ms => ms.Msg == msg))
-                return;
-            //concatenar con el status anterior
-            docToSync.MensajesSincronizacion.Add(new MsgSincronizacion {
-
-                Key= Guid.NewGuid().ToString(),
-                FechaLog = DateTime.Now.ToString(),
-                Msg = msg,
-                TipoMsg = tipoMsg,
-            }); 
-            onChangeSyncStatus?.Invoke(docToSync);
+            lock (docToSync) {
+                // para que no se dupliquen los mensajes
+                if (docToSync.MensajesSincronizacion.Exists(ms => ms.Msg == msg))
+                    return;
+                //concatenar con el status anterior
+                docToSync.MensajesSincronizacion.Add(new MsgSincronizacion
+                {
+                    FechaLog = DateTime.Now.ToString(),
+                    Msg = msg,
+                    TipoMsg = tipoMsg,
+                });
+                try
+                {
+                    onChangeSyncStatus?.Invoke(docToSync);
+                }
+                catch (Exception e) {
+                    TechTools.Utils.Logger.Error("onChangeSyncStatus - business");
+                    TechTools.Utils.Logger.Error(e);
+                }
+                
+            }
+            
         }
         public List<DocsToSyncMsg> GetDocsVetToSyncByTipo(eTipoDocToSync tipoDocToSync)
         {
@@ -260,6 +340,7 @@ namespace jbp.business.hana
             {
                 var sql = string.Format(@"
                     SELECT
+                     TOP 10   
                      ID,
                      TIPO_DOC,   
                      CLIENTE,

@@ -18,6 +18,10 @@ namespace jbp.business.hana
         public void RaiseError(string err) { 
             this.onError(err);
         }
+        public void RaiseError(Exception e)
+        { 
+            RaiseError(e.ToString()+e.StackTrace);
+        }
         public void NotifyMsg(string msg)
         {
             this.onNotifyMsg(msg);

@@ -117,9 +117,9 @@ namespace jbp.business.hana
                 ""JbpVw_ArticulosPorBodega""
                where
                 ""CodBodega"" in ('PT2', 'PT4') --no se incluye PT3 y BAL3 que es de guayaquil por petición de gardenia
-                and ""CodArticulo"" = '{0}'
-            ", codArticulo);
-            return new BaseCore().GetDecimalScalarByQuery(sql);
+                and ""CodArticulo"" = ?
+            ");
+            return new BaseCore().GetDecimalScalarByQuery(sql, new Dictionary<string, object> { { "@0", codArticulo } });
         }
     }
 }

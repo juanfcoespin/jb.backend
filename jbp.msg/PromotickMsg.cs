@@ -43,6 +43,11 @@ namespace jbp.msg
 
         public string respWs { get; set; }
     }
+
+    public class notacreditoManual : DocumentoEnviadoMsg
+    {
+        public string ruc { get; set; }
+    }
     public class AceleradorMsg
     {
         public string NroDocumento { get; set; }
@@ -78,6 +83,9 @@ namespace jbp.msg
         /// </summary>
         public string descripcion
         {
+            set {
+                _description=value;
+            }
             get
             {
                 if (this._customDescription)

@@ -323,9 +323,9 @@ namespace jbp.business.hana
         internal static string GetNombreArticuloByCodigo(string codArticulo)
         {
             var sql = string.Format(@"
-                select ""ItemName"" from OITM where ""ItemCode""='{0}'
-            ", codArticulo);
-            return new BaseCore().GetScalarByQuery(sql);    
+                select ""ItemName"" from OITM where ""ItemCode""=?
+            ");
+            return new BaseCore().GetScalarByQuery(sql, new Dictionary<string, object> { { "@0", codArticulo} });    
         }
     }
 }

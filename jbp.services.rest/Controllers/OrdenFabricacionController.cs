@@ -51,5 +51,37 @@ namespace jbp.services.rest.Controllers
         {
             return OrdenFabricacionBusiness.GetComponentesAPesarOfByDocNum(docNum, codInsumo);
         }
+
+        [HttpGet]
+        [Route("api/of/getOrdenFab/{DocNum}")]
+        public HttpResponseMessage getOrdenFab(int DocNum)
+        {
+            try{
+                return Request.CreateResponse(HttpStatusCode.OK, OrdenFabricacionBusiness.getOrdenFab(DocNum));
+            }
+            catch (Exception error){
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new
+                {
+                    message = "Ocurrió un problema al obtener la OF",
+                    error = error.Message
+                });
+            }
+        }
+
+        [HttpPost]
+        [Route("api/of/crearCampania")]
+        public HttpResponseMessage crearCampania(CampaniaRequest datos){
+            try{
+                OrdenFabricacionBusiness.crearCampania(datos);
+                return Request.CreateResponse(HttpStatusCode.OK, new{ message = "La campaña fue creada correctamente" });
+            }
+            catch (Exception error){
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new{
+                    message = "Ocurrió un problema al crear la campaña",
+                    error = error.Message
+                });
+            }
+        }
+
     }
 }

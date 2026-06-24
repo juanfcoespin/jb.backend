@@ -67,7 +67,6 @@ namespace jb.presentacion.InyectarDocsSAP
         {
             bsMensajes.ResetBindings(false);
         }
-
         private void tipoPagoMsgBindingSource_CurrentChanged(object sender, EventArgs e)
         {
             

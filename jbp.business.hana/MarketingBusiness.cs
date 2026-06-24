@@ -114,7 +114,7 @@ namespace jbp.business.hana
                 });
                 if (esNuevo) {
                     sql = "select top 1 ID from JB_DASHBOARDS order by ID desc";
-                    me.id = new BaseCore().GetIntScalarByQuery(sql);
+                    me.id = new BaseCore().GetIntScalarByQuery(sql, null);
                 }
                 return me;
             }

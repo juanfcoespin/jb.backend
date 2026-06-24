@@ -128,10 +128,10 @@ namespace jbp.business.hana
         {
             var sql = string.Format(@"
                 SELECT ""FolioNum"" from OINV
-                where ""DocNum""={0}
-            ", me.DocNum);
+                where ""DocNum""=?
+            ");
             var bc = new BaseCore();
-            var docNumAnterior = bc.GetScalarByQuery(sql);
+            var docNumAnterior = bc.GetScalarByQuery(sql, new Dictionary<string, object> { { "@0", me.DocNum } });
             sql = string.Format(@"
                 insert into JBP_LOG_FACTURAS_EXPORTACION(
                     ACTUALIZADOR, DOC_NUM_SAP, NUM_FACTURA_ANTERIOR,
@@ -212,16 +212,18 @@ namespace jbp.business.hana
             var sql = string.Format(@"
                 select 
                  ""LugarFacturacion""
-                from  ""JbpVw_Factura"" where ""DocNum"" = '{0}';
-                ",me.DocNum);
-            var lugar=new BaseCore().GetScalarByQuery(sql);
+                from  ""JbpVw_Factura"" where ""DocNum"" = ?;
+                ");
+            var lugar=new BaseCore().GetScalarByQuery(sql, 
+                new Dictionary<string, object> { { "@0", me.DocNum } }
+            );
             return lugar == "FV_EXPP";
         }
 
         internal static int GetIdChequeProtestadoByDocNum(string numDoc)
         {
-            var sql = string.Format(@"select ""DocEntry"" from OVPM where ""DocNum""={0}", numDoc);
-            return new BaseCore().GetIntScalarByQuery(sql);
+            var sql = string.Format(@"select ""DocEntry"" from OVPM where ""DocNum""=?", numDoc);
+            return new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> { { "@0", numDoc } });
         }
 
         internal static List<ValorPagadoMsg> GetPagosBorradorByIdFactura(int idFactura)

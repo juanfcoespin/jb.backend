@@ -96,16 +96,51 @@ namespace jbp.business.hana
 
         public static bool DuplicateOrder(OrdenMsg order)
         {
+            // Validar contra ordenes ya ingresadas en SAP
             var bddOrders = GetOrdersByClientAndDate(order.CodCliente, DateTime.Now);
-            if (bddOrders.Count == 0) //no hay ninguna orden de este cliente en esta fecha
-                return false;
-            
             foreach(var bddOrder in bddOrders)
             {
                 if (OrdersEquals(order, bddOrder))
                     return true;
             }
+
+            // Validar contra ordenes pendientes en CACHE (evita el entrada repetida antes de sincronizar a SAP)
+            var cacheOrders = GetOrdersFromCacheByClient(order);
+            foreach (var cacheOrder in cacheOrders){
+                if (OrdersEquals(order, cacheOrder))
+                    return true;
+            }
+
             return false;
+        }
+
+        private static List<OrdenMsg> GetOrdersFromCacheByClient(OrdenMsg order)
+        {
+            var ms = new List<OrdenMsg>();
+            var sql = string.Format(@"
+                select MSG from JB_CACHE_DOCS_VET_TO_SYNC 
+                where TIPO_DOC = 'Pedido' 
+                and CLIENTE = ? 
+                and VENDEDOR = ?
+            ");
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                 {"@0", order.Cliente },
+                 {"@1", order.Vendedor }
+            });
+            if (dt != null && dt.Rows.Count > 0)
+                foreach (DataRow dr in dt.Rows){
+                    try{
+                        var msgJsonObj = dr["MSG"].ToString();
+                        var orderCache = TechTools.Serializador.SerializadorJson.Deserializar(typeof(OrdenMsg), msgJsonObj) as OrdenMsg;
+                        if (orderCache != null && orderCache.CodCliente == order.CodCliente)
+                            ms.Add(orderCache);
+                    }
+                    catch { 
+                        throw; 
+                    }
+                }
+            return ms;
         }
 
         private static bool OrdersEquals(OrdenMsg order, OrdenMsg bddOrder)

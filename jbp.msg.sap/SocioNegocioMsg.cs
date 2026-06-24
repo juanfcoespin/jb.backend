@@ -19,4 +19,9 @@ namespace jbp.msg.sap
         public string Nombre { get; set; }
         public string Email { get; set; }
     }
+
+    public class PeticionRucMsg
+    {
+        public string ruc { get; set; }
+    }
 }

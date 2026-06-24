@@ -59,6 +59,7 @@ namespace jbp.msg.sap
         public int LineNum { get; set; }
         public string BodegaOrigen { get; set; }
         public decimal CantidadReservada { get; set; }
+        public bool RequierePicking { get; set; }
     }
     public class ST_ComponentesDetalleMsg: ST_ComponentesMsg
     {

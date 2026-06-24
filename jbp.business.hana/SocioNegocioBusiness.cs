@@ -47,11 +47,15 @@ namespace jbp.business.hana
             from
              ""JbpVw_FacturasMasNCParticipantes""
             where
-             ""RucPrincipal"" = '{0}'
-             and ""añoFactura"" = '{1}'
-             and ""mesFactura"" = '{2}'
-            ", me.ruc, me.year, me.mes );
-            return new BaseCore().GetIntScalarByQuery(sql);
+             ""RucPrincipal"" = ?
+             and ""añoFactura"" = ?
+             and ""mesFactura"" = ?
+            " );
+            return new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> {
+             { "@0", me.ruc},
+             { "@1", me.year},
+             { "@2", me.mes}
+            });
         }
         public static int GetMetaMensualParticipante(string ruc) {
             if (string.IsNullOrEmpty(ruc))
@@ -63,9 +67,9 @@ namespace jbp.business.hana
                 from ""JbpVw_SocioNegocio""
                 where
                  ""CodTipoSocioNegocio""='C'
-                 and ""Ruc"" = '{0}'
-            ", ruc);
-            return new BaseCore().GetIntScalarByQuery(sql);
+                 and ""Ruc"" = ?
+            ");
+            return new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> { { "@0", ruc } });
         }
         public static List<CarteraMsg> GetCarteraByRucPrincipalCliente(string rucPrincipal)
         {
@@ -221,10 +225,13 @@ namespace jbp.business.hana
                  ""JbpVw_SocioNegocio"" t0 left join
                  ""JbpVw_ListaPrecio"" t1 on t1.""Id"" = t0.""IdListaPrecio""
                 where
-                 t1.""CodArticulo"" = '{0}'
-                 and t0.""CodSocioNegocio"" = '{1}'
-            ",codArticulo, codSocioNegocio);
-            var ms = new BaseCore().GetDoubleScalarByQuery(sql);
+                 t1.""CodArticulo"" = ?
+                 and t0.""CodSocioNegocio"" = ?
+            ");
+            var ms = new BaseCore().GetDoubleScalarByQuery(sql, new Dictionary<string, object> {
+                { "@0", codArticulo },
+                { "@1", codSocioNegocio }
+            });
             return ms;
         }
 
@@ -430,26 +437,36 @@ namespace jbp.business.hana
             campos.Add(@"""Nombre""");
             campos.Add(@"""NombreComercial""");
           
-            var searchCondition = new BaseCore().GetSearchCondition(true, campos, token);
+            var searchCondition = new BaseCore().GetSearchCondition(true, campos, "?");
             var sql = String.Format(@"
                 select 
                  ""Ruc"",
                  case
                      when ""NombreComercial"" is null or ""NombreComercial"" = '' then ""Nombre""
                      else ""Nombre"" || ' - ' || ""NombreComercial""
-                 end ""Nombre""
+                 end ""Nombre"",
+                 ""AplicaPuntos"",
+                 ""FactorConversionPuntos""   
                 from ""JbpVw_SocioNegocio""
                 where
-                 ""CodTipoSocioNegocio"" = 'C' ?
-            ");
-            var dt = new BaseCore().GetDataTableByQuery(sql, new Dictionary<string, object> {
-                {"@0",searchCondition }
+                 ""CodTipoSocioNegocio"" = 'C' 
+                 {0}
+            ", searchCondition);
+            var tokenLike = $"%{token.ToLower()}%";
+            var bc = new BaseCore();
+            var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                {"@0",tokenLike },
+                {"@1",tokenLike },
+                {"@2",tokenLike },
             });
             foreach(DataRow dr in dt.Rows)
             {
+                bool esParticipante = dr["AplicaPuntos"].ToString() == "SI";
                 ms.Add(new SocioNegocioItemMsg { 
                     Ruc=dr["Ruc"].ToString(),
-                    Nombre = dr["Nombre"].ToString()
+                    Nombre = dr["Nombre"].ToString(),
+                    ParticipantePlanPuntos= esParticipante,
+                    FactorConversionPuntos = bc.GetInt(dr["FactorConversionPuntos"])
                 });
             }
             return ms;
@@ -462,18 +479,16 @@ namespace jbp.business.hana
                 var ms = false;
                 var sql = string.Format(@"
                     SELECT 
-                     --t0.""Ruc"" ""RucSucursal"",
-                     --t1.""Ruc"" ""RucPrincipal"",
                      top 1
                      t1.""EsElite""-- SI o NO para habilitar canje de puntos
                     FROM
                      ""JbpVw_SocioNegocio"" t0 inner join--es el secundario o sucursal
                      ""JbpVw_SocioNegocio"" t1 on t1.""Ruc"" = t0.""RucPrincipal""--es el principal
                     where
-                     t0.""Ruc"" = '{0}'--sucursal 0 principal
+                     t0.""Ruc"" = ?--sucursal 0 principal
                      and t1.""AplicaPuntos"" = 'SI' -- el principal participa en el plan puntos
-                ", ruc);
-                var resp = new BaseCore().GetScalarByQuery(sql);
+                ");
+                var resp = new BaseCore().GetScalarByQuery(sql, new Dictionary<string, object> { { "@0", ruc } });
                 if (resp!=null && resp.Equals("SI"))
                     ms = true;
                 return new HabilitadoCanjearPuntosMS() { 
@@ -520,9 +535,9 @@ namespace jbp.business.hana
                 var sql = string.Format(@"
                     select ""Email"" from ""JbpVw_SocioNegocio""
                     where
-                        ""CodSocioNegocio"" = '{0}'
-                ", codCliente);
-                var correos = bc.GetScalarByQuery(sql);
+                        ""CodSocioNegocio"" = ?
+                ");
+                var correos = bc.GetScalarByQuery(sql, new Dictionary<string, object> { { "@0", codCliente } });
                 return GetUnSoloCorreo(correos);
             }
             catch
@@ -770,9 +785,9 @@ namespace jbp.business.hana
                 from
                  ""JbpVw_SocioNegocio""
                 where
-                 ""CodSocioNegocio"" = '{0}'
-            ", codCliente);
-            return new BaseCore().GetScalarByQuery(sql);
+                 ""CodSocioNegocio"" = ?
+            ");
+            return new BaseCore().GetScalarByQuery(sql, new Dictionary<string, object> { { "@0", codCliente } });
         }
     }
 }

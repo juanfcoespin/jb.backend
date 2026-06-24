@@ -15,7 +15,7 @@ namespace jbp.business.hana
         public static int GetNumHojaRuta()
         {
             var sql = "SELECT top 1 NUM_HOJA_RUTA FROM JBP_CONF";
-            var ms = new BaseCore().GetIntScalarByQuery(sql);
+            var ms = new BaseCore().GetIntScalarByQuery(sql,null);
             return ms;
         }
     }

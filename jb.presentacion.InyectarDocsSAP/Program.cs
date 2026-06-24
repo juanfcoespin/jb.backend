@@ -10,15 +10,14 @@ namespace jb.presentacion.InyectarDocsSAP
         {
             Application.ThreadException += (sender, args) =>
             {
-                File.AppendAllText("fatal.log",
-                    $"[UI THREAD] {DateTime.Now}\n{args.Exception}\n\n");
+                TechTools.Utils.Logger.Error("UI THREAD EXCEPTION");
+                TechTools.Utils.Logger.Error(args.Exception);
             };
 
             AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
             {
-                var ex = args.ExceptionObject as Exception;
-                File.AppendAllText("fatal.log",
-                    $"[NON UI THREAD] {DateTime.Now}\n{ex}\n\n");
+                TechTools.Utils.Logger.Error("FATAL UNHANDLED EXCEPTION");
+                TechTools.Utils.Logger.Error(args.ExceptionObject.ToString());
             };
 
             // To customize application configuration such as set high DPI settings or default font,
