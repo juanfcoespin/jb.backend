@@ -76,22 +76,67 @@ namespace jbp.business.hana
                     var lotesConUbicaciones = Map(c, me.Responsable, ubicacionPesaje);
                     lotesConUbicaciones.ForEach(loteConUbicacion => {
                         SendMessageToClient(c.ClientId, $"Procesando lote: {loteConUbicacion.Lote}", eMessageType.Warning);
-                        var loteMS = TransferToUbicaciones(loteConUbicacion);
-                        loteConUbicacion.DocNumTS = loteMS.DocNum;
-                        if (!string.IsNullOrEmpty(loteMS.Error))
-                        {
-                            SendMessageToClient(c.ClientId, $"Error: {loteMS.Error}", eMessageType.Error);
-                            ms.Error = loteMS.Error; //asigno el error al mensaje de respuesta
+
+                        //controlar si ya se realizaron las transferencias en el log
+                        var idLotePesaje = GetIdLotePesaje(loteConUbicacion.Lote, loteConUbicacion.CodArticulo, me.NumOF);
+                        if (idLotePesaje > 0){
+                            var msg = $"El lote {loteConUbicacion.Lote} del artículo {loteConUbicacion.CodArticulo} ya fue transferido previamente para la OF {me.NumOF}";
+                            SendMessageToClient(c.ClientId, msg, eMessageType.Warning);
+                            ms.Error = msg;
+                            return;
                         }
-                        else
-                        {
-                            SetLogLotesPesaje(loteConUbicacion, me);
-                            var msg = $"Se transfirió satisfactoriamente con TS Nro:{loteMS.DocNum}";
-                            loteConUbicacion.movimientos.ForEach(m => {
-                                msg += $"{m.Cantidad} de {m.UbicacionDesde} a {m.UbicacionHasta} ";
-                            });
-                            SendMessageToClient(c.ClientId, msg, eMessageType.Success);
-                            ms.DocNum = loteMS.DocNum; //asigno el doc num de la ultima transferencia
+
+                        // Aseguramos conexión a SAP y bloqueamos concurrencia para la transacción
+                        ConectarASap(c.ClientId, sapTransferenciaStock);
+                        Monitor.Enter(control);
+                        try{
+                            // 1. Iniciamos transacción global en SAP
+                            sapTransferenciaStock.StartTransaction();
+
+                            var loteMS = TransferToUbicaciones(loteConUbicacion);
+                            loteConUbicacion.DocNumTS = loteMS.DocNum;
+
+                            if (!string.IsNullOrEmpty(loteMS.Error)){
+                                sapTransferenciaStock.RollBackTransaction();
+                                SendMessageToClient(c.ClientId, $"Error: {loteMS.Error}", eMessageType.Error);
+                                ms.Error = loteMS.Error; //asigno el error al mensaje de respuesta
+                            }
+                            else{
+                                SetLogLotesPesaje(loteConUbicacion, me);
+                                // 2. Si tanto SAP como BD tuvieron éxito, hacemos Commit de SAP
+                                sapTransferenciaStock.CommitTransaction();
+
+                                // 3. Como estamos en transacción, el DocNum no existe en la BD antes del commit.
+                                // Lo obtenemos ahora que el registro ya es visible en la Base de Datos.
+                                if (loteMS.DocNum == 0 && !string.IsNullOrEmpty(loteMS.Id)){
+                                    loteMS.DocNum = GetDocNumBYId(loteMS.Id);
+                                    loteConUbicacion.DocNumTS = loteMS.DocNum;
+
+                                    // Actualizamos el registro de movimientos que se insertó con DocNum=0
+                                    var insertedIdLotePesaje = GetIdLotePesaje(loteConUbicacion.Lote, loteConUbicacion.CodArticulo, me.NumOF);
+                                    if (insertedIdLotePesaje > 0 && loteMS.DocNum > 0){
+                                        var sqlUpdate = "update JB_MOVIMIENTOS_LOTE_PESAJE set DOC_NUM_TS = ? where ID_LOTE_PESAJE = ?";
+                                        new BaseCore().Execute(sqlUpdate, new Dictionary<string, object> { { "@0", loteMS.DocNum }, { "@1", insertedIdLotePesaje } });
+                                    }
+                                }
+
+                                var msg = $"Se transfirió satisfactoriamente con TS Nro:{loteMS.DocNum}";
+                                loteConUbicacion.movimientos.ForEach(m => {
+                                    msg += $"{m.Cantidad} de {m.UbicacionDesde} a {m.UbicacionHasta} ";
+                                });
+                                SendMessageToClient(c.ClientId, msg, eMessageType.Success);
+                                ms.DocNum = loteMS.DocNum; //asigno el doc num de la ultima transferencia
+                                ms.Id = loteMS.Id;
+                            }
+                        }
+                        catch (Exception ex){
+                            // En caso de cualquier error (incluyendo los de SQL en SetLogLotesPesaje), se revierte SAP
+                            sapTransferenciaStock.RollBackTransaction();
+                            SendMessageToClient(c.ClientId, $"Error crítico en transacción: {ex.Message}", eMessageType.Error);
+                            ms.Error = ex.Message;
+                        }
+                        finally{
+                            Monitor.Exit(control);
                         }
                     });
                 });
