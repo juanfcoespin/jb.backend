@@ -52,3 +52,13 @@ C:\JB\jb.backend\jbp.msg\obj\Debug\jbp.msg.csproj.CoreCompileInputs.cache
 C:\JB\jb.backend\jbp.msg\obj\Debug\jbp.msg.csproj.Up2Date
 C:\JB\jb.backend\jbp.msg\obj\Debug\jbp.msg.dll
 C:\JB\jb.backend\jbp.msg\obj\Debug\jbp.msg.pdb
+C:\DesarrollosJB\jb.backend\jbp.msg\bin\Debug\jbp.msg.dll.config
+C:\DesarrollosJB\jb.backend\jbp.msg\bin\Debug\jbp.msg.dll
+C:\DesarrollosJB\jb.backend\jbp.msg\bin\Debug\jbp.msg.pdb
+C:\DesarrollosJB\jb.backend\jbp.msg\bin\Debug\TechTools.Utils.dll
+C:\DesarrollosJB\jb.backend\jbp.msg\bin\Debug\TechTools.Utils.pdb
+C:\DesarrollosJB\jb.backend\jbp.msg\obj\Debug\jbp.msg.csproj.AssemblyReference.cache
+C:\DesarrollosJB\jb.backend\jbp.msg\obj\Debug\jbp.msg.csproj.CoreCompileInputs.cache
+C:\DesarrollosJB\jb.backend\jbp.msg\obj\Debug\jbp.msg.csproj.Up2Date
+C:\DesarrollosJB\jb.backend\jbp.msg\obj\Debug\jbp.msg.dll
+C:\DesarrollosJB\jb.backend\jbp.msg\obj\Debug\jbp.msg.pdb
