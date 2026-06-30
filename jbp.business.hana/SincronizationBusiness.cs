@@ -75,11 +75,32 @@ namespace jbp.business.hana
                 );
             }
         }
+
+        private bool IsAlreadySynchronized(object idCache){
+            try{
+                var sql = "select count(*) from JB_HISTORICO_DOCS_SINCRONIZADOS where ID = ?";
+                var count = new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> { { "@0", idCache } });
+                return count > 0;
+            }
+            catch { return false; }
+        }
+
         private void SyncDocs(List<DocsToSyncMsg> docsToSync, eTipoDocToSync tipoDocToSync)
         {
             foreach (var docToSync in docsToSync.ToList())
             {
                 var currentDoc = docToSync;
+
+                // Consulta en histórico para comprobar si ya se sincronizó y evitar registros repetidos en SAP
+                if (IsAlreadySynchronized(currentDoc.IdCache)){
+                    var errMsg = "El documento ya existe en el histórico. Se asume repetido. No se sincronizará nuevamente.";
+                    NofifySyncStatus(currentDoc, errMsg, eTipoMsg.Error);
+                    currentDoc.Error = errMsg;
+                    RegistrarErrEnCache(currentDoc);
+                    NotificarErrorPorCorreo(currentDoc, errMsg);
+                    continue; // Saltar este documento
+                }
+
                 BaseSapObj sapDiapiObj = null;
                 if (tipoDocToSync == eTipoDocToSync.Pedido)
                     sapDiapiObj = new jbp.core.sapDiApi.SapOrder();
@@ -148,7 +169,7 @@ namespace jbp.business.hana
                         NofifySyncStatus(docToSync, "Registrando error en bdd");
                         currentDoc.Error = resp;
                         RegistrarErrEnCache(currentDoc);
-                        NotificarErrorPorCorreo(currentDoc);
+                        NotificarErrorPorCorreo(currentDoc, "Error en sincronización de doc VET");
                         NofifySyncStatus(currentDoc, resp, eTipoMsg.Error);
                     }
                 }
@@ -241,9 +262,7 @@ namespace jbp.business.hana
 
             
         }
-        private void NotificarErrorPorCorreo(DocsToSyncMsg doc)
-        {
-            var titulo = "Error en sincronización de doc VET";
+        private void NotificarErrorPorCorreo(DocsToSyncMsg doc, string titulo = ""){
             var msg = string.Format(@"
                 <h1>{7}</h1>
                 <div>
