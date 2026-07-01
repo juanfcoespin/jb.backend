@@ -166,13 +166,16 @@ namespace jbp.business.hana
                         RegistrarErrEnCache(currentDoc);
                         NofifySyncStatus(currentDoc, resp, eTipoMsg.Error);
 
-                        // Detener todo el proceso si el periodo de SAP está cerrado
-                        if (resp.Contains("1250000073") || resp.Contains("rango permitido")){
+                        if (resp.Contains("1250000073") || resp.Contains("rango permitido"))
+                        {
+                            // Detener todo el proceso si el periodo de SAP está cerrado
                             NotificarErrorPorCorreo(currentDoc, "Error en sincronización: Se requiere abrir los períodos contables en SAP");
                             throw new Exception("Error: " + resp + "\n\nSe requiere abrir los períodos contables en SAP. El sincronizador automático ha sido detenido.");
                         }
-
-                        NotificarErrorPorCorreo(currentDoc, "Error en sincronización de doc VET");
+                        else if (resp.Contains("3524-20") || resp.Contains("ya se ha cerrado o bloqueado"))
+                            NotificarErrorPorCorreo(currentDoc, "El pago no se procesó porque la factura ya se encuentra cerrada o bloqueada en SAP.");
+                        else
+                            NotificarErrorPorCorreo(currentDoc, "Error en sincronización de doc VET");
                     }
                 }
                 catch (Exception)

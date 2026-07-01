@@ -83,5 +83,24 @@ namespace jbp.services.rest.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("api/of/campania/list")]
+        public HttpResponseMessage campaniaList(CampaniaRequest datos)
+        {
+            try
+            {
+                OrdenFabricacionBusiness.crearCampania(datos);
+                return Request.CreateResponse(HttpStatusCode.OK, new { message = "La campaña fue creada correctamente" });
+            }
+            catch (Exception error)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new
+                {
+                    message = "Ocurrió un problema al crear la campaña",
+                    error = error.Message
+                });
+            }
+        }
+
     }
 }
