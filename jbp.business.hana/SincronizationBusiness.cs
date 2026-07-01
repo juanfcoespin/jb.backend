@@ -57,7 +57,7 @@ namespace jbp.business.hana
             // pone en estado no procesado 0 si no se proceso correctamente 1
             try{
                 var sql = string.Format(@"
-                update JB_CACHE_DOCS_VET_TO_SYNC        
+                update JB_CACHE_DOCS_VET_TO_SYNC
                 set PROCESANDO=0
                 where PROCESANDO = ?
             ");
@@ -164,8 +164,15 @@ namespace jbp.business.hana
                         NofifySyncStatus(docToSync, "Registrando error en bdd");
                         currentDoc.Error = resp;
                         RegistrarErrEnCache(currentDoc);
-                        NotificarErrorPorCorreo(currentDoc, "Error en sincronización de doc VET");
                         NofifySyncStatus(currentDoc, resp, eTipoMsg.Error);
+
+                        // Detener todo el proceso si el periodo de SAP está cerrado
+                        if (resp.Contains("1250000073") || resp.Contains("rango permitido")){
+                            NotificarErrorPorCorreo(currentDoc, "Error en sincronización: Se requiere abrir los períodos contables en SAP");
+                            throw new Exception("Error: " + resp + "\n\nSe requiere abrir los períodos contables en SAP. El sincronizador automático ha sido detenido.");
+                        }
+
+                        NotificarErrorPorCorreo(currentDoc, "Error en sincronización de doc VET");
                     }
                 }
                 catch (Exception)
