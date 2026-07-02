@@ -528,11 +528,7 @@ namespace jbp.business.hana
                       t1.""LoteProveedor"",
                       t1.""Fabricante"",
                       to_char(t1.""FechaIngreso"", 'yyyy-mm-dd') ""FechaIngreso"",
-                      case
-                       when t5.""FechaInicioPesaje"" is null then to_char(t1.""FechaFabricacion"", 'yyyy-mm-dd')
-                       else to_char(t5.""FechaInicioPesaje"", 'yyyy-mm-dd')
-                      end ""FechaFabricacion"",
-                      to_char(t1.""FechaVencimiento"", 'yyyy-mm-dd') ""FechaVencimiento"",
+                      
                       to_char(t1.""FechaRetesteo"", 'yyyy-mm-dd') ""FechaRetest"",
                       t1.""Bultos"",
                       cast(t1.""Observaciones"" as nvarchar(2000)) ""Observaciones""
@@ -540,14 +536,24 @@ namespace jbp.business.hana
                 if (!esPT)
                 {
                     sql += @" 
-                        ,t3.""Proveedor"",
+                         ,case
+                           when t5.""FechaInicioPesaje"" is null then to_char(t1.""FechaFabricacion"", 'yyyy-mm-dd')
+                           else to_char(t5.""FechaInicioPesaje"", 'yyyy-mm-dd')
+                         end ""FechaFabricacion"",
+                         to_char(t1.""FechaVencimiento"", 'yyyy-mm-dd') ""FechaVencimiento"",
+                        t3.""Proveedor"",
                         t3.""CondicionAlmacenamiento""
                     ";
                 }
                 else
                 {
                     sql += @"
-                      ,t4.""CondicionAlmacenamiento"" ""CondicionAlmacenamientoPT"", -- desde aqui info de PT
+                        ,case
+                           when t5.""FechaInicioPesaje"" is null then to_char(t1.""FechaFabricacion"", 'yyyy-mm')
+                           else to_char(t5.""FechaInicioPesaje"", 'yyyy-mm')
+                         end ""FechaFabricacion"",
+                         to_char(t1.""FechaVencimiento"", 'yyyy-mm') ""FechaVencimiento"",
+                      t4.""CondicionAlmacenamiento"" ""CondicionAlmacenamientoPT"", -- desde aqui info de PT
                       t4.""ResponsableEmpaque"",
                       t4.""Cliente"",
                       t4.""Bultos"" ""BultosPT"",

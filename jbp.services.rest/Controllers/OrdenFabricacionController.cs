@@ -69,12 +69,12 @@ namespace jbp.services.rest.Controllers
         }
 
         [HttpPost]
-        [Route("api/of/crearCampania")]
+        [Route("api/of/campania/create")]
         public HttpResponseMessage crearCampania(CampaniaRequest datos){
             try{
                 OrdenFabricacionBusiness.crearCampania(datos);
                 return Request.CreateResponse(HttpStatusCode.OK, new{ message = "La campaña fue creada correctamente" });
-            }
+            }   
             catch (Exception error){
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, new{
                     message = "Ocurrió un problema al crear la campaña",

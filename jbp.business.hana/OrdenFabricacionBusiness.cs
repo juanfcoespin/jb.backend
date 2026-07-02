@@ -275,16 +275,17 @@ namespace jbp.business.hana
                 // nueva campaña
                 var sqlCampania = @"
                     INSERT INTO JB_CAMPANIA( NOMBRE, FECHA_DESDE, FECHA_HASTA, FINALIZADA)
-                    VALUES( ?, ?, ?, ?)";
+                    VALUES( ?, ?, ?, ?, ?)";
                 bc.ExecuteQueryTransaction( sqlCampania, new Dictionary<string, object>{
                         {"@1", datos.NombreCampania},
                         {"@2", datos.FechaDesde},
                         {"@3", datos.FechaHasta},
-                        {"@4", datos.Finalizada}
+                        {"@4", datos.Finalizada},
+                        {"@5", datos.IdOF},
                     }
                 );
 
-                // Obtener el ID
+                // Obtener el last ID
                 var sqlId = @"SELECT CURRENT_IDENTITY_VALUE() FROM DUMMY";
                 int campaniaId = bc.GetIntScalarTransaction(sqlId, null);
 

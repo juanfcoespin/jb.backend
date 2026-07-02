@@ -54,6 +54,7 @@ namespace jbp.msg.sap
         public DateTime FechaDesde { get; set; }
         public DateTime FechaHasta { get; set; }
         public bool Finalizada {  get; set; }
+        public int IdOF { get; set; }
         public List<OrdenFabricacion> OrdenesFabricacion { get; set; }
     }
 
