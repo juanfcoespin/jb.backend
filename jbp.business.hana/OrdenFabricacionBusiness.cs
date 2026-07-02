@@ -275,13 +275,12 @@ namespace jbp.business.hana
                 // nueva campaña
                 var sqlCampania = @"
                     INSERT INTO JB_CAMPANIA( NOMBRE, FECHA_DESDE, FECHA_HASTA, FINALIZADA)
-                    VALUES( ?, ?, ?, ?, ?)";
+                    VALUES( ?, ?, ?, ?)";
                 bc.ExecuteQueryTransaction( sqlCampania, new Dictionary<string, object>{
                         {"@1", datos.NombreCampania},
                         {"@2", datos.FechaDesde},
                         {"@3", datos.FechaHasta},
                         {"@4", datos.Finalizada},
-                        {"@5", datos.IdOF},
                     }
                 );
 
@@ -292,11 +291,12 @@ namespace jbp.business.hana
                 // Insertar detalle
                 foreach (var of in datos.OrdenesFabricacion){
                     var sqlDetalle = @"
-                        INSERT INTO JB_ORDENES_FAB_CAMP(ID_CAMPANIA,NRO_OF)
-                        VALUES(?, ?)";
+                        INSERT INTO JB_ORDENES_FAB_CAMP(ID_CAMPANIA,NRO_OF, ID_OF)
+                        VALUES(?, ?, ?)";
                     bc.ExecuteQueryTransaction( sqlDetalle, new Dictionary<string, object>{
                             {"@0", campaniaId},
-                            {"@1", of.DocNum}
+                            {"@1", of.DocNum},
+                            {"@2", of.Id},
                         }
                     );
                 }
