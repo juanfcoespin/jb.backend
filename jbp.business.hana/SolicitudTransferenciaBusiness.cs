@@ -279,7 +279,7 @@ namespace jbp.business.hana
                         LineNum = bc.GetInt(dr["LineNum"]),
                     };
                     componente.Ubicaciones = GetUbicacionesPorLote(bc.GetInt(dr["IdLote"]), componente.BodegaOrigen);
-                    componente.RequierePicking = SeRequirePickingDelComponente(componente);
+                    componente.RequierePicking = SeRequirePickingDelComponente(componente, id);
                     
                     if(componente.Ubicaciones!=null && componente.Ubicaciones.Count>0 && componente.Ubicaciones[0].Cantidad>0)
                         ms.Add(componente);
@@ -288,7 +288,7 @@ namespace jbp.business.hana
             return ms;
         }
 
-        private static bool SeRequirePickingDelComponente(ST_ComponentesMsg componente)
+        private static bool SeRequirePickingDelComponente(ST_ComponentesMsg componente, int idST)
         {
             //si solo tiene la ubicación de pesaje
             var tieneUbicacionPesaje = false;
@@ -302,6 +302,29 @@ namespace jbp.business.hana
             });
             if(tieneUbicacionPesaje && !tieneMasUbicaciones)
                 return false;
+
+            // Verificar si el componente (lote) ya está en pesaje en alguna OF de la misma campaña
+            var sql = @"
+                SELECT count(1)
+                FROM JB_LOTES_PESAJE P
+                JOIN JB_ORDENES_FAB_CAMP C ON P.DOC_NUM_OF = C.NRO_OF
+                WHERE P.COD_ARTICULO = ? AND P.LOTE = ?
+                  AND C.ID_CAMPANIA = (
+                      SELECT top 1 C2.ID_CAMPANIA
+                      FROM JB_ORDENES_FAB_CAMP C2
+                      JOIN ""JbVw_OFsConTSaPesaje"" V ON V.""DocNum"" = C2.NRO_OF
+                      WHERE V.""IdST"" = ?
+                  )
+            ";
+            var count = new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> {
+                {"@0", componente.CodArticulo},
+                {"@1", componente.Lote},
+                {"@2", idST}
+            });
+
+            if (count > 0)
+                return false;
+
             return true;
         }
 

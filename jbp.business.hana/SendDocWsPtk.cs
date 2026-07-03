@@ -158,7 +158,7 @@ namespace jbp.business.hana
                 if (SeEnvioAntesDocumento(documento))
                 {
                     ActualizarReintentosEnvio(documento);
-                    if (documento.numIntentosTx > 3)
+                    if (documento.numIntentosTx == 3)
                         NotificarPorCorreoNumIntentosExedidos(documento);
                 }
                 else

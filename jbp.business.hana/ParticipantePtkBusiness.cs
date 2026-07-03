@@ -282,7 +282,7 @@ namespace jbp.business.hana
                 e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
                 EnviarPorCorreo("Error en el registro del Participante", strJsonParticipante + e.Message);
 
-                throw new Exception($"Error en el registro del Participante - {strJsonParticipante}");
+                throw new Exception($"Error en el registro del Participante - {strJsonParticipante} - \n {e.ToString()}");
             }
         }
 
