@@ -81,33 +81,61 @@ namespace jbp.business.hana
             });
         }
 
-        public RespuestasPtkWsFacturasMsg SendDocumentosToWS(List<DocumentoPromotickMsg> documentos, bool esNcAjuste=false)
-        {
+        public RespuestasPtkWsFacturasMsg SendDocumentosToWS(List<DocumentoPromotickMsg> documentos, bool esNcAjuste=false){
             DocumentosPtkMsg me = new DocumentosPtkMsg { facturas = documentos };
-            try
-            {
-                var url = string.Format("{0}/{1}", conf.Default.ptkWsUrl, "gsttransaccion");
+            var url = string.Format("{0}/{1}", conf.Default.ptkWsUrl, "gsttransaccion");
+            var reqMsg = new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(me);
+            DateTime dateReq = DateTime.Now;
+
+            try{
                 var rc = new RestCall();
-                var resp = (RespuestasPtkWsFacturasMsg)rc.SendPostOrPut(url, typeof(RespuestasPtkWsFacturasMsg),
-                    me, typeof(DocumentosPtkMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
+                var resp = (RespuestasPtkWsFacturasMsg)rc.SendPostOrPut(url, typeof(RespuestasPtkWsFacturasMsg), me, typeof(DocumentosPtkMsg), RestCall.eRestMethod.POST, this.credencialesWsPromotick);
+
+                DateTime dateRes = DateTime.Now;
+                var resMsg = new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(resp);
+                InsertarLogWS(dateReq, dateRes, reqMsg, resMsg, url, "POST", 200);
+
                 if (!esNcAjuste)
                     ActualizarRespuestasWS(resp);
                 else
                     RegistrarNCAjuste(resp, documentos);
                 return resp;
             }
-            catch (Exception e)
-            {
+            catch (Exception e){
+                DateTime dateRes = DateTime.Now;
+                InsertarLogWS(dateReq, dateRes, reqMsg, e.Message, url, "POST", 500);
+
                 e = ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
                 EnviarPorCorreo(e.Message, "Jbp-Promotick");
                 var ms = new List<RespPtkWSFacturasMsg>();
                 ms.Add(new RespPtkWSFacturasMsg { 
                     mensaje=$"Error: {e.Message+e.StackTrace}"
                 });
-                return new RespuestasPtkWsFacturasMsg
-                {
+                return new RespuestasPtkWsFacturasMsg{
                     respuesta = ms
                 };
+            }
+        }
+
+        private void InsertarLogWS(DateTime dateReq, DateTime dateRes, string msgReq, string msgRes, string url, string metodo, int statusCode){
+            try{
+                var sql = @"
+                    INSERT INTO LOG_PROMOTICK (DATE_REQ, DATE_RES, MSG_REQ, MSG_RES, URL, METODO, STATUS_CODE) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+                new BaseCore().Execute(sql, new Dictionary<string, object> {
+                    {"@0", dateReq},
+                    {"@1", dateRes},
+                    {"@2", msgReq ?? ""},
+                    {"@3", msgRes ?? ""},
+                    {"@4", url},
+                    {"@5", metodo},
+                    {"@6", statusCode}
+                });
+            }
+            catch (Exception ex){
+                // Ignorar o notificar si el log falla, para no afectar el flujo principal
+                EnviarPorCorreo($"Error guardando log en LOG_PROMOTICK: {ex.Message}", "Error en InsertarLogWS");
             }
         }
 
