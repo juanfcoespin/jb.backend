@@ -310,12 +310,10 @@ namespace jbp.business.hana
                 JOIN JB_ORDENES_FAB_CAMP C ON P.DOC_NUM_OF = C.NRO_OF
                 WHERE P.COD_ARTICULO = ? AND P.LOTE = ?
                   AND C.ID_CAMPANIA = (
-                      SELECT top 1 C2.ID_CAMPANIA
-                      FROM JB_ORDENES_FAB_CAMP C2
-                      JOIN ""JbVw_OFsConTSaPesaje"" V ON V.""DocNum"" = C2.NRO_OF
-                      WHERE V.""IdST"" = ?
-                  )
-            ";
+                      SELECT top 1 ID_CAMPANIA
+                      FROM JB_ORDENES_FAB_CAMP
+                      WHERE ID_ST = ?
+                  )";
             var count = new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> {
                 {"@0", componente.CodArticulo},
                 {"@1", componente.Lote},

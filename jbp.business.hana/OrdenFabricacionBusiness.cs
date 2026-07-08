@@ -271,7 +271,7 @@ namespace jbp.business.hana
 
             try{
                 bc.BeginTransaction();
-
+              
                 // nueva campaña
                 var sqlCampania = @"
                     INSERT INTO JB_CAMPANIA( NOMBRE, FECHA_DESDE, FECHA_HASTA, FINALIZADA)
@@ -290,13 +290,19 @@ namespace jbp.business.hana
 
                 // Insertar detalle
                 foreach (var of in datos.OrdenesFabricacion){
+                    // buscar todos las st que esten como liberadas para obtener el id de la st.
+                    FiltroPickingProdME datosSt = new FiltroPickingProdME { docNumOF = of.DocNum.ToString(), CodBodegaMat = "MAT1" };
+                    dynamic result = SolicitudTransferenciaBusiness.GetST_OF_Liberadas(datosSt);
+                    var sts = result.sts ;
+                    var st = sts[0] as ST_OF_LiberadasMsg;
+
                     var sqlDetalle = @"
-                        INSERT INTO JB_ORDENES_FAB_CAMP(ID_CAMPANIA,NRO_OF, ID_OF)
+                        INSERT INTO JB_ORDENES_FAB_CAMP(ID_CAMPANIA,NRO_OF, ID_ST)
                         VALUES(?, ?, ?)";
                     bc.ExecuteQueryTransaction( sqlDetalle, new Dictionary<string, object>{
                             {"@0", campaniaId},
                             {"@1", of.DocNum},
-                            {"@2", of.Id},
+                            {"@2", st.Id},
                         }
                     );
                 }

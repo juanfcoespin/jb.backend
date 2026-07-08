@@ -32,11 +32,11 @@ namespace jbp.core.sapDiApi
             this.Company.StartTransaction();
         }
         public void RollBackTransaction() {
-            this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
+            if (this.Company.InTransaction)  this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
         }
         public void CommitTransaction()
         {
-            this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
+            if (this.Company.InTransaction)  this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
         }
         public bool IsConected()
         {
