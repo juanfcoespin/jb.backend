@@ -237,22 +237,23 @@ namespace jbp.business.hana
         {
             var sql = string.Format(@"
                 select
-                ""Id"",
-                ""DocNum"",
-                ""CodArticulo"",
-                ""Articulo"",
-                ""Lote"",
-                ""FechaFabricacion"",
-                ""FechaInicio"",
-                ""FechaVencimiento"",
-                ""FechaFinalizacion"",
-                ""FechaCierre"",
-                ""FechaCreacion"",
-                ""Estado""
+                t1.""Id"" ""IdST"",
+	            t0.""Id"",
+	            t0.""DocNum"",
+	            t0.""CodArticulo"",
+	            t0.""Articulo"",
+	            t0.""Lote"",
+	            t0.""FechaFabricacion"",
+	            t0.""FechaInicio"",
+	            t0.""FechaVencimiento"",
+	            t0.""FechaFinalizacion"",
+	            t0.""FechaCierre"",
+	            t0.""FechaCreacion"",
+	            t0.""Estado""
                 from
-                 ""JbpVw_OrdenFabricacion""
-                where
-                 ""DocNum"" = ?
+                 ""JbpVw_OrdenFabricacion"" t0
+                 inner join ""JbpVw_SolicitudTraslado"" t1 on t1.""DocNumOrdenFabricacion""=t0.""DocNum""
+                where t0.""DocNum"" = ?
             ");
             var resp = new BaseCore().GetDataTableByQuery(sql, new Dictionary<string, object> {
                     {"@0" , DocNum }
@@ -274,13 +275,12 @@ namespace jbp.business.hana
               
                 // nueva campaña
                 var sqlCampania = @"
-                    INSERT INTO JB_CAMPANIA( NOMBRE, FECHA_DESDE, FECHA_HASTA, FINALIZADA)
-                    VALUES( ?, ?, ?, ?)";
+                    INSERT INTO JB_CAMPANIA( NOMBRE, FECHA_DESDE, FECHA_HASTA)
+                    VALUES( ?, ?, ?)";
                 bc.ExecuteQueryTransaction( sqlCampania, new Dictionary<string, object>{
-                        {"@1", datos.NombreCampania},
-                        {"@2", datos.FechaDesde},
-                        {"@3", datos.FechaHasta},
-                        {"@4", datos.Finalizada},
+                        {"@0", datos.NombreCampania},
+                        {"@1", datos.FechaDesde},
+                        {"@2", datos.FechaHasta},
                     }
                 );
 
@@ -290,30 +290,127 @@ namespace jbp.business.hana
 
                 // Insertar detalle
                 foreach (var of in datos.OrdenesFabricacion){
-                    // buscar todos las st que esten como liberadas para obtener el id de la st.
-                    FiltroPickingProdME datosSt = new FiltroPickingProdME { docNumOF = of.DocNum.ToString(), CodBodegaMat = "MAT1" };
-                    dynamic result = SolicitudTransferenciaBusiness.GetST_OF_Liberadas(datosSt);
-                    var sts = result.sts ;
-                    var st = sts[0] as ST_OF_LiberadasMsg;
-
                     var sqlDetalle = @"
                         INSERT INTO JB_ORDENES_FAB_CAMP(ID_CAMPANIA,NRO_OF, ID_ST)
                         VALUES(?, ?, ?)";
                     bc.ExecuteQueryTransaction( sqlDetalle, new Dictionary<string, object>{
                             {"@0", campaniaId},
                             {"@1", of.DocNum},
-                            {"@2", st.Id},
+                            {"@2", of.IdST},
                         }
                     );
                 }
 
                 bc.Commit();
-            }
-            catch{
+            }catch{
                 bc.Rollback();
                 throw;
             }
         }
 
+        public static System.Data.DataTable listaCampanias(){
+            var sql = @"
+                SELECT *
+                FROM JB_CAMPANIA
+                ORDER BY 1 DESC
+            ";
+            return new BaseCore().GetDataTableByQuery(sql, null);
+        }
+
+        public static System.Data.DataTable obtenerCampania(int id){
+            var sqlDetalle = @"
+                SELECT NRO_OF, ID_ST
+                FROM JB_ORDENES_FAB_CAMP
+                WHERE ID_CAMPANIA = ?
+            ";
+            return new BaseCore().GetDataTableByQuery(sqlDetalle, new Dictionary<string, object> { { "@0", id } });
+        }
+
+        public static void eliminarCampania(int id){
+            var sql = @"DELETE FROM JB_CAMPANIA WHERE ID = ?";
+            new BaseCore().Execute(sql, new Dictionary<string, object> { { "@0", id } });
+        }
+
+        public static void eliminarOfDeCampania(int nroOf, int idCampania){
+            var sql = @"DELETE FROM JB_ORDENES_FAB_CAMP WHERE NRO_OF = ? AND ID_CAMPANIA = ?";
+            new BaseCore().Execute(sql, new Dictionary<string, object> { { "@0", nroOf }, { "@1", idCampania } });
+        }
+
+        public static void actualizarCampania(int id, CampaniaUpdate datos){
+            var sql = @"UPDATE JB_CAMPANIA SET NOMBRE = ?, FECHA_DESDE = ?, FECHA_HASTA = ? WHERE ID = ?";
+            new BaseCore().Execute(sql, new Dictionary<string, object> {
+                { "@0", datos.NombreCampania },
+                { "@1", datos.FechaDesde },
+                { "@2", datos.FechaHasta },
+                { "@3", id }
+            });
+        }
+
+        public static void crearDetalleCampania(List<OrdenFabricacion> datos){
+            BaseCore bc = new BaseCore();
+            try{
+                bc.BeginTransaction();
+                foreach (var of in datos){
+                    var sqlDetalle = @"
+                        INSERT INTO JB_ORDENES_FAB_CAMP(ID_CAMPANIA,NRO_OF, ID_ST)
+                        VALUES(?, ?, ?)";
+                    bc.ExecuteQueryTransaction(sqlDetalle, new Dictionary<string, object>{
+                        {"@0", of.campaniaId},
+                        {"@1", of.DocNum},
+                        {"@2", of.IdST}
+                    });
+                }
+                bc.Commit();
+            }catch{
+                bc.Rollback();
+                throw;
+            }
+        }
+
+        public static System.Data.DataTable buscarCampania_OF(string filter)
+        {
+            int nroOf;
+            bool isNumber = int.TryParse(filter, out nroOf);
+
+            var resp = new DataTable();
+
+            if (isNumber && filter.Length > 6)
+            {
+                var sql = @"
+                    SELECT DISTINCT C.*
+                    FROM JB_CAMPANIA C
+                    LEFT JOIN JB_ORDENES_FAB_CAMP OC ON C.ID = OC.ID_CAMPANIA
+                    WHERE OC.NRO_OF = ?
+                ";
+                resp = new BaseCore().GetDataTableByQuery(sql, new Dictionary<string, object> {
+                    { "@0", nroOf }
+                });
+            }
+
+            if (resp.Rows.Count == 0){
+                filter = filter.ToLower();
+                var sqlCampania = @"
+                    SELECT *
+                    FROM JB_CAMPANIA
+                    WHERE lower(NOMBRE) LIKE ? 
+                ";
+                resp = new BaseCore().GetDataTableByQuery(sqlCampania, new Dictionary<string, object> {
+                    { "@0", "%" + filter + "%" }
+                });
+            }
+            return resp;
+        }
+
+        public static System.Data.DataTable buscarCampaniaPorFechas(string fechaInicio, string fechaFin){
+            var sqlCampania = @"
+                SELECT *
+                FROM JB_CAMPANIA
+                WHERE FECHA_DESDE >= ? AND FECHA_HASTA <= ?
+            ";
+            return new BaseCore().GetDataTableByQuery(sqlCampania, new Dictionary<string, object> {
+                { "@0", fechaInicio },
+                { "@1", fechaFin }
+            });
+        }
     }
 }

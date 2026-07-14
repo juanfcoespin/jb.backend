@@ -27,6 +27,7 @@ namespace jbp.core.sapDiApi
             this.obj.CardCode = me.CodCliente;
             this.obj.Comments = me.Comentario;
             this.obj.NumAtCard = me.Vendedor;
+            this.obj.UserFields.Fields.Item("U_MOT_TRASLADO").Value = "V";
             me.Lines.ForEach(line =>
             {
                 this.obj.Lines.ItemCode = line.CodArticulo;

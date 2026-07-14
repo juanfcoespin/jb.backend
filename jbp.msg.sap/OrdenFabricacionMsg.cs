@@ -49,15 +49,21 @@ namespace jbp.msg.sap
         }
     }
 
+    public class CampaniaUpdate{
+        public string NombreCampania { get; set; }
+        public DateTime FechaDesde { get; set; }
+        public DateTime FechaHasta { get; set; }
+    }
+
     public class CampaniaRequest{
         public string NombreCampania { get; set; }
         public DateTime FechaDesde { get; set; }
         public DateTime FechaHasta { get; set; }
-        public bool Finalizada {  get; set; }
         public List<OrdenFabricacion> OrdenesFabricacion { get; set; }
     }
 
     public class OrdenFabricacion{
+        public int IdST { get; set; }
         public int Id { get; set; }
         public int DocNum { get; set; }
         public string CodArticulo { get; set; } = string.Empty;
@@ -70,5 +76,6 @@ namespace jbp.msg.sap
         public DateTime? FechaCierre { get; set; }
         public DateTime? FechaCreacion { get; set; }
         public string Estado { get; set; } = string.Empty;
+        public string campaniaId { get; set; } = string.Empty;
     }
 }

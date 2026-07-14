@@ -120,7 +120,7 @@ namespace jbp.business.hana
         private void InsertarLogWS(DateTime dateReq, DateTime dateRes, string msgReq, string msgRes, string url, string metodo, int statusCode){
             try{
                 var sql = @"
-                    INSERT INTO LOG_PROMOTICK (DATE_REQ, DATE_RES, MSG_REQ, MSG_RES, URL, METODO, STATUS_CODE) 
+                    INSERT INTO JB_LOG_PROMOTICK (DATE_REQ, DATE_RES, MSG_REQ, MSG_RES, URL, METODO, STATUS_CODE) 
                     VALUES (?, ?, ?, ?, ?, ?, ?)";
 
                 new BaseCore().Execute(sql, new Dictionary<string, object> {

@@ -14,13 +14,13 @@ namespace jbp.presentacion.EnvioDocumentosPromotick
         static void Main(string[] args)
         {
             //Console.WriteLine("Inicio Proceso");
-            //new DocumentosPtkBusiness().EnviarDocumentosAPromotick();
+            new DocumentosPtkBusiness().EnviarDocumentosAPromotick();
             //new DocumentosPtkBusiness().EnviarNotasCreditoManuales();     // automatizado en app2 seccion ventas
             //new DocumentosPtkBusiness().EnviarAjustes();
             //new DocumentosPtkBusiness().EnviarAceleradores("Oct-Dic 2025");
             //new ParticipantePtkBusiness().InactivarParticipantes();
-            new ParticipantePtkBusiness().ActualizacionMasivaParticipantes();       //automatizado en app2 seccion ventas   
-            new ParticipantePtkBusiness().RegistroMasivoParticipantes();            //automatizado en app2 seccion ventas 
+            //new ParticipantePtkBusiness().ActualizacionMasivaParticipantes();       //automatizado en app2 seccion ventas   
+            //new ParticipantePtkBusiness().RegistroMasivoParticipantes();            //automatizado en app2 seccion ventas 
             //new BaseBusiness().testCorreo("<b>Cabecera</b><br> Esto es una prueba");
             //new ParticipantePtkBusiness().AsignacionMasivaVendedor();
             //new VendedorPtkBusiness().ActualizacionMasivaVendedores(eTipoOperacionVendedor.insert);
