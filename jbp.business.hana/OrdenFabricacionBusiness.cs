@@ -377,10 +377,11 @@ namespace jbp.business.hana
             if (isNumber && filter.Length > 6)
             {
                 var sql = @"
-                    SELECT DISTINCT C.*
+                    SELECT C.*
                     FROM JB_CAMPANIA C
                     LEFT JOIN JB_ORDENES_FAB_CAMP OC ON C.ID = OC.ID_CAMPANIA
                     WHERE OC.NRO_OF = ?
+                    ORDER BY 1 DESC
                 ";
                 resp = new BaseCore().GetDataTableByQuery(sql, new Dictionary<string, object> {
                     { "@0", nroOf }
@@ -393,6 +394,7 @@ namespace jbp.business.hana
                     SELECT *
                     FROM JB_CAMPANIA
                     WHERE lower(NOMBRE) LIKE ? 
+                    ORDER BY 1 DESC
                 ";
                 resp = new BaseCore().GetDataTableByQuery(sqlCampania, new Dictionary<string, object> {
                     { "@0", "%" + filter + "%" }
@@ -406,6 +408,7 @@ namespace jbp.business.hana
                 SELECT *
                 FROM JB_CAMPANIA
                 WHERE FECHA_DESDE >= ? AND FECHA_HASTA <= ?
+                ORDER BY 1 DESC
             ";
             return new BaseCore().GetDataTableByQuery(sqlCampania, new Dictionary<string, object> {
                 { "@0", fechaInicio },

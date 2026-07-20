@@ -159,6 +159,10 @@ namespace jbp.business.hana
                     {
                         ms.VisitadoresMedicosFarmacias = true;
                     }
+                    if (grupo.ToLower() == "tics")
+                    {
+                        ms.tics = true;
+                    }
                 });
             }
             return ms;

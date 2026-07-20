@@ -20,6 +20,8 @@ namespace jbp.msg
         public bool Dashboards { get; set; }
         public bool ControlCalidad { get; set; }
         public bool VisitadoresMedicosFarmacias { get; set; }
+        public bool tics { get; set; }
+        
     }
     public class ModulosMsg
     {
