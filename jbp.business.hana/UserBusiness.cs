@@ -67,11 +67,9 @@ namespace jbp.business.hana
         }
 
 
-        public static RespAuthMsg GetUser(LoginMsg me)
-        {
+        public static RespAuthMsg GetUser(LoginMsg me){
             var ms = new RespAuthMsg();
-            try
-            {
+            try{
                 if (LogOnAD(me.User,me.Pwd)) {
                     var domain = new PrincipalContext(ContextType.Domain);
                     var user = UserPrincipal.FindByIdentity(domain, me.User);
@@ -88,8 +86,7 @@ namespace jbp.business.hana
                     LogLogin(ms, me.AppName);
                 }
             }
-            catch (Exception e)
-            {
+            catch (Exception e){
                 e=ExceptionManager.GetDeepErrorMessage(e, ExceptionManager.eCapa.Business);
                 ms.Error = e.Message;
             }

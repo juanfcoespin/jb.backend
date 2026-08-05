@@ -444,21 +444,18 @@ namespace jbp.business.hana
                     throw new Exception("Ha sido imposible conectar sap despues de " + numIntentosConexion);
 
 
-                // si la cantidad es mayor igual colocar la misma q se planifico en la OF
-                // porq las balanzas pueden mandar con un valor + o - al planificado (tolerancia)
-                var idOf = OrdenFabricacionBusiness.GetIdByDocNum(me.DocNumOF);
-                me.Lineas.ForEach(line =>
-                {
-                    var cp = new CantPesadaComponenteOF
-                    {
-                        IdOf = idOf,
-                        CodArticulo = line.CodArticulo
-                    };
-                    var camposOf = BodegaBusiness.GetCamposOF(cp);
-                    foreach (var lote in line.Lotes)
-                    {
-                        if (lote.Cantidad > camposOf.CantidadPlanificada)
-                            lote.Cantidad = camposOf.CantidadPlanificada;
+                // Si la cantidad pesada en la balanza para un lote es mayor a la requerida para ESE lote en la OF
+                // colocar la cantidad requerida del lote (porq las balanzas pueden mandar un valor + o - por tolerancia)
+                me.Lineas.ForEach(line => {
+                    var compOFMsg = OrdenFabricacionBusiness.GetComponentesAPesarOfByDocNum(me.DocNumOF, line.CodArticulo);
+
+                    if (compOFMsg != null && compOFMsg.Componentes.Count > 0){
+                        var compOF = compOFMsg.Componentes[0];
+                        foreach (var lote in line.Lotes){
+                            var loteOF = compOF.CantidadesPorLote.FirstOrDefault(l => l.Lote == lote.Lote);
+                            if (loteOF != null && lote.Cantidad > (double)loteOF.Cantidad)
+                                lote.Cantidad = (double)loteOF.Cantidad;
+                        }
                     }
                 });
 

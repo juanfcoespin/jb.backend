@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using TechTools.Core.Hana;
 using TechTools.Exceptions;
 using TechTools.Rest;
+using TechTools.Serializador;
 using TechTools.Utils;
 
 
@@ -903,6 +904,89 @@ namespace jbp.business.hana
             var ms = GetParticipantePuntosByRucPrincipal(ruc);
             ms.documentos = GetFacturasYNcByRucPrincipal(ruc);
             return ms;
+        }
+
+        //actualizar puntos desde promotick
+        public DataTable ActualizarPuntosDesdePromotick(){
+            var bc = new BaseCore();
+            //1. de OCRD los registros donde CardType = 'C' traer LicTradNum
+            //2. consultar de GetFacturasYNcByRucPrincipal(LicTradNum) para obtener los documentos con sus montos acumulados del mes corriente
+            var sql = string.Format(@"
+                select
+                    c.""LicTradNum"" as ""RucPrincipal"",
+                    SUM(f.""montoFactura"") as ""montoFactura""
+                from ""OCRD"" c
+                left join ""JbpVw_FacturasMasNCParticipantes"" f 
+                    on c.""LicTradNum"" = f.""RucPrincipal""
+                    AND f.""mesFactura"" = '07'
+                    AND f.""añoFactura"" = EXTRACT(YEAR FROM CURRENT_DATE)
+                where c.""CardType"" = 'C' and c.""U_IXX_APLICA_PUNTOS"" = 'SI'
+                group by c.""LicTradNum""
+            ");
+            var montoFacturasYNc = bc.GetDataTableByQuery(sql, new Dictionary<string, object> { });
+
+            DataTable resultados = new DataTable();
+            resultados.Columns.Add("LicTradNum", typeof(string));
+            resultados.Columns.Add("montoFactura", typeof(object));
+            resultados.Columns.Add("puntosDisponibles", typeof(object));
+
+            if (montoFacturasYNc.Rows.Count > 0){
+                var rows = montoFacturasYNc.Rows.Cast<DataRow>().ToList();
+                object lockObj = new object();
+
+                Parallel.ForEach(rows, new ParallelOptions { MaxDegreeOfParallelism = 10 }, dr => {
+                    try {
+                        var ruc = dr["RucPrincipal"].ToString();
+                        //3. consultar en promorick por cada LicTradNum usando GetEstadoCuentaByRuc(LicTradNum)
+                        var estadoCuenta = GetEstadoCuentaByRuc(ruc);
+
+                        int puntosDisponibles = 0;
+                        if (estadoCuenta is IDictionary<string, object> dict && dict.ContainsKey("data"))
+                            if (dict["data"] is IDictionary<string, object> dataDict && dataDict.ContainsKey("puntosDisponibles"))
+                                int.TryParse(dataDict["puntosDisponibles"]?.ToString(), out puntosDisponibles);
+
+                        if (estadoCuenta != null)
+                            lock (lockObj){
+                                resultados.Rows.Add(ruc, dr["montoFactura"] == null ? 0 : dr["montoFactura"], puntosDisponibles);
+                            }
+                    }
+                    catch (Exception){
+                        // Si falla un RUC específico por timeout o error de API, 
+                        // se ignora para no detener el resto de peticiones en paralelo.
+                    }
+                });
+            }
+            // 4. Actualizar los campos U_Cumplimiento y U_PuntosDisponiblesPTK en OCRD en lote (usando transacción para eficiencia)
+            if (resultados.Rows.Count > 0){
+                var sqlUpdate = @"
+                    update ""OCRD""
+                    set ""U_Cumplimiento"" = ?,
+                        ""U_PuntosDisponiblesPTK"" = ?
+                    where ""LicTradNum"" = ? and ""CardType"" = 'C'
+                ";
+
+                try{
+                    bc.BeginTransaction();
+                    foreach (DataRow row in resultados.Rows){
+                        var cumplimiento = row["montoFactura"] == DBNull.Value || row["montoFactura"] == null ? 0 : Convert.ToDecimal(row["montoFactura"]);
+                        var puntos = row["puntosDisponibles"] == DBNull.Value || row["puntosDisponibles"] == null ? 0 : Convert.ToInt32(row["puntosDisponibles"]);
+                        var rucParticipante = row["LicTradNum"].ToString();
+
+                        bc.ExecuteQueryTransaction(sqlUpdate, new Dictionary<string, object> {
+                            { "@0", cumplimiento },
+                            { "@1", puntos },
+                            { "@2", rucParticipante }
+                        });
+                    }
+                    bc.Commit();
+                }
+                catch (Exception){
+                    bc.Rollback();
+                    throw;
+                }
+            }
+            return resultados;
+
         }
     }
 }

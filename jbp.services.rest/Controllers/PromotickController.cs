@@ -4,6 +4,7 @@ using jbp.msg.sap;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -159,6 +160,26 @@ namespace jbp.services.rest.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, new
                 {
                     message = "Ocurrió un problema al registrar los participantes",
+                    error = error.Message
+                });
+            }
+        }
+
+        //obtener puntos desde promotick, para enviarlos a sap/socio de negocio
+        [HttpGet]
+        [Route("api/promotick/actualizarPuntosDesdePromotick")]
+        public HttpResponseMessage ActualizarPuntosDesdePromotick(){
+            try{
+                var participantePtkBusiness = new ParticipantePtkBusiness();
+                DataTable resp = participantePtkBusiness.ActualizarPuntosDesdePromotick();
+                return Request.CreateResponse(HttpStatusCode.OK, new{
+                    message = "Se actualizó el cumplimiento y los puntos disponibles de los participantes",
+                    participantes = resp
+                });
+            }
+            catch (Exception error){
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new{
+                    message = "Ocurrió un problema al actualizar los puntos desde promotick",
                     error = error.Message
                 });
             }
