@@ -297,10 +297,8 @@ namespace jbp.business.hana
             {
                 if (u.Ubicacion.ToLower().Contains("psj"))
                     tieneUbicacionPesaje = true;
-                else
-                    tieneMasUbicaciones = true;
             });
-            if(tieneUbicacionPesaje && !tieneMasUbicaciones)
+            if(tieneUbicacionPesaje)
                 return false;
 
             // Verificar si el componente (lote) ya está en pesaje en alguna OF de la misma campaña

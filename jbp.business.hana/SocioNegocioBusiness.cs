@@ -69,7 +69,15 @@ namespace jbp.business.hana
                  ""CodTipoSocioNegocio""='C'
                  and ""Ruc"" = ?
             ");
+            try
+            {
             return new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> { { "@0", ruc } });
+
+            }
+            catch
+            {
+                throw;
+            }
         }
         public static List<CarteraMsg> GetCarteraByRucPrincipalCliente(string rucPrincipal)
         {

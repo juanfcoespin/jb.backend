@@ -80,8 +80,8 @@ namespace jbp.services.rest.Controllers
         [Route("api/socioNegocio/habilitadoParaCangearPuntos/{nroDocumento}")]
         public HabilitadoCanjearPuntosMS HabilitadoParaCangearPuntos(string nroDocumento)
         {
-            return new HabilitadoCanjearPuntosMS { CodResp=1, Resp=true};
-            //return jbp.business.hana.SocioNegocioBusiness.HabilitadoParaCangearPuntos(nroDocumento);
+            //return new HabilitadoCanjearPuntosMS { CodResp=1, Resp=true};
+            return jbp.business.hana.SocioNegocioBusiness.HabilitadoParaCangearPuntos(nroDocumento);
         }
 
         
