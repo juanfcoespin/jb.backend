@@ -173,8 +173,7 @@ namespace jbp.services.rest.Controllers
                 var participantePtkBusiness = new ParticipantePtkBusiness();
                 DataTable resp = participantePtkBusiness.ActualizarPuntosDesdePromotick();
                 return Request.CreateResponse(HttpStatusCode.OK, new{
-                    message = "Se actualizó el cumplimiento y los puntos disponibles de los participantes",
-                    participantes = resp
+                    message = "Se actualizó el cumplimiento y los puntos disponibles de los participantes"
                 });
             }
             catch (Exception error){

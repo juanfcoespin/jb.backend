@@ -480,33 +480,19 @@ namespace jbp.business.hana
             return ms;
         }
 
-        public static HabilitadoCanjearPuntosMS HabilitadoParaCangearPuntos(string ruc)
-        {
-            try
-            {
-                var ms = false;
-                var sql = string.Format(@"
-                    SELECT 
-                     top 1
-                     t1.""EsElite""-- SI o NO para habilitar canje de puntos
-                    FROM
-                     ""JbpVw_SocioNegocio"" t0 inner join--es el secundario o sucursal
-                     ""JbpVw_SocioNegocio"" t1 on t1.""Ruc"" = t0.""RucPrincipal""--es el principal
-                    where
-                     t0.""Ruc"" = ?--sucursal 0 principal
-                     and t1.""AplicaPuntos"" = 'SI' -- el principal participa en el plan puntos
-                ");
-                var resp = new BaseCore().GetScalarByQuery(sql, new Dictionary<string, object> { { "@0", ruc } });
-                if (resp!=null && resp.Equals("SI"))
-                    ms = true;
-                return new HabilitadoCanjearPuntosMS() { 
-                    CodResp=1,
-                    Resp=ms
+        public static HabilitadoCanjearPuntosMS HabilitadoParaCangearPuntos(string ruc){
+            try{
+                dynamic cumplioMeta = ParticipanteCumplioMeta(new ConsultaCumplimientoMetaParticipantesMe(){
+                    ruc = ruc,
+                    year = DateTime.Now.Year.ToString(),
+                    mes = DateTime.Now.Month.ToString()
+                });
+                return new HabilitadoCanjearPuntosMS(){
+                    CodResp = 1,
+                    Resp = cumplioMeta.cumpleMeta,
                 };
-            }
-            catch(Exception e) {
-                return new HabilitadoCanjearPuntosMS()
-                {
+            }catch (Exception e){
+                return new HabilitadoCanjearPuntosMS(){
                     CodResp = -500,
                     Resp = false
                 };
