@@ -33,9 +33,10 @@ namespace jbp.services.rest.Controllers
             return UserBusiness.GetUser(me);
         }
         [HttpGet]
-        [Route("api/user/getModulosAcceso")]
-        public List<string> GetModulosAcceso() { 
-            return UserBusiness.GetModulosAcceso();
+        [Route("api/user/getModulosAcceso/{userName}")]
+        public List<string> GetModulosAcceso(string userName)
+        {
+            return UserBusiness.GetModulosAcceso(userName);
         }
 
         [HttpPost]

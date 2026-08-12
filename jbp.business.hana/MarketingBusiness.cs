@@ -1,25 +1,74 @@
-﻿using System;
+﻿using jbp.msg;
+using jbp.msg.sap;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using jbp.msg;
 using TechTools.Core.Hana;
-using System.Data;
-using jbp.msg.sap;
 
 
 namespace jbp.business.hana
 {
     public class MarketingBusiness
     {
-        public static DashBoardsMsg GetDasboards()
+        public static DashBoardsMsg GetDasboards(string userName)
         {
             try
             {
+                var grupos = new Dictionary<string, string>();
+
+                using (var domain = new PrincipalContext(ContextType.Domain))
+                {
+                    using (var user = UserPrincipal.FindByIdentity(domain, userName))
+                    {
+                        if (user != null)
+                            using (var userGroups = user.GetGroups())
+                            {
+                                foreach (var group in userGroups)
+                                {
+                                    using (group)
+                                    {
+                                        if (group.Name.ToLower() == "dashboards")
+                                            continue;
+                                        if (!grupos.ContainsKey(group.Name.ToLower()))
+                                            grupos.Add(group.Name.ToLower(), group.Name.ToLower());
+                                    }
+                                }
+                            }
+                    }
+                }
+
+                // 1. Verificamos si es del grupo tics (acceso total)
+                bool esTics = grupos.ContainsKey("tics");
+
+                var whereConditions = new List<string>();
+                var sqlParams = new Dictionary<string, object>();
+
+                if (!esTics)
+                {
+                    // 2. Condición base: Dashboards vacíos (públicos)
+                    whereConditions.Add("MODULOS is null");
+                    whereConditions.Add("trim(MODULOS) = ''");
+
+                    // 3. Convertimos el diccionario a lista para recorrerlo
+                    var listaGrupos = grupos.Values.ToList();
+
+                    // 4. Por cada grupo, agregamos un LIKE a la consulta SQL
+                    for (int i = 0; i < listaGrupos.Count; i++)
+                    {
+                        // SAP HANA usa '?' para los parámetros posicionales en la consulta
+                        whereConditions.Add($" ',' || lower(REPLACE(MODULOS, ' ', '')) || ',' LIKE '%' || ? || '%' ");
+                        sqlParams.Add($"@{i}", $",{listaGrupos[i]},");
+                    }
+                }
+
                 var ms = new List<Dash>();
-                var sql = string.Format(@"
+                var whereClause = esTics ? "" : $"WHERE {string.Join(" OR ", whereConditions)}";
+
+                var sql = $@"
                  select
                    ID,
                    NOMBRE,
@@ -27,12 +76,17 @@ namespace jbp.business.hana
                    MODULOS
                  from
                    JB_DASHBOARDS
+                 {whereClause}
                  order by
                    ID
-                "
-                );
+                ";
+
                 var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql,null);
+                var dt = bc.GetDataTableByQuery(sql, sqlParams);
+
+                // Obtenemos los módulos una sola vez fuera del bucle para no saturar al AD
+                var modulosDelUsuario = UserBusiness.GetModulosAcceso(userName);
+
                 foreach (DataRow dr in dt.Rows)
                 {
                     var dash = new Dash
@@ -42,11 +96,12 @@ namespace jbp.business.hana
                         url = dr["URL"].ToString(),
                         modulosStr = dr["MODULOS"].ToString()
                     };
-                    var modulos = UserBusiness.GetModulosAcceso();
-                    modulos.ForEach(mod => {
-                        dash.modulos.Add(new ModulosMsg { 
-                            Name=mod,
-                            Checked=dash.modulosStr.Contains(mod)
+
+                    modulosDelUsuario.ForEach(mod => {
+                        dash.modulos.Add(new ModulosMsg
+                        {
+                            Name = mod,
+                            Checked = dash.modulosStr.Contains(mod)
                         });
                     });
                     ms.Add(dash);
@@ -54,15 +109,16 @@ namespace jbp.business.hana
                 return new DashBoardsMsg
                 {
                     data = ms
-                }; 
-            }
-            catch (Exception ex) {
-                return new DashBoardsMsg
-                { 
-                    error=ex.Message
                 };
             }
-            
+            catch (Exception ex)
+            {
+                return new DashBoardsMsg
+                {
+                    error = ex.Message
+                };
+            }
+
         }
 
         public static string deleteDasboard(int id)

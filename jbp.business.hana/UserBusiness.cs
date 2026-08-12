@@ -121,13 +121,34 @@ namespace jbp.business.hana
             }
         }
 
-        public static List<string> GetModulosAcceso()
+        public static List<string> GetModulosAcceso(string userName)
         {
             var ms = new List<string>();
-            ms = TechTools.Utils.ObjectUtils.GetMemberNames(typeof(ModulosAccesoMS));
+            try
+            {
+                using (var domain = new PrincipalContext(ContextType.Domain))
+                {
+                    using (var user = UserPrincipal.FindByIdentity(domain, userName))
+                    {
+                        if (user != null)
+                            using (var userGroups = user.GetGroups())
+                            {
+                                foreach (var group in userGroups)
+                                {
+                                    using (group)
+                                    {
+                                        ms.Add(group.Name);
+                                    }
+                                }
+                            }
+                    }
+                }
+            }
+            catch (Exception) { }
+
             return ms;
         }
-        
+
         public static ModulosAccesoMS GetModulosAcceso(RespAuthMsg me) {
             var ms = new ModulosAccesoMS();
             // Por grupo de AD

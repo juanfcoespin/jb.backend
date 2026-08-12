@@ -15,10 +15,10 @@ namespace jbp.services.rest.Controllers
     {
 
         [HttpGet]
-        [Route("api/marketing/getDasboards")]
-        public DashBoardsMsg getDasboards()
+        [Route("api/marketing/getDasboards/{userName}")]
+        public DashBoardsMsg getDasboards(string userName)
         {
-            return MarketingBusiness.GetDasboards();
+            return MarketingBusiness.GetDasboards(userName);
         }
 
         [HttpGet]
