@@ -18,77 +18,31 @@ namespace jbp.business.hana
         {
             try
             {
-                var grupos = new Dictionary<string, string>();
+                string departamento = null;
 
                 using (var domain = new PrincipalContext(ContextType.Domain))
                 {
                     using (var user = UserPrincipal.FindByIdentity(domain, userName))
                     {
                         if (user != null)
-                            using (var userGroups = user.GetGroups())
-                            {
-                                foreach (var group in userGroups)
-                                {
-                                    using (group)
-                                    {
-                                        if (group.Name.ToLower() == "dashboards")
-                                            continue;
-                                        if (!grupos.ContainsKey(group.Name.ToLower()))
-                                            grupos.Add(group.Name.ToLower(), group.Name.ToLower());
-                                    }
-                                }
-                            }
+                        {
+                            // 1. Extraer el departamento nativo del AD y agregarlo a los grupos
+                            var directoryEntry = user.GetUnderlyingObject() as System.DirectoryServices.DirectoryEntry;
+                            if (directoryEntry != null && directoryEntry.Properties.Contains("department"))
+                                departamento = directoryEntry.Properties["department"].Value?.ToString();
+                        }
                     }
                 }
 
-                // 1. Verificamos si es del grupo tics (acceso total)
-                bool esTics = grupos.ContainsKey("tics");
-
-                var whereConditions = new List<string>();
-                var sqlParams = new Dictionary<string, object>();
-
-                if (!esTics)
-                {
-                    // 2. Condición base: Dashboards vacíos (públicos)
-                    whereConditions.Add("MODULOS is null");
-                    whereConditions.Add("trim(MODULOS) = ''");
-
-                    // 3. Convertimos el diccionario a lista para recorrerlo
-                    var listaGrupos = grupos.Values.ToList();
-
-                    // 4. Por cada grupo, agregamos un LIKE a la consulta SQL
-                    for (int i = 0; i < listaGrupos.Count; i++)
-                    {
-                        // SAP HANA usa '?' para los parámetros posicionales en la consulta
-                        whereConditions.Add($" ',' || lower(REPLACE(MODULOS, ' ', '')) || ',' LIKE '%' || ? || '%' ");
-                        sqlParams.Add($"@{i}", $",{listaGrupos[i]},");
-                    }
-                }
-
+                bool esTics = departamento.ToLower().Trim() == "tics";
                 var ms = new List<Dash>();
-                var whereClause = esTics ? "" : $"WHERE {string.Join(" OR ", whereConditions)}";
-
-                var sql = $@"
-                 select
-                   ID,
-                   NOMBRE,
-                   URL,
-                   MODULOS
-                 from
-                   JB_DASHBOARDS
-                 {whereClause}
-                 order by
-                   ID
-                ";
-
+                var sql = $@"select ID, NOMBRE, URL, MODULOS from JB_DASHBOARDS order by ID";
                 var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql, sqlParams);
-
-                // Obtenemos los módulos una sola vez fuera del bucle para no saturar al AD
-                var modulosDelUsuario = UserBusiness.GetModulosAcceso(userName);
+                var dt = bc.GetDataTableByQuery(sql, null);
 
                 foreach (DataRow dr in dt.Rows)
                 {
+                    if (!esTics && !dr["MODULOS"].ToString().Contains(departamento)) continue;
                     var dash = new Dash
                     {
                         id = bc.GetInt(dr["ID"]),
@@ -96,14 +50,6 @@ namespace jbp.business.hana
                         url = dr["URL"].ToString(),
                         modulosStr = dr["MODULOS"].ToString()
                     };
-
-                    modulosDelUsuario.ForEach(mod => {
-                        dash.modulos.Add(new ModulosMsg
-                        {
-                            Name = mod,
-                            Checked = dash.modulosStr.Contains(mod)
-                        });
-                    });
                     ms.Add(dash);
                 }
                 return new DashBoardsMsg

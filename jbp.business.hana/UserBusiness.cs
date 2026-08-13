@@ -121,26 +121,41 @@ namespace jbp.business.hana
             }
         }
 
-        public static List<string> GetModulosAcceso(string userName)
+        public static List<string> getDepartamentos()
         {
             var ms = new List<string>();
             try
             {
-                using (var domain = new PrincipalContext(ContextType.Domain))
+                // Primero buscamos dinámicamente la carpeta (OU) principal llamada "Departamentos"
+                using (var entry = new System.DirectoryServices.DirectoryEntry())
                 {
-                    using (var user = UserPrincipal.FindByIdentity(domain, userName))
+                    using (var searcher = new System.DirectoryServices.DirectorySearcher(entry))
                     {
-                        if (user != null)
-                            using (var userGroups = user.GetGroups())
+                        searcher.Filter = "(&(objectCategory=organizationalUnit)(name=Departamentos))";
+                        var deptoResult = searcher.FindOne();
+
+                        if (deptoResult != null)
+                        {
+                            // Obtenemos todos los sub-departamentos (OUs hijos) de esa carpeta
+                            using (var childSearcher = new System.DirectoryServices.DirectorySearcher(deptoResult.GetDirectoryEntry()))
                             {
-                                foreach (var group in userGroups)
+                                childSearcher.Filter = "(objectCategory=organizationalUnit)";
+                                childSearcher.SearchScope = System.DirectoryServices.SearchScope.OneLevel;
+                                childSearcher.PropertiesToLoad.Add("name");
+
+                                using (var results = childSearcher.FindAll())
                                 {
-                                    using (group)
+                                    foreach (System.DirectoryServices.SearchResult res in results)
                                     {
-                                        ms.Add(group.Name);
+                                        if (res.Properties.Contains("name"))
+                                        {
+                                            ms.Add(res.Properties["name"][0].ToString());
+                                        }
                                     }
                                 }
                             }
+                        }
+                        ms.Sort();
                     }
                 }
             }
