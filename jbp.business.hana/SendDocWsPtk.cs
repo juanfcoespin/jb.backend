@@ -95,6 +95,55 @@ namespace jbp.business.hana
                 var resMsg = new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(resp);
                 InsertarLogWS(dateReq, dateRes, reqMsg, resMsg, url, "POST", 200);
 
+                var msgHtml = new StringBuilder();
+                msgHtml.Append("<h3>Resultados del envío a Promotick</h3>");
+                msgHtml.Append("<table border='1' cellpadding='5' cellspacing='0'><tr><th>Num Documento</th><th>Monto Factura</th><th>Puntos</th><th>Num Factura</th><th>Estado</th><th>Mensaje</th></tr>");
+                
+                var failedJsons = new StringBuilder();
+                bool todosExitosos = true;
+                var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+
+                foreach (var reqDoc in documentos){
+                    var resDoc = resp.respuesta != null ? resp.respuesta.FirstOrDefault(r => r.numFactura == reqDoc.numFactura) : null;
+                    string estado = "Sin Respuesta";
+                    string msj = "";
+                    bool isFailed = false;
+                    
+                    if (resDoc != null)
+                        if (resDoc.codigo == 1){
+                            estado = "Exitoso";
+                            msj = resDoc.mensaje;
+                        }
+                        else{
+                            estado = "Fallido";
+                            msj = resDoc.mensaje;
+                            todosExitosos = false;
+                            isFailed = true;
+                        }
+                    else{
+                        todosExitosos = false;
+                        isFailed = true;
+                    }
+
+                    if (isFailed){
+                        var failedReq = new DocumentosPtkMsg { facturas = new List<DocumentoPromotickMsg> { reqDoc } };
+                        string jsonReq = serializer.Serialize(failedReq);
+                        failedJsons.AppendFormat("<p><strong>Factura: {0}</strong><br/><code>{1}</code></p>", reqDoc.numFactura, jsonReq);
+                    }
+
+                    msgHtml.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>",
+                        reqDoc.numDocumento, reqDoc.montoFactura, reqDoc.puntos, reqDoc.numFactura, estado, msj);
+                }
+                msgHtml.Append("</table>");
+
+                if (!todosExitosos && failedJsons.Length > 0){
+                    msgHtml.Append("<h3>Documentos de las peticiones fallidas</h3>");
+                    msgHtml.Append(failedJsons.ToString());
+                }
+                
+                string tituloCorreo = todosExitosos ? "Envío exitoso a Promotick" : "Fallos en envío a Promotick";
+                EnviarPorCorreo(tituloCorreo, msgHtml.ToString());
+
                 if (!esNcAjuste)
                     ActualizarRespuestasWS(resp);
                 else

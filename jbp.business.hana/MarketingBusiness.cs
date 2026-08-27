@@ -14,7 +14,41 @@ namespace jbp.business.hana
 {
     public class MarketingBusiness
     {
-        public static DashBoardsMsg GetDasboards(string userName)
+        public static DashBoardsMsg GetDasboards()
+        {
+            try
+            {
+                var ms = new List<Dash>();
+                var sql = $@"select ID, NOMBRE, URL, MODULOS from JB_DASHBOARDS order by ID";
+                var bc = new BaseCore();
+                var dt = bc.GetDataTableByQuery(sql, null);
+
+                foreach (DataRow dr in dt.Rows)
+                {
+                    var dash = new Dash
+                    {
+                        id = bc.GetInt(dr["ID"]),
+                        nombre = dr["NOMBRE"].ToString(),
+                        url = dr["URL"].ToString(),
+                        modulosStr = dr["MODULOS"].ToString()
+                    };
+                    ms.Add(dash);
+                }
+                return new DashBoardsMsg
+                {
+                    data = ms
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DashBoardsMsg
+                {
+                    error = ex.Message
+                };
+            }
+
+        }
+        public static DashBoardsMsg GetDasboardsV2(string userName)
         {
             try
             {
@@ -28,13 +62,25 @@ namespace jbp.business.hana
                         {
                             // 1. Extraer el departamento nativo del AD y agregarlo a los grupos
                             var directoryEntry = user.GetUnderlyingObject() as System.DirectoryServices.DirectoryEntry;
-                            if (directoryEntry != null && directoryEntry.Properties.Contains("department"))
-                                departamento = directoryEntry.Properties["department"].Value?.ToString();
+                            if (directoryEntry != null && directoryEntry.Properties.Contains("distinguishedName"))
+                            {
+                                var dn = directoryEntry.Properties["distinguishedName"].Value?.ToString();
+                                if (!string.IsNullOrEmpty(dn))
+                                {
+                                    var partes = dn.Split(',');
+                                    if (partes.Length >= 6)
+                                    {
+                                        var parteDepto = partes[partes.Length - 6];
+                                        var depto = parteDepto.Split('=');
+                                        departamento = depto[1];
+                                    }
+                                }
+                            }
                         }
                     }
                 }
 
-                bool esTics = departamento.ToLower().Trim() == "tics";
+                bool esTics = (departamento ?? "").ToLower().Trim() == "tics";
                 var ms = new List<Dash>();
                 var sql = $@"select ID, NOMBRE, URL, MODULOS from JB_DASHBOARDS order by ID";
                 var bc = new BaseCore();

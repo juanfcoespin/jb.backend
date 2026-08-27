@@ -482,16 +482,21 @@ namespace jbp.business.hana
 
         public static HabilitadoCanjearPuntosMS HabilitadoParaCangearPuntos(string ruc){
             try{
-                dynamic cumplioMeta = ParticipanteCumplioMeta(new ConsultaCumplimientoMetaParticipantesMe(){
-                    ruc = ruc,
-                    year = DateTime.Now.Year.ToString(),
-                    mes = DateTime.Now.Month.ToString()
-                });
+                //3. consultar en promorick por cada LicTradNum usando GetEstadoCuentaByRuc(LicTradNum)
+                var participantePtkBusiness = new ParticipantePtkBusiness();
+                var estadoCuenta = participantePtkBusiness.GetEstadoCuentaByRuc(ruc);
+
+                int puntosDisponibles = 0;
+                if (estadoCuenta is IDictionary<string, object> dict && dict.ContainsKey("data"))
+                    if (dict["data"] is IDictionary<string, object> dataDict && dataDict.ContainsKey("puntosDisponibles"))
+                        int.TryParse(dataDict["puntosDisponibles"]?.ToString(), out puntosDisponibles);
+
                 return new HabilitadoCanjearPuntosMS(){
                     CodResp = 1,
-                    Resp = cumplioMeta.cumpleMeta,
+                    Resp = (puntosDisponibles > 0)
                 };
-            }catch (Exception e){
+            }
+            catch (Exception e){
                 return new HabilitadoCanjearPuntosMS(){
                     CodResp = -500,
                     Resp = false

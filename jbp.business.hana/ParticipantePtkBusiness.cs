@@ -135,7 +135,14 @@ namespace jbp.business.hana
             select 
              TIPO_DOCUMENTO,
              FECHA_TX,
-             FECHA_DOCUMENTO,
+             CASE 
+            WHEN FECHA_DOCUMENTO LIKE_REGEXPR '^[0-9]{{2}}/[0-9]{{2}}/[0-9]{{4}}$'
+                THEN TO_VARCHAR(
+                    TO_DATE(FECHA_DOCUMENTO, 'DD/MM/YYYY'),
+                    'YYYY-MM-DD'
+                )
+                ELSE FECHA_DOCUMENTO
+            END AS FECHA_DOCUMENTO,
              FECHA_DOCUMENTO_ORIGINAL,
              NRO_DOCUMENTO,
              MONTO,
@@ -145,6 +152,7 @@ namespace jbp.business.hana
              DESCRIPCION
             from JBP_LOG_ENVIO_DOCUMENTOS_PTK
             where RUC=?
+            ORDER BY FECHA_TX  DESC 
             ");
             var bc = new BaseCore();
             var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {

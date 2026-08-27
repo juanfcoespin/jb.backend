@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="BaseBusiness.cs" />
     <Compile Include="BaseWSPtk.cs" />
+    <Compile Include="conf.cs" />
     <Compile Include="MarketingBusiness.cs" />
     <None Include="PagoBusinessBk_23Feb26.bk" />
     <None Include="OrdenFabricacionBusiness_24Feb26.bk" />

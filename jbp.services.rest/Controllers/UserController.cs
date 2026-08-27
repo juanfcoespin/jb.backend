@@ -46,6 +46,13 @@ namespace jbp.services.rest.Controllers
             return UserBusiness.getDepartamentos();
         }
 
+        [HttpGet]
+        [Route("api/user/getUserAD/{userName}")]
+        public object getUserAD(string userName)
+        {
+            return UserBusiness.getUserAD(userName);
+        }
+
         [HttpPost]
         [Route("api/user/log")]
         public string Log([FromBody] LogMsg me)

@@ -13,12 +13,19 @@ namespace jbp.services.rest.Controllers
 {
     public class MarketingController : ApiController
     {
+        [HttpGet]
+        [Route("api/marketing/getDasboards/")]
+        public DashBoardsMsg getDasboards()
+        {
+            return MarketingBusiness.GetDasboards();
+        }
 
+        //para app2
         [HttpGet]
         [Route("api/marketing/getDasboards/{userName}")]
-        public DashBoardsMsg getDasboards(string userName)
+        public DashBoardsMsg getDasboardsV2(string userName)
         {
-            return MarketingBusiness.GetDasboards(userName);
+            return MarketingBusiness.GetDasboardsV2(userName);
         }
 
         [HttpGet]

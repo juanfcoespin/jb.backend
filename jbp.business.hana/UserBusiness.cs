@@ -225,5 +225,33 @@ namespace jbp.business.hana
             }
             return true;
         }
+
+        public static object getUserAD(string userName)
+        {
+            var dict = new Dictionary<string, string>();
+            try
+            {
+                using (var domain = new PrincipalContext(ContextType.Domain))
+                {
+                    using (var user = UserPrincipal.FindByIdentity(domain, userName))
+                    {
+                        if (user != null)
+                        {
+                            var directoryEntry = user.GetUnderlyingObject() as System.DirectoryServices.DirectoryEntry;
+                            if (directoryEntry != null)
+                                foreach (string propertyName in directoryEntry.Properties.PropertyNames)
+                                {
+                                    var val = directoryEntry.Properties[propertyName].Value;
+                                    var valStr = val is Array arr ? string.Join(", ", Enumerable.Cast<object>(arr)) : val?.ToString();
+                                    dict.Add(propertyName, valStr);
+                                }
+                        }
+                    }
+                }
+            }
+            catch (Exception) { }
+
+            return dict;
+        }
     }
 }
