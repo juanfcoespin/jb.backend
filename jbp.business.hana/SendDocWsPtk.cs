@@ -81,7 +81,13 @@ namespace jbp.business.hana
             });
         }
 
-        public RespuestasPtkWsFacturasMsg SendDocumentosToWS(List<DocumentoPromotickMsg> documentos, bool esNcAjuste=false){
+         public RespuestasPtkWsFacturasMsg SendDocumentosToWS(List<DocumentoPromotickMsg> documentos, bool esNcAjuste=false){
+            if (documentos == null || documentos.Count == 0){
+                FileLogger.WriteLogToFile("INFO", "No hay documentos para procesar", "promotick");
+                return new RespuestasPtkWsFacturasMsg { respuesta = new List<RespPtkWSFacturasMsg>() };
+            }
+
+            FileLogger.WriteLogToFile("INFO", $"Iniciando proceso de envío a WS Promotick. Cantidad de documentos: {documentos.Count}", "promotick");
             DocumentosPtkMsg me = new DocumentosPtkMsg { facturas = documentos };
             var url = string.Format("{0}/{1}", conf.Default.ptkWsUrl, "gsttransaccion");
             var reqMsg = new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(me);
@@ -103,29 +109,36 @@ namespace jbp.business.hana
                 bool todosExitosos = true;
                 var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
 
-                foreach (var reqDoc in documentos){
+                foreach (var reqDoc in documentos)
+                {
                     var resDoc = resp.respuesta != null ? resp.respuesta.FirstOrDefault(r => r.numFactura == reqDoc.numFactura) : null;
                     string estado = "Sin Respuesta";
                     string msj = "";
                     bool isFailed = false;
                     
                     if (resDoc != null)
-                        if (resDoc.codigo == 1){
+                    {
+                        if (resDoc.codigo == 1)
+                        {
                             estado = "Exitoso";
                             msj = resDoc.mensaje;
                         }
-                        else{
+                        else
+                        {
                             estado = "Fallido";
                             msj = resDoc.mensaje;
                             todosExitosos = false;
                             isFailed = true;
                         }
-                    else{
+                    }
+                    else
+                    {
                         todosExitosos = false;
                         isFailed = true;
                     }
 
-                    if (isFailed){
+                    if (isFailed)
+                    {
                         var failedReq = new DocumentosPtkMsg { facturas = new List<DocumentoPromotickMsg> { reqDoc } };
                         string jsonReq = serializer.Serialize(failedReq);
                         failedJsons.AppendFormat("<p><strong>Factura: {0}</strong><br/><code>{1}</code></p>", reqDoc.numFactura, jsonReq);
@@ -144,6 +157,8 @@ namespace jbp.business.hana
                 string tituloCorreo = todosExitosos ? "Envío exitoso a Promotick" : "Fallos en envío a Promotick";
                 EnviarPorCorreo(tituloCorreo, msgHtml.ToString());
 
+                FileLogger.WriteLogToFile(todosExitosos ? "SUCCESS" : "WARNING", $"Se procesaron en promotick {documentos?.Count ?? 0} documentos, exitosos: {resp.respuesta.Where(d => d.codigo == 1).Count()}, fallidas: {resp.respuesta.Where(d => d.codigo != 1).Count()}", "promotick");
+
                 if (!esNcAjuste)
                     ActualizarRespuestasWS(resp);
                 else
@@ -151,6 +166,7 @@ namespace jbp.business.hana
                 return resp;
             }
             catch (Exception e){
+                FileLogger.WriteLogToFile("ERROR", $"Excepción en el proceso de envío a WS: {e.Message}", "promotick");
                 DateTime dateRes = DateTime.Now;
                 InsertarLogWS(dateReq, dateRes, reqMsg, e.Message, url, "POST", 500);
 
