@@ -81,7 +81,7 @@ namespace jbp.business.hana
             });
         }
 
-         public RespuestasPtkWsFacturasMsg SendDocumentosToWS(List<DocumentoPromotickMsg> documentos, bool esNcAjuste=false){
+        public RespuestasPtkWsFacturasMsg SendDocumentosToWS(List<DocumentoPromotickMsg> documentos, bool esNcAjuste=false){
             if (documentos == null || documentos.Count == 0){
                 FileLogger.WriteLogToFile("INFO", "No hay documentos para procesar", "promotick");
                 return new RespuestasPtkWsFacturasMsg { respuesta = new List<RespPtkWSFacturasMsg>() };
@@ -103,7 +103,7 @@ namespace jbp.business.hana
 
                 var msgHtml = new StringBuilder();
                 msgHtml.Append("<h3>Resultados del envío a Promotick</h3>");
-                msgHtml.Append("<table border='1' cellpadding='5' cellspacing='0'><tr><th>Num Documento</th><th>Monto Factura</th><th>Puntos</th><th>Num Factura</th><th>Estado</th><th>Mensaje</th></tr>");
+                msgHtml.Append("<table border='1' cellpadding='5' cellspacing='0'><tr><th>Num Documento</th><th>Tipo Documento</th><th>Monto Factura</th><th>Puntos</th><th>Num Factura</th><th>Estado</th><th>Mensaje</th></tr>");
                 
                 var failedJsons = new StringBuilder();
                 bool todosExitosos = true;
@@ -144,8 +144,8 @@ namespace jbp.business.hana
                         failedJsons.AppendFormat("<p><strong>Factura: {0}</strong><br/><code>{1}</code></p>", reqDoc.numFactura, jsonReq);
                     }
 
-                    msgHtml.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>",
-                        reqDoc.numDocumento, reqDoc.montoFactura, reqDoc.puntos, reqDoc.numFactura, estado, msj);
+                    msgHtml.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td><td>{6}</td></tr>",
+                        reqDoc.numDocumento, reqDoc.tipoDocumento, reqDoc.montoFactura, reqDoc.puntos, reqDoc.numFactura, estado, msj);
                 }
                 msgHtml.Append("</table>");
 
@@ -155,7 +155,9 @@ namespace jbp.business.hana
                 }
                 
                 string tituloCorreo = todosExitosos ? "Envío exitoso a Promotick" : "Fallos en envío a Promotick";
-                EnviarPorCorreo(tituloCorreo, msgHtml.ToString());
+                //envia correo si hay mas de uno y si no es notaCreditoManual
+                if(documentos.Count() > 1 && !documentos.FirstOrDefault().tipoDocumento.Equals("notaCreditoManual"))
+                    EnviarPorCorreo(tituloCorreo, msgHtml.ToString());
 
                 FileLogger.WriteLogToFile(todosExitosos ? "SUCCESS" : "WARNING", $"Se procesaron en promotick {documentos?.Count ?? 0} documentos, exitosos: {resp.respuesta.Where(d => d.codigo == 1).Count()}, fallidas: {resp.respuesta.Where(d => d.codigo != 1).Count()}", "promotick");
 
