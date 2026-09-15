@@ -11,11 +11,13 @@ namespace jbp.business.hana
 {
     public class DirectorioBusiness
     {
-        public static List<ContactoMsg> GetDirectorio()
+        private BaseCore baseCore = new BaseCore();
+        public List<ContactoMsg> GetDirectorio()
         {
             var ms = new List<ContactoMsg>();
             var sql = @"
             select 
+             ID,
              CONTACTO,
              DEPARTAMENTO,
              PLANTA,
@@ -23,12 +25,13 @@ namespace jbp.business.hana
             from
              JBP_DIRECTORIO_TELEFONICO
             ";
-            var dt = new BaseCore().GetDataTableByQuery(sql,null);
+            var dt = baseCore.GetDataTableByQuery(sql,null);
             foreach(DataRow dr in dt.Rows)
             {
                 ms.Add(
                 new ContactoMsg
                 {
+                    ID = dr["ID"].ToString(),
                     CONTACTO = dr["CONTACTO"].ToString(),
                     DEPARTAMENTO = dr["DEPARTAMENTO"].ToString(),
                     PLANTA = dr["PLANTA"].ToString(),
@@ -37,6 +40,77 @@ namespace jbp.business.hana
             );
             }
             return ms;
+        }
+
+        public void CrearContacto(ContactoMsg contacto)
+        {
+            var sql = @"
+            insert into JBP_DIRECTORIO_TELEFONICO (
+             CONTACTO,
+             DEPARTAMENTO,
+             PLANTA,
+             EXT
+            )
+            values (
+             ?,
+             ?,
+             ?,
+             ?
+            )
+            ";
+            var parameters = new Dictionary<string, object>
+            {
+                { "@0", contacto.CONTACTO },
+                { "@1", contacto.DEPARTAMENTO },
+                { "@2", contacto.PLANTA },
+                { "@3", contacto.Ext }
+            };
+            baseCore.Execute(sql, parameters);
+        }
+
+        public void ActualizarContacto(int id, ContactoMsg contacto)
+        {
+            var sql = "select count(*) from JBP_DIRECTORIO_TELEFONICO where ID = ?";
+            var parameters = new Dictionary<string, object>
+            {
+                { "@0", id }
+            };
+            var count = baseCore.GetIntScalarByQuery(sql, parameters);
+            if (count == 0)
+                throw new Exception("Contacto no encontrado");
+
+            sql = @"
+            update JBP_DIRECTORIO_TELEFONICO
+            set 
+             CONTACTO = ?,
+             DEPARTAMENTO = ?,
+             PLANTA = ?,
+             EXT = ?
+            where 
+             ID = ?
+            ";
+            parameters = new Dictionary<string, object>
+            {
+                { "@0", contacto.CONTACTO },
+                { "@1", contacto.DEPARTAMENTO },
+                { "@2", contacto.PLANTA },
+                { "@3", contacto.Ext },
+                { "@4", id }
+            };
+            baseCore.Execute(sql, parameters);
+        }
+
+        public void EliminarContacto(int id)
+        {
+            var sql = @"
+            delete from JBP_DIRECTORIO_TELEFONICO
+            where ID = ?
+            ";
+            var parameters = new Dictionary<string, object>
+            {
+                { "@0", id }
+            };
+            baseCore.Execute(sql, parameters);
         }
     }
 }

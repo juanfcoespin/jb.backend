@@ -57,6 +57,7 @@ namespace jbp.msg
     }
     public class ContactoMsg
     {
+        public string ID;
         public string CONTACTO;
         public string DEPARTAMENTO;
         public string PLANTA;
