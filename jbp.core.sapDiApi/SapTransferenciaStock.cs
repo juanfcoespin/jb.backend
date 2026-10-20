@@ -1,6 +1,4 @@
-﻿//stockTransfer.DocDate = DateTime.Parse("2026-05-29");
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -164,12 +162,16 @@ namespace jbp.core.sapDiApi
                     stockTransfer.Lines.Quantity = Math.Round(line.CantidadEnviada, 4);
                     var i = 0;
                     double cantidadEnLotes = 0;
+                    double cantFraccionada = 0;
+                    double difTolerancia = 0;
                     line.Lotes.ForEach(lote =>
                     {//lotes
                         stockTransfer.Lines.BatchNumbers.BatchNumber = lote.Lote;
                         stockTransfer.Lines.BatchNumbers.Quantity = Math.Round(lote.CantidadEnviada, 4);
                         double cantidadEnUbicaciones = 0;
                         lote.Ubicaciones.ForEach(ubicacion => {//ubicacion desde
+                            cantFraccionada += ubicacion.U_jb_cant_fraccionada_pesaje;
+                            difTolerancia += ubicacion.U_jb_dif_tolerancia;
                             if (ubicacion.IdUbicacion > 0)
                             {
                                 stockTransfer.Lines.BinAllocations.BinActionType = SAPbobsCOM.BinActionTypeEnum.batFromWarehouse;
@@ -193,6 +195,8 @@ namespace jbp.core.sapDiApi
                     {
                         stockTransfer.Lines.Quantity = Math.Round(cantidadEnLotes, 4);
                     }
+                    stockTransfer.Lines.UserFields.Fields.Item("U_jb_cant_fraccionada_pesaje").Value = Math.Round(cantFraccionada, 4);
+                    stockTransfer.Lines.UserFields.Fields.Item("U_jb_dif_tolerancia").Value = Math.Round(difTolerancia, 6);
                     stockTransfer.Lines.Add();
                 }
             });

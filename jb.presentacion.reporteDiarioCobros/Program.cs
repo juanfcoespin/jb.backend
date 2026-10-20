@@ -35,7 +35,7 @@ namespace jb.presentacion.reporteDiarioCobros
                     string error = null;
                     string destinatarios = vendedor.Email;
                     destinatarios += ";" + Properties.conf.Default.destinatarios;
-                    MailUtils.SendAndGetError(ref error, destinatarios, "Reporte Cobros Diarios - "+vendedor.Nombre, reporte);
+                    MailUtils.Send( destinatarios, "Reporte Cobros Diarios - "+vendedor.Nombre, reporte, ref error);
                     if (error != null)
                         NotificarError(error, true);
                 }
@@ -133,10 +133,10 @@ namespace jb.presentacion.reporteDiarioCobros
 
         private static void NotificarError(string message, bool soloLog=false)
         {
-            try
-            {
+            string error = null;
+            try{
                 if (!soloLog)
-                    MailUtils.Send(Properties.conf.Default.correoErrores, "Error al enviar el reporte diario de cobranza", message);
+                    MailUtils.Send(Properties.conf.Default.correoErrores, "Error al enviar el reporte diario de cobranza", message, ref error);
             }
             catch{}
         }

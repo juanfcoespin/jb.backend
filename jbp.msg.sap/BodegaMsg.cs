@@ -213,6 +213,8 @@ namespace jbp.msg.sap
     public class TsBalanzasLoteMsg
     {
         public double Cantidad { get; set; }
+        public double U_jb_cant_fraccionada_pesaje { get; set; }
+        public double U_jb_dif_tolerancia { get; set; }
         public string Lote { get; set; }
     }
 

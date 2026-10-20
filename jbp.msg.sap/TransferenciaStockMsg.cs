@@ -70,6 +70,8 @@ namespace jbp.msg.sap
         public string Ubicacion { get; set; }
         public double Cantidad { get; set; }
         public int IdUbicacion { get; set; }
+        public double U_jb_cant_fraccionada_pesaje { get; set; }
+        public double U_jb_dif_tolerancia { get; set; }
     }
     public class TransferenciaStockMsg
     {

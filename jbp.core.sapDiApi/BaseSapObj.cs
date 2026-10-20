@@ -16,27 +16,53 @@ namespace jbp.core.sapDiApi
         public event dDisconected onDisconected;
         public delegate void dNotififacationMessage(string msg);
         public event dNotififacationMessage onNotififacationMessage;
+        public string LastError { get; set; }
+        public int LastErrorCode { get; set; }
+
+        public string GetLastErrorDescription()
+        {
+            if (!string.IsNullOrEmpty(this.LastError))
+                return this.LastError;
+
+            try
+            {
+                if (this.Company != null)
+                {
+                    string desc = this.Company.GetLastErrorDescription();
+                    if (!string.IsNullOrWhiteSpace(desc))
+                        return desc;
+                }
+            }
+            catch
+            {
+            }
+            return "";
+        }
 
         public BaseSapObj()
         {
-            this.Company= new SAPbobsCOM.Company();
+            this.Company = new SAPbobsCOM.Company();
             this.Company.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB;
-            this.Company.Server = conf.Default.server; 
-            this.Company.language= SAPbobsCOM.BoSuppLangs.ln_Spanish;
+            this.Company.Server = conf.Default.server;
+            this.Company.language = SAPbobsCOM.BoSuppLangs.ln_Spanish;
             this.Company.UseTrusted = false;
             this.Company.DbUserName = conf.Default.dbUser;
             this.Company.DbPassword = conf.Default.dbPwd;
-            
+
         }
-        public void StartTransaction() { 
+        public void StartTransaction()
+        {
             this.Company.StartTransaction();
         }
-        public void RollBackTransaction() {
-            if (this.Company.InTransaction)  this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
+        public void RollBackTransaction()
+        {
+            if (this.Company.InTransaction)
+                this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
         }
         public void CommitTransaction()
         {
-            if (this.Company.InTransaction)  this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
+            if (this.Company.InTransaction)
+                this.Company.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
         }
         public bool IsConected()
         {
@@ -46,44 +72,72 @@ namespace jbp.core.sapDiApi
         {
             this.onNotififacationMessage?.Invoke(msg);
         }
-        public bool Connect(BaseSapObj me=null)
+        public bool Connect(BaseSapObj me = null)
         {
             try
             {
+                this.LastError = "";
+                this.LastErrorCode = 0;
                 this.onNotififacationMessage?.Invoke("Conectando a SAP Business One... " + conf.Default.server + " - " + conf.Default.dbName);
-                if (me!=null && me.Company!=null)
-                    this.Company=me.Company;
+                if (me != null && me.Company != null)
+                    this.Company = me.Company;
                 if (this.Company.Connected)
                 {
                     this.onNotififacationMessage?.Invoke("Se ha establecido anteriormente la conexión a SAP");
                     return true;
                 }
-                    
+
                 this.Company.Server = conf.Default.server;
                 this.Company.CompanyDB = conf.Default.dbName;
                 this.Company.DbUserName = conf.Default.dbUser;
                 this.Company.DbPassword = conf.Default.dbPwd;
                 this.Company.UserName = conf.Default.sapUser;
                 this.Company.Password = conf.Default.sapPwd;
-                this.Company.Connect();
-                var resp= this.Company.Connected;
-                this.onNotififacationMessage?.Invoke("Respuesta de conexión a SAP: " + resp);
+                int retCode = this.Company.Connect();
+                var resp = this.Company.Connected;
+                if (!resp || retCode != 0)
+                {
+                    int errCode = 0;
+                    string errMsg = "";
+                    this.Company.GetLastError(out errCode, out errMsg);
+                    this.LastErrorCode = errCode != 0 ? errCode : retCode;
+                    this.LastError = !string.IsNullOrWhiteSpace(errMsg)
+                        ? errMsg
+                        : this.Company.GetLastErrorDescription();
+
+                    if (string.IsNullOrWhiteSpace(this.LastError))
+                    {
+                        this.LastError = $"Error al conectar con SAP (Código: {this.LastErrorCode})";
+                    }
+                    else
+                    {
+                        this.LastError = $"[Código: {this.LastErrorCode}] {this.LastError}";
+                    }
+                    this.onNotififacationMessage?.Invoke("Fallo conexión SAP: " + this.LastError);
+                }
+                else
+                {
+                    this.onNotififacationMessage?.Invoke("Respuesta de conexión a SAP: " + resp);
+                }
                 return resp;
             }
-            catch
+            catch (Exception ex)
             {
+                this.LastError = $"Excepción al conectar a SAP: {ex.Message}";
+                this.onNotififacationMessage?.Invoke(this.LastError);
                 return false;
             }
         }
-        public void Disconnect() {
-            if (this.Company!=null && this.Company.Connected)
+        public void Disconnect()
+        {
+            if (this.Company != null && this.Company.Connected)
             {
                 this.onNotififacationMessage?.Invoke("Desconectando de SAP: ");
                 this.Company.Disconnect();
                 var resp = this.Company.Connected;
                 this.onNotififacationMessage?.Invoke("Conectado a SAP: " + resp);
             }
-                
+
             //CheckIfIsDisconectedAsync();
         }
 

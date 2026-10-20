@@ -20,7 +20,7 @@ namespace jbp.business.hana
         public static readonly object control = new object();
         //public static SapSolicitudTransferencia sapST = new SapSolicitudTransferencia();
 
-        public static DocSapInsertadoMsg Save(StMsg me, int numIntentos = 0, SapTransferenciaStock sapTransferenciaStock=null)
+        public static DocSapInsertadoMsg Save(StMsg me, int numIntentos = 0, SapTransferenciaStock sapTransferenciaStock = null)
         {
             /*
                 se pasa como parametro xq sapTransferenciaStock puede iniciar una tx
@@ -36,7 +36,7 @@ namespace jbp.business.hana
 
                 // se instancia aquí porque se utiliza esta función en transacciones multi hilo
                 // con la finalidad de que no se comparta el objeto sapST
-                var sapST = new SapSolicitudTransferencia(); 
+                var sapST = new SapSolicitudTransferencia();
                 ConectarASap(sapST, sapTransferenciaStock);
                 ms = sapST.AddST(me);
             }
@@ -49,7 +49,7 @@ namespace jbp.business.hana
                     Save(me, numIntentos);
                 }
                 else
-                    ms.Error=e.Message;
+                    ms.Error = e.Message;
             }
             finally
             {
@@ -66,19 +66,27 @@ namespace jbp.business.hana
             {
                 if (!sapST.Connect(baseSapObj)) // cuando no se puede conectar es por que el obj sap se inhibe
                 {
-                    sapST = null;
                     sapST = new SapSolicitudTransferencia(); //se reinicia el objeto para hacer otro intento de conexión
                     if (!sapST.Connect(baseSapObj))
                     {
+                        var detalleError = sapST.GetLastErrorDescription();
+
+                        if (string.IsNullOrWhiteSpace(detalleError))
+                        {
+                            detalleError = "Error desconocido de conexión";
+                        }
+
                         sapST = null;
-                        throw new Exception("Alta concurrencia: Vuelva a intentar la sincronización en 1 minuto");
+                        throw new Exception($"Error al conectar con SAP: {detalleError}");
                     }
                 }
             }
         }
 
-        public static string GetLineaByCodBodegaMat(string codBodegaMat) {
-            switch (codBodegaMat) {
+        public static string GetLineaByCodBodegaMat(string codBodegaMat)
+        {
+            switch (codBodegaMat)
+            {
                 case "MAT1":
                     return "HUM";
                 case "MAT2":
@@ -86,7 +94,7 @@ namespace jbp.business.hana
             }
             return null;
         }
-        public static object GetST_OF_Liberadas(FiltroPickingProdME filtro) 
+        public static object GetST_OF_Liberadas(FiltroPickingProdME filtro)
         {
             /*
              Son las St correspondientes a las OF liberadas que se requiere para hacer el picking 
@@ -136,7 +144,7 @@ namespace jbp.business.hana
                 if (!string.IsNullOrEmpty(filtro.articulo))
                 {
                     sql += string.Format(@" and upper(t1.""Articulo"") like ?");
-                    parametros.Add("@4", "%"+filtro.articulo.ToUpper()+"%");
+                    parametros.Add("@4", "%" + filtro.articulo.ToUpper() + "%");
                 }
                 var bc = new BaseCore();
                 var dt = bc.GetDataTableByQuery(sql, parametros);
@@ -163,9 +171,10 @@ namespace jbp.business.hana
                         }
                     }
                 }
-                return new { sts=ms };
+                return new { sts = ms };
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 return new
                 {
                     error = e.Message
@@ -206,7 +215,7 @@ namespace jbp.business.hana
                     {
                         CodArticulo = dr["CodArticulo"].ToString(),
                         Articulo = dr["Articulo"].ToString(),
-                        Cantidad = bc.GetDecimal(dr["Cantidad"],4),
+                        Cantidad = bc.GetDecimal(dr["Cantidad"], 4),
                         UnidadMedida = dr["UnidadMedida"].ToString(),
                         BodegaDestino = dr["BodegaDestino"].ToString(),
                         LineNum = bc.GetInt(dr["LineNum"]),
@@ -271,7 +280,7 @@ namespace jbp.business.hana
                         CodArticulo = dr["CodArticulo"].ToString(),
                         Articulo = dr["Articulo"].ToString(),
                         Lote = dr["Lote"].ToString(),
-                        Cantidad = bc.GetDecimal(dr["Cantidad"],4),
+                        Cantidad = bc.GetDecimal(dr["Cantidad"], 4),
                         CantidadReservada = bc.GetDecimal(dr["CantidadReservada"], 4),
                         UnidadMedida = dr["UnidadMedida"].ToString(),
                         BodegaOrigen = dr["BodegaOrigen"].ToString(),
@@ -280,8 +289,8 @@ namespace jbp.business.hana
                     };
                     componente.Ubicaciones = GetUbicacionesPorLote(bc.GetInt(dr["IdLote"]), componente.BodegaOrigen);
                     componente.RequierePicking = SeRequirePickingDelComponente(componente, id);
-                    
-                    if(componente.Ubicaciones!=null && componente.Ubicaciones.Count>0 && componente.Ubicaciones[0].Cantidad>0)
+
+                    if (componente.Ubicaciones != null && componente.Ubicaciones.Count > 0 && componente.Ubicaciones[0].Cantidad > 0)
                         ms.Add(componente);
                 }
             }
@@ -298,7 +307,7 @@ namespace jbp.business.hana
                 if (u.Ubicacion.ToLower().Contains("psj"))
                     tieneUbicacionPesaje = true;
             });
-            if(tieneUbicacionPesaje)
+            if (tieneUbicacionPesaje)
                 return false;
 
             // Verificar si el componente (lote) ya está en pesaje en alguna OF de la misma campaña
@@ -347,9 +356,10 @@ namespace jbp.business.hana
             {
                 foreach (DataRow dr in dt.Rows)
                 {
-                    ms.Add(new UbicacionLoteMsg{
+                    ms.Add(new UbicacionLoteMsg
+                    {
                         Ubicacion = dr["Ubicacion"].ToString(),
-                        Cantidad = bc.GetDecimal(dr["Cantidad"],4),
+                        Cantidad = bc.GetDecimal(dr["Cantidad"], 4),
                     });
                 }
             }
