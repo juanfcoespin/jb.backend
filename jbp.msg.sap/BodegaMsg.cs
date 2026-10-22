@@ -131,7 +131,7 @@ namespace jbp.msg.sap
         public string CodArticulo { get; set; }
         public string Lote { get; set; }
         public string Responsable { get; set; }
-        
+        public int U_CantBultos { get; set; }     //viene sumado CantidadBultos de los movimientos    
         public List<MovimientoTsMsg> movimientos { get; set; }
         public string ClientId { get; set; }
         public int DocNumTS { get; set; }
@@ -142,6 +142,7 @@ namespace jbp.msg.sap
     }
     public class MovimientoTsMsg {
         public double Cantidad { get; set; }
+        public int CantidadBultos { get; set; }
         public string CodBodegaDesde { get; set; }
         public string UbicacionDesde { get; set; }
         public string CodBodegaHasta { get; set; }
@@ -213,9 +214,9 @@ namespace jbp.msg.sap
     public class TsBalanzasLoteMsg
     {
         public double Cantidad { get; set; }
+        public string Lote { get; set; }
         public double U_jb_cant_fraccionada_pesaje { get; set; }
         public double U_jb_dif_tolerancia { get; set; }
-        public string Lote { get; set; }
     }
 
     public class SubNivelBodegaMsg

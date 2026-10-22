@@ -36,10 +36,15 @@ namespace jbp.core.sapDiApi
             stockTransfer.DocDate = DateTime.Now;
             stockTransfer.PriceList = -2; //Último precio determinado
             stockTransfer.Comments = me.Responsable;
+
+            //? registro de cantidad de bultos transferidos solo para lotes de producto terminado
+            if (!string.IsNullOrWhiteSpace(me.Lote) && me.Lote.Trim().ToUpper().StartsWith("H"))
+                if (me.U_CantBultos > 0)
+                    stockTransfer.UserFields.Fields.Item("U_CantBultos").Value = me.U_CantBultos;
+
             if (conf.Default.NroSerieTSPorDefecto > 0)
-            {
                 stockTransfer.Series = conf.Default.NroSerieTSPorDefecto; //TR_HUM
-            }
+
             //identifico las lineas a agregarse
             var lineas = new List<LineaMsg>();
             me.movimientos.ForEach(m => {
