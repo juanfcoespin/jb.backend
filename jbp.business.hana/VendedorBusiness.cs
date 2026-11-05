@@ -108,7 +108,7 @@ namespace jbp.business.hana
             return "Efectivo";
         }
 
-        public static object GetCarteraByCodVendedor(string codVendedor)
+        public static object GetCarteraByCodVendedor(string codVendedor=null, bool traerCarteraTotal=false)
         {
             try {
                 if (string.IsNullOrEmpty(codVendedor) || codVendedor == "0")
@@ -134,9 +134,12 @@ namespace jbp.business.hana
                      t0.""Comentarios"",
                      t0.""TipoNC""
                   from ""JbpVw_Cartera"" t0  inner join
-                    ""JbpVw_SocioNegocio"" t1 on t1.""CodSocioNegocio"" = t0.""CodCliente""
-                  where
+                    ""JbpVw_SocioNegocio"" t1 on t1.""CodSocioNegocio"" = t0.""CodCliente""");
+                sql += string.Format(@"
+                    where
                      t1.""CodVendedor"" = ?
+                ");
+                sql += string.Format(@"
                   order by
                      t1.""CodSocioNegocio"",
                      t0.""OrdenRango""

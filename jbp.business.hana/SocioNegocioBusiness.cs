@@ -482,7 +482,7 @@ namespace jbp.business.hana
 
         public static HabilitadoCanjearPuntosMS HabilitadoParaCangearPuntos(string ruc){
             try{
-                //3. consultar en promorick por cada LicTradNum usando GetEstadoCuentaByRuc(LicTradNum)
+                // consultar en promorick por cada ruc
                 var participantePtkBusiness = new ParticipantePtkBusiness();
                 var estadoCuenta = participantePtkBusiness.GetEstadoCuentaByRuc(ruc);
 
