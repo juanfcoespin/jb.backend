@@ -25,6 +25,13 @@ namespace jbp.services.rest.Controllers
             return jbp.business.hana.CatalogoBusiness.GetCatalogoPesaje();
         }
 
+        [HttpGet]
+        [Route("api/vendor/GetCarteraTotal")]
+        public object GetCarteraTotal()
+        {
+            return VendedorBusiness.GetCarteraByCodVendedor(null, true);
+        }
+
 
     }
 }
