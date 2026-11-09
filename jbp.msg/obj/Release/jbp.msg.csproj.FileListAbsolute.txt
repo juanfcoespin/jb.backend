@@ -14,3 +14,13 @@ D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.pdb
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.csproj.CoreCompileInputs.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.csproj.AssemblyReference.cache
 D:\DesarrolloSw\JBP\jbp.backend\jbp.msg\obj\Release\jbp.msg.csproj.Up2Date
+C:\JB\jb.backend\jbp.msg\bin\Release\jbp.msg.dll.config
+C:\JB\jb.backend\jbp.msg\bin\Release\jbp.msg.dll
+C:\JB\jb.backend\jbp.msg\bin\Release\jbp.msg.pdb
+C:\JB\jb.backend\jbp.msg\bin\Release\TechTools.Utils.dll
+C:\JB\jb.backend\jbp.msg\bin\Release\TechTools.Utils.pdb
+C:\JB\jb.backend\jbp.msg\obj\Release\jbp.msg.csproj.AssemblyReference.cache
+C:\JB\jb.backend\jbp.msg\obj\Release\jbp.msg.csproj.CoreCompileInputs.cache
+C:\JB\jb.backend\jbp.msg\obj\Release\jbp.msg.csproj.Up2Date
+C:\JB\jb.backend\jbp.msg\obj\Release\jbp.msg.dll
+C:\JB\jb.backend\jbp.msg\obj\Release\jbp.msg.pdb

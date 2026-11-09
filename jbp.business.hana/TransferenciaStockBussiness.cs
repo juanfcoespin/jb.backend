@@ -448,6 +448,7 @@ namespace jbp.business.hana
                 // Si la cantidad pesada en la balanza para un lote es mayor a la requerida para ESE lote en la OF
                 // colocar la cantidad requerida del lote (porq las balanzas pueden mandar un valor + o - por tolerancia)
                 me.Lineas.ForEach(line =>{
+                    //TODO: aqui si compOFMsg devuelve nulo no deberia continuar, en el codigo actual si avanza
                     var compOFMsg = OrdenFabricacionBusiness.GetComponentesAPesarOfByDocNum(me.DocNumOF, line.CodArticulo);
                     
                     if (compOFMsg != null && compOFMsg.Componentes.Count > 0){
@@ -556,6 +557,9 @@ namespace jbp.business.hana
             if (insumosPorPesar == 0) { // se fraccionaron todos los insumos
                 SetOFPesada(docNumOF);
                 EnviarCorreoFinalizacionPesaje(docNumOF);
+                // realizar entrada de mercaderia por ajuste hacia la bodega destino con los valores de U_jb_dif_tolerancia
+
+                
             }
         }
         public static void EnviarCorreoFinalizacionPesaje(int docNumOF)

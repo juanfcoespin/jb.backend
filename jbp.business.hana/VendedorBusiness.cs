@@ -111,7 +111,7 @@ namespace jbp.business.hana
         public static object GetCarteraByCodVendedor(string codVendedor=null, bool traerCarteraTotal=false)
         {
             try {
-                if (string.IsNullOrEmpty(codVendedor) || codVendedor == "0")
+                if (!traerCarteraTotal && (string.IsNullOrEmpty(codVendedor) || codVendedor == "0"))
                     throw new Exception("No se ha identificado el código del vendedor. Solicite al departamento de ventas que registre correctamente su correo en SAP!!");
                 var ms = new List<CarteraMsg>();
                 var sql = string.Format(@"
@@ -135,19 +135,30 @@ namespace jbp.business.hana
                      t0.""TipoNC""
                   from ""JbpVw_Cartera"" t0  inner join
                     ""JbpVw_SocioNegocio"" t1 on t1.""CodSocioNegocio"" = t0.""CodCliente""");
-                sql += string.Format(@"
-                    where
-                     t1.""CodVendedor"" = ?
-                ");
+                if (!traerCarteraTotal) {
+                    sql += string.Format(@"
+                        where
+                         t1.""CodVendedor"" = ?
+                    ");
+                }
+                
                 sql += string.Format(@"
                   order by
                      t1.""CodSocioNegocio"",
                      t0.""OrdenRango""
                 ");
                 var bc = new BaseCore();
-                var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
-                    {"@0",codVendedor }
-                });
+                var dt = new DataTable();
+                if (!traerCarteraTotal)
+                {
+                    dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                        {"@0",codVendedor }
+                    });
+                }
+                else {
+                    dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object>());
+                }
+                
                 if (dt != null && dt.Rows.Count > 0)
                 {
                     foreach (DataRow dr in dt.Rows)

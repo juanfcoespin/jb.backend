@@ -142,6 +142,7 @@ namespace jbp.core.sapDiApi
             stockTransfer.ToWarehouse = me.BodegaDestino;
             stockTransfer.DocDate = DateTime.Now;
             stockTransfer.Comments = me.Responsable;
+            stockTransfer.JournalMemo = "test";          //guarda referencia a la ST 
             stockTransfer.PriceList = -2; //Por pedido de contabilidad toda TS debe costearse con la LDP: "Último Precio Determinado"
 
             if (conf.Default.NroSerieTSPorDefecto > 0)

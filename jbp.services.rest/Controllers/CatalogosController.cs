@@ -26,7 +26,7 @@ namespace jbp.services.rest.Controllers
         }
 
         [HttpGet]
-        [Route("api/vendor/GetCarteraTotal")]
+        [Route("api/catalogos/GetCarteraTotal")]
         public object GetCarteraTotal()
         {
             return VendedorBusiness.GetCarteraByCodVendedor(null, true);
