@@ -12,6 +12,7 @@ namespace jbp.msg.sap
         public string CodSocioNegocio { get; set; }
 
         public string TipoDocumento { get; set; }
+        public string CodTipoDocumento { get; set; }
         public string Vendedor { get; set; }
         public string NumFolio { get; set; }
         public string FechaDocumento { get; set; }
@@ -30,5 +31,6 @@ namespace jbp.msg.sap
         public string TipoNC { get; set; }
         public int IdFactura { get; set; }
         public List<ValorPagadoMsg> PagosBorrador { get; set; }
+        
     }
 }
