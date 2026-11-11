@@ -142,7 +142,7 @@ namespace jbp.core.sapDiApi
             stockTransfer.ToWarehouse = me.BodegaDestino;
             stockTransfer.DocDate = DateTime.Now;
             stockTransfer.Comments = me.Responsable;
-            stockTransfer.JournalMemo = "test";          //guarda referencia a la ST 
+            stockTransfer.JournalMemo = me.Id.ToString();          //guarda referencia a la ST 
             stockTransfer.PriceList = -2; //Por pedido de contabilidad toda TS debe costearse con la LDP: "Último Precio Determinado"
 
             if (conf.Default.NroSerieTSPorDefecto > 0)
@@ -156,8 +156,8 @@ namespace jbp.core.sapDiApi
                     if (me.Id > 0) //si la Ts tiene como documento base una solicitud de transferencia
                     {
                         stockTransfer.Lines.BaseType = SAPbobsCOM.InvBaseDocTypeEnum.InventoryTransferRequest; // Solicitud de transferencia
-                        stockTransfer.Lines.BaseEntry = me.Id;
-                        stockTransfer.Lines.BaseLine = line.LineNum;
+                        stockTransfer.Lines.BaseEntry = me.Id;                                                  // asegura la integridad referencial hacia una ST
+                        stockTransfer.Lines.BaseLine = line.LineNum;                                            // identificador/posicion dentro de ls ST
                     }
                     else
                     {

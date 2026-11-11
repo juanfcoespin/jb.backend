@@ -17,7 +17,7 @@
     <WebStackScaffolding_IsReferencingScriptLibrariesSelected>True</WebStackScaffolding_IsReferencingScriptLibrariesSelected>
     <WebStackScaffolding_LayoutPageFile />
     <WebStackScaffolding_IsAsyncSelected>False</WebStackScaffolding_IsAsyncSelected>
-    <NameOfLastUsedPublishProfile>C:\JB\jb.backend\jbp.services.rest\Properties\PublishProfiles\FolderProfile.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>C:\DesarrollosJB\jb.backend\jbp.services.rest\Properties\PublishProfiles\FolderProfile.pubxml</NameOfLastUsedPublishProfile>
     <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
   <ProjectExtensions>
