@@ -132,6 +132,62 @@ namespace jbp.core.sapDiApi
             return null;
         }
 
+        //entrada por ajuste de inventario tipo oInventoryGenEntry
+        public DocSapInsertadoMsg AddAjusteInventario(EntradaAjustePesajeMsg me){
+            var ms = new DocSapInsertadoMsg();
+            try{
+                if (this.Company == null || !this.Company.Connected)
+                    this.Connect();
+
+                var entrada = (Documents)this.Company.GetBusinessObject(BoObjectTypes.oInventoryGenEntry);
+
+                entrada.DocDate = DateTime.Now;
+
+                if (!string.IsNullOrEmpty(me.Comments))
+                    entrada.Comments = me.Comments;
+                else
+                    entrada.Comments = "Ajuste por diferencia de cantidad física en transferencia";
+
+                if (me.PaymentGroupCode != 0)
+                    entrada.PaymentGroupCode = me.PaymentGroupCode;
+
+                me.DocumentLines.ForEach(line => {
+                    entrada.Lines.ItemCode = line.ItemCode;
+                    double cantidadTotal = 0;
+                    if (!string.IsNullOrEmpty(line.WarehouseCode))
+                        entrada.Lines.WarehouseCode = line.WarehouseCode;
+                    else 
+                        entrada.Lines.WarehouseCode = "PROD1LIQ";
+
+                    if (!string.IsNullOrEmpty(line.AccountCode))
+                        entrada.Lines.AccountCode = line.AccountCode;
+                    else
+                        entrada.Lines.AccountCode = "_SYS00000001319";
+
+                    if (line.BatchNumbers != null && line.BatchNumbers.Count > 0){
+                        line.BatchNumbers.ForEach(lote => {
+                            entrada.Lines.BatchNumbers.BatchNumber = lote.BatchNumber;
+                            entrada.Lines.BatchNumbers.Quantity = lote.Quantity;
+                            cantidadTotal += lote.Quantity;
+                            entrada.Lines.BatchNumbers.Add();
+                        });
+                    }
+                    entrada.Lines.Quantity = cantidadTotal;
+                    entrada.Lines.Add();
+                });
+
+                var error = entrada.Add();
+                if (error != 0)
+                    ms.Error = "Error: " + this.Company.GetLastErrorDescription();
+                else
+                    ms.Id = this.Company.GetNewObjectKey();
+            }
+            catch (Exception ex){
+                ms.Error = ex.Message;
+            }
+            return ms;
+        }
+
         ~SapEntradaMercancia()
         {
             //cuando se destruye el objeto

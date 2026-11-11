@@ -488,8 +488,6 @@ namespace jbp.business.hana
                 var newMe = Map(me, ubicacionPesaje);
                 ms = sapTransferenciaStock.AddFromSt(newMe);
 
-                EnviarCorreoFinalizacionPesaje(me.DocNumOF);
-
                 if (string.IsNullOrEmpty(ms.Error))
                 {
                     ms.DocNum = GetDocNumBYId(ms.Id);
@@ -575,8 +573,9 @@ namespace jbp.business.hana
             ");
             var insumosPorPesar = new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> { { "@0", docNumOF } });
             if (insumosPorPesar == 0)
-            { // se fraccionaron todos los insumos
+            { // se fraccionaron todos los insumos?
                 SetOFPesada(docNumOF);
+                EnviarCorreoFinalizacionPesaje(docNumOF);
             }
         }
         public static void EnviarCorreoFinalizacionPesaje(int docNumOF)
@@ -590,7 +589,9 @@ namespace jbp.business.hana
                     {
                         string error = null;
 
-                        var transferencias = getTranferenciasByOF(docNumOF);
+                        DataTable tranferenciasDatos = getTranferenciasDataTableByOF(docNumOF);
+                        realizarIngresosAjustePesaje(tranferenciasDatos, docNumOF, appName);
+                        var transferenciasHTML = armarHtmlTransferencias(tranferenciasDatos);
                         var ambiente = BaseCore.GetBddName();
 
                         var cuerpoMensaje = string.Format(@"
@@ -601,7 +602,7 @@ namespace jbp.business.hana
                             </div>",
                             docNumOF,
                             ambiente,
-                            transferencias
+                            transferenciasHTML
                         );
 
                         TechTools.Net.MailUtils.Send(
@@ -628,8 +629,54 @@ namespace jbp.business.hana
 
         }
 
-        // obtiene todas las tranferencias de una ST dato una OF
-        private static string getTranferenciasByOF(int docNumOF)
+        // realiza el ingreso de mercancia por ajuste para cada componente pesado
+        private static void realizarIngresosAjustePesaje(DataTable tranferenciasDatos, int docNumOF, string appName)
+        {
+            if (tranferenciasDatos == null || tranferenciasDatos.Rows.Count == 0)
+                return;
+
+            var bc = new BaseCore();
+            foreach (DataRow dr in tranferenciasDatos.Rows)
+            {
+                try
+                {
+                    var itemCode = dr["ItemCode"] != null ? dr["ItemCode"].ToString() : "";
+                    var lote = dr.Table.Columns.Contains("Lote") && dr["Lote"] != null ? dr["Lote"].ToString() : "";
+                    var quantity = bc.GetDouble(dr["Quantity"]);
+
+                    if (!string.IsNullOrEmpty(itemCode) && quantity > 0)
+                    {
+                        var ajusteMsg = new EntradaAjustePesajeMsg();
+                        var linea = new EntradaAjusteLineaMsg
+                        {
+                            ItemCode = itemCode
+                        };
+
+                        if (!string.IsNullOrEmpty(lote))
+                        {
+                            linea.BatchNumbers.Add(new EntradaAjusteLoteMsg
+                            {
+                                BatchNumber = lote,
+                                Quantity = quantity
+                            });
+                        }
+
+                        ajusteMsg.DocumentLines.Add(linea);
+
+                        var respAjuste = EntradaMercanciaBussiness.IngresoPorAjustePesaje(ajusteMsg);
+                        if (respAjuste != null && !string.IsNullOrEmpty(respAjuste.Error))
+                            LogErrorCorreo(docNumOF, "Error al ingresar ajuste pesaje item " + itemCode + ", lote " + lote + ": " + respAjuste.Error, appName);
+                    }
+                }
+                catch (Exception exRow)
+                {
+                    LogErrorCorreo(docNumOF, "Excepción en ajuste pesaje fila: " + exRow.Message, appName);
+                }
+            }
+        }
+
+        // obtiene todas las tranferencias de una ST dado una OF en un DataTable
+        private static DataTable getTranferenciasDataTableByOF(int docNumOF)
         {
             try
             {
@@ -640,99 +687,106 @@ namespace jbp.business.hana
                     WTR1.""ItemCode"", 
                     WTR1.""BaseLine"", 
                     WTR1.""Dscription"", 
-                    WTR1.""Quantity"", 
+                    IBT1.""BatchNum"" AS ""Lote"",
+                    COALESCE(IBT1.""Quantity"", WTR1.""Quantity"") AS ""Quantity"", 
                     WTR1.""U_jb_cant_fraccionada_pesaje"", 
                     WTR1.""U_jb_dif_tolerancia""
                 FROM WTR1
                 INNER JOIN OWTQ ON WTR1.""BaseRef"" = TO_VARCHAR(OWTQ.""DocNum"") 
+                LEFT JOIN IBT1 ON IBT1.""BaseEntry"" = WTR1.""DocEntry"" 
+                              AND IBT1.""BaseLinNum"" = WTR1.""LineNum"" 
+                              AND IBT1.""BaseType"" = 67
+                              AND IBT1.""Direction"" = 0
                 WHERE OWTQ.""JrnlMemo"" = ?");
 
-                var dt = bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
+                return bc.GetDataTableByQuery(sql, new Dictionary<string, object> {
                     { "@0", docNumOF.ToString() }
                 });
-
-                if (dt == null || dt.Rows.Count == 0)
-                {
-                    return "<p style='color: #666; font-style: italic; margin-top: 15px;'>No se encontraron transferencias registradas para esta orden de fabricación.</p>";
-                }
-
-                var sb = new StringBuilder();
-
-                sb.Append("<div style='margin-top: 20px;'>");
-
-                sb.Append(@"
-                    <div style=""padding: 10px 14px; margin-bottom: 15px; background-color: #f1f1f1; border-left: 4px solid #a1a1a1; color: #000000; font-size: 13px; border-radius: 3px;"">
-                        Informe de los componentes pesados.
-                    </div>");
-
-                sb.Append(@"
-                <table style=""width: 100%; border-collapse: collapse; font-family: Arial, Helvetica, sans-serif; font-size: 13px; margin-top: 10px; border: 1px solid #dcdcdc;"">
-                    <thead>
-                        <tr style=""background-color: #f2f2f2; color: #111111; text-align: left; border-bottom: 2px solid #a1a1a1;"">
-                            <th style=""padding: 9px 10px; border: 1px solid #dcdcdc; text-align: center;"">ST (DocNum)</th>
-                            <th style=""padding: 9px 10px; border: 1px solid #dcdcdc; text-align: center;"">Línea</th>
-                            <th style=""padding: 9px 10px; border: 1px solid #dcdcdc;"">Código</th>
-                            <th style=""padding: 9px 10px; border: 1px solid #dcdcdc;"">Descripción</th>
-                            <th style=""padding: 9px 10px; border: 1px solid #dcdcdc; text-align: right;"">Cant. Requerida</th>
-                            <th style=""padding: 9px 10px; border: 1px solid #dcdcdc; text-align: right;"">Cant. Fraccionada</th>
-                            <th style=""padding: 9px 10px; border: 1px solid #dcdcdc; text-align: right;"">Dif. Tolerancia</th>
-                        </tr>
-                    </thead>
-                    <tbody>");
-
-                var rowIndex = 0;
-                foreach (DataRow dr in dt.Rows)
-                {
-                    var baseRef = dr["BaseRef"] != null ? dr["BaseRef"].ToString() : "";
-                    var baseLine = dr["BaseLine"] != null ? dr["BaseLine"].ToString() : "";
-                    var itemCode = dr["ItemCode"] != null ? dr["ItemCode"].ToString() : "";
-                    var dscription = dr["Dscription"] != null ? dr["Dscription"].ToString() : "";
-                    var quantity = bc.GetDouble(dr["Quantity"]);
-                    var cantFraccionada = bc.GetDouble(dr["U_jb_cant_fraccionada_pesaje"]);
-                    var difTolerancia = bc.GetDouble(dr["U_jb_dif_tolerancia"]);
-
-                    var tieneDiferencia = difTolerancia > 0;
-                    var bgColor = tieneDiferencia ? "#eeeeee" : (rowIndex % 2 == 0 ? "#ffffff" : "#f9f9f9");
-                    var difStyle = tieneDiferencia
-                        ? "color: #000000; font-weight: bold; background-color: #dddddd;"
-                        : "color: #555555;";
-
-                    sb.AppendFormat(@"
-                        <tr style=""background-color: {0}; border-bottom: 1px solid #e0e0e0;"">
-                            <td style=""padding: 8px 10px; border: 1px solid #e0e0e0; text-align: center;"">{1}</td>
-                            <td style=""padding: 8px 10px; border: 1px solid #e0e0e0; text-align: center;"">{2}</td>
-                            <td style=""padding: 8px 10px; border: 1px solid #e0e0e0; font-weight: bold;"">{3}</td>
-                            <td style=""padding: 8px 10px; border: 1px solid #e0e0e0;"">{4}</td>
-                            <td style=""padding: 8px 10px; border: 1px solid #e0e0e0; text-align: right;"">{5:0.####}</td>
-                            <td style=""padding: 8px 10px; border: 1px solid #e0e0e0; text-align: right;"">{6:0.####}</td>
-                            <td style=""padding: 8px 10px; border: 1px solid #e0e0e0; text-align: right; {7}"">{8:0.####}</td>
-                        </tr>",
-                        bgColor,
-                        baseRef,
-                        baseLine,
-                        itemCode,
-                        dscription,
-                        quantity,
-                        cantFraccionada,
-                        difStyle,
-                        difTolerancia
-                    );
-
-                    rowIndex++;
-                }
-
-                sb.Append(@"
-                    </tbody>
-                </table>
-                </div>");
-
-                return sb.ToString();
             }
             catch (Exception ex)
             {
-                LogErrorCorreo(docNumOF, "Error al obtener transferencias para correo: " + ex.Message, "API - Transferencia Stock Balanzas");
-                return "<p style='color: #555555; font-style: italic; margin-top: 15px;'>Error al cargar el detalle de transferencias.</p>";
+                LogErrorCorreo(docNumOF, "Error al consultar transferencias en base de datos: " + ex.Message, "API - Transferencia Stock Balanzas");
+                return null;
             }
+        }
+
+        // tabla HTML del reporte de tranferencias de pesaje
+        private static string armarHtmlTransferencias(DataTable dt)
+        {
+            if (dt == null || dt.Rows.Count == 0)
+                return "<p style='color: #666; font-style: italic; margin-top: 15px;'>No se encontraron transferencias registradas para esta orden de fabricación.</p>";
+
+            var bc = new BaseCore();
+            var sb = new StringBuilder();
+
+            sb.Append("<div style='margin-top: 20px;'>");
+
+            sb.Append(@"
+                <div style=""padding: 10px 14px; margin-bottom: 15px; background-color: #f1f1f1; border-left: 4px solid #a1a1a1; color: #000000; font-size: 13px; border-radius: 3px;"">
+                    Informe de los componentes pesados.
+                </div>");
+
+            sb.Append(@"
+            <table style=""width: 100%; border-collapse: collapse; font-family: Arial, Helvetica, sans-serif; font-size: 13px; margin-top: 10px; border: 1px solid #dcdcdc;"">
+                <thead>
+                    <tr style=""background-color: #f2f2f2; color: #111111; text-align: left; border-bottom: 2px solid #a1a1a1;"">
+                        <th style=""padding: 9px 10px; border: 1px solid #dcdcdc; text-align: center;"">ST (DocNum)</th>
+                        <th style=""padding: 9px 10px; border: 1px solid #dcdcdc; text-align: center;"">Línea</th>
+                        <th style=""padding: 9px 10px; border: 1px solid #dcdcdc;"">Código</th>
+                        <th style=""padding: 9px 10px; border: 1px solid #dcdcdc;"">Descripción</th>
+                        <th style=""padding: 9px 10px; border: 1px solid #dcdcdc;"">Lote</th>
+                        <th style=""padding: 9px 10px; border: 1px solid #dcdcdc; text-align: right;"">Cant. Requerida</th>
+                        <th style=""padding: 9px 10px; border: 1px solid #dcdcdc; text-align: right;"">Cant. Fraccionada</th>
+                        <th style=""padding: 9px 10px; border: 1px solid #dcdcdc; text-align: right;"">Dif. Tolerancia</th>
+                    </tr>
+                </thead>
+                <tbody>");
+
+            var rowIndex = 0;
+            foreach (DataRow dr in dt.Rows)
+            {
+                var baseRef = dr["BaseRef"] != null ? dr["BaseRef"].ToString() : "";
+                var baseLine = dr["BaseLine"] != null ? dr["BaseLine"].ToString() : "";
+                var itemCode = dr["ItemCode"] != null ? dr["ItemCode"].ToString() : "";
+                var dscription = dr["Dscription"] != null ? dr["Dscription"].ToString() : "";
+                var lote = dr.Table.Columns.Contains("Lote") && dr["Lote"] != null ? dr["Lote"].ToString() : "";
+                var quantity = bc.GetDouble(dr["Quantity"]);
+                var cantFraccionada = bc.GetDouble(dr["U_jb_cant_fraccionada_pesaje"]);
+                var difTolerancia = bc.GetDouble(dr["U_jb_dif_tolerancia"]);
+
+                var bgColor = rowIndex % 2 == 0 ? "#ffffff" : "#f9f9f9";
+
+                sb.AppendFormat(@"
+                    <tr style=""background-color: {0}; border-bottom: 1px solid #e0e0e0;"">
+                        <td style=""padding: 8px 10px; border: 1px solid #e0e0e0; text-align: center;"">{1}</td>
+                        <td style=""padding: 8px 10px; border: 1px solid #e0e0e0; text-align: center;"">{2}</td>
+                        <td style=""padding: 8px 10px; border: 1px solid #e0e0e0; font-weight: bold;"">{3}</td>
+                        <td style=""padding: 8px 10px; border: 1px solid #e0e0e0;"">{4}</td>
+                        <td style=""padding: 8px 10px; border: 1px solid #e0e0e0;"">{5}</td>
+                        <td style=""padding: 8px 10px; border: 1px solid #e0e0e0; text-align: right;"">{6:0.####}</td>
+                        <td style=""padding: 8px 10px; border: 1px solid #e0e0e0; text-align: right;"">{7:0.####}</td>
+                        <td style=""padding: 8px 10px; border: 1px solid #e0e0e0; text-align: right;"">{8:0.####}</td>
+                    </tr>",
+                    bgColor,
+                    baseRef,
+                    baseLine,
+                    itemCode,
+                    dscription,
+                    lote,
+                    quantity,
+                    cantFraccionada,
+                    difTolerancia
+                );
+
+                rowIndex++;
+            }
+
+            sb.Append(@"
+                </tbody>
+            </table>
+            </div>");
+
+            return sb.ToString();
         }
 
         private static void LogErrorCorreo(int docNumOF, string err, string appName)

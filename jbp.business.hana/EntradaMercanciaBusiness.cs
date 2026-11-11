@@ -209,5 +209,36 @@ namespace jbp.business.hana
             });
             
         }
+
+        public static DocSapInsertadoMsg IngresoPorAjustePesaje(EntradaAjustePesajeMsg me){
+            Monitor.Enter(control);
+            try{
+                if (me == null || me.DocumentLines == null || me.DocumentLines.Count == 0)
+                    return new DocSapInsertadoMsg { Error = "No existen líneas para realizar el ajuste de inventario." };
+
+                if (sapEntradaMercancia == null)
+                    sapEntradaMercancia = new SapEntradaMercancia();
+                if (!sapEntradaMercancia.IsConected())
+                    sapEntradaMercancia.Connect();
+
+                var ms = sapEntradaMercancia.AddAjusteInventario(me);
+                if (string.IsNullOrEmpty(ms.Error) && !string.IsNullOrEmpty(ms.Id))
+                    ms.DocNum = GetDocNumAjusteById(ms.Id);
+
+                return ms;
+            }
+            catch (Exception ex){
+                return new DocSapInsertadoMsg { Error = ex.Message };
+            }
+            finally{
+                Monitor.Exit(control);
+            }
+        }
+
+        public static int GetDocNumAjusteById(string idEntradaAjuste)
+        {
+            var sql = @"select ""DocNum"" from OIGN where ""DocEntry"" = ?";
+            return new BaseCore().GetIntScalarByQuery(sql, new Dictionary<string, object> { { "@0", idEntradaAjuste } });
+        }
     }
 }

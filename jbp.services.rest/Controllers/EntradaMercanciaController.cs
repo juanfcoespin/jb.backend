@@ -27,5 +27,12 @@ namespace jbp.services.rest.Controllers
              var ms = EntradaMercanciaBussiness.Ingresar(me, true);
             return ms;
         }
+
+        [HttpPost]
+        [Route("api/EntradaMercancia/AjustePesaje")]
+        public DocSapInsertadoMsg EntradaMercanciaAjustePesaje([FromBody] EntradaAjustePesajeMsg me){
+            var ms = EntradaMercanciaBussiness.IngresoPorAjustePesaje(me);
+            return ms;
+        }
     }
 }

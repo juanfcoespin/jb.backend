@@ -85,4 +85,38 @@ namespace jbp.msg.sap
         public string Ubicacion { get; set; }
         public dynamic IdUbicacion { get; set; }
     }
+
+    public class EntradaAjustePesajeMsg
+    {
+        public string Comments { get; set; }
+        public int PaymentGroupCode { get; set; }
+        public List<EntradaAjusteLineaMsg> DocumentLines { get; set; }
+
+        public EntradaAjustePesajeMsg()
+        {
+            this.DocumentLines = new List<EntradaAjusteLineaMsg>();
+            this.Comments = "Ajuste por diferencia de cantidad física en transferencia";
+            this.PaymentGroupCode = -2;
+        }
+    }
+
+    public class EntradaAjusteLineaMsg
+    {
+        public string ItemCode { get; set; }
+        public string WarehouseCode { get; set; }
+        public string AccountCode { get; set; }
+        public List<EntradaAjusteLoteMsg> BatchNumbers { get; set; }
+
+        public EntradaAjusteLineaMsg()
+        {
+            this.BatchNumbers = new List<EntradaAjusteLoteMsg>();
+        }
+    }
+
+    public class EntradaAjusteLoteMsg
+    {
+        public string BatchNumber { get; set; }
+        public double Quantity { get; set; }
+    }
+
 }
