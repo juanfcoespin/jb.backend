@@ -133,7 +133,7 @@ namespace jbp.core.sapDiApi
         }
 
         //entrada por ajuste de inventario tipo oInventoryGenEntry
-        public DocSapInsertadoMsg AddAjusteInventario(EntradaAjustePesajeMsg me){
+        public DocSapInsertadoMsg AddAjusteInventario(EntradaAjustePesajeMsg me, int docNumOF){
             var ms = new DocSapInsertadoMsg();
             try{
                 if (this.Company == null || !this.Company.Connected)
@@ -146,7 +146,7 @@ namespace jbp.core.sapDiApi
                 if (!string.IsNullOrEmpty(me.Comments))
                     entrada.Comments = me.Comments;
                 else
-                    entrada.Comments = "Ajuste por diferencia de cantidad física en transferencia";
+                    entrada.Comments = docNumOF.ToString();
 
                 if (me.PaymentGroupCode != 0)
                     entrada.PaymentGroupCode = me.PaymentGroupCode;

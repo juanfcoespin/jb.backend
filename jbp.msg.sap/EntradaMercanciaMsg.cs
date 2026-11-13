@@ -95,7 +95,6 @@ namespace jbp.msg.sap
         public EntradaAjustePesajeMsg()
         {
             this.DocumentLines = new List<EntradaAjusteLineaMsg>();
-            this.Comments = "Ajuste por diferencia de cantidad física en transferencia";
             this.PaymentGroupCode = -2;
         }
     }

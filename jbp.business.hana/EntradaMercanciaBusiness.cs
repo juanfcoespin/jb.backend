@@ -1,13 +1,14 @@
-﻿using jbp.msg.sap;
+﻿using jbp.core.sapDiApi;
+using jbp.msg;
+using jbp.msg.sap;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using jbp.core.sapDiApi;
 using System.Threading;
+using System.Threading.Tasks;
 using TechTools.Core.Hana;
-using System.Data;
 
 namespace jbp.business.hana
 {
@@ -210,7 +211,91 @@ namespace jbp.business.hana
             
         }
 
-        public static DocSapInsertadoMsg IngresoPorAjustePesaje(EntradaAjustePesajeMsg me){
+        public static string EntradaMercanciaAjustePesaje(){
+            var bc = new BaseCore();
+            string sql = "SELECT ORDEN_FAB FROM JB_PENDIENTE_AJUSTE WHERE AJUSTADO = FALSE";
+            DataTable pendienteAjuste = bc.GetDataTableByQuery(sql, null);
+
+            if (pendienteAjuste == null || pendienteAjuste.Rows.Count == 0)
+                return "No hay órdenes pendientes de ajuste.";
+
+            int totalProcesadas = 0, docNumEntrada = 0; 
+
+            foreach (DataRow dr in pendienteAjuste.Rows){
+                int docNumOF = bc.GetInt(dr["ORDEN_FAB"]);
+                if (docNumOF <= 0)
+                    continue;
+
+                try{
+                    DataTable tranferenciasDatos = TransferenciaStockBussiness.getTranferenciasDataTableByOF(docNumOF);
+                    DocSapInsertadoMsg resp = realizarIngresosAjustePesaje(tranferenciasDatos, docNumOF);
+                    docNumEntrada = resp.DocNum;
+
+                    if (resp != null){
+                        string sqlUpdate = "UPDATE JB_PENDIENTE_AJUSTE SET AJUSTADO = TRUE, UPDATED_AT = CURRENT_TIMESTAMP, DOCNUM_ENTRADA = ? WHERE ORDEN_FAB = ?";
+                        bc.Execute(sqlUpdate, new Dictionary<string, object> { { "@0", resp.DocNum } , { "@1", docNumOF } });
+                        totalProcesadas++;
+                    }
+                }
+                catch (Exception ex){
+                    LogErrorCorreo(docNumOF, "Error procesando ajuste OF " + docNumOF + ": " + ex.Message);
+                }
+            }
+
+            return $"Proceso completado. Se procesaron {totalProcesadas} órdenes de fabricación. \nEntrada mercadería DocNum: {docNumEntrada}";
+        }
+
+        // realiza un unico ingreso de mercancia por ajuste agrupando todos los componentes pesados de la OF
+        private static DocSapInsertadoMsg realizarIngresosAjustePesaje(DataTable tranferenciasDatos, int docNumOF){
+            if (tranferenciasDatos == null || tranferenciasDatos.Rows.Count == 0)
+                return null;
+
+            var bc = new BaseCore();
+            var ajusteMsg = new EntradaAjustePesajeMsg();
+
+            foreach (DataRow dr in tranferenciasDatos.Rows){
+                try{
+                    var itemCode = dr["ItemCode"].ToString();
+                    var lote = dr["Lote"].ToString();
+                    var quantity = bc.GetDouble(dr["U_jb_dif_tolerancia"]);
+
+                    if (!string.IsNullOrEmpty(itemCode) && quantity > 0){
+                        var linea = ajusteMsg.DocumentLines.FirstOrDefault(l => l.ItemCode == itemCode);
+                        if (linea == null){
+                            linea = new EntradaAjusteLineaMsg{
+                                ItemCode = itemCode
+                            };
+                            ajusteMsg.DocumentLines.Add(linea);
+                        }
+
+                        if (!string.IsNullOrEmpty(lote)) {
+                            linea.BatchNumbers.Add(new EntradaAjusteLoteMsg{
+                                BatchNumber = lote,
+                                Quantity = quantity
+                            });
+                        }
+                    }
+                }
+                catch (Exception exRow){
+                    LogErrorCorreo(docNumOF, "Excepción al armar línea de ajuste pesaje: " + exRow.Message);
+                    throw;
+                }
+            }
+
+            if (ajusteMsg.DocumentLines.Count == 0)
+                return null;
+
+            DocSapInsertadoMsg respAjuste = IngresoPorAjustePesaje(ajusteMsg, docNumOF);
+            if (respAjuste != null && !string.IsNullOrEmpty(respAjuste.Error)){
+                LogErrorCorreo(docNumOF, "Error al ingresar ajuste pesaje OF " + docNumOF + ": " + respAjuste.Error);
+                return null;
+            }
+
+            return respAjuste;
+        }
+
+        public static DocSapInsertadoMsg IngresoPorAjustePesaje(EntradaAjustePesajeMsg me, int docNumOF){
+            //se necesita ejecutar una peticion por vez y q esta termine para procesar para avanzar
             Monitor.Enter(control);
             try{
                 if (me == null || me.DocumentLines == null || me.DocumentLines.Count == 0)
@@ -221,7 +306,7 @@ namespace jbp.business.hana
                 if (!sapEntradaMercancia.IsConected())
                     sapEntradaMercancia.Connect();
 
-                var ms = sapEntradaMercancia.AddAjusteInventario(me);
+                var ms = sapEntradaMercancia.AddAjusteInventario(me, docNumOF);
                 if (string.IsNullOrEmpty(ms.Error) && !string.IsNullOrEmpty(ms.Id))
                     ms.DocNum = GetDocNumAjusteById(ms.Id);
 
@@ -234,6 +319,19 @@ namespace jbp.business.hana
                 Monitor.Exit(control);
             }
         }
+
+        private static void LogErrorCorreo(int docNumOF, string err, string appName = "Ajuste Pesaje"){
+            try{
+                UserBusiness.Log(new LogMsg
+                {
+                    AppName = appName,
+                    Obs = err,
+                    UserName = ""
+                });
+            }
+            catch { }
+        }
+
 
         public static int GetDocNumAjusteById(string idEntradaAjuste)
         {

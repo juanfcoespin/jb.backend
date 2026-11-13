@@ -28,11 +28,22 @@ namespace jbp.services.rest.Controllers
             return ms;
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("api/EntradaMercancia/AjustePesaje")]
-        public DocSapInsertadoMsg EntradaMercanciaAjustePesaje([FromBody] EntradaAjustePesajeMsg me){
-            var ms = EntradaMercanciaBussiness.IngresoPorAjustePesaje(me);
-            return ms;
+        public HttpResponseMessage EntradaMercanciaAjustePesaje(){
+            try{
+                string resp = EntradaMercanciaBussiness.EntradaMercanciaAjustePesaje();
+                return Request.CreateResponse(HttpStatusCode.OK, new { 
+                    message = "Se realizo el ajuste de las ordenes de fabricacion luego de pesaje",
+                    resp});
+            }
+            catch (Exception error){
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new
+                {
+                    message = "Ocurrió un problema al realizar el ajuste",
+                    error = error.Message
+                });
+            }
         }
     }
 }
